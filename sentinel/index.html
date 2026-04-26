@@ -99,9 +99,20 @@
           <button class="sample-btn text-accent hover:underline" data-sample="escrow">Escrow Releaser</button>
         </div>
         <p class="text-xs text-muted mt-4 leading-relaxed">
-          Sample buttons show cached classifications instantly (free preview). Click <strong class="text-white">Scan</strong> with any address to run a live classification — pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, …). Need to scan many at once? <a href="/sentinel/bulk/" class="text-accent hover:underline">Bulk scan up to 50 →</a>
+          Sample buttons show cached classifications instantly (free preview). Click <strong class="text-white">Scan</strong> with any address to run a live classification — pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, …).
         </p>
       </div>
+
+      <a href="/sentinel/bulk/" class="mt-4 block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">Bulk scan</div>
+            <div class="font-bold text-lg text-white">Scan up to 50 wallets in one payment</div>
+            <div class="text-sm text-muted mt-1">Paste a list, get one quote, pay once, download all reports as JSON.</div>
+          </div>
+          <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">→</div>
+        </div>
+      </a>
 
       <div id="result" class="mt-6 hidden"></div>
     </div>
@@ -117,7 +128,7 @@
             XR-Sentinel implements <strong class="text-white">x402 v2</strong> with the
             <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
             Verification and settlement are delegated to the
-            <a href="https://t54.ai" class="text-accent hover:underline">t54</a> XRPL facilitator.
+            <a href="https://t54.ai" target="_blank" rel="noopener" class="text-accent hover:underline">t54</a> XRPL facilitator.
           </p>
           <ol class="space-y-4 text-sm text-muted">
             <li class="flex gap-4">
@@ -134,9 +145,9 @@
             </li>
           </ol>
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
-            <a href="https://sentinel.xrpl-utilities.io/docs" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
-            <a href="https://sentinel.xrpl-utilities.io/openapi.json" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec →</a>
-            <a href="https://sentinel.xrpl-utilities.io/agents.json" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json →</a>
+            <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
+            <a href="https://sentinel.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec (JSON) →</a>
+            <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
           </div>
         </div>
         <div>
@@ -173,7 +184,7 @@ report = session.post(
         <li><code class="font-mono text-white">activity_score</code> — 0–100, scaled to how automated and service-like the wallet behaves</li>
         <li><code class="font-mono text-white">activity_level</code> — Low / Medium / High / Dormant / Unknown</li>
         <li><code class="font-mono text-white">confidence</code> — low / medium / high tier based on transaction depth</li>
-        <li><code class="font-mono text-white">signals</code> — array drawn from a published, versioned catalog at <a href="https://sentinel.xrpl-utilities.io/schema" class="text-accent hover:underline">/schema</a></li>
+        <li><code class="font-mono text-white">signals</code> — array drawn from a published, versioned catalog (raw JSON at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener" class="text-accent hover:underline font-mono">/schema</a>)</li>
         <li><code class="font-mono text-white">features</code> — tx types, IN/OUT split, currencies, dust counts, offer churn, time span</li>
         <li><code class="font-mono text-white">top_counterparties</code> — top 20 with verified XRPScan labels and direction</li>
         <li><code class="font-mono text-white">reasoning</code> — AI-generated narrative tying the signals to the score</li>
