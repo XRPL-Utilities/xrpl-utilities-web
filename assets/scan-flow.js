@@ -217,34 +217,82 @@
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function renderScanning(target, status) {
+    target.replaceChildren();
+    const wrap = el('div', 'bg-panel border-2 border-accent rounded-2xl p-8');
+    wrap.appendChild(el('div', 'text-xs uppercase tracking-widest text-good font-semibold mb-2', '✓ Payment received'));
+    wrap.appendChild(el('h3', 'text-3xl md:text-4xl font-bold mb-2', 'Scanning your wallets'));
+    wrap.appendChild(el('p', 'text-muted mb-8', 'Building reports — keep this tab open. Should take under a minute per wallet.'));
+
+    const total = status.scans_total || 1;
+    const done = status.scans_complete || 0;
+
+    const counterRow = el('div', 'flex items-end justify-between mb-3');
+    const counter = el('div', 'text-4xl md:text-5xl font-bold');
+    counter.id = 'flow-counter';
+    counter.textContent = `${done} / ${total}`;
+    counterRow.appendChild(counter);
+    counterRow.appendChild(el('div', 'text-muted text-sm pb-2', 'wallets scanned'));
+    wrap.appendChild(counterRow);
+
+    const trackWrap = el('div', 'bg-ink border border-border rounded-full h-4 overflow-hidden');
+    const bar = el('div', 'bg-accent h-full transition-all duration-700 rounded-full');
+    bar.id = 'flow-progress';
+    bar.style.width = Math.max(3, Math.round((done / total) * 100)) + '%';
+    trackWrap.appendChild(bar);
+    wrap.appendChild(trackWrap);
+
+    target.appendChild(wrap);
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function updateScanningProgress(target, status) {
+    const bar = target.querySelector('#flow-progress');
+    const counter = target.querySelector('#flow-counter');
+    const total = status.scans_total || 1;
+    const done = status.scans_complete || 0;
+    if (bar) bar.style.width = Math.max(3, Math.round((done / total) * 100)) + '%';
+    if (counter) counter.textContent = `${done} / ${total}`;
+  }
+
   async function pollUntilDone(target, invoiceId, getCancelled) {
+    const originalTitle = document.title;
+    let scanningShown = false;
+    const restore = () => { document.title = originalTitle; };
+
     const start = Date.now();
     while (Date.now() - start < POLL_TIMEOUT_MS) {
-      if (getCancelled()) return null;
+      if (getCancelled()) { restore(); return null; }
       try {
         const r = await fetch(`${API_BASE}/bulk/status/${invoiceId}`);
         if (r.status === 404) {
           updateStatus(target, 'Invoice not found (may have expired)', 'bad');
+          restore();
           return null;
         }
         const status = await r.json();
         if (status.state === 'awaiting_payment') {
           updateStatus(target, 'Awaiting payment…');
-        } else if (status.state === 'paid') {
-          updateStatus(target, 'Payment received — preparing scans…', 'good');
-        } else if (status.state === 'scanning') {
-          updateStatus(target, `Scanning ${status.scans_complete}/${status.scans_total}…`);
+          document.title = '⏳ Awaiting payment · XR-Sentinel';
+        } else if (status.state === 'paid' || status.state === 'scanning') {
+          if (!scanningShown) { renderScanning(target, status); scanningShown = true; }
+          else { updateScanningProgress(target, status); }
+          document.title = `[${status.scans_complete}/${status.scans_total}] Scanning · XR-Sentinel`;
         } else if (status.state === 'complete') {
-          updateStatus(target, 'Scans complete.', 'good');
+          document.title = '✓ Scans complete · XR-Sentinel';
           const rr = await fetch(`${API_BASE}/bulk/results/${invoiceId}`);
-          if (rr.ok) return await rr.json();
-          updateStatus(target, 'Could not fetch results', 'bad');
+          if (rr.ok) { setTimeout(restore, 5000); return await rr.json(); }
+          if (scanningShown) { updateStatus(target, 'Could not fetch results', 'bad'); }
+          else { renderError(target, 'Could not fetch results — try refreshing.'); }
+          restore();
           return null;
         } else if (status.state === 'failed') {
-          updateStatus(target, 'Scan job failed: ' + (status.error || 'unknown'), 'bad');
+          renderError(target, 'Scan job failed: ' + (status.error || 'unknown'));
+          restore();
           return null;
         } else if (status.state === 'expired') {
-          updateStatus(target, 'Invoice expired without payment.', 'bad');
+          renderError(target, 'Invoice expired without payment. Generate a fresh quote and try again.');
+          restore();
           return null;
         }
       } catch (e) {
@@ -253,6 +301,7 @@
       await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
     }
     updateStatus(target, 'Polling timeout — scan may still complete; check back later.', 'bad');
+    restore();
     return null;
   }
 
