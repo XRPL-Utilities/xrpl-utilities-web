@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XR-Sentinel — XRPL Activity Pattern Classifier</title>
+  <meta name="description" content="AI-assisted behavioral pattern classification for XRP Ledger wallets. Try it on any address." />
+  <meta property="og:title" content="XR-Sentinel" />
+  <meta property="og:description" content="XRPL Activity Pattern Classifier. AI-assisted, agent-payable, $0.10 per scan." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0a; }
+    .badge-low    { background: rgba(34, 197, 94,  0.15); color: #4ade80; border-color: rgba(34, 197, 94,  0.3); }
+    .badge-medium { background: rgba(234, 179, 8,  0.15); color: #facc15; border-color: rgba(234, 179, 8,  0.3); }
+    .badge-high   { background: rgba(239, 68, 68,  0.15); color: #f87171; border-color: rgba(239, 68, 68,  0.3); }
+    .badge-dormant{ background: rgba(115, 115, 115, 0.15); color: #a3a3a3; border-color: rgba(115, 115, 115, 0.3); }
+    .badge-unknown{ background: rgba(115, 115, 115, 0.15); color: #a3a3a3; border-color: rgba(115, 115, 115, 0.3); }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
+        <span class="font-semibold tracking-tight">XRPL-Utilities</span>
+        <span class="text-muted">/</span>
+        <span class="text-accent font-medium">XR-Sentinel</span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm text-muted">
+        <a href="https://sentinel.xrpl-utilities.io/docs" class="hover:text-white transition">API docs</a>
+        <a href="https://sentinel.xrpl-utilities.io/schema" class="hover:text-white transition">Schema</a>
+        <a href="https://sentinel.xrpl-utilities.io/agents.json" class="hover:text-white transition">Manifest</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Sentinel</h1>
+      <p class="text-xl text-muted">XRPL Activity Pattern Classifier</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pb-16">
+      <div class="bg-panel border border-border rounded-2xl p-8">
+        <label for="address" class="block text-sm font-semibold mb-3 text-white">XRPL address</label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            id="address"
+            type="text"
+            placeholder="r..."
+            spellcheck="false"
+            class="flex-grow bg-ink border border-border rounded-lg px-4 py-3 font-mono text-sm focus:outline-none focus:border-accent transition"
+          />
+          <button
+            id="scan-btn"
+            class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition whitespace-nowrap"
+          >
+            Scan
+          </button>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2 text-xs">
+          <span class="text-muted">Try a sample:</span>
+          <button class="sample-btn text-accent hover:underline" data-sample="sologenic">Sologenic issuer</button>
+          <span class="text-border">·</span>
+          <button class="sample-btn text-accent hover:underline" data-sample="bithomp">Bithomp validator</button>
+          <span class="text-border">·</span>
+          <button class="sample-btn text-accent hover:underline" data-sample="escrow">Escrow Releaser</button>
+        </div>
+        <p class="text-xs text-muted mt-4 leading-relaxed">
+          Public previews use cached sample classifications. To run a live scan, AI agents pay
+          <strong class="text-white">$0.10 USD</strong> in XRP or RLUSD via the
+          <a href="https://x402.org" class="text-accent hover:underline">x402</a> protocol.
+          See <a href="#for-agents" class="text-accent hover:underline">For agents</a> below.
+        </p>
+      </div>
+
+      <div id="result" class="mt-6 hidden"></div>
+    </div>
+  </section>
+
+  <section id="for-agents" class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-6 py-20">
+      <div class="grid md:grid-cols-2 gap-12">
+        <div>
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For AI agents</h2>
+          <h3 class="text-3xl font-bold mb-6">Pay $0.10 per scan, no API key</h3>
+          <p class="text-muted leading-relaxed mb-6">
+            XR-Sentinel implements <strong class="text-white">x402 v2</strong> with the
+            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
+            Verification and settlement are delegated to the
+            <a href="https://t54.ai" class="text-accent hover:underline">t54</a> XRPL facilitator.
+          </p>
+          <ol class="space-y-4 text-sm text-muted">
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">1.</span>
+              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with two options: XRP (dynamic, ≈ $0.10 spot) or RLUSD (flat 0.10).</span>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">2.</span>
+              <span>Sign an XRPL Payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">3.</span>
+              <span>Server verifies, runs the classification, then settles. Returns <code class="font-mono text-white">200</code> with the report and a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
+            </li>
+          </ol>
+          <div class="mt-8 flex flex-wrap gap-3 text-sm">
+            <a href="https://sentinel.xrpl-utilities.io/docs" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
+            <a href="https://sentinel.xrpl-utilities.io/openapi.json" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec →</a>
+            <a href="https://sentinel.xrpl-utilities.io/agents.json" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json →</a>
+          </div>
+        </div>
+        <div>
+          <div class="bg-ink border border-border rounded-xl p-6 font-mono text-sm overflow-x-auto">
+            <div class="text-muted mb-3"># pip install x402-xrpl</div>
+            <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
+<span class="text-accent">from</span> xrpl.wallet <span class="text-accent">import</span> Wallet
+
+session = X402RequestsSession(
+    wallet=Wallet.from_seed(seed),
+    rpc_url=<span class="text-green-400">"https://xrplcluster.com"</span>,
+    payment_requirements_selector=<span class="text-green-400">"XRP"</span>,
+)
+
+report = session.post(
+    <span class="text-green-400">"https://sentinel.xrpl-utilities.io/scan"</span>,
+    json={<span class="text-green-400">"address"</span>: <span class="text-green-400">"r..."</span>},
+).json()
+
+<span class="text-accent">print</span>(report[<span class="text-green-400">"activity_level"</span>])
+<span class="text-accent">print</span>(report[<span class="text-green-400">"signals"</span>])
+<span class="text-accent">print</span>(report[<span class="text-green-400">"reasoning"</span>])</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
+      <h3 class="text-3xl font-bold mb-6">What you get back</h3>
+      <ul class="space-y-3 text-muted leading-relaxed">
+        <li><code class="font-mono text-white">activity_score</code> — 0–100, scaled to how automated and service-like the wallet behaves</li>
+        <li><code class="font-mono text-white">activity_level</code> — Low / Medium / High / Dormant / Unknown</li>
+        <li><code class="font-mono text-white">confidence</code> — low / medium / high tier based on transaction depth</li>
+        <li><code class="font-mono text-white">signals</code> — array drawn from a published, versioned catalog at <a href="https://sentinel.xrpl-utilities.io/schema" class="text-accent hover:underline">/schema</a></li>
+        <li><code class="font-mono text-white">features</code> — tx types, IN/OUT split, currencies, dust counts, offer churn, time span</li>
+        <li><code class="font-mono text-white">top_counterparties</code> — top 20 with verified XRPScan labels and direction</li>
+        <li><code class="font-mono text-white">reasoning</code> — AI-generated narrative tying the signals to the score</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Safe harbor & compliance</h2>
+      <p class="text-muted leading-relaxed text-sm">
+        XR-Sentinel produces behavioral pattern classification, not risk assessment.
+        It is not a compliance, AML, sanctions, or forensic service. A "High" activity
+        level is not a risk signal — it typically indicates an exchange, market maker,
+        AMM, validator, or trading bot.
+      </p>
+      <p class="text-muted leading-relaxed text-sm mt-4">
+        XRPL-Utilities provides behavioral data classification and technical ledger analysis.
+        We do not provide financial advice, risk ratings, or investment forensics.
+        Users are responsible for ensuring their use of these tools complies with local
+        digital asset regulations, including the California Digital Financial Assets Law
+        and the Colorado AI Act where applicable.
+      </p>
+    </div>
+  </section>
+
+  <footer class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
+      <div>XR-Sentinel &copy; 2026 · Powered by XRPL & AI</div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="hover:text-white transition">← Home</a>
+        <a href="https://sentinel.xrpl-utilities.io/tos" class="hover:text-white transition">Terms</a>
+        <a href="https://sentinel.xrpl-utilities.io/healthz" class="hover:text-white transition">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const SAMPLES = {
+      sologenic: {
+        address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz",
+        activity_score: 88,
+        activity_level: "High",
+        confidence: "high",
+        window_days: 90,
+        transaction_count: 200,
+        signals: ["PASSIVE_COUNTERPARTY", "MULTI_CURRENCY_GATEWAY"],
+        features: { unique_currencies: 17, dust_payments_under_usd_0p01: 0 },
+        reasoning: "Token issuer with high transaction depth across many currencies. Passive counterparty role is consistent with an issuer wallet receiving payments from holders. Multi-currency gateway behavior is expected for an issuer of this size.",
+      },
+      bithomp: {
+        address: "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe",
+        activity_score: 0,
+        activity_level: "Dormant",
+        confidence: "medium",
+        window_days: 90,
+        transaction_count: 0,
+        signals: ["DORMANT_REAWAKENING"],
+        features: { total_txs_fetched: 47 },
+        reasoning: "Wallet has historical transactions on-ledger but no activity in the last 90 days. Bithomp validator label is verified via XRPScan. Current behavior cannot be classified.",
+      },
+      escrow: {
+        address: "rELeasERs3m4inA1UinRLTpXemqyStqzwh",
+        activity_score: 72,
+        activity_level: "High",
+        confidence: "high",
+        window_days: 90,
+        transaction_count: 200,
+        signals: ["NET_OUTBOUND_SWEEP"],
+        features: { direction_in_out: "5/195", top_counterparty: "XRP Tip Bot" },
+        reasoning: "Predominantly outbound EscrowFinish operations with XRP Tip Bot as the top counterparty. Pattern matches an automated escrow-release service rather than a human-operated wallet.",
+      },
+    };
+
+    const EXAMPLE_LABEL = "Cached sample classification (illustrative)";
+
+    function levelBadgeClass(level) {
+      const m = { Low: "badge-low", Medium: "badge-medium", High: "badge-high", Dormant: "badge-dormant", Unknown: "badge-unknown" };
+      return m[level] || "badge-unknown";
+    }
+
+    function renderReport(data, isSample) {
+      const r = document.getElementById("result");
+      const signals = (data.signals || []).map(s => `<span class="font-mono text-xs bg-ink border border-border rounded px-2 py-1">${s}</span>`).join(" ");
+      r.innerHTML = `
+        <div class="bg-panel border border-border rounded-2xl p-8">
+          ${isSample ? `<div class="mb-4 text-xs uppercase tracking-wider text-accent">${EXAMPLE_LABEL}</div>` : ""}
+          <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+            <div>
+              <div class="text-xs text-muted mb-1">Address</div>
+              <div class="font-mono text-sm break-all">${data.address}</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="border ${levelBadgeClass(data.activity_level)} rounded-full px-3 py-1 text-xs font-semibold">${data.activity_level}</span>
+              <span class="text-3xl font-bold">${data.activity_score}<span class="text-muted text-base">/100</span></span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm">
+            <div><div class="text-xs text-muted mb-1">Confidence</div><div class="font-medium">${data.confidence}</div></div>
+            <div><div class="text-xs text-muted mb-1">Window</div><div class="font-medium">${data.window_days} days</div></div>
+            <div><div class="text-xs text-muted mb-1">Tx in window</div><div class="font-medium">${data.transaction_count}</div></div>
+            <div><div class="text-xs text-muted mb-1">Signals</div><div class="font-medium">${(data.signals || []).length}</div></div>
+          </div>
+          ${signals ? `<div class="mb-6"><div class="text-xs text-muted uppercase tracking-wider mb-2">Signals</div><div class="flex flex-wrap gap-2">${signals}</div></div>` : ""}
+          <div>
+            <div class="text-xs text-muted uppercase tracking-wider mb-2">Reasoning</div>
+            <p class="text-white leading-relaxed">${data.reasoning}</p>
+          </div>
+        </div>
+      `;
+      r.classList.remove("hidden");
+      r.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function render402(challenge) {
+      const r = document.getElementById("result");
+      const accepts = (challenge.accepts || []).map(a => {
+        const isXrp = a.asset === "XRP";
+        const human = isXrp ? `${(parseInt(a.amount) / 1_000_000).toFixed(6)} XRP` : `${a.amount} RLUSD`;
+        return `<li class="flex justify-between border border-border rounded-lg p-3"><span class="font-mono text-sm">${isXrp ? "XRP" : "RLUSD"}</span><span class="font-mono text-sm text-accent">${human}</span></li>`;
+      }).join("");
+      r.innerHTML = `
+        <div class="bg-panel border border-border rounded-2xl p-8">
+          <div class="mb-4 text-xs uppercase tracking-wider text-accent">Live response from /scan</div>
+          <h3 class="text-2xl font-bold mb-2">HTTP 402 Payment Required</h3>
+          <p class="text-muted leading-relaxed mb-6">
+            This is the actual response an AI agent receives when it calls
+            <code class="font-mono text-sm text-white">POST sentinel.xrpl-utilities.io/scan</code>
+            without payment. The agent picks one of the options below, signs a matching
+            XRPL Payment, and retries with a <code class="font-mono text-sm text-white">PAYMENT-SIGNATURE</code> header.
+          </p>
+          <div class="mb-6">
+            <div class="text-xs text-muted uppercase tracking-wider mb-2">Accepts (one of)</div>
+            <ul class="space-y-2">${accepts}</ul>
+          </div>
+          <p class="text-sm text-muted">
+            Want a real classification? See the
+            <a href="#for-agents" class="text-accent hover:underline">For agents</a> section
+            or click a sample wallet above.
+          </p>
+        </div>
+      `;
+      r.classList.remove("hidden");
+      r.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderError(message) {
+      const r = document.getElementById("result");
+      r.innerHTML = `
+        <div class="bg-panel border border-border rounded-2xl p-8">
+          <h3 class="text-xl font-bold mb-2 text-red-400">Couldn't reach the service</h3>
+          <p class="text-muted leading-relaxed">${message}</p>
+        </div>
+      `;
+      r.classList.remove("hidden");
+    }
+
+    document.querySelectorAll(".sample-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const data = SAMPLES[btn.dataset.sample];
+        if (data) {
+          document.getElementById("address").value = data.address;
+          renderReport(data, true);
+        }
+      });
+    });
+
+    document.getElementById("scan-btn").addEventListener("click", async () => {
+      const address = document.getElementById("address").value.trim();
+      if (!address) { renderError("Enter an XRPL address (starts with 'r')."); return; }
+
+      const btn = document.getElementById("scan-btn");
+      btn.disabled = true;
+      btn.textContent = "Scanning...";
+
+      try {
+        const res = await fetch("https://sentinel.xrpl-utilities.io/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address }),
+        });
+
+        if (res.status === 402) {
+          render402(await res.json());
+        } else if (res.ok) {
+          renderReport(await res.json(), false);
+        } else {
+          renderError(`Service returned HTTP ${res.status}.`);
+        }
+      } catch (e) {
+        renderError("Network error. Check your connection and try again.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Scan";
+      }
+    });
+  </script>
+
+</body>
+</html>

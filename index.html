@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XRPL-Utilities — XRPL AI Agent Applications</title>
+  <meta name="description" content="A growing suite of XRPL-native tools built for the agentic economy. Pay-per-use APIs that AI agents can discover and consume autonomously." />
+  <meta property="og:title" content="XRPL-Utilities" />
+  <meta property="og:description" content="XRPL AI Agent Applications. Auto-discoverable, agent-payable APIs built on XRP Ledger." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0a; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .accent-gradient { background: linear-gradient(135deg, #00b8ff 0%, #0091cc 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(0, 184, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 184, 255, 0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
+        <span class="font-semibold tracking-tight">XRPL-Utilities</span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm text-muted">
+        <a href="#tools" class="hover:text-white transition">Tools</a>
+        <a href="#agents" class="hover:text-white transition">For agents</a>
+        <a href="/sentinel/" class="text-accent hover:text-accent-dim transition font-medium">Try XR-Sentinel →</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="grid-bg">
+    <div class="max-w-6xl mx-auto px-6 py-24 md:py-32 text-center">
+      <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-32 w-32 mx-auto mb-8 rounded-2xl glow" />
+      <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+        XRPL <span class="accent-gradient">AI Agent</span> Applications
+      </h1>
+      <p class="text-xl md:text-2xl text-muted max-w-3xl mx-auto leading-relaxed">
+        A growing suite of XRPL-native tools built for the agentic economy.
+        Auto-discoverable, agent-payable APIs that autonomous AI agents can find,
+        understand, and pay for — without API keys or human intervention.
+      </p>
+      <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/sentinel/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-8 py-3 rounded-lg transition">
+          Try XR-Sentinel →
+        </a>
+        <a href="https://sentinel.xrpl-utilities.io/agents.json" class="border border-border hover:border-accent text-white px-8 py-3 rounded-lg transition">
+          Agent manifest
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">Mission</h2>
+      <p class="text-2xl md:text-3xl font-light leading-relaxed text-white">
+        AI agents are the next class of API consumer. They discover services without humans,
+        pay without accounts, and integrate without onboarding flows. We build XRPL-native
+        services for that world — designed from day one to be machine-discoverable and machine-payable.
+      </p>
+    </div>
+  </section>
+
+  <section id="tools" class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-6 py-20">
+      <div class="mb-12">
+        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Tools</h2>
+        <h3 class="text-4xl font-bold">The portfolio</h3>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <a href="/sentinel/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
+            <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
+          </div>
+          <h4 class="text-2xl font-bold mb-3">XR-Sentinel</h4>
+          <p class="text-muted leading-relaxed mb-6 flex-grow">
+            XRPL activity pattern classifier. Given any XRPL address, returns a 0–100 activity score,
+            structured signal catalog, and AI-generated narrative summary.
+          </p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-muted">$0.10 USD per scan · XRP or RLUSD</span>
+            <span class="text-accent group-hover:translate-x-1 transition">→</span>
+          </div>
+        </a>
+
+        <div class="bg-panel border border-border rounded-2xl p-8 flex flex-col opacity-60">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-xs uppercase tracking-wider text-muted font-semibold">In design</span>
+          </div>
+          <h4 class="text-2xl font-bold mb-3">XR-Escrow</h4>
+          <p class="text-muted leading-relaxed mb-6 flex-grow">
+            Conditional XRPL escrow management for autonomous agents. Programmatic create, finish,
+            and cancel against time and crypto-conditions.
+          </p>
+          <div class="text-sm text-muted">Coming soon</div>
+        </div>
+
+        <div class="bg-panel border border-border rounded-2xl p-8 flex flex-col opacity-60">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-xs uppercase tracking-wider text-muted font-semibold">In design</span>
+          </div>
+          <h4 class="text-2xl font-bold mb-3">XR-Trust</h4>
+          <p class="text-muted leading-relaxed mb-6 flex-grow">
+            Trustline introspection and risk envelope analysis for agent-managed wallets.
+            Issuer reputation, freeze flags, ripple paths.
+          </p>
+          <div class="text-sm text-muted">Coming soon</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="agents" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-20">
+      <div class="grid md:grid-cols-2 gap-12 items-start">
+        <div>
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">For AI agents</h2>
+          <h3 class="text-4xl font-bold mb-6">Discover. Pay. Consume.</h3>
+          <p class="text-muted leading-relaxed mb-6">
+            Every tool implements the <a href="https://x402.org" class="text-accent hover:underline">x402</a>
+            payment standard with the XRPL <code class="font-mono text-sm bg-panel px-2 py-1 rounded">exact</code> scheme.
+            No API keys, no accounts, no onboarding. Your agent finds the manifest,
+            reads the schema, signs an XRPL Payment, and gets a structured response.
+          </p>
+          <ul class="space-y-3 text-muted">
+            <li class="flex gap-3"><span class="text-accent">→</span> Manifests at <code class="font-mono text-sm">/.well-known/agents.json</code></li>
+            <li class="flex gap-3"><span class="text-accent">→</span> Crawler-friendly at <code class="font-mono text-sm">/llms.txt</code></li>
+            <li class="flex gap-3"><span class="text-accent">→</span> Full OpenAPI 3.0 spec at <code class="font-mono text-sm">/openapi.json</code></li>
+            <li class="flex gap-3"><span class="text-accent">→</span> Settlement via the t54 XRPL facilitator</li>
+          </ul>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-6 font-mono text-sm overflow-x-auto">
+          <div class="text-muted mb-3"># Pay-per-call from any x402 v2 client</div>
+          <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
+
+session = X402RequestsSession(
+    wallet=wallet,
+    rpc_url=<span class="text-green-400">"https://xrplcluster.com"</span>,
+    payment_requirements_selector=<span class="text-green-400">"XRP"</span>,
+)
+
+report = session.post(
+    <span class="text-green-400">"https://sentinel.xrpl-utilities.io/scan"</span>,
+    json={<span class="text-green-400">"address"</span>: target},
+).json()</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <img src="/assets/logo.png" alt="" class="h-8 w-8 rounded" />
+          <div class="text-sm">
+            <div class="font-semibold">XRPL-Utilities</div>
+            <div class="text-muted text-xs">XRPL AI Agent Applications · &copy; 2026</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-muted">
+          <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+          <a href="https://sentinel.xrpl-utilities.io/docs" class="hover:text-white transition">API docs</a>
+          <a href="https://sentinel.xrpl-utilities.io/agents.json" class="hover:text-white transition">Manifest</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
