@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status — XR-Sentinel</title>
+  <meta name="description" content="Live operational status of XR-Sentinel and its upstream dependencies." />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc', 'good': '#22c55e', 'bad': '#ef4444', 'warn': '#facc15' },
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
+      }},
+    };
+  </script>
+  <style>body { background: #0a0a0a; }</style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
+        <span class="font-semibold tracking-tight">XRPL-Utilities</span>
+        <span class="text-muted">/</span>
+        <span class="text-accent font-medium">Status</span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm text-muted">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pt-16 pb-12">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">System status</h1>
+      <p class="text-muted">Live operational status of XR-Sentinel. Updates every 30 seconds.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pb-24">
+      <div id="overall" class="bg-panel border border-border rounded-2xl p-8 mb-6 text-muted text-center">Checking…</div>
+      <div id="checks" class="space-y-4"></div>
+      <p id="last-checked" class="text-xs text-muted text-center mt-8"></p>
+    </div>
+  </section>
+
+  <footer class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
+      <div>XRPL-Utilities &copy; 2026</div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="hover:text-white transition">← Home</a>
+        <a href="/manifest/" class="hover:text-white transition">Manifest</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const SUBSYSTEM_LABELS = {
+      quicknode:  { name: "QuickNode XRPL RPC",       desc: "Ledger data source" },
+      facilitator:{ name: "t54 x402 Facilitator",     desc: "Payment verify + settle" },
+      xrp_price:  { name: "CoinGecko XRP/USD price",  desc: "Drives dynamic XRP pricing per scan" },
+    };
+
+    function el(tag, cls, text) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text != null) e.textContent = text;
+      return e;
+    }
+
+    function dot(state) {
+      const colors = { good: "bg-good", bad: "bg-bad", warn: "bg-warn", unknown: "bg-muted" };
+      return el("span", "h-3 w-3 rounded-full inline-block " + (colors[state] || colors.unknown));
+    }
+
+    function renderOverall(status) {
+      const t = document.getElementById("overall");
+      t.innerHTML = "";
+      let label, color, sub;
+      if (status === "active") {
+        label = "All systems operational"; color = "text-good"; sub = "XR-Sentinel is serving live traffic.";
+      } else if (status === "degraded") {
+        label = "Partially degraded"; color = "text-warn"; sub = "One or more upstream subsystems are reporting issues. Scans may fail.";
+      } else if (status === "down") {
+        label = "Major outage"; color = "text-bad"; sub = "Critical subsystems are unavailable.";
+      } else {
+        label = "Status unknown"; color = "text-muted"; sub = "Could not reach the health endpoint.";
+      }
+      t.appendChild(el("div", "text-3xl font-bold mb-2 " + color, label));
+      t.appendChild(el("div", "text-muted", sub));
+    }
+
+    function renderCheck(key, payload) {
+      const meta = SUBSYSTEM_LABELS[key] || { name: key, desc: "" };
+      const ok = payload && payload.ok === true;
+      const card = el("div", "bg-panel border border-border rounded-2xl p-6 flex items-center gap-4");
+      card.appendChild(dot(ok ? "good" : (payload && payload.ok === false ? "bad" : "warn")));
+      const left = el("div", "flex-grow");
+      left.appendChild(el("div", "font-semibold", meta.name));
+      left.appendChild(el("div", "text-xs text-muted mt-0.5", meta.desc));
+      card.appendChild(left);
+      const right = el("div", "text-right");
+      const stateLabel = ok ? "Operational" : (payload && payload.ok === false ? "Degraded" : "Unknown");
+      right.appendChild(el("div", "text-sm font-medium " + (ok ? "text-good" : "text-bad"), stateLabel));
+      if (payload && payload.latency_ms != null) {
+        right.appendChild(el("div", "text-xs text-muted mt-1", payload.latency_ms.toFixed(0) + " ms"));
+      } else if (payload && payload.last_good_age_seconds != null) {
+        const age = payload.last_good_age_seconds;
+        const human = age < 60 ? age.toFixed(0) + "s" : age < 3600 ? (age/60).toFixed(0) + "m" : (age/3600).toFixed(1) + "h";
+        right.appendChild(el("div", "text-xs text-muted mt-1", "age " + human));
+      }
+      card.appendChild(right);
+      return card;
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch("https://sentinel.xrpl-utilities.io/healthz");
+        const data = await res.json();
+        renderOverall(data.status);
+        const list = document.getElementById("checks");
+        list.innerHTML = "";
+        Object.entries(data.checks || {}).forEach(([k, v]) => list.appendChild(renderCheck(k, v)));
+        document.getElementById("last-checked").textContent = "Last checked " + new Date().toLocaleTimeString();
+      } catch (e) {
+        renderOverall("unknown");
+        document.getElementById("checks").innerHTML = "";
+        document.getElementById("last-checked").textContent = "Last checked " + new Date().toLocaleTimeString() + " (fetch failed)";
+      }
+    }
+
+    refresh();
+    setInterval(refresh, 30000);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms — XR-Sentinel</title>
+  <meta name="description" content="Terms of service, fee schedule, and refund policy for XR-Sentinel." />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc' },
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
+      }},
+    };
+  </script>
+  <style>body { background: #0a0a0a; }</style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
+        <span class="font-semibold tracking-tight">XRPL-Utilities</span>
+        <span class="text-muted">/</span>
+        <span class="text-accent font-medium">Terms</span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm text-muted">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Terms of Service</h1>
+      <p class="text-muted">XR-Sentinel · published programmatically at <a href="https://sentinel.xrpl-utilities.io/tos" class="text-accent hover:underline font-mono text-sm">/tos</a> and rendered here for human reading.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pb-24">
+      <div id="content" class="space-y-10">
+        <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading terms from the live service…</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
+      <div>XRPL-Utilities &copy; 2026</div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="hover:text-white transition">← Home</a>
+        <a href="/manifest/" class="hover:text-white transition">Manifest</a>
+        <a href="/status/" class="hover:text-white transition">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const SECTIONS = [
+      { key: "service",            label: "Service" },
+      { key: "fee",                label: "Fee" },
+      { key: "fee_recipient",      label: "Fee recipient",       mono: true },
+      { key: "fee_breakdown",      label: "Fee breakdown" },
+      { key: "refund_policy",      label: "Refund policy" },
+      { key: "payment_protocol",   label: "Payment protocol" },
+      { key: "getting_started",    label: "Getting started" },
+      { key: "output",             label: "Output" },
+      { key: "cache_policy",       label: "Cache policy" },
+      { key: "pricing_volatility", label: "Pricing volatility" },
+      { key: "data_handling",      label: "Data handling" },
+      { key: "availability",       label: "Availability" },
+      { key: "user_responsibility",label: "User responsibility & compliance" },
+      { key: "disclaimer",         label: "Disclaimer" },
+    ];
+
+    function el(tag, cls, text) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text != null) e.textContent = text;
+      return e;
+    }
+
+    function renderValue(v) {
+      if (v == null) return el("p", "text-muted italic", "(none)");
+      if (typeof v === "string" || typeof v === "number") {
+        return el("p", "leading-relaxed text-white", String(v));
+      }
+      if (Array.isArray(v)) {
+        const ul = el("ul", "space-y-2 list-disc list-inside text-white");
+        v.forEach(item => {
+          const li = el("li", "leading-relaxed", typeof item === "string" ? item : JSON.stringify(item));
+          ul.appendChild(li);
+        });
+        return ul;
+      }
+      if (typeof v === "object") {
+        const dl = el("dl", "grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3");
+        Object.entries(v).forEach(([k, val]) => {
+          dl.appendChild(el("dt", "text-xs uppercase tracking-wider text-muted sm:text-right", k));
+          const dd = el("dd", "sm:col-span-2 text-white text-sm break-all");
+          if (val == null) {
+            dd.textContent = "—";
+          } else if (typeof val === "object") {
+            dd.appendChild(renderValue(val));
+          } else {
+            dd.textContent = String(val);
+          }
+          dl.appendChild(dd);
+        });
+        return dl;
+      }
+      return el("p", null, String(v));
+    }
+
+    function renderSection(label, value, monoString) {
+      const wrapper = el("section", "bg-panel border border-border rounded-2xl p-8");
+      wrapper.appendChild(el("h2", "text-xs uppercase tracking-widest text-accent font-semibold mb-3", label));
+      if (monoString && typeof value === "string") {
+        wrapper.appendChild(el("p", "font-mono text-sm break-all text-white", value));
+      } else {
+        wrapper.appendChild(renderValue(value));
+      }
+      return wrapper;
+    }
+
+    async function load() {
+      const target = document.getElementById("content");
+      try {
+        const res = await fetch("https://sentinel.xrpl-utilities.io/tos");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        target.innerHTML = "";
+        SECTIONS.forEach(({ key, label, mono }) => {
+          if (!(key in data)) return;
+          target.appendChild(renderSection(label, data[key], mono));
+        });
+      } catch (e) {
+        target.innerHTML = "";
+        const err = el("div", "bg-panel border border-border rounded-2xl p-8");
+        err.appendChild(el("h2", "text-xl font-bold mb-3 text-red-400", "Couldn't load terms"));
+        err.appendChild(el("p", "text-muted leading-relaxed", "The marketing site couldn't reach the live /tos endpoint. View it directly at https://sentinel.xrpl-utilities.io/tos."));
+        target.appendChild(err);
+      }
+    }
+    load();
+  </script>
+
+</body>
+</html>
