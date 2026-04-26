@@ -13,7 +13,7 @@
   <script>
     tailwind.config = {
       theme: { extend: {
-        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc' },
+        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc', good: '#22c55e' },
         fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
       }},
     };
@@ -49,20 +49,69 @@
   </section>
 
   <section>
-    <div class="max-w-3xl mx-auto px-6 pb-16 grid md:grid-cols-2 gap-6">
+    <div class="max-w-3xl mx-auto px-6 pb-16">
 
-      <a href="mailto:hello@xrpl-utilities.com?subject=XR-Sentinel%20inquiry"
-         class="bg-panel border border-border hover:border-accent rounded-2xl p-6 transition group">
-        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Email</div>
-        <div class="font-mono text-lg mb-2 group-hover:text-accent transition">hello@xrpl-utilities.com</div>
-        <div class="text-sm text-muted">Best for integration questions, business inquiries, bug reports with reproducible details, or partnership / acquisition conversations. We aim to reply within two business days.</div>
-      </a>
+      <form id="contact-form" class="bg-panel border border-border rounded-2xl p-8 space-y-5">
+        <input type="hidden" name="access_key" value="52f6dd2d-5aa9-4f6b-aeb1-e1b5dcb51b75" />
+        <input type="hidden" name="from_name" value="XRPL-Utilities Contact" />
+        <input type="hidden" name="subject" value="New contact form submission — xrpl-utilities.com" />
+        <!-- honeypot: real users won't fill this; bots usually do -->
+        <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none" />
+
+        <div class="grid md:grid-cols-2 gap-5">
+          <div>
+            <label for="name" class="block text-xs uppercase tracking-wider text-muted mb-2">Your name</label>
+            <input id="name" name="name" type="text" required autocomplete="name"
+              class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent transition" />
+          </div>
+          <div>
+            <label for="email" class="block text-xs uppercase tracking-wider text-muted mb-2">Email</label>
+            <input id="email" name="email" type="email" required autocomplete="email"
+              class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent transition" />
+          </div>
+        </div>
+
+        <div>
+          <label for="topic" class="block text-xs uppercase tracking-wider text-muted mb-2">Topic</label>
+          <select id="topic" name="topic" required
+            class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent transition">
+            <option value="">Select one…</option>
+            <option>Integration / SDK question</option>
+            <option>Custom volume or enterprise</option>
+            <option>XR-* portfolio collaboration</option>
+            <option>Misclassification feedback</option>
+            <option>Partnership or acquisition</option>
+            <option>Security finding (private disclosure)</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="message" class="block text-xs uppercase tracking-wider text-muted mb-2">Message</label>
+          <textarea id="message" name="message" rows="6" required minlength="10"
+            class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent transition resize-y"></textarea>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p class="text-xs text-muted">We typically reply within two business days. Sent securely via web3forms; never shared.</p>
+          <button type="submit" id="contact-submit"
+            class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+            Send message
+          </button>
+        </div>
+
+        <p id="contact-status" class="text-sm hidden"></p>
+      </form>
 
       <a href="https://github.com/XRPL-Utilities" target="_blank" rel="noopener"
-         class="bg-panel border border-border hover:border-accent rounded-2xl p-6 transition group">
-        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">GitHub</div>
-        <div class="font-mono text-lg mb-2 group-hover:text-accent transition">XRPL-Utilities</div>
-        <div class="text-sm text-muted">Source, issues, and discussions for the XR-* portfolio. Open a ticket against the relevant repo for technical bugs.</div>
+         class="mt-6 block bg-panel border border-border hover:border-accent rounded-2xl p-5 transition group">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">GitHub</div>
+            <div class="text-sm text-muted">Source, issues, and discussions for the XR-* portfolio. Best for technical bugs against a specific repo.</div>
+          </div>
+          <div class="text-2xl text-accent shrink-0 group-hover:translate-x-1 transition">→</div>
+        </div>
       </a>
 
     </div>
@@ -80,6 +129,46 @@
       </ul>
     </div>
   </section>
+
+  <script>
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('contact-status');
+    const submitBtn = document.getElementById('contact-submit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+      status.classList.add('hidden');
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          status.textContent = 'Thanks — your message is on its way. We typically reply within two business days.';
+          status.className = 'text-sm text-good';
+          form.reset();
+        } else {
+          status.textContent = data.message || 'Submission failed. Please try again, or email hello@xrpl-utilities.com directly.';
+          status.className = 'text-sm text-red-400';
+        }
+      } catch (err) {
+        status.textContent = 'Network error. Please try again, or email hello@xrpl-utilities.com directly.';
+        status.className = 'text-sm text-red-400';
+      } finally {
+        status.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send message';
+      }
+    });
+  </script>
 
   <footer class="border-t border-border">
     <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
