@@ -160,14 +160,43 @@
         const c = card("Discovery endpoints");
         const list = el("div", "space-y-2");
         const base = d.endpoints.base_url || BASE;
+
+        // Human-friendly mapping: raw JSON endpoints don't get a clickable link
+        // for human visitors — they're tagged "(developer)" instead. HTML and
+        // markdown-served endpoints route to a sensible human destination.
+        const META = {
+          discovery:  { type: "Markdown",      view: base + "/llms.txt", external: true,  desc: "Crawler context for AI tools" },
+          schema:     { type: "JSON · developer",                        external: false, desc: "Signal catalog (machine-targeted)" },
+          tos:        { type: "Page",          view: "/terms/",          external: false, desc: "Terms of service" },
+          scan:       { type: "POST",                                    external: false, desc: "Run a scan (use the form on /sentinel/)" },
+          manifest:   { type: "Page",                                    external: false, desc: "You're on it" },
+          health:     { type: "Page",          view: "/status/",         external: false, desc: "Live system status" },
+          stats:      { type: "JSON · developer",                        external: false, desc: "Operational counters (machine-targeted)" },
+          docs:       { type: "Interactive",   view: base + "/docs",     external: true,  desc: "Swagger UI for the OpenAPI spec" },
+          openapi:    { type: "JSON · developer",                        external: false, desc: "OpenAPI 3.0 spec (machine-targeted)" },
+        };
+
         Object.entries(d.endpoints).forEach(([k, v]) => {
           if (k === "base_url") return;
-          const row = el("a", "flex items-center justify-between bg-ink border border-border hover:border-accent rounded-lg px-4 py-3 transition");
-          row.href = base + v;
-          row.target = "_blank";
-          row.rel = "noopener";
-          row.appendChild(el("span", "text-xs uppercase tracking-wider text-muted", k));
-          row.appendChild(el("span", "font-mono text-sm text-accent", v));
+          const meta = META[k] || { type: "JSON · developer", desc: "" };
+          const row = el("div", "bg-ink border border-border rounded-lg px-4 py-3 flex items-start justify-between gap-3");
+
+          const left = el("div", "min-w-0 flex-grow");
+          const labelRow = el("div", "flex items-center gap-2 mb-0.5");
+          labelRow.appendChild(el("span", "text-xs uppercase tracking-wider text-muted", k));
+          labelRow.appendChild(el("span", "text-[10px] uppercase tracking-wider text-accent border border-accent/40 rounded px-1.5 py-0.5", meta.type));
+          left.appendChild(labelRow);
+          left.appendChild(el("div", "font-mono text-sm text-white break-all", v));
+          if (meta.desc) left.appendChild(el("div", "text-xs text-muted mt-1", meta.desc));
+          row.appendChild(left);
+
+          if (meta.view) {
+            const link = el("a", "shrink-0 text-sm text-accent hover:underline whitespace-nowrap", "View →");
+            link.href = meta.view;
+            if (meta.external) { link.target = "_blank"; link.rel = "noopener"; }
+            row.appendChild(link);
+          }
+
           list.appendChild(row);
         });
         c.appendChild(list);
