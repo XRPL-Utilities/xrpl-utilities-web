@@ -13,6 +13,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="/assets/scan-flow.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -24,6 +26,8 @@
             muted: '#a3a3a3',
             accent: '#00b8ff',
             'accent-dim': '#0091cc',
+            good: '#22c55e',
+            bad: '#ef4444',
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -95,10 +99,7 @@
           <button class="sample-btn text-accent hover:underline" data-sample="escrow">Escrow Releaser</button>
         </div>
         <p class="text-xs text-muted mt-4 leading-relaxed">
-          Public previews use cached sample classifications. To run a live scan, AI agents pay
-          <strong class="text-white">$0.10 USD</strong> in XRP or RLUSD via the
-          <a href="https://x402.org" class="text-accent hover:underline">x402</a> protocol.
-          See <a href="#for-agents" class="text-accent hover:underline">For agents</a> below.
+          Sample buttons show cached classifications instantly (free preview). Click <strong class="text-white">Scan</strong> with any address to run a live classification — pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, …). Need to scan many at once? <a href="/sentinel/bulk/" class="text-accent hover:underline">Bulk scan up to 50 →</a>
         </p>
       </div>
 
@@ -288,38 +289,6 @@ report = session.post(
       r.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function render402(challenge) {
-      const r = document.getElementById("result");
-      const accepts = (challenge.accepts || []).map(a => {
-        const isXrp = a.asset === "XRP";
-        const human = isXrp ? `${(parseInt(a.amount) / 1_000_000).toFixed(6)} XRP` : `${a.amount} RLUSD`;
-        return `<li class="flex justify-between border border-border rounded-lg p-3"><span class="font-mono text-sm">${isXrp ? "XRP" : "RLUSD"}</span><span class="font-mono text-sm text-accent">${human}</span></li>`;
-      }).join("");
-      r.innerHTML = `
-        <div class="bg-panel border border-border rounded-2xl p-8">
-          <div class="mb-4 text-xs uppercase tracking-wider text-accent">Live response from /scan</div>
-          <h3 class="text-2xl font-bold mb-2">HTTP 402 Payment Required</h3>
-          <p class="text-muted leading-relaxed mb-6">
-            This is the actual response an AI agent receives when it calls
-            <code class="font-mono text-sm text-white">POST sentinel.xrpl-utilities.io/scan</code>
-            without payment. The agent picks one of the options below, signs a matching
-            XRPL Payment, and retries with a <code class="font-mono text-sm text-white">PAYMENT-SIGNATURE</code> header.
-          </p>
-          <div class="mb-6">
-            <div class="text-xs text-muted uppercase tracking-wider mb-2">Accepts (one of)</div>
-            <ul class="space-y-2">${accepts}</ul>
-          </div>
-          <p class="text-sm text-muted">
-            Want a real classification? See the
-            <a href="#for-agents" class="text-accent hover:underline">For agents</a> section
-            or click a sample wallet above.
-          </p>
-        </div>
-      `;
-      r.classList.remove("hidden");
-      r.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
     function renderError(message) {
       const r = document.getElementById("result");
       r.innerHTML = `
@@ -341,34 +310,19 @@ report = session.post(
       });
     });
 
-    document.getElementById("scan-btn").addEventListener("click", async () => {
+    const ADDR_RE = /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/;
+    document.getElementById("scan-btn").addEventListener("click", () => {
       const address = document.getElementById("address").value.trim();
-      if (!address) { renderError("Enter an XRPL address (starts with 'r')."); return; }
-
+      if (!ADDR_RE.test(address)) { renderError("Enter a valid XRPL address (starts with 'r', 25-35 base58 characters)."); return; }
       const btn = document.getElementById("scan-btn");
       btn.disabled = true;
-      btn.textContent = "Scanning...";
-
-      try {
-        const res = await fetch("https://sentinel.xrpl-utilities.io/scan", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ address }),
-        });
-
-        if (res.status === 402) {
-          render402(await res.json());
-        } else if (res.ok) {
-          renderReport(await res.json(), false);
-        } else {
-          renderError(`Service returned HTTP ${res.status}.`);
-        }
-      } catch (e) {
-        renderError("Network error. Check your connection and try again.");
-      } finally {
+      btn.textContent = "Loading…";
+      const r = document.getElementById("result");
+      r.classList.remove("hidden");
+      window.XRSentinelScan.start(r, [address]).finally(() => {
         btn.disabled = false;
         btn.textContent = "Scan";
-      }
+      });
     });
   </script>
 

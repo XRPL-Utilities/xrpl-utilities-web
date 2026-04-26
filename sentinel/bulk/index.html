@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk scan — XR-Sentinel</title>
+  <meta name="description" content="Scan up to 50 XRPL wallets in one paid request." />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc', good: '#22c55e', bad: '#ef4444' },
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
+      }},
+    };
+  </script>
+  <style>
+    body { background: #0a0a0a; }
+    .badge-low    { background: rgba(34, 197, 94,  0.15); color: #4ade80; border-color: rgba(34, 197, 94,  0.3); }
+    .badge-medium { background: rgba(234, 179, 8,  0.15); color: #facc15; border-color: rgba(234, 179, 8,  0.3); }
+    .badge-high   { background: rgba(239, 68, 68,  0.15); color: #f87171; border-color: rgba(239, 68, 68,  0.3); }
+    .badge-dormant{ background: rgba(115, 115, 115, 0.15); color: #a3a3a3; border-color: rgba(115, 115, 115, 0.3); }
+    .badge-unknown{ background: rgba(115, 115, 115, 0.15); color: #a3a3a3; border-color: rgba(115, 115, 115, 0.3); }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
+        <span class="font-semibold tracking-tight">XRPL-Utilities</span>
+        <span class="text-muted">/</span>
+        <a href="/sentinel/" class="text-accent hover:text-accent-dim transition font-medium">XR-Sentinel</a>
+        <span class="text-muted">/</span>
+        <span class="text-accent font-medium">Bulk</span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm text-muted">
+        <a href="/sentinel/" class="hover:text-white transition">Single scan</a>
+        <a href="/" class="hover:text-white transition">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Bulk scan</h1>
+      <p class="text-xl text-muted leading-relaxed">
+        Paste up to 50 XRPL addresses, pay once, get all reports back as a downloadable bundle.
+        $0.10 USD per address in XRP, paid via any XRPL wallet.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pb-12">
+      <div class="bg-panel border border-border rounded-2xl p-8">
+        <label for="addresses" class="block text-sm font-semibold mb-3 text-white">Addresses (one per line, comma, or space-separated)</label>
+        <textarea id="addresses" rows="8" spellcheck="false"
+          placeholder="rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv&#10;rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz&#10;rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe"
+          class="w-full bg-ink border border-border rounded-lg px-4 py-3 font-mono text-sm focus:outline-none focus:border-accent transition"></textarea>
+
+        <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div id="counter" class="text-sm text-muted">0 addresses · $0.00 USD</div>
+          <button id="get-quote" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+            Get quote &amp; pay →
+          </button>
+        </div>
+
+        <p id="validation" class="text-xs mt-4 text-muted leading-relaxed"></p>
+      </div>
+
+      <div id="flow" class="mt-6"></div>
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-3xl mx-auto px-6 py-12">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
+      <ol class="space-y-3 text-muted text-sm">
+        <li class="flex gap-3"><span class="text-accent font-mono font-bold">1.</span><span>Paste your address list (max 50). Duplicates are removed automatically.</span></li>
+        <li class="flex gap-3"><span class="text-accent font-mono font-bold">2.</span><span>Click <strong class="text-white">Get quote</strong>. We mint a unique XRPL destination tag for your scan request.</span></li>
+        <li class="flex gap-3"><span class="text-accent font-mono font-bold">3.</span><span>Pay the displayed XRP amount to <code class="font-mono text-white">rKxTzCK…</code> using the destination tag. Tap the button to open Xaman / your wallet, scan the QR with mobile, or copy the values manually.</span></li>
+        <li class="flex gap-3"><span class="text-accent font-mono font-bold">4.</span><span>Once your payment lands on XRPL, scans run automatically. Reports stream in. Download the bundle as JSON when done.</span></li>
+      </ol>
+      <p class="text-xs text-muted mt-6 leading-relaxed">
+        Invoices expire 30 minutes after issuance if unpaid. Results are retained for 24 hours after completion.
+        Refund policy and full terms at <a href="/terms/" class="text-accent hover:underline">/terms/</a>.
+      </p>
+    </div>
+  </section>
+
+  <footer class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
+      <div>XR-Sentinel &copy; 2026 · Powered by XRPL &amp; AI</div>
+      <div class="flex items-center gap-6">
+        <a href="/sentinel/" class="hover:text-white transition">← Single scan</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+        <a href="/status/" class="hover:text-white transition">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/scan-flow.js"></script>
+  <script>
+    const ADDR_RE = /\br[1-9A-HJ-NP-Za-km-z]{24,34}\b/g;
+    const MAX = 50;
+    const PRICE_PER = 0.10;
+
+    function parseAddresses(raw) {
+      const matches = raw.match(ADDR_RE) || [];
+      const seen = new Set();
+      const ordered = [];
+      matches.forEach(a => { if (!seen.has(a)) { seen.add(a); ordered.push(a); } });
+      return ordered;
+    }
+
+    const ta = document.getElementById('addresses');
+    const counter = document.getElementById('counter');
+    const validation = document.getElementById('validation');
+    const btn = document.getElementById('get-quote');
+    const flow = document.getElementById('flow');
+
+    function refresh() {
+      const addrs = parseAddresses(ta.value);
+      const count = Math.min(addrs.length, MAX);
+      const cost = (count * PRICE_PER).toFixed(2);
+      counter.textContent = `${count} ${count === 1 ? 'address' : 'addresses'} · $${cost} USD`;
+      btn.disabled = count === 0;
+      if (addrs.length > MAX) {
+        validation.textContent = `Limit is ${MAX} addresses per quote — only the first ${MAX} will be quoted.`;
+        validation.className = 'text-xs mt-4 text-yellow-400 leading-relaxed';
+      } else if (addrs.length === 0 && ta.value.trim().length > 0) {
+        validation.textContent = "No valid XRPL addresses found. Each address starts with 'r' and is 25-35 characters of base58.";
+        validation.className = 'text-xs mt-4 text-yellow-400 leading-relaxed';
+      } else {
+        validation.textContent = '';
+        validation.className = 'text-xs mt-4 text-muted leading-relaxed';
+      }
+    }
+    ta.addEventListener('input', refresh);
+    refresh();
+
+    btn.addEventListener('click', () => {
+      const addrs = parseAddresses(ta.value).slice(0, MAX);
+      if (!addrs.length) return;
+      btn.disabled = true;
+      btn.textContent = 'Loading…';
+      window.XRSentinelScan.start(flow, addrs).finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Get quote & pay →';
+      });
+    });
+  </script>
+
+</body>
+</html>
