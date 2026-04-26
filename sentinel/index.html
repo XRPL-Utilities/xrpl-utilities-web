@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" integrity="sha384-Izc791esqyEy3BEIC42q7jbE0AaOkACziN+dyyXgYeDmpeMCLz0xA+xYN3aCd5zz" crossorigin="anonymous"></script>
   <script src="/assets/scan-flow.js"></script>
   <script>
     tailwind.config = {
@@ -60,6 +60,8 @@
         <a href="/" class="hover:text-white transition">Home</a>
         <a href="#try-it" class="hover:text-white transition">Try it</a>
         <a href="#for-agents" class="hover:text-white transition">How it works</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+        <a href="/contact/" class="hover:text-white transition">Contact</a>
       </nav>
     </div>
   </header>
@@ -268,47 +270,73 @@ report = session.post(
       return m[level] || "badge-unknown";
     }
 
+    function el(tag, cls, text) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text != null) e.textContent = text;
+      return e;
+    }
+
     function renderReport(data, isSample) {
       const r = document.getElementById("result");
-      const signals = (data.signals || []).map(s => `<span class="font-mono text-xs bg-ink border border-border rounded px-2 py-1">${s}</span>`).join(" ");
-      r.innerHTML = `
-        <div class="bg-panel border border-border rounded-2xl p-8">
-          ${isSample ? `<div class="mb-4 text-xs uppercase tracking-wider text-accent">${EXAMPLE_LABEL}</div>` : ""}
-          <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-            <div>
-              <div class="text-xs text-muted mb-1">Address</div>
-              <div class="font-mono text-sm break-all">${data.address}</div>
-            </div>
-            <div class="flex items-center gap-3">
-              <span class="border ${levelBadgeClass(data.activity_level)} rounded-full px-3 py-1 text-xs font-semibold">${data.activity_level}</span>
-              <span class="text-3xl font-bold">${data.activity_score}<span class="text-muted text-base">/100</span></span>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm">
-            <div><div class="text-xs text-muted mb-1">Confidence</div><div class="font-medium">${data.confidence}</div></div>
-            <div><div class="text-xs text-muted mb-1">Window</div><div class="font-medium">${data.window_days} days</div></div>
-            <div><div class="text-xs text-muted mb-1">Tx in window</div><div class="font-medium">${data.transaction_count}</div></div>
-            <div><div class="text-xs text-muted mb-1">Signals</div><div class="font-medium">${(data.signals || []).length}</div></div>
-          </div>
-          ${signals ? `<div class="mb-6"><div class="text-xs text-muted uppercase tracking-wider mb-2">Signals</div><div class="flex flex-wrap gap-2">${signals}</div></div>` : ""}
-          <div>
-            <div class="text-xs text-muted uppercase tracking-wider mb-2">Reasoning</div>
-            <p class="text-white leading-relaxed">${data.reasoning}</p>
-          </div>
-        </div>
-      `;
+      r.replaceChildren();
+      const card = el("div", "bg-panel border border-border rounded-2xl p-8");
+      if (isSample) card.appendChild(el("div", "mb-4 text-xs uppercase tracking-wider text-accent", EXAMPLE_LABEL));
+
+      const head = el("div", "flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6");
+      const addrCol = el("div");
+      addrCol.appendChild(el("div", "text-xs text-muted mb-1", "Address"));
+      addrCol.appendChild(el("div", "font-mono text-sm break-all", data.address));
+      head.appendChild(addrCol);
+
+      const scoreCol = el("div", "flex items-center gap-3");
+      scoreCol.appendChild(el("span", "border " + levelBadgeClass(data.activity_level) + " rounded-full px-3 py-1 text-xs font-semibold", data.activity_level));
+      const scoreSpan = el("span", "text-3xl font-bold", String(data.activity_score));
+      scoreSpan.appendChild(el("span", "text-muted text-base", "/100"));
+      scoreCol.appendChild(scoreSpan);
+      head.appendChild(scoreCol);
+      card.appendChild(head);
+
+      const grid = el("div", "grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm");
+      [
+        ["Confidence",   data.confidence],
+        ["Window",       data.window_days + " days"],
+        ["Tx in window", data.transaction_count],
+        ["Signals",      (data.signals || []).length],
+      ].forEach(([k, v]) => {
+        const cell = el("div");
+        cell.appendChild(el("div", "text-xs text-muted mb-1", k));
+        cell.appendChild(el("div", "font-medium", String(v)));
+        grid.appendChild(cell);
+      });
+      card.appendChild(grid);
+
+      if ((data.signals || []).length) {
+        const sigWrap = el("div", "mb-6");
+        sigWrap.appendChild(el("div", "text-xs text-muted uppercase tracking-wider mb-2", "Signals"));
+        const pills = el("div", "flex flex-wrap gap-2");
+        data.signals.forEach(s => pills.appendChild(el("span", "font-mono text-xs bg-ink border border-border rounded px-2 py-1", s)));
+        sigWrap.appendChild(pills);
+        card.appendChild(sigWrap);
+      }
+
+      const reasonWrap = el("div");
+      reasonWrap.appendChild(el("div", "text-xs text-muted uppercase tracking-wider mb-2", "Reasoning"));
+      reasonWrap.appendChild(el("p", "text-white leading-relaxed", data.reasoning));
+      card.appendChild(reasonWrap);
+
+      r.appendChild(card);
       r.classList.remove("hidden");
       r.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function renderError(message) {
       const r = document.getElementById("result");
-      r.innerHTML = `
-        <div class="bg-panel border border-border rounded-2xl p-8">
-          <h3 class="text-xl font-bold mb-2 text-red-400">Couldn't reach the service</h3>
-          <p class="text-muted leading-relaxed">${message}</p>
-        </div>
-      `;
+      r.replaceChildren();
+      const card = el("div", "bg-panel border border-border rounded-2xl p-8");
+      card.appendChild(el("h3", "text-xl font-bold mb-2 text-red-400", "Couldn't reach the service"));
+      card.appendChild(el("p", "text-muted leading-relaxed", message));
+      r.appendChild(card);
       r.classList.remove("hidden");
     }
 

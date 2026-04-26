@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — XRPL-Utilities</title>
+  <meta name="description" content="Contact XRPL-Utilities about XR-Sentinel or other XR-* applications." />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc' },
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
+      }},
+    };
+  </script>
+  <style>body { background: #0a0a0a; }</style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
+        <span class="font-semibold tracking-tight">XRPL-Utilities</span>
+        <span class="text-muted">/</span>
+        <span class="text-accent font-medium">Contact</span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm text-muted">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Contact</h1>
+      <p class="text-xl text-muted leading-relaxed">
+        Reach out about XR-Sentinel, the broader XR-* portfolio, integration support,
+        or partnership / acquisition discussions.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pb-16 grid md:grid-cols-2 gap-6">
+
+      <a href="mailto:hello@xrpl-utilities.com?subject=XR-Sentinel%20inquiry"
+         class="bg-panel border border-border hover:border-accent rounded-2xl p-6 transition group">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Email</div>
+        <div class="font-mono text-lg mb-2 group-hover:text-accent transition">hello@xrpl-utilities.com</div>
+        <div class="text-sm text-muted">Best for integration questions, business inquiries, bug reports with reproducible details, or partnership / acquisition conversations. We aim to reply within two business days.</div>
+      </a>
+
+      <a href="https://github.com/XRPL-Utilities" target="_blank" rel="noopener"
+         class="bg-panel border border-border hover:border-accent rounded-2xl p-6 transition group">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">GitHub</div>
+        <div class="font-mono text-lg mb-2 group-hover:text-accent transition">XRPL-Utilities</div>
+        <div class="text-sm text-muted">Source, issues, and discussions for the XR-* portfolio. Open a ticket against the relevant repo for technical bugs.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-3xl mx-auto px-6 py-12">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">What we'd like to hear about</h2>
+      <ul class="space-y-3 text-muted text-sm leading-relaxed">
+        <li class="flex gap-3"><span class="text-accent">→</span><span><strong class="text-white">Integration support.</strong> You're wiring an x402 client against <code class="font-mono text-xs bg-ink px-1.5 py-0.5 rounded">/scan</code> and hit a snag. Include the request body, response, and your client SDK version.</span></li>
+        <li class="flex gap-3"><span class="text-accent">→</span><span><strong class="text-white">Custom volume / enterprise.</strong> You expect to call us thousands of times a day or want a private deployment. We're open to negotiated pricing and SLAs.</span></li>
+        <li class="flex gap-3"><span class="text-accent">→</span><span><strong class="text-white">XR-* portfolio collaboration.</strong> You're building something XRPL-native and agent-payable and want to coordinate.</span></li>
+        <li class="flex gap-3"><span class="text-accent">→</span><span><strong class="text-white">Misclassification feedback.</strong> A scan returned something obviously wrong for an address you operate. Tell us the address and what you'd expect.</span></li>
+        <li class="flex gap-3"><span class="text-accent">→</span><span><strong class="text-white">Security findings.</strong> Disclose privately first, please.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
+      <div>XRPL-Utilities &copy; 2026</div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="hover:text-white transition">← Home</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+        <a href="/status/" class="hover:text-white transition">Status</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
