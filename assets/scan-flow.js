@@ -72,16 +72,28 @@
     const qrCol = el('div');
     qrCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Scan with Xaman / mobile wallet'));
     const qrBox = el('div', 'bg-white p-4 rounded-lg inline-block');
-    const qrCanvas = el('canvas');
-    qrBox.appendChild(qrCanvas);
     qrCol.appendChild(qrBox);
     grid.appendChild(qrCol);
 
-    if (global.QRCode && typeof global.QRCode.toCanvas === 'function') {
-      global.QRCode.toCanvas(qrCanvas, quote.deep_link, { width: 192, margin: 0, color: { dark: '#000000', light: '#ffffff' } }).catch(() => {
+    if (typeof global.qrcode === 'function') {
+      try {
+        const qr = global.qrcode(0, 'M'); // type 0 (auto), error correction M (15%)
+        qr.addData(quote.deep_link);
+        qr.make();
+        // SVG output. The deep_link input is server-generated XRPL URI, not user input — safe to set via innerHTML.
+        qrBox.innerHTML = qr.createSvgTag({ scalable: true, margin: 0 });
+        const svg = qrBox.querySelector('svg');
+        if (svg) {
+          svg.setAttribute('width', '192');
+          svg.setAttribute('height', '192');
+          svg.style.display = 'block';
+        }
+      } catch (e) {
+        qrBox.remove();
         qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
-      });
+      }
     } else {
+      qrBox.remove();
       qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
     }
 
