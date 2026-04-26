@@ -147,6 +147,7 @@
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
             <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
             <a href="https://sentinel.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec (JSON) →</a>
+            <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Signal schema (JSON) →</a>
             <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
           </div>
         </div>
@@ -184,7 +185,7 @@ report = session.post(
         <li><code class="font-mono text-white">activity_score</code> — 0–100, scaled to how automated and service-like the wallet behaves</li>
         <li><code class="font-mono text-white">activity_level</code> — Low / Medium / High / Dormant / Unknown</li>
         <li><code class="font-mono text-white">confidence</code> — low / medium / high tier based on transaction depth</li>
-        <li><code class="font-mono text-white">signals</code> — array drawn from a published, versioned catalog (raw JSON at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener" class="text-accent hover:underline font-mono">/schema</a>)</li>
+        <li><code class="font-mono text-white">signals</code> — array drawn from a published, versioned catalog</li>
         <li><code class="font-mono text-white">features</code> — tx types, IN/OUT split, currencies, dust counts, offer churn, time span</li>
         <li><code class="font-mono text-white">top_counterparties</code> — top 20 with verified XRPScan labels and direction</li>
         <li><code class="font-mono text-white">reasoning</code> — AI-generated narrative tying the signals to the score</li>
