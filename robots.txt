@@ -1,0 +1,7 @@
+# XRPL-Utilities marketing site
+# All crawlers welcome. Agent-payable APIs at sentinel.xrpl-utilities.io
+# Machine-readable manifests live at the API host, not here.
+User-agent: *
+Allow: /
+
+Sitemap: https://xrpl-utilities.com/sitemap.xml

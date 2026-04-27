@@ -185,12 +185,12 @@
     return card;
   }
 
-  function downloadJsonButton(filename, dataObj) {
-    const btn = el('button', 'border border-border hover:border-accent text-white text-sm px-4 py-2 rounded-lg transition');
+  function downloadButton(label, filename, contentType, body) {
+    const btn = el('button', 'border border-border hover:border-accent text-white text-sm px-3 py-2 rounded-lg transition');
     btn.type = 'button';
-    btn.textContent = 'Download JSON';
+    btn.textContent = label;
     btn.addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(dataObj, null, 2)], { type: 'application/json' });
+      const blob = new Blob([body], { type: contentType });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = filename;
@@ -198,6 +198,32 @@
       URL.revokeObjectURL(url);
     });
     return btn;
+  }
+
+  function csvEscape(v) {
+    if (v == null) return '';
+    const s = String(v);
+    return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
+  function reportsToCsv(reports) {
+    const cols = ['address', 'activity_level', 'activity_score', 'confidence', 'window_days', 'transaction_count', 'signals', 'reasoning', 'error', 'error_detail'];
+    const rows = [cols.join(',')];
+    (reports || []).forEach(r => {
+      rows.push([
+        csvEscape(r.address),
+        csvEscape(r.activity_level),
+        csvEscape(r.activity_score),
+        csvEscape(r.confidence),
+        csvEscape(r.window_days),
+        csvEscape(r.transaction_count),
+        csvEscape((r.signals || []).join('; ')),
+        csvEscape(r.reasoning),
+        csvEscape(r.error),
+        csvEscape(r.detail),
+      ].join(','));
+    });
+    return rows.join('\n') + '\n';
   }
 
   function renderResults(target, results) {
@@ -208,7 +234,20 @@
     heading.appendChild(el('div', 'text-xs uppercase tracking-widest text-good font-semibold mb-1', 'Complete'));
     heading.appendChild(el('h3', 'text-2xl font-bold', `${results.scans_complete} of ${results.scans_total} scans`));
     top.appendChild(heading);
-    top.appendChild(downloadJsonButton(`xr-sentinel-${results.invoice_id}.json`, results));
+    const downloads = el('div', 'flex gap-2 shrink-0');
+    downloads.appendChild(downloadButton(
+      'CSV',
+      `xr-sentinel-${results.invoice_id}.csv`,
+      'text/csv;charset=utf-8',
+      reportsToCsv(results.reports)
+    ));
+    downloads.appendChild(downloadButton(
+      'JSON',
+      `xr-sentinel-${results.invoice_id}.json`,
+      'application/json',
+      JSON.stringify(results, null, 2)
+    ));
+    top.appendChild(downloads);
     summary.appendChild(top);
     summary.appendChild(el('div', 'text-xs text-muted', 'Invoice ' + results.invoice_id));
     target.appendChild(summary);

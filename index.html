@@ -11,6 +11,39 @@
   <meta property="og:url" content="https://xrpl-utilities.com" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://xrpl-utilities.com/#org",
+        "name": "XRPL-Utilities",
+        "url": "https://xrpl-utilities.com",
+        "logo": "https://xrpl-utilities.com/assets/logo.png",
+        "description": "XRPL AI Agent Applications. A growing suite of XRPL-native, agent-payable APIs built for the agentic economy.",
+        "sameAs": ["https://github.com/XRPL-Utilities"]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/sentinel/#app",
+        "name": "XR-Sentinel",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP API)",
+        "description": "AI-assisted behavioral pattern classifier for XRP Ledger wallets. Returns 0-100 activity score, signal catalog, and AI-generated narrative summary.",
+        "url": "https://xrpl-utilities.com/sentinel/",
+        "image": "https://xrpl-utilities.com/assets/logo.png",
+        "publisher": { "@id": "https://xrpl-utilities.com/#org" },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.10",
+          "priceCurrency": "USD",
+          "description": "Per-scan fee, payable in XRP or RLUSD via x402 protocol"
+        }
+      }
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
