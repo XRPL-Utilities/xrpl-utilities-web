@@ -200,7 +200,7 @@
           if (meta.view) {
             const link = el("a", "shrink-0 text-sm text-accent hover:underline whitespace-nowrap", "View →");
             link.href = meta.view;
-            if (meta.external) { link.target = "_blank"; link.rel = "noopener"; }
+            if (meta.external) { link.target = "_blank"; link.rel = "noopener noreferrer"; }
             row.appendChild(link);
           }
 
