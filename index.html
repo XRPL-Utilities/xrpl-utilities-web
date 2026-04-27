@@ -83,12 +83,12 @@
 <body class="bg-ink text-white font-sans antialiased">
 
   <header class="border-b border-border">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-y-3">
       <a href="/" class="flex items-center gap-3">
         <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
         <span class="font-semibold tracking-tight">XRPL-Utilities</span>
       </a>
-      <nav class="flex items-center gap-6 text-sm text-muted">
+      <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-muted">
         <a href="#tools" class="hover:text-white transition">Tools</a>
         <a href="/terms/" class="hover:text-white transition">Terms</a>
         <a href="/contact/" class="hover:text-white transition">Contact</a>
@@ -146,7 +146,7 @@
           </div>
           <h4 class="text-2xl font-bold mb-3">XR-Sentinel</h4>
           <p class="text-muted leading-relaxed mb-6 flex-grow">
-            XRPL activity pattern classifier. Given any XRPL address, returns a 0–100 activity score,
+            XRPL activity pattern classifier. Given any XRPL address, returns a 0 to 100 activity score,
             structured signal catalog, and AI-generated narrative summary.
           </p>
           <div class="flex items-center justify-between text-sm">
@@ -190,7 +190,7 @@
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">For AI agents</h2>
           <h3 class="text-4xl font-bold mb-6">Discover. Pay. Consume.</h3>
           <p class="text-muted leading-relaxed mb-6">
-            Every tool implements the <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402</a>
+            Every tool implements the <a href="https://x402.org" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">x402</a>
             payment standard with the XRPL <code class="font-mono text-sm bg-panel px-2 py-1 rounded">exact</code> scheme.
             No API keys, no accounts, no onboarding. Your agent finds the manifest,
             reads the schema, signs an XRPL Payment, and gets a structured response.

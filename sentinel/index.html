@@ -8,6 +8,8 @@
   <meta property="og:title" content="XR-Sentinel" />
   <meta property="og:description" content="XRPL Activity Pattern Classifier. AI-assisted, agent-payable, $0.10 per scan." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/sentinel/" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" href="/assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -48,14 +50,14 @@
 <body class="bg-ink text-white font-sans antialiased">
 
   <header class="border-b border-border">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-y-3">
+      <a href="/" class="flex items-center gap-2 sm:gap-3">
         <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
         <span class="font-semibold tracking-tight">XRPL-Utilities</span>
         <span class="text-muted">/</span>
         <span class="text-accent font-medium">XR-Sentinel</span>
       </a>
-      <nav class="flex items-center gap-6 text-sm text-muted">
+      <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-muted">
         <a href="/" class="hover:text-white transition">Home</a>
         <a href="#try-it" class="hover:text-white transition">Try it</a>
         <a href="#for-agents" class="hover:text-white transition">How it works</a>
@@ -129,7 +131,7 @@
             XR-Sentinel implements <strong class="text-white">x402 v2</strong> with the
             <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
             Verification and settlement are delegated to the
-            <a href="https://t54.ai" target="_blank" rel="noopener" class="text-accent hover:underline">t54</a> XRPL facilitator.
+            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator.
           </p>
           <ol class="space-y-4 text-sm text-muted">
             <li class="flex gap-4">
@@ -146,10 +148,10 @@
             </li>
           </ol>
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
-            <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
-            <a href="https://sentinel.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec (JSON) →</a>
-            <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Signal schema (JSON) →</a>
-            <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
+            <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
+            <a href="https://sentinel.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec (JSON) →</a>
+            <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Signal schema (JSON) →</a>
+            <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
           </div>
         </div>
         <div>
@@ -183,7 +185,7 @@ report = session.post(
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-3 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">activity_score</code>: 0–100, scaled to how automated and service-like the wallet behaves</li>
+        <li><code class="font-mono text-white">activity_score</code>: 0 to 100, scaled to how automated and service-like the wallet behaves</li>
         <li><code class="font-mono text-white">activity_level</code>: Low / Medium / High / Dormant / Unknown</li>
         <li><code class="font-mono text-white">confidence</code>: low / medium / high tier based on transaction depth</li>
         <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog</li>

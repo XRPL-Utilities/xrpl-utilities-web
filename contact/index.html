@@ -29,14 +29,14 @@
 <body class="bg-ink text-white font-sans antialiased">
 
   <header class="border-b border-border">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-y-3">
+      <a href="/" class="flex items-center gap-2 sm:gap-3">
         <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
         <span class="font-semibold tracking-tight">XRPL-Utilities</span>
         <span class="text-muted">/</span>
         <span class="text-accent font-medium">Contact</span>
       </a>
-      <nav class="flex items-center gap-6 text-sm text-muted">
+      <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-muted">
         <a href="/" class="hover:text-white transition">Home</a>
         <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
         <a href="/terms/" class="hover:text-white transition">Terms</a>
@@ -98,7 +98,7 @@
             class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent transition resize-y"></textarea>
         </div>
 
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADD5FJFZmiQt3CM3" data-theme="dark"></div>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADD5FJFZmiQt3CM3" data-size="invisible" data-theme="dark"></div>
 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p class="text-xs text-muted">We typically reply within two business days. Spam-protected via Cloudflare Turnstile.</p>
@@ -111,7 +111,7 @@
         <p id="contact-status" class="text-sm hidden"></p>
       </form>
 
-      <a href="https://github.com/XRPL-Utilities" target="_blank" rel="noopener"
+      <a href="https://github.com/XRPL-Utilities" target="_blank" rel="noopener noreferrer"
          class="mt-6 block bg-panel border border-border hover:border-accent rounded-2xl p-5 transition group">
         <div class="flex items-center justify-between gap-4">
           <div>
