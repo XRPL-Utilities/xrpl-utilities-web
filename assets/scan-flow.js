@@ -264,7 +264,7 @@
     const wrap = el('div', 'bg-panel border-2 border-accent rounded-2xl p-8');
     wrap.appendChild(el('div', 'text-xs uppercase tracking-widest text-good font-semibold mb-2', '✓ Payment received'));
     wrap.appendChild(el('h3', 'text-3xl md:text-4xl font-bold mb-2', 'Scanning your wallets'));
-    wrap.appendChild(el('p', 'text-muted mb-8', 'Building reports — keep this tab open. Should take under a minute per wallet.'));
+    wrap.appendChild(el('p', 'text-muted mb-8', 'Building reports. Keep this tab open. Should take under a minute per wallet.'));
 
     const total = status.scans_total || 1;
     const done = status.scans_complete || 0;
@@ -325,7 +325,7 @@
           const rr = await fetch(`${API_BASE}/bulk/results/${invoiceId}`);
           if (rr.ok) { setTimeout(restore, 5000); return await rr.json(); }
           if (scanningShown) { updateStatus(target, 'Could not fetch results', 'bad'); }
-          else { renderError(target, 'Could not fetch results — try refreshing.'); }
+          else { renderError(target, 'Could not fetch results. Try refreshing.'); }
           restore();
           return null;
         } else if (status.state === 'failed') {
@@ -338,11 +338,11 @@
           return null;
         }
       } catch (e) {
-        // transient — keep polling
+        // transient; keep polling
       }
       await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
     }
-    updateStatus(target, 'Polling timeout — scan may still complete; check back later.', 'bad');
+    updateStatus(target, 'Polling timeout. Scan may still complete; check back later.', 'bad');
     restore();
     return null;
   }

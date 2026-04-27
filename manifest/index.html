@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manifest — XR-Sentinel</title>
-  <meta name="description" content="Human-readable view of the XR-Sentinel agent manifest — what AI agents see when they discover this service." />
-  <meta property="og:title" content="XR-Sentinel — Agent Manifest" />
+  <title>Manifest | XR-Sentinel</title>
+  <meta name="description" content="Human-readable view of the XR-Sentinel agent manifest, showing what AI agents see when they discover this service." />
+  <meta property="og:title" content="XR-Sentinel | Agent Manifest" />
   <meta property="og:description" content="What AI agents see when they discover XR-Sentinel via /.well-known/agents.json. Capabilities, payment, endpoints, legal." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/manifest/" />
@@ -147,14 +147,14 @@
         const c = card("Payment", "x402 v" + (d.payment.x402_version || ""));
         const p = d.payment;
         const pairs = [];
-        pairs.push(["price", p.amount_usd ? "$" + p.amount_usd + " USD" : "—"]);
+        pairs.push(["price", p.amount_usd ? "$" + p.amount_usd + " USD" : "-"]);
         pairs.push(["currencies", (p.currencies_accepted || []).join(" or ")]);
-        pairs.push(["recipient", p.recipient || "—"]);
-        pairs.push(["scheme", p.scheme || "—"]);
-        pairs.push(["network", p.network || "—"]);
-        pairs.push(["facilitator", p.facilitator_url || "—"]);
-        pairs.push(["client SDK", p.client_sdk || "—"]);
-        pairs.push(["freshness", p.freshness_seconds ? p.freshness_seconds + "s" : "—"]);
+        pairs.push(["recipient", p.recipient || "-"]);
+        pairs.push(["scheme", p.scheme || "-"]);
+        pairs.push(["network", p.network || "-"]);
+        pairs.push(["facilitator", p.facilitator_url || "-"]);
+        pairs.push(["client SDK", p.client_sdk || "-"]);
+        pairs.push(["freshness", p.freshness_seconds ? p.freshness_seconds + "s" : "-"]);
         c.appendChild(kvList(pairs));
         if (p.refund_policy) {
           c.appendChild(el("h3", "text-xs uppercase tracking-wider text-muted mt-6 mb-2", "Refund policy"));
@@ -169,7 +169,7 @@
         const base = d.endpoints.base_url || BASE;
 
         // Human-friendly mapping: raw JSON endpoints don't get a clickable link
-        // for human visitors — they're tagged "(developer)" instead. HTML and
+        // for human visitors; they're tagged "(developer)" instead. HTML and
         // markdown-served endpoints route to a sensible human destination.
         const META = {
           discovery:  { type: "Markdown",      view: base + "/llms.txt", external: true,  desc: "Crawler context for AI tools" },
@@ -235,10 +235,10 @@
 
       const meta = card("Manifest metadata");
       meta.appendChild(kvList([
-        ["schema_version", d.schema_version || "—"],
-        ["data residency", d.data_residency || "—"],
-        ["PII", d.pii || "—"],
-        ["location", d.location || "—"],
+        ["schema_version", d.schema_version || "-"],
+        ["data residency", d.data_residency || "-"],
+        ["PII", d.pii || "-"],
+        ["location", d.location || "-"],
       ]));
       content.appendChild(meta);
     }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XR-Sentinel — XRPL Activity Pattern Classifier</title>
+  <title>XR-Sentinel | XRPL Activity Pattern Classifier</title>
   <meta name="description" content="AI-assisted behavioral pattern classification for XRP Ledger wallets. Try it on any address." />
   <meta property="og:title" content="XR-Sentinel" />
   <meta property="og:description" content="XRPL Activity Pattern Classifier. AI-assisted, agent-payable, $0.10 per scan." />
@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/assets/scan-flow.js?v=csv"></script>
+  <script src="/assets/scan-flow.js?v=clean"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -100,7 +100,7 @@
           <button class="sample-btn text-accent hover:underline" data-sample="escrow">Escrow Releaser</button>
         </div>
         <p class="text-xs text-muted mt-4 leading-relaxed">
-          Sample buttons show cached classifications instantly (free preview). Click <strong class="text-white">Scan</strong> with any address to run a live classification — pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, …).
+          Sample buttons show cached classifications instantly (free preview). Click <strong class="text-white">Scan</strong> with any address to run a live classification. Pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, etc.).
         </p>
       </div>
 
@@ -183,13 +183,13 @@ report = session.post(
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-3 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">activity_score</code> — 0–100, scaled to how automated and service-like the wallet behaves</li>
-        <li><code class="font-mono text-white">activity_level</code> — Low / Medium / High / Dormant / Unknown</li>
-        <li><code class="font-mono text-white">confidence</code> — low / medium / high tier based on transaction depth</li>
-        <li><code class="font-mono text-white">signals</code> — array drawn from a published, versioned catalog</li>
-        <li><code class="font-mono text-white">features</code> — tx types, IN/OUT split, currencies, dust counts, offer churn, time span</li>
-        <li><code class="font-mono text-white">top_counterparties</code> — top 20 with verified XRPScan labels and direction</li>
-        <li><code class="font-mono text-white">reasoning</code> — AI-generated narrative tying the signals to the score</li>
+        <li><code class="font-mono text-white">activity_score</code>: 0–100, scaled to how automated and service-like the wallet behaves</li>
+        <li><code class="font-mono text-white">activity_level</code>: Low / Medium / High / Dormant / Unknown</li>
+        <li><code class="font-mono text-white">confidence</code>: low / medium / high tier based on transaction depth</li>
+        <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog</li>
+        <li><code class="font-mono text-white">features</code>: tx types, IN/OUT split, currencies, dust counts, offer churn, time span</li>
+        <li><code class="font-mono text-white">top_counterparties</code>: top 20 with verified XRPScan labels and direction</li>
+        <li><code class="font-mono text-white">reasoning</code>: AI-generated narrative tying the signals to the score</li>
       </ul>
     </div>
   </section>
@@ -200,7 +200,7 @@ report = session.post(
       <p class="text-muted leading-relaxed text-sm">
         XR-Sentinel produces behavioral pattern classification, not risk assessment.
         It is not a compliance, AML, sanctions, or forensic service. A "High" activity
-        level is not a risk signal — it typically indicates an exchange, market maker,
+        level is not a risk signal. It typically indicates an exchange, market maker,
         AMM, validator, or trading bot.
       </p>
       <p class="text-muted leading-relaxed text-sm mt-4">

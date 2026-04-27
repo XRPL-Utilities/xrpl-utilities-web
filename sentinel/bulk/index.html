@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bulk scan — XR-Sentinel</title>
+  <title>Bulk scan | XR-Sentinel</title>
   <meta name="description" content="Scan up to 50 XRPL wallets in one paid request." />
-  <meta property="og:title" content="XR-Sentinel — Bulk scan" />
+  <meta property="og:title" content="XR-Sentinel | Bulk scan" />
   <meta property="og:description" content="Paste up to 50 XRPL addresses, pay once, get all reports back as a downloadable bundle. $0.10 USD per address." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/sentinel/bulk/" />
@@ -112,7 +112,7 @@
     </div>
   </footer>
 
-  <script src="/assets/scan-flow.js?v=csv"></script>
+  <script src="/assets/scan-flow.js?v=clean"></script>
   <script>
     const ADDR_RE = /\br[1-9A-HJ-NP-Za-km-z]{24,34}\b/g;
     const MAX = 50;
@@ -139,7 +139,7 @@
       counter.textContent = `${count} ${count === 1 ? 'address' : 'addresses'} · $${cost} USD`;
       btn.disabled = count === 0;
       if (addrs.length > MAX) {
-        validation.textContent = `Limit is ${MAX} addresses per quote — only the first ${MAX} will be quoted.`;
+        validation.textContent = `Limit is ${MAX} addresses per quote. Only the first ${MAX} will be quoted.`;
         validation.className = 'text-xs mt-4 text-yellow-400 leading-relaxed';
       } else if (addrs.length === 0 && ta.value.trim().length > 0) {
         validation.textContent = "No valid XRPL addresses found. Each address starts with 'r' and is 25-35 characters of base58.";
