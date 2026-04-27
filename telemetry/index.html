@@ -142,10 +142,21 @@
             </div>
           </div>
 
-          <div class="bg-ink border border-accent rounded-lg p-6 text-center">
-            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">M · Implied price</div>
-            <div id="bm-m" class="text-5xl font-bold tracking-tight">—</div>
-            <div class="text-xs text-muted mt-2">USD per XRP</div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div class="bg-ink border border-accent rounded-lg p-6 text-center">
+              <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">M · Implied price</div>
+              <div id="bm-m" class="text-4xl sm:text-5xl font-bold tracking-tight">—</div>
+              <div class="text-xs text-muted mt-2">USD per XRP</div>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-6 text-center">
+              <div class="text-xs uppercase tracking-widest text-muted font-semibold mb-1">Current spot</div>
+              <div id="bm-spot" class="text-4xl sm:text-5xl font-bold tracking-tight">—</div>
+              <div id="bm-spot-as-of" class="text-xs text-muted mt-2"></div>
+            </div>
+          </div>
+
+          <div class="mt-4 bg-ink border border-border rounded-lg p-4 text-sm text-center">
+            <span class="text-muted">Market premium over implied floor: </span><span id="bm-premium" class="font-mono font-medium text-white">—</span>
           </div>
         </div>
 
@@ -183,7 +194,7 @@
           </div>
           <div id="fm-warning" class="hidden mt-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed"></div>
           <div class="text-xs text-muted mt-3 text-center">
-            Months from now · baseline = M₀ × ((1 + growth) ÷ (1 − constriction))<sup>i</sup>, ±15% band
+            Months from now · baseline = M₀ × ((1 + growth) ÷ (1 − constriction))<sup>i</sup>, ±15% band, dashed line = current spot
           </div>
         </div>
 
@@ -358,6 +369,7 @@ payload = requests.get(
       dormant_supply_xrp:      28_000_000_000,
       escrowed_supply_xrp:     36_500_000_000,
       available_liquid_supply: 35_487_000_000, // P = total - dormant - escrowed
+      current_price_usd:       0.50,           // illustrative XRP/USD spot
     };
     const DEFAULTS = { Q: 10_000_000_000, V: 6 }; // $10B settlement window, velocity 6
     const SNAPSHOT_AS_OF = '2026-04-26';
@@ -447,10 +459,15 @@ payload = requests.get(
     const bmV = document.getElementById('bm-v');
     const bmP = document.getElementById('bm-p');
     const bmM = document.getElementById('bm-m');
+    const bmSpot = document.getElementById('bm-spot');
+    const bmSpotAsOf = document.getElementById('bm-spot-as-of');
+    const bmPremium = document.getElementById('bm-premium');
 
     bmQ.value = DEFAULTS.Q;
     bmV.value = DEFAULTS.V;
-    bmP.textContent = fmtXrp(SNAPSHOT.available_liquid_supply) + '  (as of ' + SNAPSHOT_AS_OF + ')';
+    bmP.textContent = fmtXrp(SNAPSHOT.available_liquid_supply) + ' (as of ' + SNAPSHOT_AS_OF + ')';
+    bmSpot.textContent = fmtUsd4(SNAPSHOT.current_price_usd);
+    bmSpotAsOf.textContent = 'as of ' + SNAPSHOT_AS_OF;
 
     function currentM() {
       const q = Number(bmQ.value);
@@ -463,6 +480,12 @@ payload = requests.get(
     function recompute() {
       const m = currentM();
       bmM.textContent = m == null ? '—' : fmtUsd4(m);
+      if (m == null || m <= 0) {
+        bmPremium.textContent = '—';
+      } else {
+        const premium = SNAPSHOT.current_price_usd / m;
+        bmPremium.textContent = premium.toFixed(2) + '×';
+      }
       updateFloorChart();
     }
 
@@ -492,6 +515,7 @@ payload = requests.get(
           { label: 'Upper (+15%)', data: [], borderColor: 'rgba(0, 184, 255, 0.4)', backgroundColor: 'rgba(0, 184, 255, 0.10)', borderWidth: 1, fill: false, pointRadius: 0, tension: 0.25 },
           { label: 'Lower (−15%)', data: [], borderColor: 'rgba(0, 184, 255, 0.4)', backgroundColor: 'rgba(0, 184, 255, 0.10)', borderWidth: 1, fill: '-1', pointRadius: 0, tension: 0.25 },
           { label: 'Baseline', data: [], borderColor: '#00b8ff', backgroundColor: '#00b8ff', borderWidth: 2.5, fill: false, pointRadius: 0, tension: 0.25 },
+          { label: 'Current spot', data: Array(HORIZON + 1).fill(SNAPSHOT.current_price_usd), borderColor: '#a3a3a3', borderDash: [6, 4], borderWidth: 1.5, fill: false, pointRadius: 0, tension: 0 },
         ],
       },
       options: {
@@ -560,7 +584,10 @@ payload = requests.get(
       if (m0 == null || m0 <= 0) {
         fmM0.textContent = '—';
         fmM24.textContent = '—';
-        chart.data.datasets.forEach(d => d.data = []);
+        // Clear projection datasets but keep the spot reference line
+        chart.data.datasets[0].data = [];
+        chart.data.datasets[1].data = [];
+        chart.data.datasets[2].data = [];
         chart.update('none');
         showWarning('Enter a positive Q and V in the Burst Math calculator above to anchor the projection.');
         return;
