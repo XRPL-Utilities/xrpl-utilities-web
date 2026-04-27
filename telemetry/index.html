@@ -324,7 +324,7 @@ payload = requests.get(
         <li><code class="font-mono text-white">supply</code>: total / dormant / escrowed XRP, HODL wave %, 24h exchange outflow, escrow release÷relock ratio</li>
         <li><code class="font-mono text-white">liquidity</code>: per-region inflow / outflow / net flow over 24h, with a list of top venues</li>
         <li><code class="font-mono text-white">amm</code>: top pairs (TVL USD, 1% depth XRP, APR%) and vaults (TVL XRP-equivalent, utilization%, supply APY%)</li>
-        <li><code class="font-mono text-white">utility_floor</code>: baseline USD-per-XRP at the network's assumed Q and V, with the same P used by Burst Math</li>
+        <li><code class="font-mono text-white">utility_floor</code>: baseline USD-per-XRP at the network's assumed Q, V, and P, plus current spot price for premium-vs-floor comparison</li>
         <li><code class="font-mono text-white">generated_at</code>: ISO timestamp the snapshot was computed</li>
       </ul>
     </div>
@@ -388,6 +388,7 @@ payload = requests.get(
         },
         utility_floor: {
           baseline_usd: 0.047,
+          current_price_usd: 0.50,
           available_liquid_supply_xrp: 35_487_000_000,
           q_assumed_usd: 10_000_000_000,
           v_assumed: 6,
@@ -422,6 +423,7 @@ payload = requests.get(
         generated_at: '2026-04-27T08:00:00Z',
         utility_floor: {
           baseline_usd: 0.047,
+          current_price_usd: 0.50,
           available_liquid_supply_xrp: 35_487_000_000,
           q_assumed_usd: 10_000_000_000,
           v_assumed: 6,
@@ -581,10 +583,12 @@ payload = requests.get(
       const gPct = Number(fmGrowth.value);
       fmConstrictionVal.textContent = cPct.toFixed(1) + '%';
       fmGrowthVal.textContent = gPct.toFixed(1) + '%';
+      // Keep the spot reference line synced to current SNAPSHOT each tick so
+      // re-anchoring from a live payload propagates without bespoke wiring.
+      chart.data.datasets[3].data = Array(HORIZON + 1).fill(SNAPSHOT.current_price_usd);
       if (m0 == null || m0 <= 0) {
         fmM0.textContent = '—';
         fmM24.textContent = '—';
-        // Clear projection datasets but keep the spot reference line
         chart.data.datasets[0].data = [];
         chart.data.datasets[1].data = [];
         chart.data.datasets[2].data = [];
@@ -629,16 +633,40 @@ payload = requests.get(
     recompute();
 
     // ---- Live snapshot button ----
+    function reanchorFromPayload(payload) {
+      if (!payload) return;
+      const uf = payload.utility_floor;
+      if (!uf) return;
+      let touched = false;
+      if (typeof uf.current_price_usd === 'number' && isFinite(uf.current_price_usd)) {
+        SNAPSHOT.current_price_usd = uf.current_price_usd;
+        bmSpot.textContent = fmtUsd4(uf.current_price_usd);
+        touched = true;
+      }
+      if (typeof uf.available_liquid_supply_xrp === 'number' && uf.available_liquid_supply_xrp > 0) {
+        SNAPSHOT.available_liquid_supply = uf.available_liquid_supply_xrp;
+        bmP.textContent = fmtXrp(uf.available_liquid_supply_xrp) + ' (live)';
+        touched = true;
+      }
+      if (payload.generated_at) {
+        const stamp = new Date(payload.generated_at);
+        if (!isNaN(stamp.getTime())) bmSpotAsOf.textContent = 'live · ' + stamp.toLocaleDateString();
+      }
+      if (touched) recompute();
+    }
+
     document.getElementById('snap-btn').addEventListener('click', () => {
       const r = document.getElementById('result');
       const btn = document.getElementById('snap-btn');
       btn.disabled = true;
       btn.textContent = 'Working…';
       r.classList.remove('hidden');
-      window.XRTelemetryScan.start(r).finally(() => {
-        btn.disabled = false;
-        btn.textContent = 'Run live snapshot';
-      });
+      window.XRTelemetryScan.start(r)
+        .then(result => { if (result) reanchorFromPayload(result.payload); })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = 'Run live snapshot';
+        });
     });
   </script>
 

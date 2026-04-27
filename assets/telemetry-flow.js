@@ -274,13 +274,19 @@
 
   function renderUtilityFloorCard(uf) {
     const card = sectionCard('Utility floor');
-    card.appendChild(kvGrid([
-      ['Baseline',         fmtUsd(uf.baseline_usd, 4) + ' / XRP'],
-      ['Liquid supply (P)', fmtXrpAmount(uf.available_liquid_supply_xrp)],
-      ['Volume (Q)',        fmtUsd(uf.q_assumed_usd, 0)],
-      ['Velocity (V)',      Number(uf.v_assumed).toFixed(2)],
-    ], 4));
-    card.appendChild(el('div', 'text-xs text-muted mt-3 leading-relaxed', 'M = Q ÷ (V × P) — implied USD per XRP at the assumed institutional volume and velocity.'));
+    const hasSpot = typeof uf.current_price_usd === 'number';
+    const rows = [['Baseline', fmtUsd(uf.baseline_usd, 4) + ' / XRP']];
+    if (hasSpot) {
+      rows.push(['Current spot', fmtUsd(uf.current_price_usd, 4) + ' / XRP']);
+      if (uf.baseline_usd > 0) {
+        rows.push(['Premium', (uf.current_price_usd / uf.baseline_usd).toFixed(2) + '×']);
+      }
+    }
+    rows.push(['Liquid supply (P)', fmtXrpAmount(uf.available_liquid_supply_xrp)]);
+    rows.push(['Volume (Q)',        fmtUsd(uf.q_assumed_usd, 0)]);
+    rows.push(['Velocity (V)',      Number(uf.v_assumed).toFixed(2)]);
+    card.appendChild(kvGrid(rows, hasSpot ? 3 : 4));
+    card.appendChild(el('div', 'text-xs text-muted mt-3 leading-relaxed', 'M = Q ÷ (V × P) — implied USD per XRP at the assumed institutional volume and velocity. Premium is current spot ÷ baseline.'));
     return card;
   }
 
@@ -370,19 +376,23 @@
       if (!r.ok) {
         const err = await r.json().catch(() => ({}));
         renderError(target, err.detail || `Quote failed (HTTP ${r.status}).`);
-        return;
+        return null;
       }
       quote = await r.json();
     } catch (e) {
       renderError(target, 'Network error requesting quote.');
-      return;
+      return null;
     }
 
     let cancelled = false;
     renderPayment(target, quote, () => { cancelled = true; updateStatus(target, 'Cancelled by user.', 'bad'); });
 
     const payload = await pollUntilPaid(target, quote.invoice_id, () => cancelled);
-    if (payload) renderResults(target, payload, quote.invoice_id);
+    if (payload) {
+      renderResults(target, payload, quote.invoice_id);
+      return { payload: payload, invoiceId: quote.invoice_id };
+    }
+    return null;
   }
 
   global.XRTelemetryScan = { start: startTelemetryFlow, renderResults: renderResults };
