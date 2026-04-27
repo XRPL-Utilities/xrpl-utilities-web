@@ -11,12 +11,14 @@ dependencies.
 | `index.html` | Landing page for `xrpl-utilities.com`: brand intro and tools portfolio |
 | `sentinel/index.html` | XR-Sentinel showcase: try-it-yourself form, sample classifications, "for agents" snippet |
 | `sentinel/bulk/index.html` | Paid bulk-scan flow (up to 50 XRPL addresses, single payment, CSV download) |
+| `telemetry/index.html` | XR-Telemetry showcase: cached samples, Burst Math calculator, Predictive Floor Matrix chart, live paid snapshot |
 | `terms/index.html` | Terms of service |
 | `status/index.html` | Status page |
 | `manifest/index.html` | Human-friendly index of `/manifest`, `/schema`, `/openapi.json`, `/agents.json` developer endpoints |
 | `contact/index.html` | Contact form (web3forms-backed, Cloudflare Turnstile spam protection) |
 | `assets/logo.png` | Brand asset, served from `/assets/logo.png` |
 | `assets/scan-flow.js` | Single + bulk scan UI, payment polling, QR rendering, CSV export |
+| `assets/telemetry-flow.js` | Telemetry payment polling + result rendering for the `/telemetry/` page |
 | `_headers` | Cloudflare Pages security + cache headers (CSP, HSTS, X-Frame-Options, Cache-Control) |
 | `_redirects` | (none currently) |
 | `robots.txt` | Allow all, points crawlers at `sitemap.xml` |

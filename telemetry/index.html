@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XR-Telemetry | XRPL Macro Telemetry</title>
+  <meta name="description" content="On-chain XRPL macro telemetry: supply constriction, regional liquidity, AMM depth, and a utility-floor projection. Agent-payable, $0.10 per snapshot." />
+  <meta property="og:title" content="XR-Telemetry" />
+  <meta property="og:description" content="XRPL Macro Telemetry. Supply, liquidity, AMM depth, and utility-floor projection. Agent-payable, $0.10 per snapshot." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/telemetry/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="/assets/telemetry-flow.js?v=clean"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+            good: '#22c55e',
+            bad: '#ef4444',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0a; }
+    input[type="range"] { accent-color: #00b8ff; }
+    .num-input {
+      background: #0a0a0a; border: 1px solid #262626; border-radius: 0.5rem;
+      padding: 0.5rem 0.75rem; font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.875rem; color: #fff; width: 100%;
+    }
+    .num-input:focus { outline: none; border-color: #00b8ff; }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
+      <a href="/" class="flex items-center gap-2 sm:gap-3 whitespace-nowrap">
+        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-9 w-9 rounded" />
+        <span class="font-semibold tracking-tight">XRPL-Utilities</span>
+        <span class="text-muted">/</span>
+        <span class="text-accent font-medium">XR-Telemetry</span>
+      </a>
+      <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-muted whitespace-nowrap">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="#snapshots" class="hover:text-white transition">Samples</a>
+        <a href="#burst-math" class="hover:text-white transition">Burst Math</a>
+        <a href="#floor-matrix" class="hover:text-white transition">Floor Matrix</a>
+        <a href="#try-it" class="hover:text-white transition">Try it</a>
+        <a href="#for-agents" class="hover:text-white transition">How it works</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Telemetry</h1>
+      <p class="text-xl text-muted">XRPL Macro Telemetry</p>
+      <p class="text-base text-muted mt-3 max-w-2xl mx-auto leading-relaxed">
+        Network-level signals: supply constriction, regional liquidity flows, AMM depth, and an implied utility floor.
+        Pay <strong class="text-white">$0.10 USD</strong> in XRP for a fresh snapshot, or use the cached samples below.
+      </p>
+    </div>
+  </section>
+
+  <section id="snapshots">
+    <div class="max-w-5xl mx-auto px-6 pb-16">
+      <div class="bg-panel border border-border rounded-2xl p-8">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Cached samples (illustrative)</div>
+        <h2 class="text-2xl font-bold mb-4">Pick a sample snapshot</h2>
+        <p class="text-sm text-muted mb-6">
+          These are static, illustrative payloads frozen in the page so you can see the response shape without paying.
+          Click <strong class="text-white">Run live snapshot</strong> below for a real, on-chain reading.
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="supply">Today's supply constriction</button>
+          <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="drain">Last weekend's exchange drain</button>
+          <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="amm">Top 5 AMM pools</button>
+          <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="floor">Utility floor reading</button>
+        </div>
+      </div>
+
+      <div id="sample-result" class="mt-6 hidden"></div>
+    </div>
+  </section>
+
+  <section id="burst-math" class="border-t border-border bg-panel/30">
+    <div class="max-w-5xl mx-auto px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Burst Math</h2>
+      <h3 class="text-3xl font-bold mb-2">Implied price floor calculator</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
+        Plug in an institutional settlement volume and an assumed velocity. The available liquid supply
+        comes from the snapshot below. The result is the implied USD-per-XRP needed to clear that volume.
+      </p>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="bg-panel border border-border rounded-2xl p-6 lg:col-span-2">
+          <div class="grid sm:grid-cols-2 gap-4 mb-6">
+            <label class="block">
+              <div class="text-xs text-muted uppercase tracking-wider mb-2">Q · Institutional volume (USD)</div>
+              <input id="bm-q" type="number" min="0" step="100000000" class="num-input" />
+            </label>
+            <label class="block">
+              <div class="text-xs text-muted uppercase tracking-wider mb-2">V · Velocity</div>
+              <input id="bm-v" type="number" min="0.1" step="0.1" class="num-input" />
+            </label>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4 mb-6 text-sm">
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-xs text-muted uppercase tracking-wider mb-1">P · Available liquid supply</div>
+              <div id="bm-p" class="font-mono font-medium"></div>
+              <div class="text-xs text-muted mt-1">total − dormant − escrowed</div>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-xs text-muted uppercase tracking-wider mb-1">Formula</div>
+              <div class="font-mono text-sm">M = Q ÷ (V × P)</div>
+              <div class="text-xs text-muted mt-1">Implied USD per XRP</div>
+            </div>
+          </div>
+
+          <div class="bg-ink border border-accent rounded-lg p-6 text-center">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">M · Implied price</div>
+            <div id="bm-m" class="text-5xl font-bold tracking-tight">—</div>
+            <div class="text-xs text-muted mt-2">USD per XRP</div>
+          </div>
+        </div>
+
+        <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading</div>
+          <p class="mb-4">
+            <strong class="text-white">Q</strong> is the dollar value of XRP-mediated settlement you want the network to clear in the period.
+          </p>
+          <p class="mb-4">
+            <strong class="text-white">V</strong> is the average number of times each liquid XRP is reused inside that period.
+            A higher V means each XRP works harder; the implied floor is lower.
+          </p>
+          <p>
+            <strong class="text-white">P</strong> is the supply that can actually move — total minus dormant minus escrowed.
+            Constrict P (more escrowed, more dormant) and the implied floor rises for the same Q and V.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="floor-matrix" class="border-t border-border">
+    <div class="max-w-5xl mx-auto px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Predictive Floor Matrix</h2>
+      <h3 class="text-3xl font-bold mb-2">24-month projection</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
+        Using <strong class="text-white">M₀</strong> from the Burst Math calculator above as the starting point, project
+        forward under monthly supply-constriction and volume-growth assumptions. The shaded band is a ±15% uncertainty envelope.
+      </p>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="bg-panel border border-border rounded-2xl p-6 lg:col-span-2">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <canvas id="floor-chart" height="300"></canvas>
+          </div>
+          <div class="text-xs text-muted mt-3 text-center">
+            Months from now · baseline = M₀ × ((1 + growth) ÷ (1 − constriction))<sup>i</sup>, ±15% band
+          </div>
+        </div>
+
+        <div class="bg-panel border border-border rounded-2xl p-6 space-y-6">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs text-muted uppercase tracking-wider" for="fm-constriction">Monthly supply constriction</label>
+              <span id="fm-constriction-val" class="font-mono text-sm text-accent"></span>
+            </div>
+            <input id="fm-constriction" type="range" min="0" max="5" step="0.1" class="w-full" />
+            <div class="flex justify-between text-[10px] text-muted mt-1"><span>0%</span><span>5%</span></div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs text-muted uppercase tracking-wider" for="fm-growth">Monthly volume growth</label>
+              <span id="fm-growth-val" class="font-mono text-sm text-accent"></span>
+            </div>
+            <input id="fm-growth" type="range" min="0" max="15" step="0.1" class="w-full" />
+            <div class="flex justify-between text-[10px] text-muted mt-1"><span>0%</span><span>15%</span></div>
+          </div>
+
+          <div class="bg-ink border border-border rounded-lg p-4 text-sm">
+            <div class="text-xs text-muted uppercase tracking-wider mb-1">M₀ (linked)</div>
+            <div id="fm-m0" class="font-mono font-medium">—</div>
+            <div class="text-xs text-muted mt-2">Tweak Q or V above to re-anchor.</div>
+          </div>
+
+          <div class="bg-ink border border-border rounded-lg p-4 text-sm">
+            <div class="text-xs text-muted uppercase tracking-wider mb-1">M at month 24</div>
+            <div id="fm-m24" class="font-mono font-medium">—</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-xs text-muted mt-6 leading-relaxed max-w-2xl">
+        Illustrative only. Real outcomes depend on regulatory regime, AMM depth, exchange behavior, and macro liquidity —
+        none of which are linear. This calculator is a sensitivity tool, not a forecast.
+      </p>
+    </div>
+  </section>
+
+  <section id="try-it" class="border-t border-border bg-panel/30">
+    <div class="max-w-3xl mx-auto px-6 py-20">
+      <div class="bg-panel border border-border rounded-2xl p-8">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Live snapshot</div>
+        <h3 class="text-2xl font-bold mb-2">Run a real snapshot</h3>
+        <p class="text-sm text-muted mb-6">
+          Pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, etc.) and get a
+          freshly computed payload over the wire. No inputs required in v1 — Telemetry covers the whole network.
+        </p>
+        <button id="snap-btn" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
+          Run live snapshot
+        </button>
+      </div>
+
+      <div id="result" class="mt-6 hidden"></div>
+    </div>
+  </section>
+
+  <section id="for-agents" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-20">
+      <div class="grid md:grid-cols-2 gap-12">
+        <div>
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
+          <h3 class="text-3xl font-bold mb-6">Pay $0.10 per snapshot, no API key</h3>
+          <p class="text-muted leading-relaxed mb-6">
+            XR-Telemetry implements <strong class="text-white">x402 v2</strong> with the
+            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
+            Verification and settlement are delegated to the
+            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator.
+          </p>
+          <ol class="space-y-4 text-sm text-muted">
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">1.</span>
+              <span><code class="font-mono text-white">POST /quote</code> returns an invoice with amount in drops, recipient, deep link, and QR code.</span>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">2.</span>
+              <span>Pay the XRPL Payment from any wallet. Poll <code class="font-mono text-white">GET /status/{invoice_id}</code> until <code class="font-mono text-white">paid: true</code>.</span>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">3.</span>
+              <span><code class="font-mono text-white">GET /results/{invoice_id}</code> returns the full TelemetryPayload: supply, liquidity, AMM, utility floor.</span>
+            </li>
+          </ol>
+          <div class="mt-8 flex flex-wrap gap-3 text-sm">
+            <a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
+            <a href="https://telemetry.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec (JSON) →</a>
+            <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
+          </div>
+        </div>
+        <div>
+          <div class="bg-ink border border-border rounded-xl p-6 font-mono text-sm overflow-x-auto">
+            <div class="text-muted mb-3"># pip install x402-xrpl requests</div>
+            <pre class="text-white leading-relaxed"><span class="text-accent">import</span> requests
+
+quote = requests.post(
+    <span class="text-green-400">"https://telemetry.xrpl-utilities.io/quote"</span>,
+    json={},
+).json()
+
+<span class="text-muted"># Sign &amp; submit XRPL Payment from your wallet using quote["deep_link"]</span>
+<span class="text-muted"># Then poll until paid:</span>
+<span class="text-accent">while</span> <span class="text-accent">not</span> requests.get(
+    <span class="text-green-400">f"https://telemetry.xrpl-utilities.io/status/{quote['invoice_id']}"</span>
+).json()[<span class="text-green-400">"paid"</span>]:
+    time.sleep(<span class="text-green-400">5</span>)
+
+payload = requests.get(
+    <span class="text-green-400">f"https://telemetry.xrpl-utilities.io/results/{quote['invoice_id']}"</span>
+).json()
+
+<span class="text-accent">print</span>(payload[<span class="text-green-400">"supply"</span>])
+<span class="text-accent">print</span>(payload[<span class="text-green-400">"utility_floor"</span>])</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
+      <h3 class="text-3xl font-bold mb-6">What you get back</h3>
+      <ul class="space-y-3 text-muted leading-relaxed">
+        <li><code class="font-mono text-white">supply</code>: total / dormant / escrowed XRP, HODL wave %, 24h exchange outflow, escrow release÷relock ratio</li>
+        <li><code class="font-mono text-white">liquidity</code>: per-region inflow / outflow / net flow over 24h, with a list of top venues</li>
+        <li><code class="font-mono text-white">amm</code>: top pairs (TVL USD, 1% depth XRP, APR%) and vaults (TVL XRP-equivalent, utilization%, supply APY%)</li>
+        <li><code class="font-mono text-white">utility_floor</code>: baseline USD-per-XRP at the network's assumed Q and V, with the same P used by Burst Math</li>
+        <li><code class="font-mono text-white">generated_at</code>: ISO timestamp the snapshot was computed</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Safe harbor &amp; compliance</h2>
+      <p class="text-muted leading-relaxed text-sm">
+        XR-Telemetry produces on-chain network telemetry and an algebraic implied-floor computation.
+        It is not a price prediction, investment recommendation, or financial advice.
+        The Burst Math and Floor Matrix outputs are sensitivity tools — they show what the math implies
+        under explicit assumptions, not what XRP will or should be priced at.
+      </p>
+      <p class="text-muted leading-relaxed text-sm mt-4">
+        XRPL-Utilities provides behavioral data classification and technical ledger analysis.
+        We do not provide financial advice, risk ratings, or investment forensics.
+        Users are responsible for ensuring their use of these tools complies with local
+        digital asset regulations, including the California Digital Financial Assets Law
+        and the Colorado AI Act where applicable.
+      </p>
+    </div>
+  </section>
+
+  <footer class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
+      <div>XR-Telemetry &copy; 2026 · Powered by XRPL &amp; AI</div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="hover:text-white transition">← Home</a>
+        <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+        <a href="/manifest/" class="hover:text-white transition">Manifest</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+        <a href="/status/" class="hover:text-white transition">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // TODO: refresh from a live /results/{invoice_id} payload once Telemetry API is live
+    const SNAPSHOT = {
+      total_supply_xrp:        99_987_000_000,
+      dormant_supply_xrp:      28_000_000_000,
+      escrowed_supply_xrp:     36_500_000_000,
+      available_liquid_supply: 35_487_000_000, // P = total - dormant - escrowed
+    };
+    const DEFAULTS = { Q: 10_000_000_000, V: 6 }; // $10B settlement window, velocity 6
+    const SNAPSHOT_AS_OF = '2026-04-26';
+
+    // ---- Cached sample TelemetryPayloads (illustrative) ----
+    const SAMPLES = {
+      supply: {
+        generated_at: '2026-04-27T08:00:00Z',
+        supply: {
+          total_xrp: 99_987_000_000,
+          dormant_xrp: 28_000_000_000,
+          escrowed_xrp: 36_500_000_000,
+          hodl_wave_pct: 0.642,
+          exchange_outflow_24h_xrp: 41_200_000,
+          escrow_release_vs_relock_ratio: 0.78,
+        },
+        utility_floor: {
+          baseline_usd: 0.047,
+          available_liquid_supply_xrp: 35_487_000_000,
+          q_assumed_usd: 10_000_000_000,
+          v_assumed: 6,
+        },
+      },
+      drain: {
+        generated_at: '2026-04-21T08:00:00Z',
+        liquidity: [
+          { region: 'NA',   inflow_24h_xrp: 18_400_000, outflow_24h_xrp: 62_100_000, net_flow_24h_xrp: -43_700_000, top_venues: ['Coinbase', 'Kraken', 'Gemini'] },
+          { region: 'EU',   inflow_24h_xrp: 12_900_000, outflow_24h_xrp: 31_500_000, net_flow_24h_xrp: -18_600_000, top_venues: ['Bitstamp', 'Kraken', 'Bitfinex'] },
+          { region: 'MENA', inflow_24h_xrp:  7_200_000, outflow_24h_xrp:  9_800_000, net_flow_24h_xrp:  -2_600_000, top_venues: ['Rain', 'BitOasis'] },
+          { region: 'APAC', inflow_24h_xrp: 22_300_000, outflow_24h_xrp: 19_500_000, net_flow_24h_xrp:   2_800_000, top_venues: ['Bitbank', 'Bitget', 'Upbit'] },
+        ],
+      },
+      amm: {
+        generated_at: '2026-04-27T08:00:00Z',
+        amm: {
+          pairs: [
+            { pair: 'XRP/RLUSD',  tvl_usd: 206_000_000, depth_1pct_xrp: 18_300_000, apr_pct:  9.4 },
+            { pair: 'XRP/USDC',   tvl_usd: 143_000_000, depth_1pct_xrp: 11_200_000, apr_pct:  8.2 },
+            { pair: 'XRP/USDT',   tvl_usd: 112_000_000, depth_1pct_xrp:  9_700_000, apr_pct:  7.1 },
+            { pair: 'XRP/SOLO',   tvl_usd:  30_500_000, depth_1pct_xrp:  2_100_000, apr_pct: 14.3 },
+            { pair: 'XRP/CSC',    tvl_usd:   9_000_000, depth_1pct_xrp:    640_000, apr_pct: 18.7 },
+          ],
+          vaults: [
+            { asset: 'XRP',   tvl_xrp_equivalent: 142_000_000, utilization_pct: 71, supply_apy_pct: 5.2 },
+            { asset: 'RLUSD', tvl_xrp_equivalent:  88_000_000, utilization_pct: 83, supply_apy_pct: 6.4 },
+          ],
+        },
+      },
+      floor: {
+        generated_at: '2026-04-27T08:00:00Z',
+        utility_floor: {
+          baseline_usd: 0.047,
+          available_liquid_supply_xrp: 35_487_000_000,
+          q_assumed_usd: 10_000_000_000,
+          v_assumed: 6,
+        },
+        supply: {
+          total_xrp: 99_987_000_000,
+          dormant_xrp: 28_000_000_000,
+          escrowed_xrp: 36_500_000_000,
+          hodl_wave_pct: 0.642,
+          exchange_outflow_24h_xrp: 41_200_000,
+          escrow_release_vs_relock_ratio: 0.78,
+        },
+      },
+    };
+
+    const sampleResultEl = document.getElementById('sample-result');
+    document.querySelectorAll('.sample-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const data = SAMPLES[btn.dataset.sample];
+        if (!data) return;
+        sampleResultEl.classList.remove('hidden');
+        window.XRTelemetryScan.renderResults(sampleResultEl, data, null);
+        const banner = document.createElement('div');
+        banner.className = 'mb-4 text-xs uppercase tracking-wider text-accent';
+        banner.textContent = 'Cached sample (illustrative)';
+        sampleResultEl.insertBefore(banner, sampleResultEl.firstChild);
+      });
+    });
+
+    // ---- Burst Math ----
+    const fmtXrp = n => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' XRP';
+    const fmtUsd4 = n => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+
+    const bmQ = document.getElementById('bm-q');
+    const bmV = document.getElementById('bm-v');
+    const bmP = document.getElementById('bm-p');
+    const bmM = document.getElementById('bm-m');
+
+    bmQ.value = DEFAULTS.Q;
+    bmV.value = DEFAULTS.V;
+    bmP.textContent = fmtXrp(SNAPSHOT.available_liquid_supply) + '  (as of ' + SNAPSHOT_AS_OF + ')';
+
+    function currentM() {
+      const q = Number(bmQ.value);
+      const v = Number(bmV.value);
+      const p = SNAPSHOT.available_liquid_supply;
+      if (!isFinite(q) || !isFinite(v) || v <= 0 || p <= 0) return null;
+      return q / (v * p);
+    }
+
+    function recompute() {
+      const m = currentM();
+      bmM.textContent = m == null ? '—' : fmtUsd4(m);
+      updateFloorChart();
+    }
+
+    bmQ.addEventListener('input', recompute);
+    bmV.addEventListener('input', recompute);
+
+    // ---- Predictive Floor Matrix ----
+    const fmConstriction = document.getElementById('fm-constriction');
+    const fmGrowth = document.getElementById('fm-growth');
+    const fmConstrictionVal = document.getElementById('fm-constriction-val');
+    const fmGrowthVal = document.getElementById('fm-growth-val');
+    const fmM0 = document.getElementById('fm-m0');
+    const fmM24 = document.getElementById('fm-m24');
+
+    fmConstriction.value = 1.0;
+    fmGrowth.value = 3.0;
+
+    const HORIZON = 24;
+    const BAND = 0.15;
+
+    const ctx = document.getElementById('floor-chart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.from({ length: HORIZON + 1 }, (_, i) => 'm' + i),
+        datasets: [
+          { label: 'Upper (+15%)', data: [], borderColor: 'rgba(0, 184, 255, 0.4)', backgroundColor: 'rgba(0, 184, 255, 0.10)', borderWidth: 1, fill: false, pointRadius: 0, tension: 0.25 },
+          { label: 'Lower (−15%)', data: [], borderColor: 'rgba(0, 184, 255, 0.4)', backgroundColor: 'rgba(0, 184, 255, 0.10)', borderWidth: 1, fill: '-1', pointRadius: 0, tension: 0.25 },
+          { label: 'Baseline', data: [], borderColor: '#00b8ff', backgroundColor: '#00b8ff', borderWidth: 2.5, fill: false, pointRadius: 0, tension: 0.25 },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { labels: { color: '#a3a3a3', boxWidth: 10 } },
+          tooltip: {
+            backgroundColor: '#111111',
+            borderColor: '#262626',
+            borderWidth: 1,
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            callbacks: {
+              label: (ctx) => ctx.dataset.label + ': ' + fmtUsd4(ctx.parsed.y),
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { color: '#a3a3a3' },
+            grid: { color: 'rgba(38, 38, 38, 0.6)' },
+            title: { display: true, text: 'months from now', color: '#a3a3a3' },
+          },
+          y: {
+            ticks: {
+              color: '#a3a3a3',
+              callback: (v) => '$' + Number(v).toFixed(4),
+            },
+            grid: { color: 'rgba(38, 38, 38, 0.6)' },
+            title: { display: true, text: 'implied USD per XRP', color: '#a3a3a3' },
+          },
+        },
+      },
+    });
+
+    function projectBaseline(m0, growthPct, constrictionPct) {
+      const g = growthPct / 100;
+      const c = constrictionPct / 100;
+      if (c >= 1) return Array(HORIZON + 1).fill(NaN);
+      const factor = (1 + g) / (1 - c);
+      const out = [];
+      for (let i = 0; i <= HORIZON; i++) out.push(m0 * Math.pow(factor, i));
+      return out;
+    }
+
+    function updateFloorChart() {
+      const m0 = currentM();
+      fmConstrictionVal.textContent = Number(fmConstriction.value).toFixed(1) + '%';
+      fmGrowthVal.textContent = Number(fmGrowth.value).toFixed(1) + '%';
+      if (m0 == null) {
+        fmM0.textContent = '—';
+        fmM24.textContent = '—';
+        chart.data.datasets.forEach(d => d.data = []);
+        chart.update('none');
+        return;
+      }
+      fmM0.textContent = fmtUsd4(m0);
+      const baseline = projectBaseline(m0, Number(fmGrowth.value), Number(fmConstriction.value));
+      const upper = baseline.map(v => v * (1 + BAND));
+      const lower = baseline.map(v => v * (1 - BAND));
+      chart.data.datasets[0].data = upper;
+      chart.data.datasets[1].data = lower;
+      chart.data.datasets[2].data = baseline;
+      chart.update('none');
+      const m24 = baseline[HORIZON];
+      fmM24.textContent = isFinite(m24) ? fmtUsd4(m24) : '—';
+    }
+
+    fmConstriction.addEventListener('input', updateFloorChart);
+    fmGrowth.addEventListener('input', updateFloorChart);
+
+    recompute();
+
+    // ---- Live snapshot button ----
+    document.getElementById('snap-btn').addEventListener('click', () => {
+      const r = document.getElementById('result');
+      const btn = document.getElementById('snap-btn');
+      btn.disabled = true;
+      btn.textContent = 'Working…';
+      r.classList.remove('hidden');
+      window.XRTelemetryScan.start(r).finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Run live snapshot';
+      });
+    });
+  </script>
+
+</body>
+</html>

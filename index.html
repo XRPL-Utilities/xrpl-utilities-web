@@ -40,6 +40,23 @@
           "priceCurrency": "USD",
           "description": "Per-scan fee, payable in XRP or RLUSD via x402 protocol"
         }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/telemetry/#app",
+        "name": "XR-Telemetry",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP API)",
+        "description": "On-chain XRPL macro telemetry: supply constriction, regional liquidity flows, AMM depth, and an implied utility-floor projection.",
+        "url": "https://xrpl-utilities.com/telemetry/",
+        "image": "https://xrpl-utilities.com/assets/logo.png",
+        "publisher": { "@id": "https://xrpl-utilities.com/#org" },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.10",
+          "priceCurrency": "USD",
+          "description": "Per-snapshot fee, payable in XRP via x402 protocol"
+        }
       }
     ]
   }
@@ -90,9 +107,10 @@
       </a>
       <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-muted whitespace-nowrap">
         <a href="#tools" class="hover:text-white transition">Tools</a>
+        <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+        <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
         <a href="/terms/" class="hover:text-white transition">Terms</a>
         <a href="/contact/" class="hover:text-white transition">Contact</a>
-        <a href="/sentinel/" class="text-accent hover:text-accent-dim transition font-medium">Try XR-Sentinel →</a>
       </nav>
     </div>
   </header>
@@ -155,17 +173,21 @@
           </div>
         </a>
 
-        <div class="bg-panel border border-border rounded-2xl p-8 flex flex-col opacity-60">
+        <a href="/telemetry/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
           <div class="flex items-center gap-3 mb-4">
-            <span class="text-xs uppercase tracking-wider text-muted font-semibold">In design</span>
+            <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
+            <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
           </div>
-          <h4 class="text-2xl font-bold mb-3">XR-Escrow</h4>
+          <h4 class="text-2xl font-bold mb-3">XR-Telemetry</h4>
           <p class="text-muted leading-relaxed mb-6 flex-grow">
-            Conditional XRPL escrow management for autonomous agents. Programmatic create, finish,
-            and cancel against time and crypto-conditions.
+            XRPL macro telemetry: supply constriction, regional liquidity, AMM depth, and an implied
+            utility-floor projection. Network-level signals for agents and analysts.
           </p>
-          <div class="text-sm text-muted">Coming soon</div>
-        </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-muted">$0.10 USD per snapshot · XRP</span>
+            <span class="text-accent group-hover:translate-x-1 transition">→</span>
+          </div>
+        </a>
 
         <div class="bg-panel border border-border rounded-2xl p-8 flex flex-col opacity-60">
           <div class="flex items-center gap-3 mb-4">
@@ -233,6 +255,7 @@ report = session.post(
         </div>
         <div class="flex items-center gap-6 text-sm text-muted">
           <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+          <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
           <a href="/manifest/" class="hover:text-white transition">Manifest</a>
           <a href="/terms/" class="hover:text-white transition">Terms</a>
           <a href="/status/" class="hover:text-white transition">Status</a>
