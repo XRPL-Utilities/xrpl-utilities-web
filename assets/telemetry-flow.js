@@ -205,7 +205,7 @@
       ['Total XRP',                     fmtXrpAmount(supply.total_xrp)],
       ['Dormant',                       fmtXrpAmount(supply.dormant_xrp)],
       ['Escrowed',                      fmtXrpAmount(supply.escrowed_xrp)],
-      ['HODL wave',                     fmtPct(supply.hodl_wave_pct)],
+      ['HODL wave',                     fmtPctRaw(supply.hodl_wave_pct)],
       ['24h exchange outflow',          fmtXrpAmount(supply.exchange_outflow_24h_xrp)],
       ['Escrow release ÷ relock ratio', fmtRatio(supply.escrow_release_vs_relock_ratio)],
     ], 3));
