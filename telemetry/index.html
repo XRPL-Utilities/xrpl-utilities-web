@@ -181,6 +181,7 @@
           <div class="bg-ink border border-border rounded-lg p-4">
             <canvas id="floor-chart" height="300"></canvas>
           </div>
+          <div id="fm-warning" class="hidden mt-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed"></div>
           <div class="text-xs text-muted mt-3 text-center">
             Months from now · baseline = M₀ × ((1 + growth) ÷ (1 − constriction))<sup>i</sup>, ±15% band
           </div>
@@ -539,19 +540,33 @@ payload = requests.get(
       return out;
     }
 
+    const warningEl = document.getElementById('fm-warning');
+    function showWarning(message) {
+      if (!message) {
+        warningEl.classList.add('hidden');
+        warningEl.textContent = '';
+      } else {
+        warningEl.classList.remove('hidden');
+        warningEl.textContent = message;
+      }
+    }
+
     function updateFloorChart() {
       const m0 = currentM();
-      fmConstrictionVal.textContent = Number(fmConstriction.value).toFixed(1) + '%';
-      fmGrowthVal.textContent = Number(fmGrowth.value).toFixed(1) + '%';
-      if (m0 == null) {
+      const cPct = Number(fmConstriction.value);
+      const gPct = Number(fmGrowth.value);
+      fmConstrictionVal.textContent = cPct.toFixed(1) + '%';
+      fmGrowthVal.textContent = gPct.toFixed(1) + '%';
+      if (m0 == null || m0 <= 0) {
         fmM0.textContent = '—';
         fmM24.textContent = '—';
         chart.data.datasets.forEach(d => d.data = []);
         chart.update('none');
+        showWarning('Enter a positive Q and V in the Burst Math calculator above to anchor the projection.');
         return;
       }
       fmM0.textContent = fmtUsd4(m0);
-      const baseline = projectBaseline(m0, Number(fmGrowth.value), Number(fmConstriction.value));
+      const baseline = projectBaseline(m0, gPct, cPct);
       const upper = baseline.map(v => v * (1 + BAND));
       const lower = baseline.map(v => v * (1 - BAND));
       chart.data.datasets[0].data = upper;
@@ -560,6 +575,25 @@ payload = requests.get(
       chart.update('none');
       const m24 = baseline[HORIZON];
       fmM24.textContent = isFinite(m24) ? fmtUsd4(m24) : '—';
+
+      // Guard rail: warn when inputs imply implausible terminal values.
+      let warning = null;
+      if (cPct >= 100) {
+        warning = 'Constriction at or above 100% has no physical interpretation — supply cannot shrink to zero in one month.';
+      } else if (!isFinite(m24)) {
+        warning = 'Projection is undefined for these inputs.';
+      } else {
+        const supplyRemaining = Math.pow(1 - cPct / 100, HORIZON);
+        const ratio = m24 / m0;
+        if (ratio > 10) {
+          warning = `These inputs imply a ${ratio.toFixed(1)}× price by month 24. That is an extreme scenario — the model assumes V is constant and ignores velocity feedback, regulatory shocks, and AMM depth.`;
+        } else if (ratio > 5) {
+          warning = `Inputs imply a ${ratio.toFixed(1)}× projection by month 24. Constriction cannot compound indefinitely in reality; treat as sensitivity, not forecast.`;
+        } else if (supplyRemaining < 0.3) {
+          warning = `At this constriction rate, only ${(supplyRemaining * 100).toFixed(0)}% of liquid supply remains by month 24 — implausible without a major regime change.`;
+        }
+      }
+      showWarning(warning);
     }
 
     fmConstriction.addEventListener('input', updateFloorChart);
