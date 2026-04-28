@@ -669,34 +669,35 @@ payload = requests.get(
       })
       .catch(() => {});
 
-    // Data-freshness banner: read /agents.json data_status and surface a
-    // top-of-page disclaimer if any fields are mocked. The data_status
-    // block is the source of truth — when fields go live in the backend,
-    // this banner shrinks or disappears automatically without a page edit.
+    // Development banner + payment-disabled handling. Reads /agents.json
+    // for service_status and payments_enabled. Banner stays up while
+    // service_status != "live"; payment UI hides while payments_enabled
+    // is false. Both flip automatically when the backend is ready (no
+    // page edit needed).
     fetch('https://telemetry.xrpl-utilities.io/agents.json')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        const ds = (d && d.data_status) || {};
-        const isLiveOrStatic = v => {
-          const s = String(v).toLowerCase();
-          return s.startsWith('live') || s.startsWith('static') || s.includes('awaiting amendment');
-        };
-        const mockedFields = Object.entries(ds)
-          .filter(([_, v]) => !isLiveOrStatic(v))
-          .map(([k]) => k);
-        if (mockedFields.length === 0) return;
-        const banner = document.createElement('div');
-        banner.className = 'bg-yellow-900/20 border-b border-yellow-700/40 text-yellow-200 text-xs';
-        banner.innerHTML =
-          '<div class="max-w-6xl mx-auto px-4 sm:px-6 py-2 leading-relaxed">' +
-          '<strong>v1 data status:</strong> ' + mockedFields.length +
-          ' payload field' + (mockedFields.length === 1 ? '' : 's') +
-          ' currently use placeholder values (regional liquidity, dormant supply, exchange flows, escrow ratio, AMM APR). ' +
-          'Live: XRP/USD spot, AMM XRP/RLUSD pool, total supply. ' +
-          '<strong>Pricing and payments are accurate.</strong> ' +
-          'Per-field provenance: <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="underline hover:text-white">agents.json data_status</a>.' +
-          '</div>';
-        document.body.insertBefore(banner, document.body.firstChild);
+        if (!d) return;
+        const inDev = d.service_status && d.service_status !== 'live';
+        if (inDev) {
+          const banner = document.createElement('div');
+          banner.className = 'bg-yellow-900/20 border-b border-yellow-700/40 text-yellow-200 text-xs';
+          banner.innerHTML =
+            '<div class="max-w-6xl mx-auto px-4 sm:px-6 py-2 leading-relaxed text-center">' +
+            'XR-Telemetry is in active development. Some payload fields use placeholder values. Live data coming soon.' +
+            '</div>';
+          document.body.insertBefore(banner, document.body.firstChild);
+        }
+        if (d.payments_enabled === false) {
+          // Replace the "Run live snapshot" button with a notice.
+          const btn = document.getElementById('snap-btn');
+          if (btn) {
+            const notice = document.createElement('div');
+            notice.className = 'bg-ink border border-border rounded-lg px-4 py-3 text-sm text-muted text-center';
+            notice.textContent = 'Live snapshot is temporarily disabled while Telemetry is in active development. Use the cached samples above for now.';
+            btn.replaceWith(notice);
+          }
+        }
       })
       .catch(() => {});
 
