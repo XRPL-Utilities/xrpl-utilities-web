@@ -137,50 +137,50 @@
         scarcity bets, and network-adoption expectations all add premium on top.
       </p>
 
-      <div class="grid lg:grid-cols-3 gap-6">
-        <div class="bg-panel border border-border rounded-2xl p-6 lg:col-span-2">
-          <div class="grid sm:grid-cols-2 gap-4 mb-6">
-            <label class="block">
-              <div class="text-xs text-muted uppercase tracking-wider mb-2">Q &middot; Annual settlement throughput (USD)</div>
-              <input id="bm-q" type="number" min="0" step="100000000" class="num-input" />
-            </label>
-            <label class="block">
-              <div class="text-xs text-muted uppercase tracking-wider mb-2">V &middot; Annual velocity</div>
-              <input id="bm-v" type="number" min="0.1" step="0.1" class="num-input" />
-            </label>
-          </div>
+      <div class="bg-panel border border-border rounded-2xl p-6">
+        <div class="grid sm:grid-cols-2 gap-4 mb-6">
+          <label class="block">
+            <div class="text-xs text-muted uppercase tracking-wider mb-2">Q &middot; Annual settlement throughput (USD)</div>
+            <input id="bm-q" type="number" min="0" step="100000000" class="num-input" />
+          </label>
+          <label class="block">
+            <div class="text-xs text-muted uppercase tracking-wider mb-2">V &middot; Annual velocity</div>
+            <input id="bm-v" type="number" min="0.1" step="0.1" class="num-input" />
+          </label>
+        </div>
 
-          <div class="grid sm:grid-cols-2 gap-4 mb-6 text-sm">
-            <div class="bg-ink border border-border rounded-lg p-4">
-              <div class="text-xs text-muted uppercase tracking-wider mb-1">M &middot; Available liquid supply (XRP)</div>
-              <div id="bm-m" class="font-mono font-medium"></div>
-              <div class="text-xs text-muted mt-1">total &minus; dormant &minus; escrowed</div>
-            </div>
-            <div class="bg-ink border border-border rounded-lg p-4">
-              <div class="text-xs text-muted uppercase tracking-wider mb-1">Formula</div>
-              <div class="font-mono text-sm">P = Q &divide; (V &times; M)</div>
-              <div class="text-xs text-muted mt-1">Solve for USD per XRP</div>
-            </div>
+        <div class="grid sm:grid-cols-2 gap-4 mb-6 text-sm">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="text-xs text-muted uppercase tracking-wider mb-1">M &middot; Available liquid supply (XRP)</div>
+            <div id="bm-m" class="font-mono font-medium"></div>
+            <div class="text-xs text-muted mt-1">total &minus; dormant &minus; escrowed</div>
           </div>
-
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div class="bg-ink border border-accent rounded-lg p-6 text-center">
-              <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">P &middot; Implied price</div>
-              <div id="bm-p" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
-              <div class="text-xs text-muted mt-2">USD per XRP</div>
-            </div>
-            <div class="bg-ink border border-border rounded-lg p-6 text-center">
-              <div class="text-xs uppercase tracking-widest text-muted font-semibold mb-1">Current spot</div>
-              <div id="bm-spot" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
-              <div id="bm-spot-as-of" class="text-xs text-muted mt-2"></div>
-            </div>
-          </div>
-
-          <div class="mt-4 bg-ink border border-border rounded-lg p-4 text-sm text-center">
-            <span class="text-muted">Market premium over implied floor: </span><span id="bm-premium" class="font-mono font-medium text-white">-</span>
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="text-xs text-muted uppercase tracking-wider mb-1">Formula</div>
+            <div class="font-mono text-sm">P = Q &divide; (V &times; M)</div>
+            <div class="text-xs text-muted mt-1">Solve for USD per XRP</div>
           </div>
         </div>
 
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="bg-ink border border-accent rounded-lg p-6 text-center">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">P &middot; Implied price</div>
+            <div id="bm-p" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
+            <div class="text-xs text-muted mt-2">USD per XRP</div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg p-6 text-center">
+            <div class="text-xs uppercase tracking-widest text-muted font-semibold mb-1">Current spot</div>
+            <div id="bm-spot" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
+            <div id="bm-spot-as-of" class="text-xs text-muted mt-2"></div>
+          </div>
+        </div>
+
+        <div class="mt-4 bg-ink border border-border rounded-lg p-4 text-sm text-center">
+          <span class="text-muted">Market premium over implied floor: </span><span id="bm-premium" class="font-mono font-medium text-white">-</span>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 mt-6">
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the variables</div>
           <p class="mb-3">
@@ -196,28 +196,42 @@
             <strong class="text-white">Q</strong> &middot; total dollar value of settlement you assume XRPL clears
             in the same year. Q and V must use the same time window, so we lock both to annual.
           </p>
-          <p class="mb-5">
+          <p>
             <strong class="text-white">P</strong> &middot; the price each XRP would need to be worth for M and V
             to clear Q over that year. The calculator solves for this.
           </p>
+        </div>
 
-          <div class="border-t border-border pt-4">
-            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
-            <p class="mb-3">
-              Why P comes out small: today's liquid XRP supply, at the assumed velocity, can clear the assumed
-              annual settlement using only a tiny fraction of XRP's current market value as utility. Pure
-              settlement-floor math does not justify today's spot price.
-            </p>
-            <p class="mb-3">
-              The gap between P and the market is everything else XRP is priced for: bets on future adoption,
-              fixed supply (XRP cap is 100B), and store-of-value behavior. None of that is in this math, by design.
-              Burst Math is settlement-only; it is a floor, not a forecast.
-            </p>
-            <p>
-              Increase Q (more annual settlement) or shrink M (more dormant, more escrowed) and P rises. The
-              Floor Matrix below projects what 24 months of either looks like.
-            </p>
-          </div>
+        <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
+          <p class="mb-3">
+            Why P comes out small: today's liquid XRP supply, at the assumed velocity, can clear the assumed
+            annual settlement using only a tiny fraction of XRP's current market value as utility. Pure
+            settlement-floor math does not justify today's spot price.
+          </p>
+          <p class="mb-4">
+            The gap between P and the market is everything else XRP is priced for: bets on future adoption,
+            fixed supply (XRP cap is 100B), and store-of-value behavior. None of that is in this math, by design.
+            Burst Math is settlement-only; it is a floor, not a forecast.
+          </p>
+          <p class="mb-2 text-white font-semibold">What would push P up:</p>
+          <ul class="space-y-2 mb-4">
+            <li>
+              <strong class="text-white">Q rises</strong> &middot; more real annual settlement on XRPL.
+              Plausible drivers: Ripple's ODL adds new cross-border corridors, treasuries adopt XRPL for B2B
+              settlement, agent-payable x402 flows scale, RLUSD volume grows.
+            </li>
+            <li>
+              <strong class="text-white">M shrinks</strong> &middot; less XRP actually circulating.
+              Plausible drivers: Ripple's monthly 1B unlock continues to be mostly relocked, the
+              SingleAssetVault amendment activates and locks supply away, AMM TVL grows, more long-term
+              holders go dormant.
+            </li>
+          </ul>
+          <p>
+            The Floor Matrix below lets you compound either dynamic forward 24 months and see what the
+            implied floor looks like under those assumptions.
+          </p>
         </div>
       </div>
     </div>
