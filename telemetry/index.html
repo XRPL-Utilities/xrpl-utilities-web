@@ -408,29 +408,30 @@ payload = requests.get(
           v_assumed: 6,
         },
       },
+      // Cached samples reflect Telemetry's 2026-04-28 live posture.
+      // The drain block tracks the live regional aggregation pattern (APAC
+      // dominates the labeled exchange footprint, MENA shows zeros because
+      // Rain/BitOasis fall below XRPSCAN's top-10000 cutoff). The amm block
+      // shows only XRP/RLUSD because v1's amm_info coverage is XRP/RLUSD-
+      // only; the multi-pair illustrative samples were removed to match
+      // what a live /scan actually returns. Vaults stays empty pending
+      // SingleAssetVault amendment activation.
       drain: {
-        generated_at: '2026-04-21T08:00:00Z',
+        generated_at: '2026-04-28T17:00:00Z',
         liquidity: [
-          { region: 'NA',   inflow_24h_xrp: 18_400_000, outflow_24h_xrp: 62_100_000, net_flow_24h_xrp: -43_700_000, top_venues: ['Coinbase', 'Kraken', 'Gemini'] },
-          { region: 'EU',   inflow_24h_xrp: 12_900_000, outflow_24h_xrp: 31_500_000, net_flow_24h_xrp: -18_600_000, top_venues: ['Bitstamp', 'Kraken', 'Bitfinex'] },
-          { region: 'MENA', inflow_24h_xrp:  7_200_000, outflow_24h_xrp:  9_800_000, net_flow_24h_xrp:  -2_600_000, top_venues: ['Rain', 'BitOasis'] },
-          { region: 'APAC', inflow_24h_xrp: 22_300_000, outflow_24h_xrp: 19_500_000, net_flow_24h_xrp:   2_800_000, top_venues: ['Bitbank', 'Bitget', 'Upbit'] },
+          { region: 'NA',   inflow_24h_xrp:  3_200_000, outflow_24h_xrp:  4_100_000, net_flow_24h_xrp:    900_000, top_venues: ['Coinbase', 'Kraken', 'Mercado Bitcoin'] },
+          { region: 'EU',   inflow_24h_xrp:  1_800_000, outflow_24h_xrp:  2_400_000, net_flow_24h_xrp:    600_000, top_venues: ['Bitstamp', 'Bitfinex', 'eToro'] },
+          { region: 'MENA', inflow_24h_xrp:          0, outflow_24h_xrp:          0, net_flow_24h_xrp:          0, top_venues: [] },
+          { region: 'APAC', inflow_24h_xrp: 32_400_000, outflow_24h_xrp: 70_700_000, net_flow_24h_xrp: 38_300_000, top_venues: ['Binance', 'UPbit', 'Bithumb'] },
         ],
       },
       amm: {
-        generated_at: '2026-04-27T08:00:00Z',
+        generated_at: '2026-04-28T17:00:00Z',
         amm: {
           pairs: [
-            { pair: 'XRP/RLUSD',  tvl_usd: 206_000_000, depth_1pct_xrp: 18_300_000, apr_pct:  9.4 },
-            { pair: 'XRP/USDC',   tvl_usd: 143_000_000, depth_1pct_xrp: 11_200_000, apr_pct:  8.2 },
-            { pair: 'XRP/USDT',   tvl_usd: 112_000_000, depth_1pct_xrp:  9_700_000, apr_pct:  7.1 },
-            { pair: 'XRP/SOLO',   tvl_usd:  30_500_000, depth_1pct_xrp:  2_100_000, apr_pct: 14.3 },
-            { pair: 'XRP/CSC',    tvl_usd:   9_000_000, depth_1pct_xrp:    640_000, apr_pct: 18.7 },
+            { pair: 'XRP/RLUSD',  tvl_usd: 5_413_319, depth_1pct_xrp: 9_832, apr_pct: 0.041, fee_pct: 0.223 },
           ],
-          vaults: [
-            { asset: 'XRP',   tvl_xrp_equivalent: 142_000_000, utilization_pct: 71, supply_apy_pct: 5.2 },
-            { asset: 'RLUSD', tvl_xrp_equivalent:  88_000_000, utilization_pct: 83, supply_apy_pct: 6.4 },
-          ],
+          vaults: [],
         },
       },
       floor: {
@@ -482,8 +483,12 @@ payload = requests.get(
     bmQ.value = DEFAULTS.Q;
     bmV.value = DEFAULTS.V;
     bmP.textContent = fmtXrp(SNAPSHOT.available_liquid_supply) + ' (as of ' + SNAPSHOT_AS_OF + ')';
-    bmSpot.textContent = fmtUsd4(SNAPSHOT.current_price_usd);
-    bmSpotAsOf.textContent = 'as of ' + SNAPSHOT_AS_OF;
+    // Render placeholder until /healthz fetch lands the live oracle value.
+    // The static SNAPSHOT.current_price_usd is a fallback for fetch failure
+    // only; we don't want it briefly flashing on every page load when the
+    // live spot has moved.
+    bmSpot.textContent = '—';
+    bmSpotAsOf.textContent = 'loading…';
 
     function currentM() {
       const q = Number(bmQ.value);
@@ -665,13 +670,25 @@ payload = requests.get(
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         const spot = d && d.checks && d.checks.xrp_price && d.checks.xrp_price.last_good_usd;
-        if (typeof spot !== 'number' || spot <= 0) return;
+        if (typeof spot !== 'number' || spot <= 0) {
+          // Fetch returned but no usable spot — fall back to the static
+          // SNAPSHOT (last-shipped) so the tile shows something rather than
+          // an em-dash forever.
+          bmSpot.textContent = fmtUsd4(SNAPSHOT.current_price_usd);
+          bmSpotAsOf.textContent = 'as of ' + SNAPSHOT_AS_OF + ' (live fetch unavailable)';
+          return;
+        }
         SNAPSHOT.current_price_usd = spot;
         bmSpot.textContent = fmtUsd4(spot);
         bmSpotAsOf.textContent = 'live spot, just now';
         recompute();
       })
-      .catch(() => {});
+      .catch(() => {
+        // Network error / CORS rejection. Fall back to the static SNAPSHOT
+        // so the tile is filled rather than blank.
+        bmSpot.textContent = fmtUsd4(SNAPSHOT.current_price_usd);
+        bmSpotAsOf.textContent = 'as of ' + SNAPSHOT_AS_OF + ' (live fetch failed)';
+      });
 
     // Development banner + payment-disabled handling. Reads /agents.json
     // for service_status and payments_enabled. Banner stays up while
