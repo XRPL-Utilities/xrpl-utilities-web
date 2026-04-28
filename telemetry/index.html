@@ -128,27 +128,24 @@
     <div class="max-w-5xl mx-auto px-6 py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Burst Math</h2>
       <h3 class="text-3xl font-bold mb-2">Implied price floor calculator</h3>
-      <p class="text-muted leading-relaxed mb-3 max-w-2xl">
-        The macroeconomic Equation of Exchange applied to XRPL: <strong class="text-white font-mono">M · V = P · Q</strong>.
-        Money supply times velocity equals price times quantity. We hold M (liquid XRP from the snapshot) fixed,
-        you choose Q and V, and we solve for P - the lowest USD-per-XRP price that lets the math balance.
-      </p>
-      <p class="text-muted leading-relaxed mb-8 max-w-2xl text-sm">
-        Plain English: if XRPL has to clear a given dollar volume of settlement, and each liquid XRP gets reused
-        some number of times in that period, what's the lowest price each XRP would need to be worth for the
-        supply to absorb the demand? Whatever the market trades above that floor is the speculative and
-        network-effect premium.
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
+        This is the macroeconomic Equation of Exchange (<strong class="text-white font-mono">M &middot; V = P &middot; Q</strong>)
+        applied to XRPL over a one-year window. Money supply times velocity equals price times throughput.
+        We anchor M (today's liquid XRP) from the snapshot, you choose Q and V for the year, and the math
+        solves for P: the lowest USD-per-XRP price that lets the supply absorb the assumed settlement demand.
+        The market trades higher than P because XRP is not priced only on settlement utility; speculation,
+        scarcity bets, and network-adoption expectations all add premium on top.
       </p>
 
       <div class="grid lg:grid-cols-3 gap-6">
         <div class="bg-panel border border-border rounded-2xl p-6 lg:col-span-2">
           <div class="grid sm:grid-cols-2 gap-4 mb-6">
             <label class="block">
-              <div class="text-xs text-muted uppercase tracking-wider mb-2">Q · Settlement throughput (USD)</div>
+              <div class="text-xs text-muted uppercase tracking-wider mb-2">Q &middot; Annual settlement throughput (USD)</div>
               <input id="bm-q" type="number" min="0" step="100000000" class="num-input" />
             </label>
             <label class="block">
-              <div class="text-xs text-muted uppercase tracking-wider mb-2">V · Velocity</div>
+              <div class="text-xs text-muted uppercase tracking-wider mb-2">V &middot; Annual velocity</div>
               <input id="bm-v" type="number" min="0.1" step="0.1" class="num-input" />
             </label>
           </div>
@@ -187,30 +184,38 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the variables</div>
           <p class="mb-3">
-            <strong class="text-white">M</strong> &middot; the money supply that can actually move. Total XRP minus dormant minus escrowed.
-            We anchor this from the live snapshot.
+            <strong class="text-white">M</strong> &middot; the liquid XRP supply that can actually move. Total XRP
+            minus dormant minus escrowed. Anchored from the live snapshot.
           </p>
           <p class="mb-3">
-            <strong class="text-white">V</strong> &middot; velocity. How many times each liquid XRP gets reused inside the period.
-            Higher V means each XRP works harder, so the implied floor is lower.
+            <strong class="text-white">V</strong> &middot; how many times each liquid XRP is reused for settlement
+            in a year. There is no canonical XRPL velocity, which is why this is a slider. Empirically it is low
+            today (most XRP is held, not transacted); a settlement-network future would push it higher.
           </p>
           <p class="mb-3">
-            <strong class="text-white">Q</strong> &middot; settlement throughput in USD. How much value you want the network to clear in the period.
+            <strong class="text-white">Q</strong> &middot; total dollar value of settlement you assume XRPL clears
+            in the same year. Q and V must use the same time window, so we lock both to annual.
           </p>
           <p class="mb-5">
-            <strong class="text-white">P</strong> &middot; the implied USD-per-XRP price the math says is needed for the other three to balance.
-            This is what the calculator solves for.
+            <strong class="text-white">P</strong> &middot; the price each XRP would need to be worth for M and V
+            to clear Q over that year. The calculator solves for this.
           </p>
 
           <div class="border-t border-border pt-4">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
             <p class="mb-3">
-              When today's M and V can already absorb far more Q than is being asked, the implied floor (P) is small.
-              The gap between P and current spot is the speculative and network-effect premium.
+              Why P comes out small: today's liquid XRP supply, at the assumed velocity, can clear the assumed
+              annual settlement using only a tiny fraction of XRP's current market value as utility. Pure
+              settlement-floor math does not justify today's spot price.
+            </p>
+            <p class="mb-3">
+              The gap between P and the market is everything else XRP is priced for: bets on future adoption,
+              fixed supply (XRP cap is 100B), and store-of-value behavior. None of that is in this math, by design.
+              Burst Math is settlement-only; it is a floor, not a forecast.
             </p>
             <p>
-              Tighten supply (more dormant, more escrowed shrinks M) or assume larger Q and the implied floor rises.
-              The Floor Matrix below projects what that looks like over 24 months.
+              Increase Q (more annual settlement) or shrink M (more dormant, more escrowed) and P rises. The
+              Floor Matrix below projects what 24 months of either looks like.
             </p>
           </div>
         </div>
