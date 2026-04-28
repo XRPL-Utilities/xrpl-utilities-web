@@ -651,6 +651,24 @@ payload = requests.get(
 
     recompute();
 
+    // Fetch the live XRP/USD spot from the Telemetry backend's /healthz so
+    // the "Current spot" tile and burst-math premium reflect reality on
+    // page load, without requiring the user to pay for a snapshot first.
+    // /healthz exposes the oracle's last-known-good price (free; CORS-allowed
+    // for the .com origin). Falls back silently to the static placeholder if
+    // the fetch fails.
+    fetch('https://telemetry.xrpl-utilities.io/healthz')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        const spot = d && d.checks && d.checks.xrp_price && d.checks.xrp_price.last_good_usd;
+        if (typeof spot !== 'number' || spot <= 0) return;
+        SNAPSHOT.current_price_usd = spot;
+        bmSpot.textContent = fmtUsd4(spot);
+        bmSpotAsOf.textContent = 'live spot, just now';
+        recompute();
+      })
+      .catch(() => {});
+
     // ---- Live snapshot button ----
     function reanchorFromPayload(payload) {
       if (!payload) return;
