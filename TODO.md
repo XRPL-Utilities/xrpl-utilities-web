@@ -9,6 +9,14 @@ Sibling tracking files: `XR-Sentinel/TODO.md`, `XR-Telemetry/TODO.md`.
 
 ---
 
+## Recently shipped (2026-04-28 session)
+
+- [x] **Mobile menu fixed on `/telemetry`** (commit `9818f96`). Five in-page anchors collapsed into a `<details>` "Sections ▾" dropdown on mobile (`sm:hidden`); desktop unchanged. Native HTML, vanilla JS, no framework. Auto-closes on link click.
+- [x] **Live XRP/USD spot fetched on page load** (commit `a88d604`). The `/telemetry` "Current spot" tile now reads from the Telemetry backend's `/healthz` (free, CORS-allowed for .com) instead of being stuck on the static $0.50 placeholder. Burst Math premium ratio is now meaningful pre-payment.
+- [x] **Data-freshness banner** (commit `f6ae572` → simplified `8303cac`). Yellow ribbon at top of `/telemetry` reads `agents.json` `service_status` and surfaces dev-mode disclosure. Single sentence, no field enumeration.
+- [x] **"Run live snapshot" button auto-hides** when `agents.json` reports `payments_enabled: false`. Replaced with a notice card pointing to the cached samples.
+- [x] **`hodl_wave_pct` renderer fix** (commit `181b2c4`). `fmtPctRaw` instead of `fmtPct` so the 0–100 backend convention renders correctly. Sample data updated 0.642 → 64.2.
+
 ## Security
 
 - [ ] **`_headers` Cloudflare config applied** — verify Cloudflare actually serves the CSP-lite, no-frame, no-referrer headers from `_headers`. Check via `curl -sI https://xrpl-utilities.com/ | grep -iE 'frame|content-type-options|referrer|strict-transport'`.
@@ -28,12 +36,15 @@ Sibling tracking files: `XR-Sentinel/TODO.md`, `XR-Telemetry/TODO.md`.
   - [ ] Bulk scan: paste 3-5 r-addresses, complete payment, download CSV, open in Excel and confirm leading-`=`/`+`/`-`/`@` cells render as text (not formulas).
   - [ ] Contact form: submit a real test message after Turnstile sitekey is Invisible; confirm the user sees the success state and the message lands in web3forms.
   - [ ] Single scan: walk the full payment flow on mobile, confirm QR renders, document.title updates during scan, no stuck "Scanning..." title.
-  - [ ] **Telemetry single snapshot:** walk the `/telemetry` "Run live snapshot" flow on mobile, confirm QR renders, status polling updates, results render with all four cards (supply, liquidity, AMM, utility floor).
-  - [ ] **Telemetry sample buttons** on `/telemetry` render the four cached samples without errors and the `hodl_wave_pct` shows as a 0-100 percentage (not 0-1) since the renderer fix in commit `181b2c4`.
+  - [ ] **Telemetry single snapshot** *(re-verify when Telemetry payments come back online; currently the button is auto-hidden by the `agents.json payments_enabled: false` flag)*: walk the `/telemetry` "Run live snapshot" flow on mobile, confirm QR renders, status polling updates, results render with all four cards (supply, liquidity, AMM, utility floor).
+  - [x] ~~Telemetry sample buttons render with `hodl_wave_pct` as 0-100~~ — verified after commit `181b2c4`.
+  - [ ] **Telemetry data-freshness banner** appears at top of `/telemetry` on page load *(automatically disappears when backend flips `service_status: "live"`)*.
+  - [ ] **Telemetry "Run live snapshot" button is HIDDEN** while `agents.json payments_enabled: false`. Should reappear automatically once the backend re-enables payments.
 
 ## Fix suggestions (known issues)
 
-- [ ] **Mobile menu is overcrowded on `/telemetry`.** Header has 8 nav items (Home, Samples, Burst Math, Floor Matrix, Try it, How it works, XR-Sentinel, Terms). At narrow widths the wrap-and-stack falls apart. **Priority for next session.** Likely fix: collapse the cross-section anchors (Samples / Burst Math / Floor Matrix / Try it / How it works) into a hamburger or "On this page" dropdown on mobile, keep only top-level (Home / XR-Sentinel / Terms) as always-visible.
+- [x] ~~Mobile menu overcrowded on `/telemetry`~~ — fixed in commit `9818f96` (Sections dropdown on mobile, desktop unchanged).
+- [ ] **Sentinel mobile menu still has 6 items** (Home / Try it / How it works / XR-Telemetry / Terms / Contact). Less severe than Telemetry's 7+ but the same `<details>` collapse pattern would clean it up if you want consistency across the portfolio.
 - [ ] **Sibling repos** section in `README.md` mentions only `XR-Sentinel`. Add `XR-Telemetry` line.
 - [ ] Drop unused `compatibility_flags: ["nodejs_compat"]` from `wrangler.jsonc` (pure static site, no Node runtime).
 - [ ] Decide long-term: keep `wrangler.jsonc` (commit to a Workers migration) or delete it (Pages-only). Currently mitigated by `.assetsignore`.
