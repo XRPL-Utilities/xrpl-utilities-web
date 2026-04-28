@@ -128,16 +128,23 @@
     <div class="max-w-5xl mx-auto px-6 py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Burst Math</h2>
       <h3 class="text-3xl font-bold mb-2">Implied price floor calculator</h3>
-      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        Plug in an institutional settlement volume and an assumed velocity. The available liquid supply
-        comes from the snapshot below. The result is the implied USD-per-XRP needed to clear that volume.
+      <p class="text-muted leading-relaxed mb-3 max-w-2xl">
+        The macroeconomic Equation of Exchange applied to XRPL: <strong class="text-white font-mono">M · V = P · Q</strong>.
+        Money supply times velocity equals price times quantity. We hold M (liquid XRP from the snapshot) fixed,
+        you choose Q and V, and we solve for P - the lowest USD-per-XRP price that lets the math balance.
+      </p>
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl text-sm">
+        Plain English: if XRPL has to clear a given dollar volume of settlement, and each liquid XRP gets reused
+        some number of times in that period, what's the lowest price each XRP would need to be worth for the
+        supply to absorb the demand? Whatever the market trades above that floor is the speculative and
+        network-effect premium.
       </p>
 
       <div class="grid lg:grid-cols-3 gap-6">
         <div class="bg-panel border border-border rounded-2xl p-6 lg:col-span-2">
           <div class="grid sm:grid-cols-2 gap-4 mb-6">
             <label class="block">
-              <div class="text-xs text-muted uppercase tracking-wider mb-2">Q · Institutional volume (USD)</div>
+              <div class="text-xs text-muted uppercase tracking-wider mb-2">Q · Settlement throughput (USD)</div>
               <input id="bm-q" type="number" min="0" step="100000000" class="num-input" />
             </label>
             <label class="block">
@@ -148,21 +155,21 @@
 
           <div class="grid sm:grid-cols-2 gap-4 mb-6 text-sm">
             <div class="bg-ink border border-border rounded-lg p-4">
-              <div class="text-xs text-muted uppercase tracking-wider mb-1">P · Available liquid supply</div>
-              <div id="bm-p" class="font-mono font-medium"></div>
-              <div class="text-xs text-muted mt-1">total − dormant − escrowed</div>
+              <div class="text-xs text-muted uppercase tracking-wider mb-1">M &middot; Available liquid supply (XRP)</div>
+              <div id="bm-m" class="font-mono font-medium"></div>
+              <div class="text-xs text-muted mt-1">total &minus; dormant &minus; escrowed</div>
             </div>
             <div class="bg-ink border border-border rounded-lg p-4">
               <div class="text-xs text-muted uppercase tracking-wider mb-1">Formula</div>
-              <div class="font-mono text-sm">M = Q ÷ (V × P)</div>
-              <div class="text-xs text-muted mt-1">Implied USD per XRP</div>
+              <div class="font-mono text-sm">P = Q &divide; (V &times; M)</div>
+              <div class="text-xs text-muted mt-1">Solve for USD per XRP</div>
             </div>
           </div>
 
           <div class="grid sm:grid-cols-2 gap-4">
             <div class="bg-ink border border-accent rounded-lg p-6 text-center">
-              <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">M · Implied price</div>
-              <div id="bm-m" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
+              <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">P &middot; Implied price</div>
+              <div id="bm-p" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
               <div class="text-xs text-muted mt-2">USD per XRP</div>
             </div>
             <div class="bg-ink border border-border rounded-lg p-6 text-center">
@@ -178,18 +185,34 @@
         </div>
 
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
-          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading</div>
-          <p class="mb-4">
-            <strong class="text-white">Q</strong> is the dollar value of XRP-mediated settlement you want the network to clear in the period.
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the variables</div>
+          <p class="mb-3">
+            <strong class="text-white">M</strong> &middot; the money supply that can actually move. Total XRP minus dormant minus escrowed.
+            We anchor this from the live snapshot.
           </p>
-          <p class="mb-4">
-            <strong class="text-white">V</strong> is the average number of times each liquid XRP is reused inside that period.
-            A higher V means each XRP works harder; the implied floor is lower.
+          <p class="mb-3">
+            <strong class="text-white">V</strong> &middot; velocity. How many times each liquid XRP gets reused inside the period.
+            Higher V means each XRP works harder, so the implied floor is lower.
           </p>
-          <p>
-            <strong class="text-white">P</strong> is the supply that can actually move - total minus dormant minus escrowed.
-            Constrict P (more escrowed, more dormant) and the implied floor rises for the same Q and V.
+          <p class="mb-3">
+            <strong class="text-white">Q</strong> &middot; settlement throughput in USD. How much value you want the network to clear in the period.
           </p>
+          <p class="mb-5">
+            <strong class="text-white">P</strong> &middot; the implied USD-per-XRP price the math says is needed for the other three to balance.
+            This is what the calculator solves for.
+          </p>
+
+          <div class="border-t border-border pt-4">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
+            <p class="mb-3">
+              When today's M and V can already absorb far more Q than is being asked, the implied floor (P) is small.
+              The gap between P and current spot is the speculative and network-effect premium.
+            </p>
+            <p>
+              Tighten supply (more dormant, more escrowed shrinks M) or assume larger Q and the implied floor rises.
+              The Floor Matrix below projects what that looks like over 24 months.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -200,7 +223,7 @@
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Predictive Floor Matrix</h2>
       <h3 class="text-3xl font-bold mb-2">24-month projection</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        Using <strong class="text-white">M₀</strong> from the Burst Math calculator above as the starting point, project
+        Using <strong class="text-white">P₀</strong> from the Burst Math calculator above as the starting point, project
         forward under monthly supply-constriction and volume-growth assumptions. The shaded band is a ±15% uncertainty envelope.
       </p>
 
@@ -211,7 +234,7 @@
           </div>
           <div id="fm-warning" class="hidden mt-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed"></div>
           <div class="text-xs text-muted mt-3 text-center">
-            Months from now · baseline = M₀ × ((1 + growth) ÷ (1 − constriction))<sup>i</sup>, ±15% band, dashed line = current spot
+            Months from now · baseline = P₀ × ((1 + growth) ÷ (1 − constriction))<sup>i</sup>, ±15% band, dashed line = current spot
           </div>
         </div>
 
@@ -235,14 +258,14 @@
           </div>
 
           <div class="bg-ink border border-border rounded-lg p-4 text-sm">
-            <div class="text-xs text-muted uppercase tracking-wider mb-1">M₀ (linked)</div>
-            <div id="fm-m0" class="font-mono font-medium">-</div>
+            <div class="text-xs text-muted uppercase tracking-wider mb-1">P₀ (linked)</div>
+            <div id="fm-p0" class="font-mono font-medium">-</div>
             <div class="text-xs text-muted mt-2">Tweak Q or V above to re-anchor.</div>
           </div>
 
           <div class="bg-ink border border-border rounded-lg p-4 text-sm">
-            <div class="text-xs text-muted uppercase tracking-wider mb-1">M at month 24</div>
-            <div id="fm-m24" class="font-mono font-medium">-</div>
+            <div class="text-xs text-muted uppercase tracking-wider mb-1">P at month 24</div>
+            <div id="fm-p24" class="font-mono font-medium">-</div>
           </div>
         </div>
       </div>
@@ -481,15 +504,15 @@ payload = requests.get(
 
     const bmQ = document.getElementById('bm-q');
     const bmV = document.getElementById('bm-v');
-    const bmP = document.getElementById('bm-p');
-    const bmM = document.getElementById('bm-m');
+    const bmM = document.getElementById('bm-m');           // displays M (liquid supply, XRP)
+    const bmP = document.getElementById('bm-p');           // displays P (implied price, USD/XRP)
     const bmSpot = document.getElementById('bm-spot');
     const bmSpotAsOf = document.getElementById('bm-spot-as-of');
     const bmPremium = document.getElementById('bm-premium');
 
     bmQ.value = DEFAULTS.Q;
     bmV.value = DEFAULTS.V;
-    bmP.textContent = fmtXrp(SNAPSHOT.available_liquid_supply) + ' (as of ' + SNAPSHOT_AS_OF + ')';
+    bmM.textContent = fmtXrp(SNAPSHOT.available_liquid_supply) + ' (as of ' + SNAPSHOT_AS_OF + ')';
     // Render placeholder until /healthz fetch lands the live oracle value.
     // The static SNAPSHOT.current_price_usd is a fallback for fetch failure
     // only; we don't want it briefly flashing on every page load when the
@@ -497,21 +520,22 @@ payload = requests.get(
     bmSpot.textContent = '-';
     bmSpotAsOf.textContent = 'loading…';
 
-    function currentM() {
+    // P = Q / (V × M). Solve standard Equation of Exchange for price.
+    function currentP() {
       const q = Number(bmQ.value);
       const v = Number(bmV.value);
-      const p = SNAPSHOT.available_liquid_supply;
-      if (!isFinite(q) || !isFinite(v) || v <= 0 || p <= 0) return null;
-      return q / (v * p);
+      const m = SNAPSHOT.available_liquid_supply;
+      if (!isFinite(q) || !isFinite(v) || v <= 0 || m <= 0) return null;
+      return q / (v * m);
     }
 
     function recompute() {
-      const m = currentM();
-      bmM.textContent = m == null ? '-' : fmtUsd4(m);
-      if (m == null || m <= 0) {
+      const p = currentP();
+      bmP.textContent = p == null ? '-' : fmtUsd4(p);
+      if (p == null || p <= 0) {
         bmPremium.textContent = '-';
       } else {
-        const premium = SNAPSHOT.current_price_usd / m;
+        const premium = SNAPSHOT.current_price_usd / p;
         bmPremium.textContent = premium.toFixed(2) + '×';
       }
       updateFloorChart();
@@ -525,8 +549,8 @@ payload = requests.get(
     const fmGrowth = document.getElementById('fm-growth');
     const fmConstrictionVal = document.getElementById('fm-constriction-val');
     const fmGrowthVal = document.getElementById('fm-growth-val');
-    const fmM0 = document.getElementById('fm-m0');
-    const fmM24 = document.getElementById('fm-m24');
+    const fmP0 = document.getElementById('fm-p0');
+    const fmP24 = document.getElementById('fm-p24');
 
     fmConstriction.value = 1.0;
     fmGrowth.value = 3.0;
@@ -582,13 +606,13 @@ payload = requests.get(
       },
     });
 
-    function projectBaseline(m0, growthPct, constrictionPct) {
+    function projectBaseline(p0, growthPct, constrictionPct) {
       const g = growthPct / 100;
       const c = constrictionPct / 100;
       if (c >= 1) return Array(HORIZON + 1).fill(NaN);
       const factor = (1 + g) / (1 - c);
       const out = [];
-      for (let i = 0; i <= HORIZON; i++) out.push(m0 * Math.pow(factor, i));
+      for (let i = 0; i <= HORIZON; i++) out.push(p0 * Math.pow(factor, i));
       return out;
     }
 
@@ -604,7 +628,7 @@ payload = requests.get(
     }
 
     function updateFloorChart() {
-      const m0 = currentM();
+      const p0 = currentP();
       const cPct = Number(fmConstriction.value);
       const gPct = Number(fmGrowth.value);
       fmConstrictionVal.textContent = cPct.toFixed(1) + '%';
@@ -612,9 +636,9 @@ payload = requests.get(
       // Keep the spot reference line synced to current SNAPSHOT each tick so
       // re-anchoring from a live payload propagates without bespoke wiring.
       chart.data.datasets[3].data = Array(HORIZON + 1).fill(SNAPSHOT.current_price_usd);
-      if (m0 == null || m0 <= 0) {
-        fmM0.textContent = '-';
-        fmM24.textContent = '-';
+      if (p0 == null || p0 <= 0) {
+        fmP0.textContent = '-';
+        fmP24.textContent = '-';
         chart.data.datasets[0].data = [];
         chart.data.datasets[1].data = [];
         chart.data.datasets[2].data = [];
@@ -622,26 +646,26 @@ payload = requests.get(
         showWarning('Enter a positive Q and V in the Burst Math calculator above to anchor the projection.');
         return;
       }
-      fmM0.textContent = fmtUsd4(m0);
-      const baseline = projectBaseline(m0, gPct, cPct);
+      fmP0.textContent = fmtUsd4(p0);
+      const baseline = projectBaseline(p0, gPct, cPct);
       const upper = baseline.map(v => v * (1 + BAND));
       const lower = baseline.map(v => v * (1 - BAND));
       chart.data.datasets[0].data = upper;
       chart.data.datasets[1].data = lower;
       chart.data.datasets[2].data = baseline;
       chart.update('none');
-      const m24 = baseline[HORIZON];
-      fmM24.textContent = isFinite(m24) ? fmtUsd4(m24) : '-';
+      const p24 = baseline[HORIZON];
+      fmP24.textContent = isFinite(p24) ? fmtUsd4(p24) : '-';
 
       // Guard rail: warn when inputs imply implausible terminal values.
       let warning = null;
       if (cPct >= 100) {
         warning = 'Constriction at or above 100% has no physical interpretation - supply cannot shrink to zero in one month.';
-      } else if (!isFinite(m24)) {
+      } else if (!isFinite(p24)) {
         warning = 'Projection is undefined for these inputs.';
       } else {
         const supplyRemaining = Math.pow(1 - cPct / 100, HORIZON);
-        const ratio = m24 / m0;
+        const ratio = p24 / p0;
         if (ratio > 10) {
           warning = `These inputs imply a ${ratio.toFixed(1)}× price by month 24. That is an extreme scenario - the model assumes V is constant and ignores velocity feedback, regulatory shocks, and AMM depth.`;
         } else if (ratio > 5) {
@@ -742,7 +766,7 @@ payload = requests.get(
       }
       if (typeof uf.available_liquid_supply_xrp === 'number' && uf.available_liquid_supply_xrp > 0) {
         SNAPSHOT.available_liquid_supply = uf.available_liquid_supply_xrp;
-        bmP.textContent = fmtXrp(uf.available_liquid_supply_xrp) + ' (live)';
+        bmM.textContent = fmtXrp(uf.available_liquid_supply_xrp) + ' (live)';
         touched = true;
       }
       if (payload.generated_at) {
