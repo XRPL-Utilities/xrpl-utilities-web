@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Status | XR-Sentinel</title>
-  <meta name="description" content="Live operational status of XR-Sentinel and its upstream dependencies." />
-  <meta property="og:title" content="XR-Sentinel | System Status" />
-  <meta property="og:description" content="Live operational status of XR-Sentinel: QuickNode XRPL RPC, t54 x402 facilitator, and the XRP price feed." />
+  <title>Status | XRPL-Utilities</title>
+  <meta name="description" content="Live operational status of XR-Sentinel and XR-Telemetry plus their upstream dependencies." />
+  <meta property="og:title" content="XRPL-Utilities | System Status" />
+  <meta property="og:description" content="Live operational status of XR-Sentinel and XR-Telemetry: QuickNode XRPL RPC, t54 x402 facilitator, the XRP price feed, and per-product slow-task caches." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/status/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -38,6 +38,7 @@
       <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-muted whitespace-nowrap">
         <a href="/" class="hover:text-white transition">Home</a>
         <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+        <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
         <a href="/terms/" class="hover:text-white transition">Terms</a>
         <a href="/contact/" class="hover:text-white transition">Contact</a>
       </nav>
@@ -47,15 +48,24 @@
   <section>
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-12">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">System status</h1>
-      <p class="text-muted">Live operational status of XR-Sentinel. Updates every 30 seconds.</p>
+      <p class="text-muted">Live operational status of XR-Sentinel and XR-Telemetry. Updates every 30 seconds.</p>
     </div>
   </section>
 
   <section>
-    <div class="max-w-3xl mx-auto px-6 pb-24">
-      <div id="overall" class="bg-panel border border-border rounded-2xl p-8 mb-6 text-muted text-center">Checking…</div>
-      <div id="checks" class="space-y-4"></div>
-      <p id="last-checked" class="text-xs text-muted text-center mt-8"></p>
+    <div class="max-w-3xl mx-auto px-6 pb-24 space-y-10">
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Sentinel</h2>
+        <div id="overall-sentinel" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-muted text-center">Checking…</div>
+        <div id="checks-sentinel" class="space-y-4"></div>
+        <p id="last-checked-sentinel" class="text-xs text-muted text-center mt-4"></p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Telemetry</h2>
+        <div id="overall-telemetry" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-muted text-center">Checking…</div>
+        <div id="checks-telemetry" class="space-y-4"></div>
+        <p id="last-checked-telemetry" class="text-xs text-muted text-center mt-4"></p>
+      </div>
     </div>
   </section>
 
@@ -71,10 +81,16 @@
   </footer>
 
   <script>
+    // Subsystem labels are best-effort; unknown keys render with the raw
+    // key as the name so we don't drop fields when /healthz adds new
+    // subsystems faster than this label dict is updated.
     const SUBSYSTEM_LABELS = {
       quicknode:  { name: "QuickNode XRPL RPC",       desc: "Ledger data source" },
       facilitator:{ name: "t54 x402 Facilitator",     desc: "Payment verify + settle" },
       xrp_price:  { name: "CoinGecko XRP/USD price",  desc: "Drives dynamic XRP pricing per scan" },
+      slow_tasks: { name: "Slow-task cache",          desc: "Background metric refreshers (Telemetry)" },
+      db_path:    { name: "SQLite cache path",        desc: "Persistent metric cache (Telemetry)" },
+      snapshot_age_seconds: { name: "Snapshot age",   desc: "Seconds since last full payload rebuild (Telemetry)" },
     };
 
     function el(tag, cls, text) {
@@ -89,18 +105,18 @@
       return el("span", "h-3 w-3 rounded-full inline-block " + (colors[state] || colors.unknown));
     }
 
-    function renderOverall(status) {
-      const t = document.getElementById("overall");
+    function renderOverall(targetId, status, productName) {
+      const t = document.getElementById(targetId);
       t.innerHTML = "";
       let label, color, sub;
       if (status === "active") {
-        label = "All systems operational"; color = "text-good"; sub = "XR-Sentinel is serving live traffic.";
+        label = "All systems operational"; color = "text-good"; sub = productName + " is serving live traffic.";
       } else if (status === "degraded") {
-        label = "Partially degraded"; color = "text-warn"; sub = "One or more upstream subsystems are reporting issues. Scans may fail.";
+        label = "Partially degraded"; color = "text-warn"; sub = "One or more upstream subsystems are reporting issues. Requests may fail.";
       } else if (status === "down") {
         label = "Major outage"; color = "text-bad"; sub = "Critical subsystems are unavailable.";
       } else {
-        label = "Status unknown"; color = "text-muted"; sub = "Could not reach the health endpoint.";
+        label = "Status unknown"; color = "text-muted"; sub = "Could not reach the " + productName + " health endpoint.";
       }
       t.appendChild(el("div", "text-3xl font-bold mb-2 " + color, label));
       t.appendChild(el("div", "text-muted", sub));
@@ -129,20 +145,33 @@
       return card;
     }
 
-    async function refresh() {
+    async function refreshOne(url, overallId, checksId, lastCheckedId, productName) {
       try {
-        const res = await fetch("https://sentinel.xrpl-utilities.io/healthz");
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
-        renderOverall(data.status);
-        const list = document.getElementById("checks");
+        renderOverall(overallId, data.status, productName);
+        const list = document.getElementById(checksId);
         list.innerHTML = "";
-        Object.entries(data.checks || {}).forEach(([k, v]) => list.appendChild(renderCheck(k, v)));
-        document.getElementById("last-checked").textContent = "Last checked " + new Date().toLocaleTimeString();
+        Object.entries(data.checks || {}).forEach(([k, v]) => {
+          // Skip non-subsystem scalar/list values that aren't pingable
+          // checks (snapshot_age_seconds, db_path, slow_tasks list).
+          if (k === "snapshot_age_seconds" || k === "db_path" || k === "slow_tasks") return;
+          list.appendChild(renderCheck(k, v));
+        });
+        document.getElementById(lastCheckedId).textContent = "Last checked " + new Date().toLocaleTimeString();
       } catch (e) {
-        renderOverall("unknown");
-        document.getElementById("checks").innerHTML = "";
-        document.getElementById("last-checked").textContent = "Last checked " + new Date().toLocaleTimeString() + " (fetch failed)";
+        renderOverall(overallId, "unknown", productName);
+        document.getElementById(checksId).innerHTML = "";
+        document.getElementById(lastCheckedId).textContent = "Last checked " + new Date().toLocaleTimeString() + " (fetch failed)";
       }
+    }
+
+    function refresh() {
+      refreshOne("https://sentinel.xrpl-utilities.io/healthz",
+                 "overall-sentinel", "checks-sentinel", "last-checked-sentinel", "XR-Sentinel");
+      refreshOne("https://telemetry.xrpl-utilities.io/healthz",
+                 "overall-telemetry", "checks-telemetry", "last-checked-telemetry", "XR-Telemetry");
     }
 
     refresh();

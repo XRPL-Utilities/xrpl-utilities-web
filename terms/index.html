@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Terms | XR-Sentinel</title>
-  <meta name="description" content="Terms of service, fee schedule, and refund policy for XR-Sentinel." />
-  <meta property="og:title" content="XR-Sentinel | Terms of Service" />
-  <meta property="og:description" content="Fee schedule, refund policy, payment protocol, data handling, and compliance posture for XR-Sentinel." />
+  <title>Terms | XRPL-Utilities</title>
+  <meta name="description" content="Terms of service, fee schedule, refund policy, and compliance posture for XR-Sentinel and XR-Telemetry." />
+  <meta property="og:title" content="XRPL-Utilities | Terms of Service" />
+  <meta property="og:description" content="Fee schedule, refund policy, payment protocol, data handling, and compliance posture across XR-Sentinel and XR-Telemetry." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/terms/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -38,6 +38,7 @@
       <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-muted whitespace-nowrap">
         <a href="/" class="hover:text-white transition">Home</a>
         <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+        <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
         <a href="/contact/" class="hover:text-white transition">Contact</a>
       </nav>
     </div>
@@ -46,14 +47,94 @@
   <section>
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Terms of Service</h1>
-      <p class="text-muted">XR-Sentinel · the live, canonical terms of service.</p>
+      <p class="text-muted">Static summary plus the live, canonical terms from each product's <code class="font-mono text-xs bg-panel border border-border rounded px-1.5 py-0.5">/tos</code> endpoint.</p>
     </div>
   </section>
 
   <section>
-    <div class="max-w-3xl mx-auto px-6 pb-24">
-      <div id="content" class="space-y-10">
-        <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading terms from the live service…</div>
+    <div class="max-w-3xl mx-auto px-6 pb-12">
+      <div class="bg-panel border border-border rounded-2xl p-8 space-y-5">
+        <div>
+          <h2 class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Static summary (always available)</h2>
+          <h3 class="text-xl font-bold mb-2">Pricing and finality</h3>
+          <p class="text-white leading-relaxed">
+            Each XR-Sentinel scan and each XR-Telemetry snapshot is priced at
+            <strong class="text-white">$0.10 USD</strong>, payable in XRP. Drops are computed at request time
+            from the live XRP/USD spot, so the advertised USD amount stays accurate as the spot moves.
+            Successful payloads are paid in full; payment is final on settlement. If a request fails before
+            settlement (verify-then-work-then-settle is enforced on both services), no charge occurs and the
+            presigned transaction is never broadcast. The 30-minute payment freshness window applies to web
+            invoices; the 600-second window applies to x402.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold mb-2">What we provide</h3>
+          <p class="text-white leading-relaxed">
+            XR-Sentinel returns behavioral pattern classifications for XRPL accounts. XR-Telemetry returns
+            an XRPL macro telemetry snapshot. Both are best-effort, on-chain-derived data products.
+            Sanity bounds and per-field provenance are declared in each service's
+            <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/agents.json</code>
+            and
+            <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/schema</code>.
+            A field's value reads from a sanity-bounded cache or the appropriate fallback when the cache is
+            stale; the cache state is exposed at
+            <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/healthz</code>.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold mb-2">What we do not provide</h3>
+          <p class="text-white leading-relaxed">
+            Neither service is a risk score, AML or sanctions determination, compliance product, investment
+            recommendation, trading signal, price prediction, or financial advice. The Burst Math output in
+            XR-Telemetry is a sensitivity tool that shows what the math implies under explicit operator
+            assumptions; it is not a forecast. Always do your own research before transacting.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold mb-2">User responsibility and jurisdiction</h3>
+          <p class="text-white leading-relaxed">
+            XRPL-Utilities provides on-chain data classification and technical ledger analysis. Users are
+            responsible for ensuring their use of these tools complies with local digital-asset regulations,
+            including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
+            <strong class="text-white">This service is offered void where prohibited; use is not authorized
+            in California or Colorado.</strong>
+          </p>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold mb-2">Liability disclaimer</h3>
+          <p class="text-white leading-relaxed">
+            Services are provided <em>as is</em>, without warranty of any kind, express or implied.
+            XRPL-Utilities is not liable for direct, indirect, consequential, or incidental damages arising
+            from use, misuse, downtime, misclassification, data inaccuracy, sanity-bound rejections, oracle
+            staleness, third-party dependency degradation, or any other failure mode. Third-party
+            dependencies (QuickNode, the t54 facilitator, XRPSCAN, CoinGecko, the AI provider for XR-Sentinel)
+            may degrade or change availability without notice.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pb-24 space-y-10">
+      <div>
+        <h2 class="text-xs uppercase tracking-widest text-muted font-semibold mb-3">Live terms from the canonical endpoints</h2>
+        <p class="text-sm text-muted">Each product's full, machine-readable terms live at its own
+          <code class="font-mono text-xs bg-panel border border-border rounded px-1.5 py-0.5">/tos</code>.
+          The blocks below render those endpoints; the static summary above is the load-bearing posture if
+          either endpoint is unreachable.</p>
+      </div>
+      <div>
+        <h3 class="text-2xl font-bold mb-4">XR-Sentinel</h3>
+        <div id="content-sentinel" class="space-y-6">
+          <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading XR-Sentinel terms…</div>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-2xl font-bold mb-4">XR-Telemetry</h3>
+        <div id="content-telemetry" class="space-y-6">
+          <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading XR-Telemetry terms…</div>
+        </div>
       </div>
     </div>
   </section>
@@ -62,7 +143,7 @@
     <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
       <div>XRPL-Utilities &copy; 2026</div>
       <div class="flex items-center gap-6">
-        <a href="/" class="hover:text-white transition">← Home</a>
+        <a href="/" class="hover:text-white transition">&larr; Home</a>
         <a href="/manifest/" class="hover:text-white transition">Manifest</a>
         <a href="/status/" class="hover:text-white transition">Status</a>
       </div>
@@ -70,23 +151,6 @@
   </footer>
 
   <script>
-    const SECTIONS = [
-      { key: "service",            label: "Service" },
-      { key: "fee",                label: "Fee" },
-      { key: "fee_recipient",      label: "Fee recipient",       mono: true },
-      { key: "fee_breakdown",      label: "Fee breakdown" },
-      { key: "refund_policy",      label: "Refund policy" },
-      { key: "payment_protocol",   label: "Payment protocol" },
-      { key: "getting_started",    label: "Getting started" },
-      { key: "output",             label: "Output" },
-      { key: "cache_policy",       label: "Cache policy" },
-      { key: "pricing_volatility", label: "Pricing volatility" },
-      { key: "data_handling",      label: "Data handling" },
-      { key: "availability",       label: "Availability" },
-      { key: "user_responsibility",label: "User responsibility & compliance" },
-      { key: "disclaimer",         label: "Disclaimer" },
-    ];
-
     function el(tag, cls, text) {
       const e = document.createElement(tag);
       if (cls) e.className = cls;
@@ -101,10 +165,7 @@
       }
       if (Array.isArray(v)) {
         const ul = el("ul", "space-y-2 list-disc list-inside text-white");
-        v.forEach(item => {
-          const li = el("li", "leading-relaxed", typeof item === "string" ? item : JSON.stringify(item));
-          ul.appendChild(li);
-        });
+        v.forEach(item => ul.appendChild(el("li", "leading-relaxed", typeof item === "string" ? item : JSON.stringify(item))));
         return ul;
       }
       if (typeof v === "object") {
@@ -112,13 +173,9 @@
         Object.entries(v).forEach(([k, val]) => {
           dl.appendChild(el("dt", "text-xs uppercase tracking-wider text-muted sm:text-right", k));
           const dd = el("dd", "sm:col-span-2 text-white text-sm break-all");
-          if (val == null) {
-            dd.textContent = "-";
-          } else if (typeof val === "object") {
-            dd.appendChild(renderValue(val));
-          } else {
-            dd.textContent = String(val);
-          }
+          if (val == null) dd.textContent = "-";
+          else if (typeof val === "object") dd.appendChild(renderValue(val));
+          else dd.textContent = String(val);
           dl.appendChild(dd);
         });
         return dl;
@@ -128,7 +185,7 @@
 
     function renderSection(label, value, monoString) {
       const wrapper = el("section", "bg-panel border border-border rounded-2xl p-8");
-      wrapper.appendChild(el("h2", "text-xs uppercase tracking-widest text-accent font-semibold mb-3", label));
+      wrapper.appendChild(el("h4", "text-xs uppercase tracking-widest text-accent font-semibold mb-3", label));
       if (monoString && typeof value === "string") {
         wrapper.appendChild(el("p", "font-mono text-sm break-all text-white", value));
       } else {
@@ -137,26 +194,40 @@
       return wrapper;
     }
 
-    async function load() {
-      const target = document.getElementById("content");
+    async function loadTos(url, targetId, productName) {
+      const target = document.getElementById(targetId);
       try {
-        const res = await fetch("https://sentinel.xrpl-utilities.io/tos");
+        const res = await fetch(url, { headers: { "Accept": "application/json,text/markdown" } });
         if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        target.innerHTML = "";
-        SECTIONS.forEach(({ key, label, mono }) => {
-          if (!(key in data)) return;
-          target.appendChild(renderSection(label, data[key], mono));
-        });
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          const data = await res.json();
+          target.innerHTML = "";
+          Object.entries(data).forEach(([key, value]) => {
+            const label = key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+            const mono = key.includes("recipient");
+            target.appendChild(renderSection(label, value, mono));
+          });
+        } else {
+          const text = await res.text();
+          target.innerHTML = "";
+          const wrap = el("section", "bg-panel border border-border rounded-2xl p-8");
+          const pre = el("pre", "whitespace-pre-wrap font-sans leading-relaxed text-white text-sm");
+          pre.textContent = text;
+          wrap.appendChild(pre);
+          target.appendChild(wrap);
+        }
       } catch (e) {
         target.innerHTML = "";
         const err = el("div", "bg-panel border border-border rounded-2xl p-8");
-        err.appendChild(el("h2", "text-xl font-bold mb-3 text-red-400", "Couldn't load terms"));
-        err.appendChild(el("p", "text-muted leading-relaxed", "The marketing site couldn't reach the live /tos endpoint. View it directly at https://sentinel.xrpl-utilities.io/tos."));
+        err.appendChild(el("h4", "text-sm uppercase tracking-widest font-semibold mb-3 text-red-400", "Live " + productName + " terms unavailable"));
+        err.appendChild(el("p", "text-muted leading-relaxed text-sm", "The marketing site couldn't reach the live /tos endpoint. The static summary above remains the load-bearing posture. You can also view the endpoint directly at " + url + " ."));
         target.appendChild(err);
       }
     }
-    load();
+
+    loadTos("https://sentinel.xrpl-utilities.io/tos", "content-sentinel", "XR-Sentinel");
+    loadTos("https://telemetry.xrpl-utilities.io/tos", "content-telemetry", "XR-Telemetry");
   </script>
 
 </body>

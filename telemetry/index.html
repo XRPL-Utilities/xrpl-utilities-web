@@ -155,18 +155,18 @@
           <div class="grid sm:grid-cols-2 gap-4">
             <div class="bg-ink border border-accent rounded-lg p-6 text-center">
               <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">M · Implied price</div>
-              <div id="bm-m" class="text-4xl sm:text-5xl font-bold tracking-tight">—</div>
+              <div id="bm-m" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
               <div class="text-xs text-muted mt-2">USD per XRP</div>
             </div>
             <div class="bg-ink border border-border rounded-lg p-6 text-center">
               <div class="text-xs uppercase tracking-widest text-muted font-semibold mb-1">Current spot</div>
-              <div id="bm-spot" class="text-4xl sm:text-5xl font-bold tracking-tight">—</div>
+              <div id="bm-spot" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
               <div id="bm-spot-as-of" class="text-xs text-muted mt-2"></div>
             </div>
           </div>
 
           <div class="mt-4 bg-ink border border-border rounded-lg p-4 text-sm text-center">
-            <span class="text-muted">Market premium over implied floor: </span><span id="bm-premium" class="font-mono font-medium text-white">—</span>
+            <span class="text-muted">Market premium over implied floor: </span><span id="bm-premium" class="font-mono font-medium text-white">-</span>
           </div>
         </div>
 
@@ -180,7 +180,7 @@
             A higher V means each XRP works harder; the implied floor is lower.
           </p>
           <p>
-            <strong class="text-white">P</strong> is the supply that can actually move — total minus dormant minus escrowed.
+            <strong class="text-white">P</strong> is the supply that can actually move - total minus dormant minus escrowed.
             Constrict P (more escrowed, more dormant) and the implied floor rises for the same Q and V.
           </p>
         </div>
@@ -229,19 +229,19 @@
 
           <div class="bg-ink border border-border rounded-lg p-4 text-sm">
             <div class="text-xs text-muted uppercase tracking-wider mb-1">M₀ (linked)</div>
-            <div id="fm-m0" class="font-mono font-medium">—</div>
+            <div id="fm-m0" class="font-mono font-medium">-</div>
             <div class="text-xs text-muted mt-2">Tweak Q or V above to re-anchor.</div>
           </div>
 
           <div class="bg-ink border border-border rounded-lg p-4 text-sm">
             <div class="text-xs text-muted uppercase tracking-wider mb-1">M at month 24</div>
-            <div id="fm-m24" class="font-mono font-medium">—</div>
+            <div id="fm-m24" class="font-mono font-medium">-</div>
           </div>
         </div>
       </div>
 
       <p class="text-xs text-muted mt-6 leading-relaxed max-w-2xl">
-        Illustrative only. Real outcomes depend on regulatory regime, AMM depth, exchange behavior, and macro liquidity —
+        Illustrative only. Real outcomes depend on regulatory regime, AMM depth, exchange behavior, and macro liquidity -
         none of which are linear. This calculator is a sensitivity tool, not a forecast.
       </p>
     </div>
@@ -254,7 +254,7 @@
         <h3 class="text-2xl font-bold mb-2">Run a real snapshot</h3>
         <p class="text-sm text-muted mb-6">
           Pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, etc.) and get a
-          freshly computed payload over the wire. No inputs required in v1 — Telemetry covers the whole network.
+          freshly computed payload over the wire. No inputs required in v1 - Telemetry covers the whole network.
         </p>
         <button id="snap-btn" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
           Run live snapshot
@@ -346,7 +346,7 @@ payload = requests.get(
       <p class="text-muted leading-relaxed text-sm">
         XR-Telemetry produces on-chain network telemetry and an algebraic implied-floor computation.
         It is not a price prediction, investment recommendation, or financial advice.
-        The Burst Math and Floor Matrix outputs are sensitivity tools — they show what the math implies
+        The Burst Math and Floor Matrix outputs are sensitivity tools - they show what the math implies
         under explicit assumptions, not what XRP will or should be priced at.
       </p>
       <p class="text-muted leading-relaxed text-sm mt-4">
@@ -487,7 +487,7 @@ payload = requests.get(
     // The static SNAPSHOT.current_price_usd is a fallback for fetch failure
     // only; we don't want it briefly flashing on every page load when the
     // live spot has moved.
-    bmSpot.textContent = '—';
+    bmSpot.textContent = '-';
     bmSpotAsOf.textContent = 'loading…';
 
     function currentM() {
@@ -500,9 +500,9 @@ payload = requests.get(
 
     function recompute() {
       const m = currentM();
-      bmM.textContent = m == null ? '—' : fmtUsd4(m);
+      bmM.textContent = m == null ? '-' : fmtUsd4(m);
       if (m == null || m <= 0) {
-        bmPremium.textContent = '—';
+        bmPremium.textContent = '-';
       } else {
         const premium = SNAPSHOT.current_price_usd / m;
         bmPremium.textContent = premium.toFixed(2) + '×';
@@ -606,8 +606,8 @@ payload = requests.get(
       // re-anchoring from a live payload propagates without bespoke wiring.
       chart.data.datasets[3].data = Array(HORIZON + 1).fill(SNAPSHOT.current_price_usd);
       if (m0 == null || m0 <= 0) {
-        fmM0.textContent = '—';
-        fmM24.textContent = '—';
+        fmM0.textContent = '-';
+        fmM24.textContent = '-';
         chart.data.datasets[0].data = [];
         chart.data.datasets[1].data = [];
         chart.data.datasets[2].data = [];
@@ -624,23 +624,23 @@ payload = requests.get(
       chart.data.datasets[2].data = baseline;
       chart.update('none');
       const m24 = baseline[HORIZON];
-      fmM24.textContent = isFinite(m24) ? fmtUsd4(m24) : '—';
+      fmM24.textContent = isFinite(m24) ? fmtUsd4(m24) : '-';
 
       // Guard rail: warn when inputs imply implausible terminal values.
       let warning = null;
       if (cPct >= 100) {
-        warning = 'Constriction at or above 100% has no physical interpretation — supply cannot shrink to zero in one month.';
+        warning = 'Constriction at or above 100% has no physical interpretation - supply cannot shrink to zero in one month.';
       } else if (!isFinite(m24)) {
         warning = 'Projection is undefined for these inputs.';
       } else {
         const supplyRemaining = Math.pow(1 - cPct / 100, HORIZON);
         const ratio = m24 / m0;
         if (ratio > 10) {
-          warning = `These inputs imply a ${ratio.toFixed(1)}× price by month 24. That is an extreme scenario — the model assumes V is constant and ignores velocity feedback, regulatory shocks, and AMM depth.`;
+          warning = `These inputs imply a ${ratio.toFixed(1)}× price by month 24. That is an extreme scenario - the model assumes V is constant and ignores velocity feedback, regulatory shocks, and AMM depth.`;
         } else if (ratio > 5) {
           warning = `Inputs imply a ${ratio.toFixed(1)}× projection by month 24. Constriction cannot compound indefinitely in reality; treat as sensitivity, not forecast.`;
         } else if (supplyRemaining < 0.3) {
-          warning = `At this constriction rate, only ${(supplyRemaining * 100).toFixed(0)}% of liquid supply remains by month 24 — implausible without a major regime change.`;
+          warning = `At this constriction rate, only ${(supplyRemaining * 100).toFixed(0)}% of liquid supply remains by month 24 - implausible without a major regime change.`;
         }
       }
       showWarning(warning);
@@ -671,7 +671,7 @@ payload = requests.get(
       .then(d => {
         const spot = d && d.checks && d.checks.xrp_price && d.checks.xrp_price.last_good_usd;
         if (typeof spot !== 'number' || spot <= 0) {
-          // Fetch returned but no usable spot — fall back to the static
+          // Fetch returned but no usable spot - fall back to the static
           // SNAPSHOT (last-shipped) so the tile shows something rather than
           // an em-dash forever.
           bmSpot.textContent = fmtUsd4(SNAPSHOT.current_price_usd);

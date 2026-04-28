@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manifest | XR-Sentinel</title>
-  <meta name="description" content="Human-readable view of the XR-Sentinel agent manifest, showing what AI agents see when they discover this service." />
-  <meta property="og:title" content="XR-Sentinel | Agent Manifest" />
-  <meta property="og:description" content="What AI agents see when they discover XR-Sentinel via /.well-known/agents.json. Capabilities, payment, endpoints, legal." />
+  <title>Manifest | XRPL-Utilities</title>
+  <meta name="description" content="Human-readable view of the XR-Sentinel and XR-Telemetry agent manifests, showing what AI agents see when they discover these services." />
+  <meta property="og:title" content="XRPL-Utilities | Agent Manifest" />
+  <meta property="og:description" content="What AI agents see when they discover XR-Sentinel and XR-Telemetry via /.well-known/agents.json. Capabilities, payment, endpoints, legal." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/manifest/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -38,6 +38,7 @@
       <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-muted whitespace-nowrap">
         <a href="/" class="hover:text-white transition">Home</a>
         <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+        <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
         <a href="/terms/" class="hover:text-white transition">Terms</a>
         <a href="/contact/" class="hover:text-white transition">Contact</a>
       </nav>
@@ -46,9 +47,10 @@
 
   <section>
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
-      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Agent manifest</h1>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Agent manifests</h1>
       <p class="text-muted leading-relaxed">
-        This is what an AI agent or crawler sees when it discovers XR-Sentinel via
+        This is what an AI agent or crawler sees when it discovers XR-Sentinel or XR-Telemetry via each
+        service's
         <code class="font-mono text-sm bg-panel px-2 py-1 rounded">/.well-known/agents.json</code>,
         rendered here for human readability.
       </p>
@@ -56,9 +58,18 @@
   </section>
 
   <section>
-    <div class="max-w-3xl mx-auto px-6 pb-24">
-      <div id="content" class="space-y-6">
-        <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading manifest from the live service…</div>
+    <div class="max-w-3xl mx-auto px-6 pb-24 space-y-12">
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Sentinel</h2>
+        <div id="content-sentinel" class="space-y-6">
+          <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading XR-Sentinel manifest…</div>
+        </div>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Telemetry</h2>
+        <div id="content-telemetry" class="space-y-6">
+          <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading XR-Telemetry manifest…</div>
+        </div>
       </div>
     </div>
   </section>
@@ -75,8 +86,6 @@
   </footer>
 
   <script>
-    const BASE = "https://sentinel.xrpl-utilities.io";
-
     function el(tag, cls, text) {
       const e = document.createElement(tag);
       if (cls) e.className = cls;
@@ -112,9 +121,10 @@
       return dl;
     }
 
-    function render(d) {
-      const content = document.getElementById("content");
+    function render(d, contentId, fallbackBase) {
+      const content = document.getElementById(contentId);
       content.innerHTML = "";
+      const BASE = (d.endpoints && d.endpoints.base_url) || fallbackBase;
 
       const overview = card(d.name, "Service");
       overview.appendChild(el("p", "text-white leading-relaxed mb-4", d.description));
@@ -243,21 +253,23 @@
       content.appendChild(meta);
     }
 
-    async function load() {
+    async function loadOne(url, contentId, productName) {
       try {
-        const res = await fetch(BASE + "/agents.json");
+        const res = await fetch(url);
         if (!res.ok) throw new Error("HTTP " + res.status);
-        render(await res.json());
+        render(await res.json(), contentId, url.replace(/\/agents\.json$/, ""));
       } catch (e) {
-        const target = document.getElementById("content");
+        const target = document.getElementById(contentId);
         target.innerHTML = "";
         const err = el("div", "bg-panel border border-border rounded-2xl p-8");
-        err.appendChild(el("h2", "text-xl font-bold mb-3 text-red-400", "Couldn't load manifest"));
-        err.appendChild(el("p", "text-muted leading-relaxed", "View it directly at https://sentinel.xrpl-utilities.io/agents.json."));
+        err.appendChild(el("h3", "text-sm uppercase tracking-widest font-semibold mb-3 text-red-400", "Couldn't load " + productName + " manifest"));
+        err.appendChild(el("p", "text-muted leading-relaxed text-sm", "View it directly at " + url + " ."));
         target.appendChild(err);
       }
     }
-    load();
+
+    loadOne("https://sentinel.xrpl-utilities.io/agents.json", "content-sentinel", "XR-Sentinel");
+    loadOne("https://telemetry.xrpl-utilities.io/agents.json", "content-telemetry", "XR-Telemetry");
   </script>
 
 </body>

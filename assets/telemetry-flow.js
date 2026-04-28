@@ -90,7 +90,7 @@
     wrap.appendChild(el('h3', 'text-3xl font-bold mb-1', fmtXrp(quote.amount_drops)));
     const minsLeft = minutesUntil(quote.expires_at);
     wrap.appendChild(el('div', 'text-muted text-sm mb-6',
-      `Telemetry snapshot · expires in ${minsLeft != null ? minsLeft : '—'} min`));
+      `Telemetry snapshot · expires in ${minsLeft != null ? minsLeft : '-'} min`));
 
     const linkRow = el('div', 'flex flex-col sm:flex-row gap-3 mb-6');
     const payBtn = el('a', 'flex-1 bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-4 rounded-lg transition text-center');
@@ -286,7 +286,7 @@
     rows.push(['Volume (Q)',        fmtUsd(uf.q_assumed_usd, 0)]);
     rows.push(['Velocity (V)',      Number(uf.v_assumed).toFixed(2)]);
     card.appendChild(kvGrid(rows, hasSpot ? 3 : 4));
-    card.appendChild(el('div', 'text-xs text-muted mt-3 leading-relaxed', 'M = Q ÷ (V × P) — implied USD per XRP at the assumed institutional volume and velocity. Premium is current spot ÷ baseline.'));
+    card.appendChild(el('div', 'text-xs text-muted mt-3 leading-relaxed', 'M = Q ÷ (V × P) - implied USD per XRP at the assumed institutional volume and velocity. Premium is current spot ÷ baseline.'));
     return card;
   }
 

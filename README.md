@@ -35,9 +35,13 @@ python -m http.server 8000
 # Then open http://localhost:8000
 ```
 
-The `sentinel/` page calls `https://sentinel.xrpl-utilities.io/scan` directly.
-CORS is enabled on the API, so it works from `localhost`. The contact form
-posts to web3forms; Turnstile validation happens on web3forms' backend.
+The `sentinel/` page calls `https://sentinel.xrpl-utilities.io/bulk/quote`
+for the paid bulk flow and `/scan` for the single-scan flow. The
+`telemetry/` page calls `https://telemetry.xrpl-utilities.io/healthz`
+on load (live spot price) and `/quote` + `/status/{id}` + `/results/{id}`
+for the paid invoice flow. CORS on both APIs is locked to the .com origins,
+so local preview works from any localhost port. The contact form posts to
+web3forms; Turnstile validation happens on web3forms' backend.
 
 ## Deploy: Cloudflare Pages
 
@@ -78,3 +82,6 @@ asset bundle.
 
 - `XR-Sentinel`: the FastAPI service that powers the `/sentinel` showcase
   and the agent-facing API at `sentinel.xrpl-utilities.io`.
+- `XRPL-Utilities-XR-Telemetry`: the FastAPI service that powers the
+  `/telemetry` showcase and the agent-facing API at
+  `telemetry.xrpl-utilities.io`.
