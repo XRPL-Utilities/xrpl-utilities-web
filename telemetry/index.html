@@ -99,17 +99,24 @@
   <section id="snapshots">
     <div class="max-w-5xl mx-auto px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-8">
-        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Cached samples (illustrative)</div>
-        <h2 class="text-2xl font-bold mb-4">Pick a sample snapshot</h2>
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Free preview · cached samples</div>
+        <h2 class="text-2xl font-bold mb-4">See the payload shape, no payment</h2>
         <p class="text-sm text-muted mb-6">
-          These are static, illustrative payloads frozen in the page so you can see the response shape without paying.
-          Click <strong class="text-white">Run live snapshot</strong> below for a real, on-chain reading.
+          Click any sample to render a static, illustrative response in place. The Burst Math and Floor Matrix calculators below also work entirely on cached data, so you can stress-test scenarios before deciding to pay.
         </p>
         <div class="flex flex-wrap gap-2">
           <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="supply">Today's supply constriction</button>
           <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="drain">Last weekend's exchange drain</button>
           <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="amm">Top 5 AMM pools</button>
           <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="floor">Utility floor reading</button>
+        </div>
+        <div class="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="text-sm text-muted">
+            Already convinced? Skip the cached demos and pay for fresh on-chain data.
+          </div>
+          <a href="#try-it" class="bg-accent hover:bg-accent-dim text-ink font-semibold text-sm px-5 py-2.5 rounded-lg transition whitespace-nowrap">
+            Run a live snapshot &middot; $0.10 &rarr;
+          </a>
         </div>
       </div>
 
