@@ -373,33 +373,37 @@ payload = requests.get(
   </footer>
 
   <script>
-    // TODO: refresh from a live /results/{invoice_id} payload once Telemetry API is live
+    // Initial values reflect Telemetry's live state as of 2026-04-28 (the
+    // launch day; all Tier-2 fields flipped to live, payments enabled).
+    // /healthz fetch on page load overwrites current_price_usd with the
+    // 60s-fresh oracle value; the rest stays at last-known-shipped values
+    // until a paid /scan returns a full TelemetryPayload.
     const SNAPSHOT = {
-      total_supply_xrp:        99_987_000_000,
-      dormant_supply_xrp:      28_000_000_000,
-      escrowed_supply_xrp:     36_500_000_000,
-      available_liquid_supply: 35_487_000_000, // P = total - dormant - escrowed
-      current_price_usd:       0.50,           // illustrative XRP/USD spot
+      total_supply_xrp:        100_000_000_000,
+      dormant_supply_xrp:        4_779_688_113,
+      escrowed_supply_xrp:      33_200_000_000,
+      available_liquid_supply:  62_020_311_887, // P = total - dormant - escrowed
+      current_price_usd:               1.37,    // overwritten by /healthz on load
     };
     const DEFAULTS = { Q: 10_000_000_000, V: 6 }; // $10B settlement window, velocity 6
-    const SNAPSHOT_AS_OF = '2026-04-26';
+    const SNAPSHOT_AS_OF = '2026-04-28';
 
     // ---- Cached sample TelemetryPayloads (illustrative) ----
     const SAMPLES = {
       supply: {
-        generated_at: '2026-04-27T08:00:00Z',
+        generated_at: '2026-04-28T17:00:00Z',
         supply: {
-          total_xrp: 99_987_000_000,
-          dormant_xrp: 28_000_000_000,
-          escrowed_xrp: 36_500_000_000,
-          hodl_wave_pct: 64.2,
-          exchange_outflow_24h_xrp: 41_200_000,
-          escrow_release_vs_relock_ratio: 0.78,
+          total_xrp: 100_000_000_000,
+          dormant_xrp: 4_779_688_113,
+          escrowed_xrp: 33_200_000_000,
+          hodl_wave_pct: 4.78,
+          exchange_outflow_24h_xrp: 43_863_636,
+          escrow_release_vs_relock_ratio: 1.000,
         },
         utility_floor: {
-          baseline_usd: 0.047,
-          current_price_usd: 0.50,
-          available_liquid_supply_xrp: 35_487_000_000,
+          baseline_usd: 0.0269,
+          current_price_usd: 1.37,
+          available_liquid_supply_xrp: 62_020_311_887,
           q_assumed_usd: 10_000_000_000,
           v_assumed: 6,
         },
@@ -430,21 +434,21 @@ payload = requests.get(
         },
       },
       floor: {
-        generated_at: '2026-04-27T08:00:00Z',
+        generated_at: '2026-04-28T17:00:00Z',
         utility_floor: {
-          baseline_usd: 0.047,
-          current_price_usd: 0.50,
-          available_liquid_supply_xrp: 35_487_000_000,
+          baseline_usd: 0.0269,
+          current_price_usd: 1.37,
+          available_liquid_supply_xrp: 62_020_311_887,
           q_assumed_usd: 10_000_000_000,
           v_assumed: 6,
         },
         supply: {
-          total_xrp: 99_987_000_000,
-          dormant_xrp: 28_000_000_000,
-          escrowed_xrp: 36_500_000_000,
-          hodl_wave_pct: 64.2,
-          exchange_outflow_24h_xrp: 41_200_000,
-          escrow_release_vs_relock_ratio: 0.78,
+          total_xrp: 100_000_000_000,
+          dormant_xrp: 4_779_688_113,
+          escrowed_xrp: 33_200_000_000,
+          hodl_wave_pct: 4.78,
+          exchange_outflow_24h_xrp: 43_863_636,
+          escrow_release_vs_relock_ratio: 1.000,
         },
       },
     };
