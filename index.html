@@ -122,29 +122,19 @@
         XRPL <span class="accent-gradient">AI Agent</span> Applications
       </h1>
       <p class="text-xl md:text-2xl text-muted max-w-3xl mx-auto leading-relaxed">
-        A growing suite of XRPL-native tools built for the agentic economy.
-        Auto-discoverable, agent-payable APIs that autonomous AI agents can find,
-        understand, and pay for, without API keys or human intervention.
+        On-chain XRPL data products, priced in XRP, payable per call.
+        Vet a wallet before sending. Read the network's macro state before quoting.
+        No accounts, no API keys, no onboarding.
       </p>
       <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
         <a href="/sentinel/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-8 py-3 rounded-lg transition">
-          Try XR-Sentinel →
+          Scan a wallet &rarr;
         </a>
-        <a href="#tools" class="border border-border hover:border-accent text-white px-8 py-3 rounded-lg transition">
-          View tools
+        <a href="/telemetry/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-8 py-3 rounded-lg transition">
+          Get a network snapshot &rarr;
         </a>
       </div>
-    </div>
-  </section>
-
-  <section class="border-t border-border">
-    <div class="max-w-4xl mx-auto px-6 py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">Mission</h2>
-      <p class="text-2xl md:text-3xl font-light leading-relaxed text-white">
-        AI agents are the next class of API consumer. They discover services without humans,
-        pay without accounts, and integrate without onboarding flows. We build XRPL-native
-        services for that world, designed from day one to be machine-discoverable and machine-payable.
-      </p>
+      <p class="mt-6 text-sm text-muted">$0.10 per call &middot; pay in XRP &middot; results in seconds</p>
     </div>
   </section>
 
@@ -166,13 +156,15 @@
             <img src="/assets/xr-sentinel.png" alt="" class="h-14 w-14 rounded-lg" />
           </div>
           <h4 class="text-2xl font-bold mb-3">XR-Sentinel</h4>
-          <p class="text-muted leading-relaxed mb-6 flex-grow">
-            XRPL activity pattern classifier. Given any XRPL address, returns a 0 to 100 activity score,
-            structured signal catalog, and AI-generated narrative summary.
+          <p class="text-white leading-relaxed mb-3 font-medium">Vet a wallet before you interact.</p>
+          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
+            Score any XRPL address 0-100 against a behavioral signal catalog
+            (mixers, dormant reawakenings, dust attacks, sweep patterns) plus
+            an AI narrative summary. For agents trading, pay flows, custody, or due diligence.
           </p>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">$0.10 USD per scan · XRP or RLUSD</span>
-            <span class="text-accent group-hover:translate-x-1 transition">→</span>
+            <span class="text-muted">$0.10 USD per scan &middot; XRP or RLUSD</span>
+            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
           </div>
         </a>
 
@@ -185,13 +177,15 @@
             <img src="/assets/xr-telemetry.png" alt="" class="h-14 w-14 rounded-lg" />
           </div>
           <h4 class="text-2xl font-bold mb-3">XR-Telemetry</h4>
-          <p class="text-muted leading-relaxed mb-6 flex-grow">
-            XRPL macro telemetry: supply constriction, regional liquidity, AMM depth, and an implied
-            utility-floor projection. Network-level signals for agents and analysts.
+          <p class="text-white leading-relaxed mb-3 font-medium">Read the network's macro state in one call.</p>
+          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
+            Live supply constriction, dormant float, regional liquidity flows,
+            AMM depth, and an algebraic utility-floor projection. For agents quoting,
+            researchers modeling, or operators sizing exposure.
           </p>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">$0.10 USD per snapshot · XRP</span>
-            <span class="text-accent group-hover:translate-x-1 transition">→</span>
+            <span class="text-muted">$0.10 USD per snapshot &middot; XRP</span>
+            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
           </div>
         </a>
 
@@ -200,14 +194,26 @@
             <span class="text-xs uppercase tracking-wider text-muted font-semibold">In design</span>
           </div>
           <h4 class="text-2xl font-bold mb-3">XR-Trust</h4>
-          <p class="text-muted leading-relaxed mb-6 flex-grow">
-            Trustline introspection and risk envelope analysis for agent-managed wallets.
-            Issuer reputation, freeze flags, ripple paths.
+          <p class="text-white leading-relaxed mb-3 font-medium">Audit a wallet's trustline exposure.</p>
+          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
+            Issuer reputation, freeze flags, ripple-path traversal, and trustline-risk
+            envelope analysis for agent-managed wallets.
           </p>
           <div class="text-sm text-muted">Coming soon</div>
         </div>
 
       </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">Mission</h2>
+      <p class="text-2xl md:text-3xl font-light leading-relaxed text-white">
+        AI agents are the next class of API consumer. They discover services without humans,
+        pay without accounts, and integrate without onboarding flows. We build XRPL-native
+        services for that world, designed from day one to be machine-discoverable and machine-payable.
+      </p>
     </div>
   </section>
 
