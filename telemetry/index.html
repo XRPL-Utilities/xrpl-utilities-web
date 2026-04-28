@@ -243,8 +243,10 @@
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Predictive Floor Matrix</h2>
       <h3 class="text-3xl font-bold mb-2">24-month projection</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        Using <strong class="text-white">P₀</strong> from the Burst Math calculator above as the starting point, project
-        forward under monthly supply-constriction and volume-growth assumptions. The shaded band is a ±15% uncertainty envelope.
+        Burst Math anchors <strong class="text-white">P₀</strong> at today's snapshot, but real networks do
+        not sit still: supply tightens, settlement grows, and both compound. Pick monthly rates for each below
+        and the math projects P forward 24 months from P₀. The shaded band is a &plusmn;15% uncertainty envelope
+        around the baseline; the dashed line is today's market spot for comparison.
       </p>
 
       <div class="grid lg:grid-cols-3 gap-6">
@@ -254,7 +256,7 @@
           </div>
           <div id="fm-warning" class="hidden mt-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed"></div>
           <div class="text-xs text-muted mt-3 text-center">
-            Months from now · baseline = P₀ × ((1 + growth) ÷ (1 − constriction))<sup>i</sup>, ±15% band, dashed line = current spot
+            Months from now &middot; baseline = P₀ &times; ((1 + growth) &divide; (1 &minus; constriction))<sup>i</sup>, &plusmn;15% band, dashed line = current spot
           </div>
         </div>
 
@@ -266,6 +268,7 @@
             </div>
             <input id="fm-constriction" type="range" min="0" max="5" step="0.1" class="w-full" />
             <div class="flex justify-between text-[10px] text-muted mt-1"><span>0%</span><span>5%</span></div>
+            <p class="text-[11px] text-muted mt-2 leading-relaxed">% of liquid M that exits circulation each month (vault locks, escrow relock, dormancy growth, AMM TVL).</p>
           </div>
 
           <div>
@@ -275,6 +278,7 @@
             </div>
             <input id="fm-growth" type="range" min="0" max="15" step="0.1" class="w-full" />
             <div class="flex justify-between text-[10px] text-muted mt-1"><span>0%</span><span>15%</span></div>
+            <p class="text-[11px] text-muted mt-2 leading-relaxed">% monthly increase in annual settlement Q (new ODL corridors, B2B adoption, RLUSD scale).</p>
           </div>
 
           <div class="bg-ink border border-border rounded-lg p-4 text-sm">
@@ -290,10 +294,46 @@
         </div>
       </div>
 
-      <p class="text-xs text-muted mt-6 leading-relaxed max-w-2xl">
-        Illustrative only. Real outcomes depend on regulatory regime, AMM depth, exchange behavior, and macro liquidity -
-        none of which are linear. This calculator is a sensitivity tool, not a forecast.
-      </p>
+      <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the controls</div>
+          <p class="mb-3">
+            <strong class="text-white">P₀</strong> &middot; the implied floor today. Copied live from Burst Math.
+            Change Q or V there to re-anchor everything below.
+          </p>
+          <p class="mb-3">
+            <strong class="text-white">Monthly supply constriction</strong> &middot; how fast liquid M shrinks per
+            month. 1%/mo means 1% of circulating XRP exits each month into vaults, escrow, AMM TVL, or dormancy.
+          </p>
+          <p class="mb-3">
+            <strong class="text-white">Monthly volume growth</strong> &middot; how fast annual settlement Q grows
+            per month. 3%/mo compounds to roughly 1.4&times; volume by month 24.
+          </p>
+          <p>
+            <strong class="text-white">&plusmn;15% band</strong> &middot; a visual reminder that the baseline is a
+            point estimate and reality is noisier. It is not a statistical confidence interval.
+          </p>
+        </div>
+
+        <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
+          <p class="mb-3">
+            Small monthly rates compound aggressively. 1%/mo constriction is 21% of supply gone in 24 months.
+            3%/mo volume growth is roughly 1.4&times; volume by month 24. Both push P up.
+          </p>
+          <p class="mb-3">
+            Watch where the baseline crosses the dashed spot line. That is the math saying: under these specific
+            assumptions, the implied utility floor catches up to today's market price somewhere in the next 24
+            months. It does not mean spot stays still in reality; it means the speculation and adoption
+            premium fully materializes as settlement utility on this trajectory.
+          </p>
+          <p>
+            Sensitivity, not forecast. Regulatory regime, macro liquidity, AMM depth, and exchange behavior
+            all matter, and none of them compound smoothly. Treat the chart as &quot;what would the math say
+            if these specific rates held&quot; rather than a price target.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 
