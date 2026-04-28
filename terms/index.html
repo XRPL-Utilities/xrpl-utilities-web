@@ -76,9 +76,8 @@
             <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/agents.json</code>
             and
             <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/schema</code>.
-            A field's value reads from a sanity-bounded cache or the appropriate fallback when the cache is
-            stale; the cache state is exposed at
-            <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/healthz</code>.
+            Each field's value reads from a sanity-bounded cache, with the appropriate fallback applied when
+            the cache is stale.
           </p>
         </div>
         <div>
@@ -116,24 +115,19 @@
   </section>
 
   <section>
-    <div class="max-w-3xl mx-auto px-6 pb-24 space-y-10">
-      <div>
-        <h2 class="text-xs uppercase tracking-widest text-muted font-semibold mb-3">Live terms from the canonical endpoints</h2>
-        <p class="text-sm text-muted">Each product's full, machine-readable terms live at its own
-          <code class="font-mono text-xs bg-panel border border-border rounded px-1.5 py-0.5">/tos</code>.
-          The blocks below render those endpoints; the static summary above is the load-bearing posture if
-          either endpoint is unreachable.</p>
-      </div>
-      <div>
-        <h3 class="text-2xl font-bold mb-4">XR-Sentinel</h3>
-        <div id="content-sentinel" class="space-y-6">
-          <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading XR-Sentinel terms…</div>
-        </div>
-      </div>
-      <div>
-        <h3 class="text-2xl font-bold mb-4">XR-Telemetry</h3>
-        <div id="content-telemetry" class="space-y-6">
-          <div class="bg-panel border border-border rounded-2xl p-8 text-muted">Loading XR-Telemetry terms…</div>
+    <div class="max-w-3xl mx-auto px-6 pb-24">
+      <div class="bg-panel border border-border rounded-2xl p-6">
+        <h2 class="text-xs uppercase tracking-widest text-muted font-semibold mb-3">Canonical machine-readable terms</h2>
+        <p class="text-sm text-muted leading-relaxed mb-4">
+          Each product publishes its full terms as a machine-readable endpoint. Agents and integrators should
+          read directly from these; the human summary above is the load-bearing posture if either endpoint is
+          unreachable.
+        </p>
+        <div class="flex flex-wrap gap-3 text-sm">
+          <a href="https://sentinel.xrpl-utilities.io/tos" target="_blank" rel="noopener noreferrer"
+             class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">XR-Sentinel /tos &rarr;</a>
+          <a href="https://telemetry.xrpl-utilities.io/tos" target="_blank" rel="noopener noreferrer"
+             class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">XR-Telemetry /tos &rarr;</a>
         </div>
       </div>
     </div>
@@ -149,86 +143,6 @@
       </div>
     </div>
   </footer>
-
-  <script>
-    function el(tag, cls, text) {
-      const e = document.createElement(tag);
-      if (cls) e.className = cls;
-      if (text != null) e.textContent = text;
-      return e;
-    }
-
-    function renderValue(v) {
-      if (v == null) return el("p", "text-muted italic", "(none)");
-      if (typeof v === "string" || typeof v === "number") {
-        return el("p", "leading-relaxed text-white", String(v));
-      }
-      if (Array.isArray(v)) {
-        const ul = el("ul", "space-y-2 list-disc list-inside text-white");
-        v.forEach(item => ul.appendChild(el("li", "leading-relaxed", typeof item === "string" ? item : JSON.stringify(item))));
-        return ul;
-      }
-      if (typeof v === "object") {
-        const dl = el("dl", "grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3");
-        Object.entries(v).forEach(([k, val]) => {
-          dl.appendChild(el("dt", "text-xs uppercase tracking-wider text-muted sm:text-right", k));
-          const dd = el("dd", "sm:col-span-2 text-white text-sm break-all");
-          if (val == null) dd.textContent = "-";
-          else if (typeof val === "object") dd.appendChild(renderValue(val));
-          else dd.textContent = String(val);
-          dl.appendChild(dd);
-        });
-        return dl;
-      }
-      return el("p", null, String(v));
-    }
-
-    function renderSection(label, value, monoString) {
-      const wrapper = el("section", "bg-panel border border-border rounded-2xl p-8");
-      wrapper.appendChild(el("h4", "text-xs uppercase tracking-widest text-accent font-semibold mb-3", label));
-      if (monoString && typeof value === "string") {
-        wrapper.appendChild(el("p", "font-mono text-sm break-all text-white", value));
-      } else {
-        wrapper.appendChild(renderValue(value));
-      }
-      return wrapper;
-    }
-
-    async function loadTos(url, targetId, productName) {
-      const target = document.getElementById(targetId);
-      try {
-        const res = await fetch(url, { headers: { "Accept": "application/json,text/markdown" } });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const ct = res.headers.get("content-type") || "";
-        if (ct.includes("application/json")) {
-          const data = await res.json();
-          target.innerHTML = "";
-          Object.entries(data).forEach(([key, value]) => {
-            const label = key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-            const mono = key.includes("recipient");
-            target.appendChild(renderSection(label, value, mono));
-          });
-        } else {
-          const text = await res.text();
-          target.innerHTML = "";
-          const wrap = el("section", "bg-panel border border-border rounded-2xl p-8");
-          const pre = el("pre", "whitespace-pre-wrap font-sans leading-relaxed text-white text-sm");
-          pre.textContent = text;
-          wrap.appendChild(pre);
-          target.appendChild(wrap);
-        }
-      } catch (e) {
-        target.innerHTML = "";
-        const err = el("div", "bg-panel border border-border rounded-2xl p-8");
-        err.appendChild(el("h4", "text-sm uppercase tracking-widest font-semibold mb-3 text-red-400", "Live " + productName + " terms unavailable"));
-        err.appendChild(el("p", "text-muted leading-relaxed text-sm", "The marketing site couldn't reach the live /tos endpoint. The static summary above remains the load-bearing posture. You can also view the endpoint directly at " + url + " ."));
-        target.appendChild(err);
-      }
-    }
-
-    loadTos("https://sentinel.xrpl-utilities.io/tos", "content-sentinel", "XR-Sentinel");
-    loadTos("https://telemetry.xrpl-utilities.io/tos", "content-telemetry", "XR-Telemetry");
-  </script>
 
 </body>
 </html>
