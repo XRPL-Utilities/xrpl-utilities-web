@@ -596,12 +596,12 @@ payload = requests.get(
     bmQ.value = DEFAULTS.Q;
     bmV.value = DEFAULTS.V;
     bmM.textContent = fmtXrp(SNAPSHOT.available_liquid_supply) + ' (as of ' + SNAPSHOT_AS_OF + ')';
-    // Render placeholder until /healthz fetch lands the live oracle value.
-    // The static SNAPSHOT.current_price_usd is a fallback for fetch failure
-    // only; we don't want it briefly flashing on every page load when the
-    // live spot has moved.
-    bmSpot.textContent = '-';
-    bmSpotAsOf.textContent = 'loading…';
+    // Skeleton placeholder until /healthz fetch lands the live oracle value.
+    // Pulsing grey block sized to the eventual $1.3700 text so the tile has
+    // visual weight on first paint instead of a hyphen and 'loading…' flash.
+    // Static SNAPSHOT.current_price_usd is the fallback for fetch failure.
+    bmSpot.innerHTML = '<span class="inline-block h-10 w-36 bg-border rounded animate-pulse align-middle"></span>';
+    bmSpotAsOf.innerHTML = '<span class="inline-block h-3 w-24 bg-border rounded animate-pulse"></span>';
 
     // P = Q / (V × M). Solve standard Equation of Exchange for price.
     function currentP() {

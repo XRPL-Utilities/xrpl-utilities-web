@@ -56,14 +56,70 @@
     <div class="max-w-3xl mx-auto px-6 pb-24 space-y-10">
       <div>
         <h2 class="text-2xl font-bold mb-4">XR-Sentinel</h2>
-        <div id="overall-sentinel" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-muted text-center">Checking…</div>
-        <div id="checks-sentinel" class="space-y-4"></div>
+        <div id="overall-sentinel" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
+          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
+          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
+        </div>
+        <div id="checks-sentinel" class="space-y-4">
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-52 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-56 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-48 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-72 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+        </div>
         <p id="last-checked-sentinel" class="text-xs text-muted text-center mt-4"></p>
       </div>
       <div>
         <h2 class="text-2xl font-bold mb-4">XR-Telemetry</h2>
-        <div id="overall-telemetry" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-muted text-center">Checking…</div>
-        <div id="checks-telemetry" class="space-y-4"></div>
+        <div id="overall-telemetry" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
+          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
+          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
+        </div>
+        <div id="checks-telemetry" class="space-y-4">
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-52 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-56 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-48 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-72 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+        </div>
         <p id="last-checked-telemetry" class="text-xs text-muted text-center mt-4"></p>
       </div>
     </div>
