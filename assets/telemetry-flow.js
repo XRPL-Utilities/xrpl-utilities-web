@@ -280,32 +280,74 @@
     const card = sectionCard('AMM');
     const wrap = el('div', 'grid md:grid-cols-2 gap-6');
 
+    // Pairs column: stacked pair cards, mobile-friendly. Header row is the
+    // pair name + APR (most useful at a glance); body is a 3-up grid of
+    // TVL / 1% depth / fee_pct so nothing overflows on a 375px viewport.
     const pairsCol = el('div');
     pairsCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Top pairs'));
+    const pairsList = el('div', 'space-y-2');
     (amm.pairs || []).forEach(p => {
-      const row = el('div', 'flex items-center justify-between gap-3 py-2 border-b border-border/50 text-sm');
-      row.appendChild(el('div', 'font-mono', p.pair));
-      const right = el('div', 'flex items-center gap-4 text-xs text-muted');
-      right.appendChild(el('span', null, 'TVL ' + fmtUsd(p.tvl_usd, 0)));
-      right.appendChild(el('span', null, '1% depth ' + fmtXrpAmount(p.depth_1pct_xrp)));
-      right.appendChild(el('span', 'text-white font-medium', fmtPctRaw(p.apr_pct) + ' APR'));
-      row.appendChild(right);
-      pairsCol.appendChild(row);
+      const r = el('div', 'bg-ink border border-border rounded-lg p-3');
+      const header = el('div', 'flex items-baseline justify-between gap-3 mb-2');
+      header.appendChild(el('div', 'font-mono font-semibold text-sm', p.pair));
+      header.appendChild(el('div', 'text-sm text-white font-medium', fmtPctRaw(p.apr_pct) + ' APR'));
+      r.appendChild(header);
+
+      const grid = el('div', 'grid grid-cols-3 gap-2');
+      const cells = [
+        ['TVL',       fmtUsd(p.tvl_usd, 0)],
+        ['1% depth',  fmtXrpAmount(p.depth_1pct_xrp)],
+        ['Fee',       fmtPctRaw(p.fee_pct)],
+      ];
+      cells.forEach(([k, v]) => {
+        const c = el('div');
+        c.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-0.5', k));
+        c.appendChild(el('div', 'font-mono text-xs text-white break-all', v));
+        grid.appendChild(c);
+      });
+      r.appendChild(grid);
+      pairsList.appendChild(r);
     });
+    if (!(amm.pairs || []).length) {
+      pairsList.appendChild(el('div', 'bg-ink border border-border rounded-lg p-3 text-xs text-muted', 'No pair data this snapshot.'));
+    }
+    pairsCol.appendChild(pairsList);
     wrap.appendChild(pairsCol);
 
+    // Vaults column: same stacked-card pattern. When empty, show an explicit
+    // placeholder so the column does not look broken (vault tracking is
+    // gated on the SingleAssetVault amendment which is not yet active).
     const vaultsCol = el('div');
     vaultsCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Vaults'));
+    const vaultsList = el('div', 'space-y-2');
     (amm.vaults || []).forEach(v => {
-      const row = el('div', 'flex items-center justify-between gap-3 py-2 border-b border-border/50 text-sm');
-      row.appendChild(el('div', 'font-mono', v.asset));
-      const right = el('div', 'flex items-center gap-4 text-xs text-muted');
-      right.appendChild(el('span', null, 'TVL ' + fmtXrpAmount(v.tvl_xrp_equivalent)));
-      right.appendChild(el('span', null, 'util ' + fmtPctRaw(v.utilization_pct)));
-      right.appendChild(el('span', 'text-white font-medium', fmtPctRaw(v.supply_apy_pct) + ' APY'));
-      row.appendChild(right);
-      vaultsCol.appendChild(row);
+      const r = el('div', 'bg-ink border border-border rounded-lg p-3');
+      const header = el('div', 'flex items-baseline justify-between gap-3 mb-2');
+      header.appendChild(el('div', 'font-mono font-semibold text-sm', v.asset));
+      header.appendChild(el('div', 'text-sm text-white font-medium', fmtPctRaw(v.supply_apy_pct) + ' APY'));
+      r.appendChild(header);
+
+      const grid = el('div', 'grid grid-cols-2 gap-2');
+      const cells = [
+        ['TVL',  fmtXrpAmount(v.tvl_xrp_equivalent)],
+        ['Util', fmtPctRaw(v.utilization_pct)],
+      ];
+      cells.forEach(([k, val]) => {
+        const c = el('div');
+        c.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-0.5', k));
+        c.appendChild(el('div', 'font-mono text-xs text-white break-all', val));
+        grid.appendChild(c);
+      });
+      r.appendChild(grid);
+      vaultsList.appendChild(r);
     });
+    if (!(amm.vaults || []).length) {
+      const empty = el('div', 'bg-ink border border-border border-dashed rounded-lg p-4 text-xs text-muted leading-relaxed');
+      empty.appendChild(el('div', 'text-white font-semibold mb-1', 'No active vaults yet'));
+      empty.appendChild(el('div', null, 'XRPL single-asset vaults are gated on the SingleAssetVault amendment. This card auto-populates once vaults go live on-chain.'));
+      vaultsList.appendChild(empty);
+    }
+    vaultsCol.appendChild(vaultsList);
     wrap.appendChild(vaultsCol);
 
     card.appendChild(wrap);
