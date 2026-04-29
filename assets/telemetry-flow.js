@@ -146,25 +146,43 @@
     grid.appendChild(manualCol);
     wrap.appendChild(grid);
 
-    const statusBar = el('div', 'mt-6 flex items-center gap-3 text-sm text-muted', null);
-    const spinner = el('span', 'inline-block h-3 w-3 rounded-full bg-accent animate-pulse');
-    statusBar.appendChild(spinner);
+    const statusBar = buildStatusBanner('Awaiting payment');
     statusBar.id = 'flow-status';
-    statusBar.appendChild(el('span', null, 'Awaiting payment…'));
+    statusBar.classList.add('mt-6');
     wrap.appendChild(statusBar);
 
     target.appendChild(wrap);
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function updateStatus(target, message, tone) {
-    const bar = target.querySelector('#flow-status');
-    if (!bar) return;
-    bar.innerHTML = '';
+  function buildStatusBanner(message, tone) {
     const dotColor = tone === 'good' ? 'bg-good' : tone === 'bad' ? 'bg-bad' : 'bg-accent';
-    const dot = el('span', 'inline-block h-3 w-3 rounded-full ' + dotColor + (tone ? '' : ' animate-pulse'));
-    bar.appendChild(dot);
-    bar.appendChild(el('span', null, message));
+    const borderClass = tone === 'good' ? 'border-good/40' : tone === 'bad' ? 'border-bad/40' : 'border-accent/40';
+    const banner = el('div', 'bg-ink border ' + borderClass + ' rounded-lg p-4 flex items-start gap-4');
+
+    const dotWrap = el('span', 'relative flex h-3 w-3 shrink-0 mt-1.5');
+    if (!tone) {
+      dotWrap.appendChild(el('span', 'animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75'));
+    }
+    dotWrap.appendChild(el('span', 'relative inline-flex rounded-full h-3 w-3 ' + dotColor));
+    banner.appendChild(dotWrap);
+
+    const textWrap = el('div', 'flex-grow min-w-0');
+    textWrap.appendChild(el('div', 'text-base font-semibold text-white', message));
+    if (!tone) {
+      textWrap.appendChild(el('div', 'text-xs text-muted mt-1 leading-relaxed', "We're watching XRPL for your transaction. This page updates automatically once it lands - usually within a few seconds of broadcast."));
+    }
+    banner.appendChild(textWrap);
+    return banner;
+  }
+
+  function updateStatus(target, message, tone) {
+    const old = target.querySelector('#flow-status');
+    if (!old) return;
+    const replacement = buildStatusBanner(message, tone);
+    replacement.id = 'flow-status';
+    replacement.classList.add('mt-6');
+    old.replaceWith(replacement);
   }
 
   function downloadButton(label, filename, contentType, body) {
@@ -214,25 +232,47 @@
 
   function renderLiquidityCard(liquidity) {
     const card = sectionCard('Regional liquidity (24h)');
-    const table = el('div', 'overflow-x-auto');
-    const inner = el('div', 'min-w-full');
-    const header = el('div', 'grid grid-cols-5 gap-3 text-xs text-muted uppercase tracking-wider pb-2 border-b border-border');
-    ['Region', 'Inflow', 'Outflow', 'Net', 'Top venues'].forEach(h => header.appendChild(el('div', null, h)));
-    inner.appendChild(header);
+    // Stacked region cards. 1-up on mobile, 2-up at sm+. Each region gets
+    // its own card with header (region + net flow) + inflow/outflow grid +
+    // venue chips. Avoids the 5-column horizontal-scroll trap on narrow
+    // viewports.
+    const list = el('div', 'grid sm:grid-cols-2 gap-3');
     (liquidity || []).forEach(row => {
-      const r = el('div', 'grid grid-cols-5 gap-3 py-2 border-b border-border/50 text-sm items-start');
-      r.appendChild(el('div', 'font-mono', row.region));
-      r.appendChild(el('div', null, fmtXrpAmount(row.inflow_24h_xrp)));
-      r.appendChild(el('div', null, fmtXrpAmount(row.outflow_24h_xrp)));
-      const netClass = Number(row.net_flow_24h_xrp) >= 0 ? 'text-good' : 'text-bad';
-      r.appendChild(el('div', netClass, (Number(row.net_flow_24h_xrp) >= 0 ? '+' : '') + fmtXrpAmount(row.net_flow_24h_xrp)));
-      const venuesCell = el('div', 'flex flex-wrap gap-1');
-      (row.top_venues || []).forEach(v => venuesCell.appendChild(el('span', 'font-mono text-[11px] bg-ink border border-border rounded px-1.5 py-0.5', v)));
-      r.appendChild(venuesCell);
-      inner.appendChild(r);
+      const r = el('div', 'bg-ink border border-border rounded-lg p-4');
+
+      const header = el('div', 'flex items-baseline justify-between gap-3 mb-3');
+      header.appendChild(el('div', 'font-mono font-semibold text-base', row.region));
+      const net = Number(row.net_flow_24h_xrp);
+      const netClass = net >= 0 ? 'text-good' : 'text-bad';
+      const netEl = el('div', 'text-sm ' + netClass);
+      netEl.appendChild(el('span', 'font-mono', (net >= 0 ? '+' : '') + fmtXrpAmount(net)));
+      netEl.appendChild(el('span', 'text-muted ml-1', 'net'));
+      header.appendChild(netEl);
+      r.appendChild(header);
+
+      const flow = el('div', 'grid grid-cols-2 gap-3 mb-3');
+      const inCol = el('div');
+      inCol.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-0.5', 'Inflow'));
+      inCol.appendChild(el('div', 'font-mono text-sm', fmtXrpAmount(row.inflow_24h_xrp)));
+      flow.appendChild(inCol);
+      const outCol = el('div');
+      outCol.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-0.5', 'Outflow'));
+      outCol.appendChild(el('div', 'font-mono text-sm', fmtXrpAmount(row.outflow_24h_xrp)));
+      flow.appendChild(outCol);
+      r.appendChild(flow);
+
+      if (row.top_venues && row.top_venues.length) {
+        const venuesWrap = el('div');
+        venuesWrap.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-1', 'Top venues'));
+        const venues = el('div', 'flex flex-wrap gap-1');
+        row.top_venues.forEach(v => venues.appendChild(el('span', 'font-mono text-[11px] bg-panel border border-border rounded px-1.5 py-0.5', v)));
+        venuesWrap.appendChild(venues);
+        r.appendChild(venuesWrap);
+      }
+
+      list.appendChild(r);
     });
-    table.appendChild(inner);
-    card.appendChild(table);
+    card.appendChild(list);
     return card;
   }
 

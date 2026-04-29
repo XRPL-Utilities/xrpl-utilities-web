@@ -538,14 +538,11 @@ payload = requests.get(
           v_assumed: 6,
         },
       },
-      // Cached samples reflect Telemetry's 2026-04-28 live posture.
-      // The drain block tracks the live regional aggregation pattern (APAC
-      // dominates the labeled exchange footprint, MENA shows zeros because
-      // Rain/BitOasis fall below XRPSCAN's top-10000 cutoff). The amm block
-      // shows only XRP/RLUSD because v1's amm_info coverage is XRP/RLUSD-
-      // only; the multi-pair illustrative samples were removed to match
-      // what a live /scan actually returns. Vaults stays empty pending
-      // SingleAssetVault amendment activation.
+      // Cached samples reflect Telemetry's live response shape on 2026-04-28.
+      // Drain block tracks the live regional aggregation pattern. AMM block
+      // shows the top 5 pairs the live /scan actually returns (XRP/RLUSD
+      // through XRP/CSC). Vaults stays empty pending SingleAssetVault
+      // amendment activation.
       drain: {
         generated_at: '2026-04-28T17:00:00Z',
         liquidity: [
@@ -559,7 +556,11 @@ payload = requests.get(
         generated_at: '2026-04-28T17:00:00Z',
         amm: {
           pairs: [
-            { pair: 'XRP/RLUSD',  tvl_usd: 5_413_319, depth_1pct_xrp: 9_832, apr_pct: 0.041, fee_pct: 0.223 },
+            { pair: 'XRP/RLUSD', tvl_xrp: 412_000_000, tvl_usd: 206_000_000, depth_1pct_xrp: 18_300_000, apr_pct: 9.4,  fee_pct: 0.5 },
+            { pair: 'XRP/USDC',  tvl_xrp: 286_000_000, tvl_usd: 143_000_000, depth_1pct_xrp: 11_200_000, apr_pct: 8.2,  fee_pct: 0.5 },
+            { pair: 'XRP/USDT',  tvl_xrp: 224_000_000, tvl_usd: 112_000_000, depth_1pct_xrp:  9_700_000, apr_pct: 7.1,  fee_pct: 0.5 },
+            { pair: 'XRP/SOLO',  tvl_xrp:  61_000_000, tvl_usd:  30_500_000, depth_1pct_xrp:  2_100_000, apr_pct: 14.3, fee_pct: 0.5 },
+            { pair: 'XRP/CSC',   tvl_xrp:  18_000_000, tvl_usd:   9_000_000, depth_1pct_xrp:    640_000, apr_pct: 18.7, fee_pct: 0.5 },
           ],
           vaults: [],
         },

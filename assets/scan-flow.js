@@ -107,26 +107,44 @@
     grid.appendChild(manualCol);
     wrap.appendChild(grid);
 
-    // Status indicator
-    const statusBar = el('div', 'mt-6 flex items-center gap-3 text-sm text-muted', null);
-    const spinner = el('span', 'inline-block h-3 w-3 rounded-full bg-accent animate-pulse');
-    statusBar.appendChild(spinner);
+    // Status banner - prominent so visitors don't miss it on mobile
+    const statusBar = buildStatusBanner('Awaiting payment');
     statusBar.id = 'flow-status';
-    statusBar.appendChild(el('span', null, 'Awaiting payment…'));
+    statusBar.classList.add('mt-6');
     wrap.appendChild(statusBar);
 
     target.appendChild(wrap);
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function updateStatus(target, message, tone) {
-    const bar = target.querySelector('#flow-status');
-    if (!bar) return;
-    bar.innerHTML = '';
+  function buildStatusBanner(message, tone) {
     const dotColor = tone === 'good' ? 'bg-good' : tone === 'bad' ? 'bg-bad' : 'bg-accent';
-    const dot = el('span', 'inline-block h-3 w-3 rounded-full ' + dotColor + (tone ? '' : ' animate-pulse'));
-    bar.appendChild(dot);
-    bar.appendChild(el('span', null, message));
+    const borderClass = tone === 'good' ? 'border-good/40' : tone === 'bad' ? 'border-bad/40' : 'border-accent/40';
+    const banner = el('div', 'bg-ink border ' + borderClass + ' rounded-lg p-4 flex items-start gap-4');
+
+    const dotWrap = el('span', 'relative flex h-3 w-3 shrink-0 mt-1.5');
+    if (!tone) {
+      dotWrap.appendChild(el('span', 'animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75'));
+    }
+    dotWrap.appendChild(el('span', 'relative inline-flex rounded-full h-3 w-3 ' + dotColor));
+    banner.appendChild(dotWrap);
+
+    const textWrap = el('div', 'flex-grow min-w-0');
+    textWrap.appendChild(el('div', 'text-base font-semibold text-white', message));
+    if (!tone) {
+      textWrap.appendChild(el('div', 'text-xs text-muted mt-1 leading-relaxed', "We're watching XRPL for your transaction. This page updates automatically once it lands - usually within a few seconds of broadcast."));
+    }
+    banner.appendChild(textWrap);
+    return banner;
+  }
+
+  function updateStatus(target, message, tone) {
+    const old = target.querySelector('#flow-status');
+    if (!old) return;
+    const replacement = buildStatusBanner(message, tone);
+    replacement.id = 'flow-status';
+    replacement.classList.add('mt-6');
+    old.replaceWith(replacement);
   }
 
   function renderReport(report) {
