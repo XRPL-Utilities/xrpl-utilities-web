@@ -183,9 +183,9 @@
           ratio converts custodial inventory into an estimate of what is actually on the book.
         </p>
         <p class="text-sm text-muted leading-relaxed">
-          Methodology is fully documented in <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono">/agents.json</code> &middot; active_float_methodology</a>. Each component
-          is surfaced in the paid <code class="font-mono text-white">/scan</code> response under
-          <code class="font-mono text-white">derived_models.active_float.mathematical_bridge</code> so an agent can recompute under its own ratio.
+          Each component is surfaced in the paid <code class="font-mono text-white">/scan</code> response under
+          <code class="font-mono text-white">derived_models.active_float.mathematical_bridge</code> so an agent
+          can recompute under its own ratio.
         </p>
       </div>
     </div>
@@ -248,8 +248,7 @@
         </div>
 
         <div class="mt-4 text-xs text-muted leading-relaxed text-center">
-          M anchored from <a href="#active-float" class="text-accent hover:underline">Active Float</a> (additive: exchange &times; 10% proxy + AMM + DEX). Methodology in
-          <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">/agents.json &middot; active_float_methodology</a>.
+          M anchored from <a href="#active-float" class="text-accent hover:underline">Active Float</a> (additive: exchange &times; 10% proxy + AMM + DEX).
         </div>
       </div>
 
@@ -457,7 +456,6 @@
           </ol>
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
             <a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
-            <a href="https://telemetry.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec (JSON) →</a>
             <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
           </div>
         </div>
