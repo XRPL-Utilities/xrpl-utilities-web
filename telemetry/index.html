@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=active-float-additive"></script>
+  <script src="/assets/telemetry-flow.js?v=usd-price-trim"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -730,7 +730,9 @@ payload = requests.get(
 
     // ---- Burst Math ----
     const fmtXrp = n => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' XRP';
-    const fmtUsd4 = n => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+    // Min 2 / max 4 decimal places, trailing zeros trimmed.
+    // $1.3700 -> $1.37, $1.0140 -> $1.014, $0.0269 -> $0.0269.
+    const fmtUsd4 = n => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
 
     const bmQ = document.getElementById('bm-q');
     const bmV = document.getElementById('bm-v');

@@ -49,6 +49,16 @@
     });
   }
 
+  // Adaptive USD price: min 2, max 4 decimal places, trailing zeros trimmed.
+  // $1.3700 -> $1.37, $1.0140 -> $1.014, $0.0269 -> $0.0269. For prices,
+  // not aggregates - aggregates use fmtUsd(n, 0) for whole-dollar display.
+  function fmtUsdPrice(n) {
+    return '$' + Number(n).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 4,
+    });
+  }
+
   // Compact human formatting for very large XRP totals (Active Float card).
   // ~62B -> "62.02B XRP", ~1.64B -> "1.64B XRP", ~92M -> "92.9M XRP".
   function fmtXrpCompact(xrp) {
@@ -479,9 +489,9 @@
   function renderUtilityFloorCard(uf) {
     const card = sectionCard('Required equilibrium price');
     const hasSpot = typeof uf.current_price_usd === 'number';
-    const rows = [['Required floor', fmtUsd(uf.baseline_usd, 4) + ' / XRP']];
+    const rows = [['Required floor', fmtUsdPrice(uf.baseline_usd) + ' / XRP']];
     if (hasSpot) {
-      rows.push(['Current spot', fmtUsd(uf.current_price_usd, 4) + ' / XRP']);
+      rows.push(['Current spot', fmtUsdPrice(uf.current_price_usd) + ' / XRP']);
       if (uf.baseline_usd > 0) {
         rows.push(['Premium', (uf.current_price_usd / uf.baseline_usd).toFixed(2) + '×']);
       }
