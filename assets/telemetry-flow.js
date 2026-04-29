@@ -185,6 +185,35 @@
     old.replaceWith(replacement);
   }
 
+  // After payment is confirmed and before /results lands, show a bold
+  // bridge panel matching the Sentinel-bulk "Scanning your wallets" UX.
+  // /results is usually sub-second since the snapshot is pre-built; if
+  // the cache happens to be cold and the rebuild takes longer, the
+  // pulsing skeleton cards reassure the user the page is alive.
+  function renderBuilding(target) {
+    target.replaceChildren();
+    const wrap = el('div', 'bg-panel border-2 border-accent rounded-2xl p-8');
+
+    wrap.appendChild(el('div', 'text-xs uppercase tracking-widest text-good font-semibold mb-2', '✓ Payment received'));
+    wrap.appendChild(el('h3', 'text-3xl md:text-4xl font-bold mb-2', 'Building telemetry snapshot'));
+    wrap.appendChild(el('p', 'text-muted mb-8', 'Pulling live XRPL state. Usually lands in under a second.'));
+
+    const stack = el('div', 'space-y-3');
+    ['Supply', 'Regional liquidity', 'AMM', 'Utility floor'].forEach(label => {
+      const card = el('div', 'bg-ink border border-border rounded-lg p-4');
+      card.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted font-semibold mb-3', label));
+      const blocks = el('div', 'space-y-2');
+      blocks.appendChild(el('div', 'h-3 bg-border rounded animate-pulse w-full'));
+      blocks.appendChild(el('div', 'h-3 bg-border rounded animate-pulse w-3/4'));
+      card.appendChild(blocks);
+      stack.appendChild(card);
+    });
+    wrap.appendChild(stack);
+
+    target.appendChild(wrap);
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function downloadButton(label, filename, contentType, body) {
     const btn = el('button', 'border border-border hover:border-accent text-white text-sm px-3 py-2 rounded-lg transition');
     btn.type = 'button';
@@ -423,7 +452,7 @@
           const status = await r.json();
           if (status.paid) {
             document.title = '✓ Payment received · XR-Telemetry';
-            updateStatus(target, 'Payment received. Building snapshot…', 'good');
+            renderBuilding(target);
             const rr = await fetch(`${API_BASE}/results/${invoiceId}`);
             if (rr.ok) {
               setTimeout(restore, 5000);
