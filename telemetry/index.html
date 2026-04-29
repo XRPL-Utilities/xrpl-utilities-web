@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=clean"></script>
+  <script src="/assets/telemetry-flow.js?v=active-float-additive"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -93,6 +93,7 @@
         <span class="text-muted text-xs uppercase tracking-wider px-3 shrink-0">Jump to</span>
         <a href="#top" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">&uarr; Top</a>
         <a href="#snapshots" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Samples</a>
+        <a href="#active-float" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Active Float</a>
         <a href="#burst-math" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Burst Math</a>
         <a href="#floor-matrix" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Floor Matrix</a>
         <a href="#try-it" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Try it</a>
@@ -141,17 +142,67 @@
     </div>
   </section>
 
+  <section id="active-float" class="border-t border-border">
+    <div class="max-w-5xl mx-auto px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Active Float</h2>
+      <h3 class="text-3xl font-bold mb-2">3-second settlement supply</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-3xl">
+        Total Circulating Supply tells you how much XRP is technically out of escrow. <strong class="text-white">Modeled Active Float</strong>
+        tells you how much XRP can actually absorb a multi-billion institutional block trade inside a single 3-5 second
+        XRPL ledger close. Custodial omnibus balances at exchanges are mostly retail and institutional sub-account
+        inventory, not orderbook depth - we apply an industry-cited <strong class="text-white">10% active-depth proxy ratio</strong> to the live exchange
+        omnibus and add AMM-locked XRP and on-chain DEX depth.
+      </p>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Total Circulating Supply</div>
+          <div id="af-circulating" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div class="text-xs text-muted mt-3">Total XRPL supply minus Ripple escrow.</div>
+        </div>
+
+        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">Modeled Active Float (M)</div>
+          <div id="af-value" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div id="af-delta" class="text-sm mt-3 flex items-center gap-2">
+            <span class="text-muted">24h delta bootstrapping…</span>
+          </div>
+          <div class="text-xs text-muted mt-2">
+            Hot/warm exchange omnibus &times; 10% proxy + AMM-locked + DEX orderbook depth.
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-panel border border-border rounded-2xl p-6">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Why these two numbers differ</div>
+        <p class="text-sm text-muted leading-relaxed mb-3">
+          Subtractive models (total &minus; tagged custody &minus; dormant) fail because institutional cold custody is
+          intentionally untagged on-chain. Additive flips the burden of proof: only count XRP that is verifiably resting
+          on an open market right now. When UPbit holds 6.5B XRP across labeled wallets, those are omnibus accounts
+          backing user balances, not active orderbook depth - the 10% proxy ratio bridges custodial inventory to active
+          settlement liquidity.
+        </p>
+        <p class="text-sm text-muted leading-relaxed">
+          Methodology is fully documented in <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono">/agents.json</code> &middot; active_float_methodology</a>. Each component
+          is surfaced in the paid <code class="font-mono text-white">/scan</code> response under
+          <code class="font-mono text-white">derived_models.active_float.mathematical_bridge</code> so an agent can recompute under its own ratio.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <section id="burst-math" class="border-t border-border bg-panel/30">
     <div class="max-w-5xl mx-auto px-6 py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Burst Math</h2>
-      <h3 class="text-3xl font-bold mb-2">Implied price floor calculator</h3>
+      <h3 class="text-3xl font-bold mb-2">Required equilibrium price calculator</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        This is the macroeconomic Equation of Exchange (<strong class="text-white font-mono">M &middot; V = P &middot; Q</strong>)
-        applied to XRPL over a one-year window. Money supply times velocity equals price times throughput.
-        We anchor M (today's liquid XRP) from the snapshot, you choose Q and V for the year, and the math
-        solves for P: the lowest USD-per-XRP price that lets the supply absorb the assumed settlement demand.
-        The market trades higher than P because XRP is not priced only on settlement utility; speculation,
-        scarcity bets, and network-adoption expectations all add premium on top.
+        The macroeconomic Equation of Exchange (<strong class="text-white font-mono">M &middot; V = P &middot; Q</strong>)
+        applied to XRPL over a one-year window. We anchor <strong class="text-white">M</strong> from
+        <a href="#active-float" class="text-accent hover:underline">Modeled Active Float</a> &mdash; the supply that
+        can actually clear at 3-second machine speed &mdash; you choose Q and V for the year, and the math solves
+        for <strong class="text-white">P</strong>: the equilibrium USD-per-XRP price the identity requires under
+        those assumptions. Not a forecast: the market sets price by marginal seller reservation, not by the
+        identity. Read P as &quot;what the math requires.&quot;
       </p>
 
       <div class="bg-panel border border-border rounded-2xl p-6">
@@ -168,9 +219,9 @@
 
         <div class="grid sm:grid-cols-2 gap-4 mb-6 text-sm">
           <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="text-xs text-muted uppercase tracking-wider mb-1">M &middot; Available liquid supply (XRP)</div>
+            <div class="text-xs text-muted uppercase tracking-wider mb-1">M &middot; Active Float (XRP)</div>
             <div id="bm-m" class="font-mono font-medium"></div>
-            <div class="text-xs text-muted mt-1">total &minus; dormant &minus; escrowed</div>
+            <div class="text-xs text-muted mt-1">exchange omnibus &times; 10% + AMM-locked + DEX depth</div>
           </div>
           <div class="bg-ink border border-border rounded-lg p-4">
             <div class="text-xs text-muted uppercase tracking-wider mb-1">Formula</div>
@@ -181,9 +232,9 @@
 
         <div class="grid sm:grid-cols-2 gap-4">
           <div class="bg-ink border border-accent rounded-lg p-6 text-center">
-            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">P &middot; Implied price</div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">P &middot; Required equilibrium price</div>
             <div id="bm-p" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
-            <div class="text-xs text-muted mt-2">USD per XRP</div>
+            <div class="text-xs text-muted mt-2">USD per XRP &middot; algorithmic utility floor</div>
           </div>
           <div class="bg-ink border border-border rounded-lg p-6 text-center">
             <div class="text-xs uppercase tracking-widest text-muted font-semibold mb-1">Current spot</div>
@@ -193,7 +244,12 @@
         </div>
 
         <div class="mt-4 bg-ink border border-border rounded-lg p-4 text-sm text-center">
-          <span class="text-muted">Market premium over implied floor: </span><span id="bm-premium" class="font-mono font-medium text-white">-</span>
+          <span class="text-muted">Market premium over equilibrium floor: </span><span id="bm-premium" class="font-mono font-medium text-white">-</span>
+        </div>
+
+        <div class="mt-4 text-xs text-muted leading-relaxed text-center">
+          M anchored from <a href="#active-float" class="text-accent hover:underline">Active Float</a> (additive: exchange &times; 10% proxy + AMM + DEX). Methodology in
+          <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">/agents.json &middot; active_float_methodology</a>.
         </div>
       </div>
 
@@ -201,21 +257,22 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the variables</div>
           <p class="mb-3">
-            <strong class="text-white">M</strong> &middot; the liquid XRP supply that can actually move. Total XRP
-            minus dormant minus escrowed. Anchored from the live snapshot.
+            <strong class="text-white">M</strong> &middot; <a href="#active-float" class="text-accent hover:underline">Modeled Active Float</a> &mdash;
+            the XRP that can actually absorb a multi-billion institutional block trade inside a 3-5 second ledger close.
+            Additive construction: exchange omnibus &times; 10% active-depth proxy + AMM-locked + DEX orderbook depth.
           </p>
           <p class="mb-3">
-            <strong class="text-white">V</strong> &middot; how many times each liquid XRP is reused for settlement
-            in a year. There is no canonical XRPL velocity, which is why this is a slider. Empirically it is low
-            today (most XRP is held, not transacted); a settlement-network future would push it higher.
+            <strong class="text-white">V</strong> &middot; how many times each unit of M is reused for settlement
+            in a year. There is no canonical XRPL velocity, which is why this is a slider. Empirically low today
+            (most XRP is held, not transacted); a settlement-network future would push it higher.
           </p>
           <p class="mb-3">
             <strong class="text-white">Q</strong> &middot; total dollar value of settlement you assume XRPL clears
             in the same year. Q and V must use the same time window, so we lock both to annual.
           </p>
           <p>
-            <strong class="text-white">P</strong> &middot; the price each XRP would need to be worth for M and V
-            to clear Q over that year. The calculator solves for this.
+            <strong class="text-white">P</strong> &middot; the equilibrium USD-per-XRP price the identity requires
+            given M, V, and Q. The calculator solves for this. Not a forecast.
           </p>
         </div>
 
@@ -241,9 +298,9 @@
             </li>
             <li>
               <strong class="text-white">M</strong> <span class="text-muted">-</span> <strong class="text-white">Shrinks</strong>
-              &middot; less XRP actually circulating. Plausible drivers: Ripple's monthly 1B unlock
-              continues to be mostly relocked, the SingleAssetVault amendment activates and locks supply
-              away, AMM TVL grows, more long-term holders go dormant.
+              &middot; less XRP resting on open markets. Plausible drivers: institutions sweep
+              exchange omnibus into long-term cold custody, AMM TVL grows, market makers pull resting
+              orderbook depth as settlement volume builds.
             </li>
           </ul>
           <p>
@@ -438,10 +495,11 @@ payload = requests.get(
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-3 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">supply</code>: total / dormant / escrowed XRP, HODL wave %, 24h exchange outflow, escrow release÷relock ratio</li>
+        <li><code class="font-mono text-white">supply</code>: total / circulating / escrowed / dormant XRP, AMM-locked, exchange omnibus + venue/address counts, DEX orderbook depth, HODL wave %, 24h exchange outflow, escrow release÷relock ratio</li>
         <li><code class="font-mono text-white">liquidity</code>: per-region inflow / outflow / net flow over 24h, with a list of top venues</li>
         <li><code class="font-mono text-white">amm</code>: top pairs (TVL USD, 1% depth XRP, APR%) and vaults (TVL XRP-equivalent, utilization%, supply APY%)</li>
-        <li><code class="font-mono text-white">utility_floor</code>: baseline USD-per-XRP at the network's assumed Q, V, and P, plus current spot price for premium-vs-floor comparison</li>
+        <li><code class="font-mono text-white">derived_models.active_float</code>: <strong class="text-white">value_xrp</strong> (modeled supply available for 3-second settlement), <strong class="text-white">delta_24h_xrp</strong>, <strong class="text-white">proxy_ratio</strong>, and the full <strong class="text-white">mathematical_bridge</strong> with each additive component and its source</li>
+        <li><code class="font-mono text-white">utility_floor</code>: baseline (= P at the assumed Q, V, and Active Float as M), current spot, premium ratio</li>
         <li><code class="font-mono text-white">generated_at</code>: ISO timestamp the snapshot was computed</li>
       </ul>
     </div>
@@ -510,30 +568,72 @@ payload = requests.get(
     // until a paid /scan returns a full TelemetryPayload.
     const SNAPSHOT = {
       total_supply_xrp:        100_000_000_000,
+      circulating_supply_xrp:   66_800_000_000, // total - escrow
       dormant_supply_xrp:        4_779_688_113,
       escrowed_supply_xrp:      33_200_000_000,
-      available_liquid_supply:  62_020_311_887, // P = total - dormant - escrowed
-      current_price_usd:               1.37,    // overwritten by /healthz on load
+      // M used in Burst Math is now Modeled Active Float (additive:
+      // exchange omnibus * 10% proxy + AMM + DEX). Live values land in
+      // the 1.5-2B range; ~14.4B exchange omnibus * 0.10 + ~0.2B AMM +
+      // ~0.001B DEX = ~1.64B. /scan results overwrite this on success.
+      available_liquid_supply:   1_644_000_000,
+      current_price_usd:                 1.37, // overwritten by /healthz on load
     };
     const DEFAULTS = { Q: 10_000_000_000, V: 6 }; // $10B settlement window, velocity 6
     const SNAPSHOT_AS_OF = '2026-04-28';
 
     // ---- Cached sample TelemetryPayloads (illustrative) ----
+    // All values track the live additive Active Float methodology shipped
+    // 2026-04-29: M = exchange omnibus * 10% proxy + AMM-locked + DEX
+    // orderbook depth. baseline_usd = $10B / (6 * 1.644B) ~= $1.014.
     const SAMPLES = {
       supply: {
-        generated_at: '2026-04-28T17:00:00Z',
+        generated_at: '2026-04-29T22:00:00Z',
         supply: {
           total_xrp: 100_000_000_000,
-          dormant_xrp: 4_779_688_113,
+          circulating_xrp: 66_800_000_000,
           escrowed_xrp: 33_200_000_000,
+          dormant_xrp: 4_779_688_113,
+          amm_locked_xrp: 200_000_000,
+          exchange_omnibus_xrp: 14_433_293_926,
+          exchange_venue_count: 37,
+          exchange_address_count: 85,
+          dex_orderbook_depth_xrp: 874_471,
           hodl_wave_pct: 4.78,
           exchange_outflow_24h_xrp: 43_863_636,
           escrow_release_vs_relock_ratio: 1.000,
         },
+        derived_models: {
+          active_float: {
+            thesis: 'Modeled XRP available to absorb a multi-billion institutional block trade inside a single 3-5 second XRPL ledger close.',
+            kind: 'derived_model',
+            confidence: 'low_to_moderate',
+            value_xrp: 1_644_203_864,
+            value_xrp_24h_ago: 1_679_203_864,
+            delta_24h_xrp: -35_000_000,
+            delta_24h_pct: -2.08,
+            proxy_ratio: 0.10,
+            mathematical_bridge: {
+              starting: { label: 'Active Float (additive construction)', value_xrp: 0 },
+              additions: [
+                { label: 'Hot/warm exchange omnibus * 10.0% active-depth proxy ratio',
+                  value_xrp: 1_443_329_393,
+                  source: '14,433,293,926 XRP raw omnibus across 37 venues (85 addresses) * 0.10 ratio = 1,443,329,393 XRP. Industry-cited 5-15% range; 10% midpoint.' },
+                { label: 'AMM-locked XRP (XRPL on-chain pools)',
+                  value_xrp: 200_000_000,
+                  source: 'sum of XRP-side reserves across amm.pairs[]; live amm_info per refresh, half-of-TVL by AMM-balanced invariant.' },
+                { label: 'DEX orderbook XRP-side resting depth',
+                  value_xrp: 874_471,
+                  source: 'sum of TakerGets across sell-XRP offers in book_offers for 3 curated XRP/quote pairs.' },
+              ],
+              result: { label: 'Modeled Active Float', value_xrp: 1_644_203_864 },
+            },
+            methodology_note: 'Active Float is a derived model output, not a measurement.',
+          },
+        },
         utility_floor: {
-          baseline_usd: 0.0269,
+          baseline_usd: 1.0140,
           current_price_usd: 1.37,
-          available_liquid_supply_xrp: 62_020_311_887,
+          available_liquid_supply_xrp: 1_644_203_864,
           q_assumed_usd: 10_000_000_000,
           v_assumed: 6,
         },
@@ -566,21 +666,50 @@ payload = requests.get(
         },
       },
       floor: {
-        generated_at: '2026-04-28T17:00:00Z',
+        generated_at: '2026-04-29T22:00:00Z',
         utility_floor: {
-          baseline_usd: 0.0269,
+          baseline_usd: 1.0140,
           current_price_usd: 1.37,
-          available_liquid_supply_xrp: 62_020_311_887,
+          available_liquid_supply_xrp: 1_644_203_864,
           q_assumed_usd: 10_000_000_000,
           v_assumed: 6,
         },
         supply: {
           total_xrp: 100_000_000_000,
-          dormant_xrp: 4_779_688_113,
+          circulating_xrp: 66_800_000_000,
           escrowed_xrp: 33_200_000_000,
+          dormant_xrp: 4_779_688_113,
+          amm_locked_xrp: 200_000_000,
+          exchange_omnibus_xrp: 14_433_293_926,
+          exchange_venue_count: 37,
+          exchange_address_count: 85,
+          dex_orderbook_depth_xrp: 874_471,
           hodl_wave_pct: 4.78,
           exchange_outflow_24h_xrp: 43_863_636,
           escrow_release_vs_relock_ratio: 1.000,
+        },
+        derived_models: {
+          active_float: {
+            kind: 'derived_model',
+            confidence: 'low_to_moderate',
+            value_xrp: 1_644_203_864,
+            value_xrp_24h_ago: 1_679_203_864,
+            delta_24h_xrp: -35_000_000,
+            delta_24h_pct: -2.08,
+            proxy_ratio: 0.10,
+            mathematical_bridge: {
+              starting: { label: 'Active Float (additive construction)', value_xrp: 0 },
+              additions: [
+                { label: 'Hot/warm exchange omnibus * 10.0% active-depth proxy ratio',
+                  value_xrp: 1_443_329_393, source: '14.43B raw * 0.10 ratio.' },
+                { label: 'AMM-locked XRP (XRPL on-chain pools)',
+                  value_xrp: 200_000_000, source: 'live amm_info aggregation.' },
+                { label: 'DEX orderbook XRP-side resting depth',
+                  value_xrp: 874_471, source: 'book_offers across 3 pairs.' },
+              ],
+              result: { label: 'Modeled Active Float', value_xrp: 1_644_203_864 },
+            },
+          },
         },
       },
     };
@@ -614,6 +743,60 @@ payload = requests.get(
     bmQ.value = DEFAULTS.Q;
     bmV.value = DEFAULTS.V;
     bmM.textContent = fmtXrp(SNAPSHOT.available_liquid_supply) + ' (as of ' + SNAPSHOT_AS_OF + ')';
+
+    // Active Float dual-card. Populate from SNAPSHOT on first paint; the
+    // numbers are operator-curated cached values that match the live
+    // additive methodology. A paid /scan path (reanchorFromPayload below)
+    // overwrites both with the actual derived_models.active_float values
+    // pulled from /results.
+    const afCirculatingEl = document.getElementById('af-circulating');
+    const afValueEl = document.getElementById('af-value');
+    const afDeltaEl = document.getElementById('af-delta');
+
+    function fmtXrpCompactInline(xrp) {
+      const n = Number(xrp);
+      if (!isFinite(n)) return '-';
+      const abs = Math.abs(n);
+      if (abs >= 1e9) return (n / 1e9).toFixed(2) + 'B XRP';
+      if (abs >= 1e6) return (n / 1e6).toFixed(1) + 'M XRP';
+      if (abs >= 1e3) return Math.round(n / 1e3) + 'k XRP';
+      return Math.round(n).toLocaleString() + ' XRP';
+    }
+
+    function populateActiveFloatCard() {
+      if (afCirculatingEl) afCirculatingEl.textContent = fmtXrpCompactInline(SNAPSHOT.circulating_supply_xrp);
+      if (afValueEl) afValueEl.textContent = fmtXrpCompactInline(SNAPSHOT.available_liquid_supply);
+    }
+
+    function setActiveFloatDelta(deltaXrp, deltaPct) {
+      if (!afDeltaEl) return;
+      afDeltaEl.replaceChildren();
+      if (typeof deltaXrp !== 'number' || typeof deltaPct !== 'number') {
+        const span = document.createElement('span');
+        span.className = 'text-muted';
+        span.textContent = '24h delta bootstrapping…';
+        afDeltaEl.appendChild(span);
+        return;
+      }
+      const shrinking = deltaXrp < 0;
+      const arrow = shrinking ? '↓' : '↑';
+      const tone = shrinking ? 'text-bad' : 'text-good';
+      const sign = shrinking ? '' : '+';
+      const arrowSpan = document.createElement('span');
+      arrowSpan.className = 'text-xl font-bold ' + tone;
+      arrowSpan.textContent = arrow;
+      afDeltaEl.appendChild(arrowSpan);
+      const valSpan = document.createElement('span');
+      valSpan.className = 'font-mono ' + tone;
+      valSpan.textContent = sign + fmtXrpCompactInline(deltaXrp) + ' (' + sign + Number(deltaPct).toFixed(2) + '%)';
+      afDeltaEl.appendChild(valSpan);
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'text-xs text-muted';
+      labelSpan.textContent = '24h';
+      afDeltaEl.appendChild(labelSpan);
+    }
+
+    populateActiveFloatCard();
     // Skeleton placeholder until /healthz fetch lands the live oracle value.
     // Pulsing grey block sized to the eventual $1.3700 text so the tile has
     // visual weight on first paint instead of a hyphen and 'loading…' flash.
@@ -848,19 +1031,37 @@ payload = requests.get(
     // ---- Live snapshot button ----
     function reanchorFromPayload(payload) {
       if (!payload) return;
-      const uf = payload.utility_floor;
-      if (!uf) return;
       let touched = false;
-      if (typeof uf.current_price_usd === 'number' && isFinite(uf.current_price_usd)) {
-        SNAPSHOT.current_price_usd = uf.current_price_usd;
-        bmSpot.textContent = fmtUsd4(uf.current_price_usd);
+
+      const uf = payload.utility_floor;
+      if (uf) {
+        if (typeof uf.current_price_usd === 'number' && isFinite(uf.current_price_usd)) {
+          SNAPSHOT.current_price_usd = uf.current_price_usd;
+          bmSpot.textContent = fmtUsd4(uf.current_price_usd);
+          touched = true;
+        }
+        if (typeof uf.available_liquid_supply_xrp === 'number' && uf.available_liquid_supply_xrp > 0) {
+          SNAPSHOT.available_liquid_supply = uf.available_liquid_supply_xrp;
+          bmM.textContent = fmtXrp(uf.available_liquid_supply_xrp) + ' (live)';
+          touched = true;
+        }
+      }
+
+      // Active Float card: prefer derived_models.active_float over the
+      // utility_floor alias since the derived block carries the 24h delta.
+      const af = (payload.derived_models || {}).active_float;
+      if (af && typeof af.value_xrp === 'number') {
+        SNAPSHOT.available_liquid_supply = af.value_xrp;
+        if (afValueEl) afValueEl.textContent = fmtXrpCompactInline(af.value_xrp);
+        setActiveFloatDelta(af.delta_24h_xrp, af.delta_24h_pct);
+        bmM.textContent = fmtXrp(af.value_xrp) + ' (live)';
         touched = true;
       }
-      if (typeof uf.available_liquid_supply_xrp === 'number' && uf.available_liquid_supply_xrp > 0) {
-        SNAPSHOT.available_liquid_supply = uf.available_liquid_supply_xrp;
-        bmM.textContent = fmtXrp(uf.available_liquid_supply_xrp) + ' (live)';
-        touched = true;
+      if (payload.supply && typeof payload.supply.circulating_xrp === 'number') {
+        SNAPSHOT.circulating_supply_xrp = payload.supply.circulating_xrp;
+        if (afCirculatingEl) afCirculatingEl.textContent = fmtXrpCompactInline(payload.supply.circulating_xrp);
       }
+
       if (payload.generated_at) {
         const stamp = new Date(payload.generated_at);
         if (!isNaN(stamp.getTime())) bmSpotAsOf.textContent = 'live · ' + stamp.toLocaleDateString();

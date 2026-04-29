@@ -49,6 +49,18 @@
     });
   }
 
+  // Compact human formatting for very large XRP totals (Active Float card).
+  // ~62B -> "62.02B XRP", ~1.64B -> "1.64B XRP", ~92M -> "92.9M XRP".
+  function fmtXrpCompact(xrp) {
+    const n = Number(xrp);
+    if (!isFinite(n)) return '-';
+    const abs = Math.abs(n);
+    if (abs >= 1e9) return (n / 1e9).toFixed(2) + 'B XRP';
+    if (abs >= 1e6) return (n / 1e6).toFixed(1) + 'M XRP';
+    if (abs >= 1e3) return Math.round(n / 1e3) + 'k XRP';
+    return Math.round(n).toLocaleString() + ' XRP';
+  }
+
   function fmtIso(s) {
     if (!s) return '';
     const d = new Date(s);
@@ -199,7 +211,7 @@
     wrap.appendChild(el('p', 'text-muted mb-8', 'Pulling live XRPL state. Usually lands in under a second.'));
 
     const stack = el('div', 'space-y-3');
-    ['Supply', 'Regional liquidity', 'AMM', 'Utility floor'].forEach(label => {
+    ['Active Float', 'Supply', 'Regional liquidity', 'AMM', 'Required equilibrium price'].forEach(label => {
       const card = el('div', 'bg-ink border border-border rounded-lg p-4');
       card.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted font-semibold mb-3', label));
       const blocks = el('div', 'space-y-2');
@@ -246,16 +258,97 @@
     return grid;
   }
 
+  // Two-up Active Float dual-card. Left: neutral Total Circulating Supply
+  // (= total - escrow). Right: accent-bordered Active Float with red ↓
+  // arrow on shrinkage. Accepts the full payload because it pulls from
+  // both supply and derived_models.
+  function renderActiveFloatCard(payload) {
+    const supply = payload.supply || {};
+    const af = (payload.derived_models || {}).active_float || {};
+    const card = sectionCard('Active Float (3-second settlement supply)');
+
+    const grid = el('div', 'grid sm:grid-cols-2 gap-4');
+
+    // Left: Total Circulating Supply (neutral).
+    const left = el('div', 'bg-ink border border-border rounded-xl p-5');
+    left.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Total Circulating Supply'));
+    left.appendChild(el('div', 'text-3xl sm:text-4xl font-bold tracking-tight font-mono',
+      typeof supply.circulating_xrp === 'number' ? fmtXrpCompact(supply.circulating_xrp) : '-'));
+    left.appendChild(el('div', 'text-xs text-muted mt-2', 'Total XRPL supply minus Ripple escrow.'));
+    grid.appendChild(left);
+
+    // Right: Modeled Active Float (accent + delta arrow).
+    const right = el('div', 'bg-ink border-2 border-accent rounded-xl p-5');
+    right.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent font-semibold mb-2', 'Modeled Active Float'));
+    right.appendChild(el('div', 'text-3xl sm:text-4xl font-bold tracking-tight font-mono',
+      typeof af.value_xrp === 'number' ? fmtXrpCompact(af.value_xrp) : '-'));
+
+    const deltaXrp = af.delta_24h_xrp;
+    const deltaPct = af.delta_24h_pct;
+    if (typeof deltaXrp === 'number' && typeof deltaPct === 'number') {
+      const shrinking = deltaXrp < 0;
+      const arrow = shrinking ? '↓' : '↑';
+      const tone = shrinking ? 'text-bad' : 'text-good';
+      const sign = shrinking ? '' : '+';
+      const deltaWrap = el('div', 'mt-2 flex items-center gap-2 text-sm');
+      deltaWrap.appendChild(el('span', 'text-xl font-bold ' + tone, arrow));
+      deltaWrap.appendChild(el('span', 'font-mono ' + tone,
+        sign + fmtXrpCompact(deltaXrp) + ' (' + sign + Number(deltaPct).toFixed(2) + '%)'));
+      deltaWrap.appendChild(el('span', 'text-xs text-muted', '24h'));
+      right.appendChild(deltaWrap);
+    } else {
+      right.appendChild(el('div', 'text-xs text-muted mt-2',
+        '24h delta bootstrapping (first daily snapshot still rotating).'));
+    }
+
+    if (typeof af.proxy_ratio === 'number') {
+      right.appendChild(el('div', 'text-xs text-muted mt-2',
+        'Hot/warm exchange omnibus × ' + (af.proxy_ratio * 100).toFixed(1) +
+        '% active-depth proxy + AMM-locked + DEX orderbook depth.'));
+    }
+    grid.appendChild(right);
+
+    card.appendChild(grid);
+
+    // Methodology disclosure - one-line link to the on-API spec block.
+    const disc = el('div', 'mt-4 text-xs text-muted leading-relaxed');
+    disc.appendChild(document.createTextNode(
+      'Active Float is a derived model output, not a measurement. Each component is documented in '
+    ));
+    const link = el('a', 'text-accent hover:underline', 'mathematical_bridge');
+    link.href = 'https://telemetry.xrpl-utilities.io/agents.json#active_float_methodology';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    disc.appendChild(link);
+    disc.appendChild(document.createTextNode(
+      '. The 10% proxy ratio reflects industry estimates of 5-15% market-maker active orderbook depth as a fraction of custodial inventory.'
+    ));
+    card.appendChild(disc);
+
+    return card;
+  }
+
   function renderSupplyCard(supply) {
     const card = sectionCard('Supply');
-    card.appendChild(kvGrid([
+    const rows = [
       ['Total XRP',                     fmtXrpAmount(supply.total_xrp)],
-      ['Dormant',                       fmtXrpAmount(supply.dormant_xrp)],
+      ['Circulating (- escrow)',        typeof supply.circulating_xrp === 'number' ? fmtXrpAmount(supply.circulating_xrp) : '-'],
       ['Escrowed',                      fmtXrpAmount(supply.escrowed_xrp)],
+      ['Dormant (>12mo)',               fmtXrpAmount(supply.dormant_xrp)],
       ['HODL wave',                     fmtPctRaw(supply.hodl_wave_pct)],
       ['24h exchange outflow',          fmtXrpAmount(supply.exchange_outflow_24h_xrp)],
-      ['Escrow release ÷ relock ratio', fmtRatio(supply.escrow_release_vs_relock_ratio)],
-    ], 3));
+    ];
+    if (typeof supply.exchange_omnibus_xrp === 'number') {
+      rows.push(['Exchange omnibus (raw)', fmtXrpAmount(supply.exchange_omnibus_xrp)]);
+    }
+    if (typeof supply.amm_locked_xrp === 'number') {
+      rows.push(['AMM-locked',          fmtXrpAmount(supply.amm_locked_xrp)]);
+    }
+    if (typeof supply.dex_orderbook_depth_xrp === 'number') {
+      rows.push(['DEX orderbook depth', fmtXrpAmount(supply.dex_orderbook_depth_xrp)]);
+    }
+    rows.push(['Escrow release ÷ relock ratio', fmtRatio(supply.escrow_release_vs_relock_ratio)]);
+    card.appendChild(kvGrid(rows, 3));
     return card;
   }
 
@@ -384,20 +477,21 @@
   }
 
   function renderUtilityFloorCard(uf) {
-    const card = sectionCard('Utility floor');
+    const card = sectionCard('Required equilibrium price');
     const hasSpot = typeof uf.current_price_usd === 'number';
-    const rows = [['Baseline', fmtUsd(uf.baseline_usd, 4) + ' / XRP']];
+    const rows = [['Required floor', fmtUsd(uf.baseline_usd, 4) + ' / XRP']];
     if (hasSpot) {
       rows.push(['Current spot', fmtUsd(uf.current_price_usd, 4) + ' / XRP']);
       if (uf.baseline_usd > 0) {
         rows.push(['Premium', (uf.current_price_usd / uf.baseline_usd).toFixed(2) + '×']);
       }
     }
-    rows.push(['Liquid supply (P)', fmtXrpAmount(uf.available_liquid_supply_xrp)]);
+    rows.push(['Active Float (M)', fmtXrpAmount(uf.available_liquid_supply_xrp)]);
     rows.push(['Volume (Q)',        fmtUsd(uf.q_assumed_usd, 0)]);
     rows.push(['Velocity (V)',      Number(uf.v_assumed).toFixed(2)]);
     card.appendChild(kvGrid(rows, hasSpot ? 3 : 4));
-    card.appendChild(el('div', 'text-xs text-muted mt-3 leading-relaxed', 'M = Q ÷ (V × P) - implied USD per XRP at the assumed institutional volume and velocity. Premium is current spot ÷ baseline.'));
+    card.appendChild(el('div', 'text-xs text-muted mt-3 leading-relaxed',
+      'P = Q ÷ (V × M) - the equilibrium USD-per-XRP price the math requires under the assumed Q, V, and modeled Active Float. Not a price prediction.'));
     return card;
   }
 
@@ -423,6 +517,10 @@
     target.appendChild(summary);
 
     const stack = el('div', 'space-y-4');
+    // Active Float dual-card surfaces the headline narrative first: total
+    // circulating vs modeled active settlement supply, with the 24h
+    // shrinkage delta. Pulls fields from supply + derived_models.
+    if (payload.supply || payload.derived_models) stack.appendChild(renderActiveFloatCard(payload));
     if (payload.supply)        stack.appendChild(renderSupplyCard(payload.supply));
     if (payload.liquidity)     stack.appendChild(renderLiquidityCard(payload.liquidity));
     if (payload.amm)           stack.appendChild(renderAmmCard(payload.amm));
