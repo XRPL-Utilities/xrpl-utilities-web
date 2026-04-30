@@ -373,16 +373,18 @@
   async function startSingleScan(target, address) {
     target.replaceChildren();
     const wrap = el('div', 'bg-panel border-2 border-accent rounded-2xl p-8');
-    wrap.appendChild(el('div', 'text-xs uppercase tracking-widest text-accent font-semibold mb-2', 'Scanning'));
-    wrap.appendChild(el('h3', 'text-2xl md:text-3xl font-bold mb-2', 'Pulling on-chain history'));
-    wrap.appendChild(el('p', 'text-muted mb-6 text-sm', 'Fetching the last 90 days, classifying activity pattern, deriving signals.'));
+    const header = el('div', 'flex items-center gap-3 mb-2');
+    header.appendChild(el('span', 'scanning-pulse'));
+    header.appendChild(el('div', 'text-xs uppercase tracking-widest text-accent font-semibold', 'Scanning live ledger'));
+    wrap.appendChild(header);
+    wrap.appendChild(el('h3', 'text-2xl md:text-3xl font-bold mb-6', 'Reading 90 days of on-chain activity'));
     const stack = el('div', 'space-y-3');
     ['Activity', 'Signals', 'Reasoning'].forEach(label => {
       const card = el('div', 'bg-ink border border-border rounded-lg p-4');
       card.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted font-semibold mb-3', label));
       const blocks = el('div', 'space-y-2');
-      blocks.appendChild(el('div', 'h-3 bg-border rounded animate-pulse w-full'));
-      blocks.appendChild(el('div', 'h-3 bg-border rounded animate-pulse w-3/4'));
+      blocks.appendChild(el('div', 'skeleton-bar h-3 w-full'));
+      blocks.appendChild(el('div', 'skeleton-bar h-3 w-3/4'));
       card.appendChild(blocks);
       stack.appendChild(card);
     });
