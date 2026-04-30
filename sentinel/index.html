@@ -127,7 +127,7 @@
           </button>
         </div>
         <div class="mt-5">
-          <div class="text-xs uppercase tracking-wider text-muted mb-2">Free preview · cached samples</div>
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Try a known address</div>
           <div class="flex flex-wrap gap-2">
             <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="sologenic">Sologenic issuer</button>
             <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="bithomp">Bithomp validator</button>
@@ -135,8 +135,8 @@
           </div>
         </div>
         <p class="text-xs text-muted mt-4 leading-relaxed">
-          Click a sample to see a cached classification instantly. Click <strong class="text-white">Scan</strong>
-          with any address to run a live classification. Free from this page. Agents pay $0.10 per scan over the
+          Click any address above to pre-fill the box and run a live scan. Or paste your own and click
+          <strong class="text-white">Scan</strong>. Free from this page. Agents pay $0.10 per scan over the
           x402 API at <code class="font-mono text-white">sentinel.xrpl-utilities.io</code>.
         </p>
       </div>
@@ -285,107 +285,20 @@ report = session.post(
   </footer>
 
   <script>
-    const SAMPLES = {
-      sologenic: {
-        address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz",
-        activity_score: 88,
-        activity_level: "High",
-        confidence: "high",
-        window_days: 90,
-        transaction_count: 200,
-        signals: ["PASSIVE_COUNTERPARTY", "MULTI_CURRENCY_GATEWAY"],
-        features: { unique_currencies: 17, dust_payments_under_usd_0p01: 0 },
-        reasoning: "Token issuer with high transaction depth across many currencies. Passive counterparty role is consistent with an issuer wallet receiving payments from holders. Multi-currency gateway behavior is expected for an issuer of this size.",
-      },
-      bithomp: {
-        address: "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe",
-        activity_score: 0,
-        activity_level: "Dormant",
-        confidence: "medium",
-        window_days: 90,
-        transaction_count: 0,
-        signals: ["DORMANT_REAWAKENING"],
-        features: { total_txs_fetched: 47 },
-        reasoning: "Wallet has historical transactions on-ledger but no activity in the last 90 days. Bithomp validator label is verified via XRPScan. Current behavior cannot be classified.",
-      },
-      escrow: {
-        address: "rELeasERs3m4inA1UinRLTpXemqyStqzwh",
-        activity_score: 72,
-        activity_level: "High",
-        confidence: "high",
-        window_days: 90,
-        transaction_count: 200,
-        signals: ["NET_OUTBOUND_SWEEP"],
-        features: { direction_in_out: "5/195", top_counterparty: "XRP Tip Bot" },
-        reasoning: "Predominantly outbound EscrowFinish operations with XRP Tip Bot as the top counterparty. Pattern matches an automated escrow-release service rather than a human-operated wallet.",
-      },
+    // Pre-filled address shortcuts. Web is free; clicking a shortcut just
+    // populates the input and runs a real scan against the live API. No
+    // local cached classification - the live result is what gets shown.
+    const SAMPLE_ADDRESSES = {
+      sologenic: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz",
+      bithomp:   "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe",
+      escrow:    "rELeasERs3m4inA1UinRLTpXemqyStqzwh",
     };
-
-    const EXAMPLE_LABEL = "Cached sample classification (illustrative)";
-
-    function levelBadgeClass(level) {
-      const m = { Low: "badge-low", Medium: "badge-medium", High: "badge-high", Dormant: "badge-dormant", Unknown: "badge-unknown" };
-      return m[level] || "badge-unknown";
-    }
 
     function el(tag, cls, text) {
       const e = document.createElement(tag);
       if (cls) e.className = cls;
       if (text != null) e.textContent = text;
       return e;
-    }
-
-    function renderReport(data, isSample) {
-      const r = document.getElementById("result");
-      r.replaceChildren();
-      const card = el("div", "bg-panel border border-border rounded-2xl p-8");
-      if (isSample) card.appendChild(el("div", "mb-4 text-xs uppercase tracking-wider text-accent", EXAMPLE_LABEL));
-
-      const head = el("div", "flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6");
-      const addrCol = el("div");
-      addrCol.appendChild(el("div", "text-xs text-muted mb-1", "Address"));
-      addrCol.appendChild(el("div", "font-mono text-sm break-all", data.address));
-      head.appendChild(addrCol);
-
-      const scoreCol = el("div", "flex items-center gap-3");
-      scoreCol.appendChild(el("span", "border " + levelBadgeClass(data.activity_level) + " rounded-full px-3 py-1 text-xs font-semibold", data.activity_level));
-      const scoreSpan = el("span", "text-3xl font-bold", String(data.activity_score));
-      scoreSpan.appendChild(el("span", "text-muted text-base", "/100"));
-      scoreCol.appendChild(scoreSpan);
-      head.appendChild(scoreCol);
-      card.appendChild(head);
-
-      const grid = el("div", "grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm");
-      [
-        ["Confidence",   data.confidence],
-        ["Window",       data.window_days + " days"],
-        ["Tx in window", data.transaction_count],
-        ["Signals",      (data.signals || []).length],
-      ].forEach(([k, v]) => {
-        const cell = el("div");
-        cell.appendChild(el("div", "text-xs text-muted mb-1", k));
-        cell.appendChild(el("div", "font-medium", String(v)));
-        grid.appendChild(cell);
-      });
-      card.appendChild(grid);
-
-      if ((data.signals || []).length) {
-        const sigWrap = el("div", "mb-6");
-        sigWrap.appendChild(el("div", "text-xs text-muted uppercase tracking-wider mb-2", "Signals"));
-        const pills = el("div", "flex flex-wrap gap-2");
-        data.signals.forEach(s => pills.appendChild(el("span", "font-mono text-xs bg-ink border border-border rounded px-2 py-1", s)));
-        sigWrap.appendChild(pills);
-        card.appendChild(sigWrap);
-      }
-
-      const reasonWrap = el("div");
-      reasonWrap.appendChild(el("div", "text-xs text-muted uppercase tracking-wider mb-2", "Reasoning"));
-      reasonWrap.appendChild(el("p", "text-white leading-relaxed", data.reasoning));
-      card.appendChild(reasonWrap);
-
-      r.appendChild(card);
-      r.classList.remove("hidden");
-      r.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function renderError(message) {
@@ -400,11 +313,13 @@ report = session.post(
 
     document.querySelectorAll(".sample-btn").forEach(btn => {
       btn.addEventListener("click", () => {
-        const data = SAMPLES[btn.dataset.sample];
-        if (data) {
-          document.getElementById("address").value = data.address;
-          renderReport(data, true);
-        }
+        const addr = SAMPLE_ADDRESSES[btn.dataset.sample];
+        if (!addr) return;
+        document.getElementById("address").value = addr;
+        // Trigger the same code path as the user clicking Scan, so the
+        // live result is rendered and there is no surprise jump from a
+        // cached preview to a live read.
+        document.getElementById("scan-btn").click();
       });
     });
 
