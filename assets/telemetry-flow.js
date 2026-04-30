@@ -49,13 +49,14 @@
     });
   }
 
-  // Magnitude-adaptive USD price formatter. 2 decimals for >= $10 (where
-  // sub-cent precision is noise), up to 4 decimals for sub-$10 values that
-  // need the extra precision. $156.0976 -> $156.10; $1.014 -> $1.014;
-  // $0.0269 -> $0.0269. For prices only - aggregates use fmtUsd(n, 0).
+  // Magnitude-adaptive USD price formatter. Standard 2 decimals once the
+  // value reaches a dollar (sub-cent precision is rounding noise at that
+  // scale), up to 4 decimals for sub-dollar values where the extra digits
+  // are real. $1.1524 -> $1.15, $156.0976 -> $156.10, $0.0269 -> $0.0269.
+  // For prices only - aggregates use fmtUsd(n, 0).
   function fmtUsdPrice(n) {
     const num = Number(n);
-    const opts = Math.abs(num) >= 10
+    const opts = Math.abs(num) >= 1
       ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
       : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
     return '$' + num.toLocaleString(undefined, opts);

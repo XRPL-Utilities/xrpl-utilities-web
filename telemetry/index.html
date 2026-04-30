@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=samples-out"></script>
+  <script src="/assets/telemetry-flow.js?v=price-2dp"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -567,14 +567,14 @@ payload = requests.get(
 
     // ---- Burst Math ----
     const fmtXrp = n => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' XRP';
-    // Magnitude-adaptive USD price formatter. Standard 2 decimals when the
-    // value is large enough that the third/fourth digit is rounding noise,
-    // up to 4 decimals when sub-$10 values need the extra precision.
-    //   $156.0976 -> $156.10   $211.1909 -> $211.19   $50 -> $50.00
-    //   $1.37   -> $1.37   $1.014 -> $1.014   $0.0269 -> $0.0269
+    // Magnitude-adaptive USD price formatter. Standard 2 decimals once the
+    // value reaches a dollar (where sub-cent precision is rounding noise),
+    // up to 4 decimals for sub-dollar values where extra digits are real.
+    //   $1.1524 -> $1.15   $156.0976 -> $156.10   $50 -> $50.00
+    //   $0.5012 -> $0.50   $0.0269 -> $0.0269
     const fmtUsd4 = n => {
       const num = Number(n);
-      const opts = Math.abs(num) >= 10
+      const opts = Math.abs(num) >= 1
         ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
         : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
       return '$' + num.toLocaleString(undefined, opts);
