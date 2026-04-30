@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XR-Pulse | Public-source XRPL event feed</title>
+  <meta name="description" content="Normalized event feed bridging public-source news (Ripple Insights, BIS, SEC EDGAR) to XRPL on-chain measurements. Free on the web, agent-payable via x402." />
+  <meta property="og:title" content="XR-Pulse" />
+  <meta property="og:description" content="Public-source XRPL event feed. Free on the web, $0.10 per query for agents over x402." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/xr-pulse.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/pulse/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0a; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .source-ripple_insights { color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.12); }
+    .source-bis_press      { color: #2dd4bf; border-color: rgba(20, 184, 166, 0.3); background: rgba(20, 184, 166, 0.12); }
+    .source-sec_edgar_search { color: #c084fc; border-color: rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.12); }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+    .skeleton-bar {
+      background: linear-gradient(
+        90deg,
+        rgba(38, 38, 38, 0.6) 0%,
+        rgba(64, 64, 64, 0.9) 50%,
+        rgba(38, 38, 38, 0.6) 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+      border-radius: 0.375rem;
+    }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-2 sm:gap-3 whitespace-nowrap">
+        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-8 w-8" />
+        <span class="font-bold tracking-tight">XRPL-Utilities</span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm text-muted">
+        <a href="/sentinel/" class="hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="hover:text-white transition">Telemetry</a>
+        <a href="/pulse/" class="text-white">Pulse</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+      <img src="/assets/xr-pulse.png" alt="XR-Pulse" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse</h1>
+      <p class="text-xl text-muted">Public-source XRPL event feed</p>
+      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
+        XR-Pulse pulls events from three primary feeds, normalizes them into one time-ordered stream, and (where data permits) measures XRPL on-chain price movement in the window after each event. No editorial scoring. No source ranking. The number of feeds an event appears in is reported as a fact, not a verdict.
+      </p>
+    </div>
+  </section>
+
+  <section id="feed">
+    <div class="max-w-4xl mx-auto px-6 pb-16">
+      <div class="bg-panel border border-border rounded-2xl p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-6">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Live feed</h2>
+          <button id="refresh-btn" class="text-xs text-muted hover:text-white transition">Refresh</button>
+        </div>
+        <div id="feed-list" class="space-y-3">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/2"></div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-2/3 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/3"></div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-3/5 mb-3"></div>
+            <div class="skeleton-bar h-3 w-2/5"></div>
+          </div>
+        </div>
+        <p class="text-xs text-muted mt-6 leading-relaxed">
+          Free from this page. Agents pay $0.10 per query over the x402 API at
+          <code class="font-mono text-white">pulse.xrpl-utilities.io</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="for-agents" class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-6 py-20">
+      <div class="grid md:grid-cols-2 gap-12">
+        <div>
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
+          <h3 class="text-3xl font-bold mb-6">Pay $0.10 per query, no API key</h3>
+          <p class="text-muted leading-relaxed mb-6">
+            XR-Pulse implements <strong class="text-white">x402 v2</strong> with the
+            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
+            One paid call returns the normalized event log so you do not have to maintain N RSS parsers yourself.
+          </p>
+          <ol class="space-y-4 text-sm text-muted">
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">1.</span>
+              <span><code class="font-mono text-white">POST /events/recent</code> returns <code class="font-mono text-white">402 Payment Required</code> with two options: XRP or RLUSD.</span>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">2.</span>
+              <span>Sign an XRPL Payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">3.</span>
+              <span>Server verifies, retrieves the feed, then settles. Returns <code class="font-mono text-white">200</code> with the JSON and a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
+            </li>
+          </ol>
+          <div class="mt-8 flex flex-wrap gap-3 text-sm">
+            <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI</a>
+            <a href="https://pulse.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec</a>
+            <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json</a>
+          </div>
+        </div>
+        <div>
+          <div class="bg-ink border border-border rounded-xl p-6 font-mono text-sm overflow-x-auto">
+            <div class="text-muted mb-3"># pip install x402-xrpl</div>
+            <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
+<span class="text-accent">from</span> xrpl.wallet <span class="text-accent">import</span> Wallet
+
+session = X402RequestsSession(
+    wallet=Wallet.from_seed(seed),
+    rpc_url=<span class="text-green-400">"https://xrplcluster.com"</span>,
+    payment_requirements_selector=<span class="text-green-400">"XRP"</span>,
+)
+
+feed = session.post(
+    <span class="text-green-400">"https://pulse.xrpl-utilities.io/events/recent"</span>,
+    json={<span class="text-green-400">"limit"</span>: 50},
+).json()
+
+<span class="text-accent">for</span> e <span class="text-accent">in</span> feed[<span class="text-green-400">"events"</span>]:
+    <span class="text-accent">print</span>(e[<span class="text-green-400">"title"</span>], e[<span class="text-green-400">"source_appearances"</span>])</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
+      <h3 class="text-3xl font-bold mb-6">Three feeds, one stream, optional measurement</h3>
+      <div class="grid md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-panel border border-border rounded-lg p-5">
+          <div class="text-xs uppercase tracking-wider mb-2 source-ripple_insights inline-block px-2 py-1 rounded">ripple_insights</div>
+          <p class="text-sm text-muted leading-relaxed mt-3">RSS pull from Ripple's corporate blog. Source type: corporate publisher. Useful for product launches and corridor announcements.</p>
+        </div>
+        <div class="bg-panel border border-border rounded-lg p-5">
+          <div class="text-xs uppercase tracking-wider mb-2 source-bis_press inline-block px-2 py-1 rounded">bis_press</div>
+          <p class="text-sm text-muted leading-relaxed mt-3">Bank for International Settlements press release feed. Source type: central bank. Captures CBDC and cross-border settlement policy.</p>
+        </div>
+        <div class="bg-panel border border-border rounded-lg p-5">
+          <div class="text-xs uppercase tracking-wider mb-2 source-sec_edgar_search inline-block px-2 py-1 rounded">sec_edgar_search</div>
+          <p class="text-sm text-muted leading-relaxed mt-3">SEC EDGAR full-text search RSS, filtered for "ripple". Source type: regulatory filing. Sparse but authoritative when it fires.</p>
+        </div>
+      </div>
+      <p class="text-sm text-muted leading-relaxed mb-4">
+        Each entry carries the source it came from. When the same event lands in more than one feed within a short window, the entries collapse into a single row with <code class="font-mono text-white">appearance_count: 2</code> or higher. The number is a fact about how often the event was reported, not a credibility verdict on any individual source.
+      </p>
+      <p class="text-sm text-muted leading-relaxed">
+        Events older than the correlation window also carry an optional measurement of XRPL <code class="font-mono text-white">current_price_usd</code> drawn from XR-Telemetry. The measurement is honest about what it is. Every correlation block is watermarked <code class="font-mono text-white">"correlation": "heuristic_only"</code> because temporal proximity is not causation.
+      </p>
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Safe harbor &amp; compliance</h2>
+      <p class="text-muted leading-relaxed text-sm">
+        XR-Pulse is a deterministic event feed, not an editorial product. Source presence is reported as a property of an event, not a verdict on the source. Correlation against XR-Telemetry is a measurement, not a causal claim.
+      </p>
+      <p class="text-muted leading-relaxed text-sm mt-4">
+        XRPL-Utilities provides public-source data normalization and on-chain measurement. We do not provide financial advice, risk ratings, source credibility assessments, or investment forensics. Users are responsible for ensuring their use of these tools complies with local digital asset and AI regulations, including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
+      </p>
+    </div>
+  </section>
+
+  <footer class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
+      <div>XR-Pulse &copy; 2026 · Powered by XRPL</div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/manifest/" class="hover:text-white transition">Manifest</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+        <a href="/status/" class="hover:text-white transition">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = 'https://pulse.xrpl-utilities.io';
+
+    function fmtAgo(ts) {
+      const secs = Math.floor((Date.now() / 1000) - ts);
+      if (secs < 3600) return Math.max(1, Math.floor(secs / 60)) + 'm ago';
+      if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
+      return Math.floor(secs / 86400) + 'd ago';
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+      }[c]));
+    }
+
+    function renderEvent(e) {
+      const sources = (e.source_appearances || []).map(s =>
+        `<span class="text-xs px-2 py-0.5 rounded source-${escapeHtml(s)} border">${escapeHtml(s)}</span>`
+      ).join(' ');
+      const corrLine = e.correlation && e.correlation.available
+        ? `<div class="text-xs text-muted mt-2">Telemetry · current XRPL price ${escapeHtml('$' + (e.correlation.current_price_usd || 0).toFixed(4))} · window ${escapeHtml(e.correlation.window_hours || 24)}h · <span class="opacity-70">heuristic_only</span></div>`
+        : '';
+      const link = escapeHtml(e.primary_url || '#');
+      return `
+        <article class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition">
+          <div class="flex items-start justify-between gap-3 mb-2">
+            <a href="${link}" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:text-accent transition leading-snug">${escapeHtml(e.title)}</a>
+            <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mb-3">${escapeHtml(e.brief)}</p>
+          <div class="flex items-center gap-2 flex-wrap">${sources}<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span></div>
+          ${corrLine}
+        </article>
+      `;
+    }
+
+    async function loadFeed() {
+      const list = document.getElementById('feed-list');
+      try {
+        const r = await fetch(`${API_BASE}/events/recent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ limit: 50 }),
+        });
+        if (!r.ok) {
+          list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">Could not reach the feed (HTTP ${r.status}). Try again in a moment.</div>`;
+          return;
+        }
+        const data = await r.json();
+        if (!data.events || data.events.length === 0) {
+          list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">No events stored yet. Ingestion runs every 15 minutes; check back shortly.</div>`;
+          return;
+        }
+        list.innerHTML = data.events.map(renderEvent).join('');
+      } catch (e) {
+        list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">Network error reaching the feed.</div>`;
+      }
+    }
+
+    document.getElementById('refresh-btn').addEventListener('click', () => {
+      const list = document.getElementById('feed-list');
+      list.innerHTML = `
+        <div class="bg-ink border border-border rounded-lg p-4">
+          <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
+          <div class="skeleton-bar h-3 w-1/2"></div>
+        </div>
+      `;
+      loadFeed();
+    });
+
+    loadFeed();
+  </script>
+</body>
+</html>
