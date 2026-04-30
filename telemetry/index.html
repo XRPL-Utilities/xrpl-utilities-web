@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=chart-fmt"></script>
+  <script src="/assets/telemetry-flow.js?v=free-web"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -130,10 +130,10 @@
         </div>
         <div class="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div class="text-sm text-muted">
-            Already convinced? Skip the cached demos and pay for fresh on-chain data.
+            Want a real one? The live snapshot below is free from this page.
           </div>
           <a href="#try-it" class="bg-accent hover:bg-accent-dim text-ink font-semibold text-sm px-5 py-2.5 rounded-lg transition whitespace-nowrap">
-            Run a live snapshot &middot; $0.10 &rarr;
+            Run a live snapshot (free) &rarr;
           </a>
         </div>
       </div>
@@ -430,8 +430,8 @@
         <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Live snapshot</div>
         <h3 class="text-2xl font-bold mb-2">Run a real snapshot</h3>
         <p class="text-sm text-muted mb-6">
-          Pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, etc.) and get a
-          freshly computed payload over the wire. No inputs required in v1 - Telemetry covers the whole network.
+          Free from this page. No wallet, no payment, no inputs. The same payload agents pay for over the
+          x402 API at <code class="font-mono text-white">telemetry.xrpl-utilities.io</code>.
         </p>
         <button id="snap-btn" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
           Run live snapshot
@@ -530,7 +530,7 @@ payload = requests.get(
               <div class="text-sm text-muted leading-relaxed">
                 XRPL activity pattern classifier. Score any address against a behavioral signal
                 catalog (mixers, dormant reawakenings, sweep patterns) plus an AI narrative.
-                $0.10 per scan.
+                Free on the web, $0.10 per scan over the agent API. Bulk scans paid.
               </div>
             </div>
           </div>
@@ -1103,7 +1103,7 @@ payload = requests.get(
       btn.disabled = true;
       btn.textContent = 'Working…';
       r.classList.remove('hidden');
-      window.XRTelemetryScan.start(r)
+      window.XRTelemetryScan.startPreview(r)
         .then(result => { if (result) reanchorFromPayload(result.payload); })
         .finally(() => {
           btn.disabled = false;

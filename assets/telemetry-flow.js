@@ -607,5 +607,37 @@
     return null;
   }
 
-  global.XRTelemetryScan = { start: startTelemetryFlow, renderResults: renderResults };
+  // Free web-preview path. Marketing site posts /scan directly with no
+  // PAYMENT-SIGNATURE; the backend's web-origin check returns the
+  // snapshot without taking payment. Skips the entire /quote ->
+  // /status -> /results dance the agent x402 path uses.
+  async function startTelemetryPreview(target) {
+    renderBuilding(target);
+    let payload;
+    try {
+      const r = await fetch(`${API_BASE}/scan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      if (!r.ok) {
+        let detail = '';
+        try { const e = await r.json(); detail = e.detail || JSON.stringify(e); } catch (_) {}
+        renderError(target, detail || `Snapshot fetch failed (HTTP ${r.status}).`);
+        return null;
+      }
+      payload = await r.json();
+    } catch (e) {
+      renderError(target, 'Network error reaching Telemetry.');
+      return null;
+    }
+    renderResults(target, payload, null);
+    return { payload };
+  }
+
+  global.XRTelemetryScan = {
+    start: startTelemetryFlow,        // paid x402 path (kept for reference)
+    startPreview: startTelemetryPreview, // free web-origin path
+    renderResults: renderResults,
+  };
 })(window);

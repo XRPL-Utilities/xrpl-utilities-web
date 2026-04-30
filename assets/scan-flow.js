@@ -366,6 +366,71 @@
     return null;
   }
 
+  // Free single-wallet scan path. Marketing site posts /scan directly
+  // (no x402 dance) and the backend's web-origin check returns the
+  // report without taking payment. Bulk scans (startScanFlow below)
+  // remain paid via /bulk/quote -> /bulk/results.
+  async function startSingleScan(target, address) {
+    target.replaceChildren();
+    const wrap = el('div', 'bg-panel border-2 border-accent rounded-2xl p-8');
+    wrap.appendChild(el('div', 'text-xs uppercase tracking-widest text-accent font-semibold mb-2', 'Scanning'));
+    wrap.appendChild(el('h3', 'text-2xl md:text-3xl font-bold mb-2', 'Pulling on-chain history'));
+    wrap.appendChild(el('p', 'text-muted mb-6 text-sm', 'Fetching the last 90 days, classifying activity pattern, deriving signals.'));
+    const stack = el('div', 'space-y-3');
+    ['Activity', 'Signals', 'Reasoning'].forEach(label => {
+      const card = el('div', 'bg-ink border border-border rounded-lg p-4');
+      card.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted font-semibold mb-3', label));
+      const blocks = el('div', 'space-y-2');
+      blocks.appendChild(el('div', 'h-3 bg-border rounded animate-pulse w-full'));
+      blocks.appendChild(el('div', 'h-3 bg-border rounded animate-pulse w-3/4'));
+      card.appendChild(blocks);
+      stack.appendChild(card);
+    });
+    wrap.appendChild(stack);
+    target.appendChild(wrap);
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    let report;
+    try {
+      const r = await fetch(`${API_BASE}/scan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address }),
+      });
+      if (!r.ok) {
+        let detail = '';
+        try { const e = await r.json(); detail = e.detail || JSON.stringify(e); } catch (_) {}
+        renderError(target, detail || `Scan failed (HTTP ${r.status}).`);
+        return null;
+      }
+      report = await r.json();
+    } catch (e) {
+      renderError(target, 'Network error reaching the scanner.');
+      return null;
+    }
+
+    target.replaceChildren();
+    const summary = el('div', 'bg-panel border border-border rounded-2xl p-6 mb-4');
+    const top = el('div', 'flex items-center justify-between gap-4 mb-2');
+    const heading = el('div');
+    heading.appendChild(el('div', 'text-xs uppercase tracking-widest text-good font-semibold mb-1', 'Complete'));
+    heading.appendChild(el('h3', 'text-2xl font-bold', 'Scan report'));
+    top.appendChild(heading);
+    const downloads = el('div', 'flex gap-2 shrink-0');
+    downloads.appendChild(downloadButton(
+      'JSON',
+      'xr-sentinel-' + (report.address || 'scan') + '.json',
+      'application/json',
+      JSON.stringify(report, null, 2),
+    ));
+    top.appendChild(downloads);
+    summary.appendChild(top);
+    target.appendChild(summary);
+    target.appendChild(renderReport(report));
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return report;
+  }
+
   async function startScanFlow(target, addresses) {
     if (!Array.isArray(addresses) || addresses.length === 0) {
       renderError(target, 'No addresses provided.');
@@ -398,5 +463,8 @@
     if (results) renderResults(target, results);
   }
 
-  global.XRSentinelScan = { start: startScanFlow };
+  global.XRSentinelScan = {
+    start: startScanFlow,        // bulk: /bulk/quote -> /bulk/results (paid)
+    startSingle: startSingleScan, // single: /scan direct (free for .com origin)
+  };
 })(window);

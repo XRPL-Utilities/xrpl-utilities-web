@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/assets/scan-flow.js?v=clean"></script>
+  <script src="/assets/scan-flow.js?v=free-web"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -135,7 +135,9 @@
           </div>
         </div>
         <p class="text-xs text-muted mt-4 leading-relaxed">
-          Click a sample to see a cached classification instantly. Click <strong class="text-white">Scan</strong> with any address to run a live classification. Pay <strong class="text-white">$0.10 USD</strong> in XRP from any wallet (Xaman, Crossmark, GemWallet, etc.).
+          Click a sample to see a cached classification instantly. Click <strong class="text-white">Scan</strong>
+          with any address to run a live classification. Free from this page. Agents pay $0.10 per scan over the
+          x402 API at <code class="font-mono text-white">sentinel.xrpl-utilities.io</code>.
         </p>
       </div>
 
@@ -240,8 +242,8 @@ report = session.post(
             <div>
               <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
               <div class="text-sm text-muted leading-relaxed">
-                XRPL macro telemetry: supply constriction, regional liquidity, AMM depth,
-                and an algebraic utility-floor projection. $0.10 per snapshot.
+                XRPL macro telemetry: supply, regional liquidity, AMM depth, an Active Float model,
+                and a utility-floor projection. Free on the web, $0.10 per snapshot over the agent API.
               </div>
             </div>
           </div>
@@ -415,7 +417,7 @@ report = session.post(
       btn.textContent = "Loading…";
       const r = document.getElementById("result");
       r.classList.remove("hidden");
-      window.XRSentinelScan.start(r, [address]).finally(() => {
+      window.XRSentinelScan.startSingle(r, address).finally(() => {
         btn.disabled = false;
         btn.textContent = "Scan";
       });
