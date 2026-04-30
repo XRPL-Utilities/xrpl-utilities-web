@@ -181,10 +181,10 @@
           how much can really clear in a settlement burst.
         </p>
         <p class="text-sm text-muted leading-relaxed mb-3">
-          So we don't count the full exchange holdings. We apply a 10% multiplier as an estimate of how much
-          is genuinely on the book at any moment (a range market-structure researchers commonly cite as 5-15%).
-          On top of that we add the XRP committed to XRPL AMM pools (which is unconditionally swappable inside
-          one ledger close) and the XRP resting in the on-chain DEX order book.
+          We don't count the full exchange holdings. We apply a 10% multiplier as an estimate of how much is
+          genuinely on the book at any moment. Only a small slice of any exchange's holdings is actively quoted
+          at one time. We then add the XRP committed to XRPL AMM pools, which is always swappable inside a single
+          ledger close, plus the XRP resting in the on-chain DEX order book.
         </p>
         <p class="text-sm text-muted leading-relaxed">
           The paid <code class="font-mono text-white">/scan</code> response includes every input number and the
