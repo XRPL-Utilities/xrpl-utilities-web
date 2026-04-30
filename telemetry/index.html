@@ -206,12 +206,11 @@
         (<strong class="text-white">Q</strong>). Plug in three values and you can solve for the fourth.
       </p>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        We anchor M at <a href="#active-float" class="text-accent hover:underline">Modeled Active Float</a>
-        (the supply that can clear inside a single ledger close). You choose Q (your assumption about how much
-        annual settlement volume XRPL will see) and V (your assumption about how often that supply turns over
-        per year). The math returns P: the per-XRP price the identity requires under those specific assumptions.
-        Not a forecast. Real prices come from what the next seller is willing to accept, not from an identity.
-        Read P as &quot;what the math requires.&quot;
+        M is anchored at Modeled Active Float, the supply that can clear inside a single ledger close. Q is your
+        assumption about how much annual settlement volume XRPL will see. V is your assumption about how often
+        that supply turns over per year. With those three set, the math returns P: the per-XRP price the identity
+        requires under those specific assumptions. Not a forecast. Real prices come from what the next seller
+        is willing to accept, not from an identity. Read P as &quot;what the math requires.&quot;
       </p>
 
       <div class="bg-panel border border-border rounded-2xl p-6">
@@ -257,7 +256,7 @@
         </div>
 
         <div class="mt-4 text-xs text-muted leading-relaxed text-center">
-          M anchored from <a href="#active-float" class="text-accent hover:underline">Active Float</a> (additive: exchange &times; 10% proxy + AMM + DEX).
+          M = 10% of exchange-held XRP + XRP in AMM pools + XRP resting on the XRPL DEX.
         </div>
       </div>
 
@@ -387,12 +386,13 @@
             from Burst Math. Change Q or V there to re-anchor everything below.
           </p>
           <p class="mb-3">
-            <strong class="text-white">Monthly supply constriction</strong> &middot; how fast liquid M shrinks per
-            month. 1%/mo means 1% of circulating XRP exits each month into vaults, escrow, AMM TVL, or dormancy.
+            <strong class="text-white">Monthly supply constriction</strong> &middot; how fast liquid M shrinks
+            each month. A setting of 1% per month means 1% of circulating XRP exits each month into AMM pools,
+            cold custody, escrow, or dormancy.
           </p>
           <p class="mb-3">
             <strong class="text-white">Monthly volume growth</strong> &middot; how fast annual settlement Q grows
-            per month. 3%/mo compounds to roughly 1.4&times; volume by month 24.
+            each month. A setting of 3% per month compounds to roughly 1.4 times the starting volume by month 24.
           </p>
           <p>
             <strong class="text-white">&plusmn;15% band</strong> &middot; a visual reminder that the baseline is a
@@ -403,8 +403,9 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
           <p class="mb-3">
-            Small monthly rates compound aggressively. 1%/mo constriction is 21% of supply gone in 24 months.
-            3%/mo volume growth is roughly 1.4&times; volume by month 24. Both push P up.
+            Small monthly rates compound aggressively. 1% per month of supply constriction works out to about
+            21% of supply gone in 24 months. 3% per month of volume growth works out to roughly 1.4 times the
+            starting volume by month 24. Both push P up.
           </p>
           <p class="mb-3">
             Watch where the projected baseline crosses the grey dashed line representing today's market price.
