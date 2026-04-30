@@ -270,14 +270,20 @@ feed = session.post(
 
     async function loadFeed() {
       const list = document.getElementById('feed-list');
+      const errBox = (msg) => `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">${msg} <button id="retry-link" class="text-accent hover:underline ml-1">Retry</button></div>`;
       try {
+        const ctl = new AbortController();
+        const timeoutId = setTimeout(() => ctl.abort(), 30000);
         const r = await fetch(`${API_BASE}/events/recent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ limit: 50 }),
+          signal: ctl.signal,
         });
+        clearTimeout(timeoutId);
         if (!r.ok) {
-          list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">Could not reach the feed (HTTP ${r.status}). Try again in a moment.</div>`;
+          list.innerHTML = errBox(`Feed returned HTTP ${r.status}.`);
+          attachRetry();
           return;
         }
         const data = await r.json();
@@ -287,8 +293,14 @@ feed = session.post(
         }
         list.innerHTML = data.events.map(renderEvent).join('');
       } catch (e) {
-        list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">Network error reaching the feed.</div>`;
+        list.innerHTML = errBox('Could not reach the feed. This usually clears on a retry; the API is at <code class="font-mono text-white">pulse.xrpl-utilities.io</code>.');
+        attachRetry();
       }
+    }
+
+    function attachRetry() {
+      const btn = document.getElementById('retry-link');
+      if (btn) btn.addEventListener('click', loadFeed);
     }
 
     document.getElementById('refresh-btn').addEventListener('click', () => {
