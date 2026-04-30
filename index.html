@@ -109,6 +109,7 @@
         <a href="/" class="hover:text-white transition">Home</a>
         <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
         <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
+        <a href="/pulse/" class="hover:text-white transition">XR-Pulse</a>
         <a href="/manifest/" class="hover:text-white transition">Manifest</a>
         <a href="/terms/" class="hover:text-white transition">Terms</a>
         <a href="/contact/" class="hover:text-white transition">Contact</a>
@@ -123,6 +124,7 @@
           <a href="/" class="hover:text-white transition text-sm text-muted">Home</a>
           <a href="/sentinel/" class="hover:text-white transition text-sm text-muted">XR-Sentinel</a>
           <a href="/telemetry/" class="hover:text-white transition text-sm text-muted">XR-Telemetry</a>
+          <a href="/pulse/" class="hover:text-white transition text-sm text-muted">XR-Pulse</a>
           <a href="/manifest/" class="hover:text-white transition text-sm text-muted">Manifest</a>
           <a href="/terms/" class="hover:text-white transition text-sm text-muted">Terms</a>
           <a href="/contact/" class="hover:text-white transition text-sm text-muted">Contact</a>
@@ -201,6 +203,27 @@
           </p>
           <div class="flex items-center justify-between text-sm">
             <span class="text-muted">Free on the web &middot; $0.10 per snapshot for agents</span>
+            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
+          </div>
+        </a>
+
+        <a href="/pulse/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
+              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
+            </div>
+            <img src="/assets/xr-pulse.png" alt="" class="h-14 w-14 rounded-lg" />
+          </div>
+          <h4 class="text-2xl font-bold mb-3">XR-Pulse</h4>
+          <p class="text-white leading-relaxed mb-3 font-medium">Public-source XRPL event feed.</p>
+          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
+            Four primary feeds normalized into one time-ordered stream, with mechanical
+            cross-verification when sources overlap and a measured XRPL price-window
+            correlation block. For agents that need context for ledger movement, not just the movement.
+          </p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-muted">Free on the web &middot; $0.10 per query for agents</span>
             <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
           </div>
         </a>
@@ -284,6 +307,7 @@ report = session.post(
         <div class="flex items-center gap-6 text-sm text-muted">
           <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
           <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
+          <a href="/pulse/" class="hover:text-white transition">XR-Pulse</a>
           <a href="/manifest/" class="hover:text-white transition">Manifest</a>
           <a href="/terms/" class="hover:text-white transition">Terms</a>
           <a href="/status/" class="hover:text-white transition">Status</a>
