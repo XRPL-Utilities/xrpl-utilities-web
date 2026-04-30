@@ -320,19 +320,10 @@
 
     card.appendChild(grid);
 
-    // Methodology disclosure - one-line link to the on-API spec block.
-    const disc = el('div', 'mt-4 text-xs text-muted leading-relaxed');
-    disc.appendChild(document.createTextNode(
-      'Active Float is a derived model output, not a measurement. Each component is documented in '
-    ));
-    const link = el('a', 'text-accent hover:underline', 'mathematical_bridge');
-    link.href = 'https://telemetry.xrpl-utilities.io/agents.json#active_float_methodology';
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    disc.appendChild(link);
-    disc.appendChild(document.createTextNode(
-      '. The 10% proxy ratio reflects industry estimates of 5-15% market-maker active orderbook depth as a fraction of custodial inventory.'
-    ));
+    // Plain disclosure. The bridge data ships in the JSON payload itself
+    // for agents that want to inspect it; no need to link out.
+    const disc = el('div', 'mt-4 text-xs text-muted leading-relaxed',
+      'Active Float is a model output, not a measurement. The 10% multiplier is a midpoint estimate; market-structure researchers commonly cite a 5-15% range. Every input number ships in supply.* and the full breakdown ships in derived_models.active_float.mathematical_bridge.');
     card.appendChild(disc);
 
     return card;
