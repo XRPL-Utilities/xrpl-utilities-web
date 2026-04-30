@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=price-2dp"></script>
+  <script src="/assets/telemetry-flow.js?v=price-split"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -567,14 +567,27 @@ payload = requests.get(
 
     // ---- Burst Math ----
     const fmtXrp = n => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' XRP';
-    // Magnitude-adaptive USD price formatter. Standard 2 decimals once the
-    // value reaches a dollar (where sub-cent precision is rounding noise),
-    // up to 4 decimals for sub-dollar values where extra digits are real.
-    //   $1.1524 -> $1.15   $156.0976 -> $156.10   $50 -> $50.00
-    //   $0.5012 -> $0.50   $0.0269 -> $0.0269
+    // Standard USD display. 2 decimals once the value reaches a dollar
+    // (where sub-cent precision is rounding noise), up to 4 decimals for
+    // sub-dollar values where extra digits are real. Used everywhere the
+    // user is reading a market or chart number, not a calculated headline.
+    //   $1.1524 -> $1.15   $156.0976 -> $156.10   $0.0269 -> $0.0269
     const fmtUsd4 = n => {
       const num = Number(n);
       const opts = Math.abs(num) >= 1
+        ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+        : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
+      return '$' + num.toLocaleString(undefined, opts);
+    };
+    // Equilibrium-price display. Looser threshold so the third/fourth
+    // decimal survives at the $1-$10 range where it carries meaning -
+    // a Burst Math floor of $1.014 vs $1.0143 is real signal at billion-
+    // unit M. Used for the headline equilibrium output and its mirrors
+    // (Burst Math P, Floor Matrix anchor / month-24 cards).
+    //   $1.014 -> $1.014   $9.999 -> $9.999   $10 -> $10.00   $156 -> $156.00
+    const fmtUsdEq = n => {
+      const num = Number(n);
+      const opts = Math.abs(num) >= 10
         ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
         : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
       return '$' + num.toLocaleString(undefined, opts);
@@ -659,7 +672,7 @@ payload = requests.get(
 
     function recompute() {
       const p = currentP();
-      bmP.textContent = p == null ? '-' : fmtUsd4(p);
+      bmP.textContent = p == null ? '-' : fmtUsdEq(p);
       if (p == null || p <= 0) {
         bmPremium.textContent = '-';
       } else {
@@ -783,7 +796,7 @@ payload = requests.get(
         showWarning('Enter a positive Q and V in the Burst Math calculator above to anchor the projection.');
         return;
       }
-      fmP0.textContent = fmtUsd4(p0);
+      fmP0.textContent = fmtUsdEq(p0);
       const baseline = projectBaseline(p0, gPct, cPct);
       const upper = baseline.map(v => v * (1 + BAND));
       const lower = baseline.map(v => v * (1 - BAND));
@@ -792,7 +805,7 @@ payload = requests.get(
       chart.data.datasets[2].data = baseline;
       chart.update('none');
       const p24 = baseline[HORIZON];
-      fmP24.textContent = isFinite(p24) ? fmtUsd4(p24) : '-';
+      fmP24.textContent = isFinite(p24) ? fmtUsdEq(p24) : '-';
 
       // Guard rail: warn when inputs imply implausible terminal values.
       let warning = null;

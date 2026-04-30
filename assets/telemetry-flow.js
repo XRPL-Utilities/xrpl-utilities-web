@@ -49,14 +49,27 @@
     });
   }
 
-  // Magnitude-adaptive USD price formatter. Standard 2 decimals once the
-  // value reaches a dollar (sub-cent precision is rounding noise at that
-  // scale), up to 4 decimals for sub-dollar values where the extra digits
-  // are real. $1.1524 -> $1.15, $156.0976 -> $156.10, $0.0269 -> $0.0269.
+  // Standard USD price display. 2 decimals once the value reaches a
+  // dollar (sub-cent precision is rounding noise at that scale), up to
+  // 4 decimals for sub-dollar values where the extra digits are real.
+  // $1.1524 -> $1.15, $156.0976 -> $156.10, $0.0269 -> $0.0269.
   // For prices only - aggregates use fmtUsd(n, 0).
   function fmtUsdPrice(n) {
     const num = Number(n);
     const opts = Math.abs(num) >= 1
+      ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
+    return '$' + num.toLocaleString(undefined, opts);
+  }
+
+  // Equilibrium-price display. Looser threshold so the third/fourth
+  // decimal survives at the $1-$10 range where it carries meaning - a
+  // Burst Math floor of $1.014 vs $1.0143 is real signal at billion-
+  // unit M. Used for the Required-floor row in renderUtilityFloorCard.
+  // $1.014 -> $1.014, $9.999 -> $9.999, $10 -> $10.00, $156 -> $156.00.
+  function fmtUsdEq(n) {
+    const num = Number(n);
+    const opts = Math.abs(num) >= 10
       ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
       : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
     return '$' + num.toLocaleString(undefined, opts);
@@ -483,7 +496,10 @@
   function renderUtilityFloorCard(uf) {
     const card = sectionCard('Required equilibrium price');
     const hasSpot = typeof uf.current_price_usd === 'number';
-    const rows = [['Required floor', fmtUsdPrice(uf.baseline_usd) + ' / XRP']];
+    // Baseline (= P from Burst Math) keeps the precise threshold so a
+    // $1.014 floor reads as $1.014, not $1.01. Spot is a market quote
+    // where 2 decimals is plenty.
+    const rows = [['Required floor', fmtUsdEq(uf.baseline_usd) + ' / XRP']];
     if (hasSpot) {
       rows.push(['Current spot', fmtUsdPrice(uf.current_price_usd) + ' / XRP']);
       if (uf.baseline_usd > 0) {
