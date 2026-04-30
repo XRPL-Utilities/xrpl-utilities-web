@@ -274,14 +274,13 @@ report = session.post(
           <div>
             <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Signal glossary</h2>
             <h3 class="text-2xl md:text-3xl font-bold">What do these signal flags mean?</h3>
-            <p class="text-sm text-muted mt-2">Click to expand — 20 flags, plain-English translations.</p>
+            <p class="text-sm text-muted mt-2">Click to expand. 20 flags in plain English.</p>
           </div>
           <span class="text-3xl text-accent shrink-0 group-open:rotate-180 transition-transform mt-1">▾</span>
         </summary>
 
         <p class="text-sm text-muted leading-relaxed mt-6 mb-8">
-          XR-Sentinel reports include a <code class="font-mono text-white">signals</code> array — short flags drawn from a versioned catalog. <strong class="text-white">None of these are risk, compliance, or sanctions assessments.</strong> They describe what kind of behavior the on-chain history looks like. The canonical machine-readable catalog is at
-          <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono">/schema</code></a>.
+          XR-Sentinel reports include a <code class="font-mono text-white">signals</code> array. Short flags drawn from a versioned catalog that describe what kind of behavior the on-chain history looks like. <strong class="text-white">None of these are risk, compliance, or sanctions assessments.</strong>
         </p>
 
         <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Behavioral pattern</h4>
@@ -289,7 +288,7 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">OFFER_HEAVY_BOT</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              Most of what this wallet does is place and cancel DEX orders — typical of a market-making bot.
+              Most of what this wallet does is place and cancel DEX orders. Typical of a market-making bot.
               <span class="block text-xs mt-2 opacity-70">Fires when: order placement and cancellation make up more than half of in-window activity.</span>
             </dd>
           </div>
@@ -349,7 +348,7 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">SCORE_TRAJECTORY_BOT_ONBOARDING</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              The automation score jumped sharply over the last 30 days. Looks like a wallet transitioning from human/idle use to bot or service operation.
+              The automation score jumped sharply over the last 30 days. Looks like a wallet that was hand-operated or idle and is now running like a bot or service.
               <span class="block text-xs mt-2 opacity-70">Fires when: score climbed 30+ points within 30 days vs the prior recorded scan and the wallet is now classified High. Requires a prior recorded scan.</span>
             </dd>
           </div>
@@ -381,7 +380,7 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">COUNTERPARTY_BURST</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              Ten or more counterparties showed up in this scan that weren't there last time. Fresh fanout pattern — payouts, new market-making relationships, or distribution events.
+              Ten or more counterparties showed up in this scan that weren't there last time. Could be a payout fanout, new market-making relationships, or a distribution event.
               <span class="block text-xs mt-2 opacity-70">Fires when: 10+ new addresses in the top counterparties list vs the prior recorded scan. Requires a prior recorded scan.</span>
             </dd>
           </div>
@@ -413,7 +412,7 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">TARGET_ADVISORY_TRUSTED</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              The advisory on the scanned address is provider-verified. Highest-confidence subset of TARGET_ADVISORY.
+              The advisory on the scanned address is provider-verified, the strongest tier.
               <span class="block text-xs mt-2 opacity-70">Fires when: the target's advisory has <code class="font-mono">trusted</code> set to true. Not currently observable; reserved for forward compatibility.</span>
             </dd>
           </div>
