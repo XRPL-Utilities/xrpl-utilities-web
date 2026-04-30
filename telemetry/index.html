@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=prose-pass"></script>
+  <script src="/assets/telemetry-flow.js?v=chart-fmt"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -741,9 +741,18 @@ payload = requests.get(
 
     // ---- Burst Math ----
     const fmtXrp = n => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' XRP';
-    // Min 2 / max 4 decimal places, trailing zeros trimmed.
-    // $1.3700 -> $1.37, $1.0140 -> $1.014, $0.0269 -> $0.0269.
-    const fmtUsd4 = n => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+    // Magnitude-adaptive USD price formatter. Standard 2 decimals when the
+    // value is large enough that the third/fourth digit is rounding noise,
+    // up to 4 decimals when sub-$10 values need the extra precision.
+    //   $156.0976 -> $156.10   $211.1909 -> $211.19   $50 -> $50.00
+    //   $1.37   -> $1.37   $1.014 -> $1.014   $0.0269 -> $0.0269
+    const fmtUsd4 = n => {
+      const num = Number(n);
+      const opts = Math.abs(num) >= 10
+        ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+        : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
+      return '$' + num.toLocaleString(undefined, opts);
+    };
 
     const bmQ = document.getElementById('bm-q');
     const bmV = document.getElementById('bm-v');
@@ -855,7 +864,9 @@ payload = requests.get(
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: Array.from({ length: HORIZON + 1 }, (_, i) => 'm' + i),
+        // Plain integer X-axis labels. Axis title "months from now" provides
+        // the unit; tooltip title callback adds back the "Month X" framing.
+        labels: Array.from({ length: HORIZON + 1 }, (_, i) => String(i)),
         datasets: [
           { label: 'Upper (+15%)', data: [], borderColor: 'rgba(0, 184, 255, 0.4)', backgroundColor: 'rgba(0, 184, 255, 0.10)', borderWidth: 1, fill: false, pointRadius: 0, tension: 0.25 },
           { label: 'Lower (−15%)', data: [], borderColor: 'rgba(0, 184, 255, 0.4)', backgroundColor: 'rgba(0, 184, 255, 0.10)', borderWidth: 1, fill: '-1', pointRadius: 0, tension: 0.25 },
@@ -877,6 +888,13 @@ payload = requests.get(
             titleColor: '#fff',
             bodyColor: '#fff',
             callbacks: {
+              title: (items) => {
+                if (!items.length) return '';
+                const m = parseInt(items[0].label, 10);
+                if (m === 0) return 'Today';
+                if (m === 1) return 'Month 1 from now';
+                return 'Month ' + m + ' from now';
+              },
               label: (ctx) => ctx.dataset.label + ': ' + fmtUsd4(ctx.parsed.y),
             },
           },
@@ -890,7 +908,7 @@ payload = requests.get(
           y: {
             ticks: {
               color: '#a3a3a3',
-              callback: (v) => '$' + Number(v).toFixed(4),
+              callback: (v) => fmtUsd4(v),
             },
             grid: { color: 'rgba(38, 38, 38, 0.6)' },
             title: { display: true, text: 'implied USD per XRP', color: '#a3a3a3' },

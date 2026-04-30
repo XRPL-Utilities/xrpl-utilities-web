@@ -49,14 +49,16 @@
     });
   }
 
-  // Adaptive USD price: min 2, max 4 decimal places, trailing zeros trimmed.
-  // $1.3700 -> $1.37, $1.0140 -> $1.014, $0.0269 -> $0.0269. For prices,
-  // not aggregates - aggregates use fmtUsd(n, 0) for whole-dollar display.
+  // Magnitude-adaptive USD price formatter. 2 decimals for >= $10 (where
+  // sub-cent precision is noise), up to 4 decimals for sub-$10 values that
+  // need the extra precision. $156.0976 -> $156.10; $1.014 -> $1.014;
+  // $0.0269 -> $0.0269. For prices only - aggregates use fmtUsd(n, 0).
   function fmtUsdPrice(n) {
-    return '$' + Number(n).toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 4,
-    });
+    const num = Number(n);
+    const opts = Math.abs(num) >= 10
+      ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
+    return '$' + num.toLocaleString(undefined, opts);
   }
 
   // Compact human formatting for very large XRP totals (Active Float card).
