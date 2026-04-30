@@ -38,9 +38,11 @@
   <style>
     body { background: #0a0a0a; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
-    .source-ripple_insights { color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.12); }
-    .source-bis_press      { color: #2dd4bf; border-color: rgba(20, 184, 166, 0.3); background: rgba(20, 184, 166, 0.12); }
-    .source-sec_edgar_search { color: #c084fc; border-color: rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.12); }
+    .source-bis_speeches         { color: #2dd4bf; border-color: rgba(20, 184, 166, 0.3); background: rgba(20, 184, 166, 0.12); }
+    .source-sec_press            { color: #c084fc; border-color: rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.12); }
+    .source-cointelegraph_ripple { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); background: rgba(251, 146, 60, 0.12); }
+    .source-decrypt_ripple       { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background: rgba(244, 114, 182, 0.12); }
+    .verified-pill               { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.12); }
 
     @keyframes shimmer {
       0%   { background-position: -200% 0; }
@@ -81,7 +83,7 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse</h1>
       <p class="text-xl text-muted">Public-source XRPL event feed</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        XR-Pulse pulls events from three primary feeds, normalizes them into one time-ordered stream, and (where data permits) measures XRPL on-chain price movement in the window after each event. No editorial scoring. No source ranking. The number of feeds an event appears in is reported as a fact, not a verdict.
+        XR-Pulse pulls events from four primary feeds, normalizes them into one time-ordered stream, and measures XRPL on-chain price movement in the four-hour window after each event. No editorial scoring. No source ranking. When two sources cover the same story we mark it cross-verified by mechanical title-similarity, not by editorial review.
       </p>
     </div>
   </section>
@@ -174,26 +176,30 @@ feed = session.post(
   <section id="how-it-works" class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
-      <h3 class="text-3xl font-bold mb-6">Three feeds, one stream, optional measurement</h3>
-      <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <h3 class="text-3xl font-bold mb-6">Four feeds, one stream, mechanical correlation</h3>
+      <div class="grid md:grid-cols-2 gap-4 mb-8">
         <div class="bg-panel border border-border rounded-lg p-5">
-          <div class="text-xs uppercase tracking-wider mb-2 source-ripple_insights inline-block px-2 py-1 rounded">ripple_insights</div>
-          <p class="text-sm text-muted leading-relaxed mt-3">RSS pull from Ripple's corporate blog. Source type: corporate publisher. Useful for product launches and corridor announcements.</p>
+          <div class="text-xs uppercase tracking-wider mb-2 source-bis_speeches inline-block px-2 py-1 rounded border">bis_speeches</div>
+          <p class="text-sm text-muted leading-relaxed mt-3">Bank for International Settlements RSS for central-bank speeches. Source type: central bank. Captures CBDC, cross-border settlement, and monetary policy framing.</p>
         </div>
         <div class="bg-panel border border-border rounded-lg p-5">
-          <div class="text-xs uppercase tracking-wider mb-2 source-bis_press inline-block px-2 py-1 rounded">bis_press</div>
-          <p class="text-sm text-muted leading-relaxed mt-3">Bank for International Settlements press release feed. Source type: central bank. Captures CBDC and cross-border settlement policy.</p>
+          <div class="text-xs uppercase tracking-wider mb-2 source-sec_press inline-block px-2 py-1 rounded border">sec_press</div>
+          <p class="text-sm text-muted leading-relaxed mt-3">SEC press release RSS, filtered post-fetch for entries that mention "ripple" or "xrp" in title or summary. Source type: regulatory press.</p>
         </div>
         <div class="bg-panel border border-border rounded-lg p-5">
-          <div class="text-xs uppercase tracking-wider mb-2 source-sec_edgar_search inline-block px-2 py-1 rounded">sec_edgar_search</div>
-          <p class="text-sm text-muted leading-relaxed mt-3">SEC EDGAR full-text search RSS, filtered for "ripple". Source type: regulatory filing. Sparse but authoritative when it fires.</p>
+          <div class="text-xs uppercase tracking-wider mb-2 source-cointelegraph_ripple inline-block px-2 py-1 rounded border">cointelegraph_ripple</div>
+          <p class="text-sm text-muted leading-relaxed mt-3">Cointelegraph's Ripple tag RSS. Source type: crypto news. Source-side topic-filtered, no client-side keyword filter applied.</p>
+        </div>
+        <div class="bg-panel border border-border rounded-lg p-5">
+          <div class="text-xs uppercase tracking-wider mb-2 source-decrypt_ripple inline-block px-2 py-1 rounded border">decrypt_ripple</div>
+          <p class="text-sm text-muted leading-relaxed mt-3">Decrypt's Ripple category RSS. Source type: crypto news. Source-side topic-filtered, no client-side keyword filter applied.</p>
         </div>
       </div>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        Each entry carries the source it came from. When the same event lands in more than one feed within a short window, the entries collapse into a single row with <code class="font-mono text-white">appearance_count: 2</code> or higher. The number is a fact about how often the event was reported, not a credibility verdict on any individual source.
+        When two sources publish the same story under different URLs, we cluster them by title similarity. If their normalized title tokens overlap by Jaccard ≥ 0.5 within a 48-hour window, the cluster collapses into one record with <code class="font-mono text-white">cross_verified: true</code> and a <code class="font-mono text-white">cluster_members</code> list so you can verify the merge. The threshold is mechanical, not editorial.
       </p>
       <p class="text-sm text-muted leading-relaxed">
-        Events older than the correlation window also carry an optional measurement of XRPL <code class="font-mono text-white">current_price_usd</code> drawn from XR-Telemetry. The measurement is honest about what it is. Every correlation block is watermarked <code class="font-mono text-white">"correlation": "heuristic_only"</code> because temporal proximity is not causation.
+        Events older than the four-hour correlation window also carry an optional measurement of XRPL <code class="font-mono text-white">current_price_usd</code> drawn from XR-Telemetry. Every correlation block is watermarked <code class="font-mono text-white">"correlation": "heuristic_only"</code> because temporal proximity is not causation.
       </p>
     </div>
   </section>
@@ -242,8 +248,11 @@ feed = session.post(
       const sources = (e.source_appearances || []).map(s =>
         `<span class="text-xs px-2 py-0.5 rounded source-${escapeHtml(s)} border">${escapeHtml(s)}</span>`
       ).join(' ');
+      const verifiedPill = e.cross_verified
+        ? `<span class="text-xs px-2 py-0.5 rounded verified-pill border">cross_verified</span>`
+        : '';
       const corrLine = e.correlation && e.correlation.available
-        ? `<div class="text-xs text-muted mt-2">Telemetry · current XRPL price ${escapeHtml('$' + (e.correlation.current_price_usd || 0).toFixed(4))} · window ${escapeHtml(e.correlation.window_hours || 24)}h · <span class="opacity-70">heuristic_only</span></div>`
+        ? `<div class="text-xs text-muted mt-2">Telemetry · current XRPL price ${escapeHtml('$' + (e.correlation.current_price_usd || 0).toFixed(4))} · window ${escapeHtml(String(e.correlation.window_hours || 4))}h · <span class="opacity-70">heuristic_only</span></div>`
         : '';
       const link = escapeHtml(e.primary_url || '#');
       return `
@@ -253,7 +262,7 @@ feed = session.post(
             <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">${escapeHtml(e.brief)}</p>
-          <div class="flex items-center gap-2 flex-wrap">${sources}<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span></div>
+          <div class="flex items-center gap-2 flex-wrap">${sources}${verifiedPill}<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span></div>
           ${corrLine}
         </article>
       `;
