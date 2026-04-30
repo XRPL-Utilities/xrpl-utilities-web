@@ -269,6 +269,182 @@ report = session.post(
 
   <section class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-16">
+      <details class="group">
+        <summary class="cursor-pointer list-none flex items-start justify-between gap-4 py-2">
+          <div>
+            <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Signal glossary</h2>
+            <h3 class="text-2xl md:text-3xl font-bold">What do these signal flags mean?</h3>
+            <p class="text-sm text-muted mt-2">Click to expand — 20 flags, plain-English translations.</p>
+          </div>
+          <span class="text-3xl text-accent shrink-0 group-open:rotate-180 transition-transform mt-1">▾</span>
+        </summary>
+
+        <p class="text-sm text-muted leading-relaxed mt-6 mb-8">
+          XR-Sentinel reports include a <code class="font-mono text-white">signals</code> array — short flags drawn from a versioned catalog. <strong class="text-white">None of these are risk, compliance, or sanctions assessments.</strong> They describe what kind of behavior the on-chain history looks like. The canonical machine-readable catalog is at
+          <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono">/schema</code></a>.
+        </p>
+
+        <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Behavioral pattern</h4>
+        <dl class="space-y-3">
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">OFFER_HEAVY_BOT</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Most of what this wallet does is place and cancel DEX orders — typical of a market-making bot.
+              <span class="block text-xs mt-2 opacity-70">Fires when: order placement and cancellation make up more than half of in-window activity.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">MULTI_CURRENCY_GATEWAY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet handles four or more different tokens. Typical of a gateway, issuer, or multi-asset service.
+              <span class="block text-xs mt-2 opacity-70">Fires when: 4+ unique currencies touched in the window.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">BURST_ACTIVITY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              A flurry of transactions packed into less than an hour. Automation territory.
+              <span class="block text-xs mt-2 opacity-70">Fires when: 20+ in-window transactions span less than one hour.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">TRUSTLINE_ONLY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Most of what this wallet does is set up trustlines for tokens, not move money. Typical of issuer setup or token-registration wallets.
+              <span class="block text-xs mt-2 opacity-70">Fires when: more than half of in-window transactions are TrustSet operations.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">NET_OUTBOUND_SWEEP</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Money is leaving this wallet much faster than it's coming in. Looks like a hot wallet distributing funds.
+              <span class="block text-xs mt-2 opacity-70">Fires when: outgoing transactions exceed incoming by 1.5&times; or more on a High-activity wallet.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">NET_INBOUND_ACCUMULATION</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Money is piling in faster than it's going out. Accumulation or aggregation pattern.
+              <span class="block text-xs mt-2 opacity-70">Fires when: incoming transactions exceed outgoing by 1.5&times; or more on a Medium- or High-activity wallet.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">PASSIVE_COUNTERPARTY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet behaves like an issuer or AMM pool. It sits there receiving from others rather than initiating activity. Suppresses some other signals that don't make sense for passive roles.
+              <span class="block text-xs mt-2 opacity-70">Fires when: label or transaction mix indicates issuer / stablecoin / gateway / AMM-pool role.</span>
+            </dd>
+          </div>
+        </dl>
+
+        <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Cadence &amp; trajectory</h4>
+        <dl class="space-y-3">
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">DORMANT_REAWAKENING</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet sat silent for at least a month before its recent activity. Just woke up.
+              <span class="block text-xs mt-2 opacity-70">Fires when: 30+ days of silence between the most-recent prior transaction and the oldest in-window transaction.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">SCORE_TRAJECTORY_BOT_ONBOARDING</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The automation score jumped sharply over the last 30 days. Looks like a wallet transitioning from human/idle use to bot or service operation.
+              <span class="block text-xs mt-2 opacity-70">Fires when: score climbed 30+ points within 30 days vs the prior recorded scan and the wallet is now classified High. Requires a prior recorded scan.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">CADENCE_TIGHTENING</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The time between transactions has dropped sharply since the last scan. The wallet is speeding up toward bot-typical timings.
+              <span class="block text-xs mt-2 opacity-70">Fires when: median seconds-between-tx halved or more since the prior scan, with the prior cadence at least 30 seconds. Requires a prior recorded scan.</span>
+            </dd>
+          </div>
+        </dl>
+
+        <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Counterparties</h4>
+        <dl class="space-y-3">
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">LABELED_EXCHANGE_COUNTERPARTY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet transacts with a known exchange (per XRPScan labels). Descriptive flag; says nothing about compliance status.
+              <span class="block text-xs mt-2 opacity-70">Fires when: at least one top counterparty matches an exchange label or domain.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">SINGLE_COUNTERPARTY_HEAVY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Almost all payments go to or come from a single address. Typical of broker/dealer relationships, dedicated settlement wallets, or merchant-to-acquirer flows.
+              <span class="block text-xs mt-2 opacity-70">Fires when: 80%+ of in-window payments (10+ minimum) flow through one counterparty.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">COUNTERPARTY_BURST</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Ten or more counterparties showed up in this scan that weren't there last time. Fresh fanout pattern — payouts, new market-making relationships, or distribution events.
+              <span class="block text-xs mt-2 opacity-70">Fires when: 10+ new addresses in the top counterparties list vs the prior recorded scan. Requires a prior recorded scan.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">COUNTERPARTY_ADVISORY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              A counterparty has been publicly flagged on XRPScan (e.g., community-reported as hacked, scam, or sanctioned). Worth a closer look.
+              <span class="block text-xs mt-2 opacity-70">Fires when: at least one top counterparty carries an XRPScan advisory.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">COUNTERPARTY_ADVISORY_TRUSTED</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              A counterparty's advisory is provider-verified, not just community-reported.
+              <span class="block text-xs mt-2 opacity-70">Fires when: an advisory's <code class="font-mono">trusted</code> flag is true. Not currently observable in XRPScan data; reserved for forward compatibility.</span>
+            </dd>
+          </div>
+        </dl>
+
+        <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Address-specific flags</h4>
+        <dl class="space-y-3">
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">TARGET_ADVISORY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The address you scanned has been publicly flagged on XRPScan. Read the report on XRPScan before transacting with this address.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the scanned address itself carries an XRPScan advisory. Higher-priority than COUNTERPARTY_ADVISORY since it concerns the wallet under review directly.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">TARGET_ADVISORY_TRUSTED</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The advisory on the scanned address is provider-verified. Highest-confidence subset of TARGET_ADVISORY.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the target's advisory has <code class="font-mono">trusted</code> set to true. Not currently observable; reserved for forward compatibility.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">DUST_ONLY_ON_QUIET_WALLET</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Every payment in the window is sub-cent dust on a wallet that's otherwise quiet. Likely an address-poisoning beacon.
+              <span class="block text-xs mt-2 opacity-70">Fires when: all in-window payments are below $0.01 USD on a Low- or Dormant-level wallet.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">DUST_ON_FRESH_WALLET</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              A nearly-new wallet has at least one sub-cent payment. A common address-poisoning move targeting freshly-activated wallets.
+              <span class="block text-xs mt-2 opacity-70">Fires when: 5 or fewer in-window payments and at least one is below $0.01 USD.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">HIGH_DUST_RATIO</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              More than one in five payments are sub-cent dust amid otherwise active usage. Beacon or poisoning signals mixed into legitimate activity.
+              <span class="block text-xs mt-2 opacity-70">Fires when: dust payments exceed 20% of 10+ in-window payments.</span>
+            </dd>
+          </div>
+        </dl>
+      </details>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Sister product</h2>
       <h3 class="text-2xl font-bold mb-6">Also part of the XRPL-Utilities Portfolio</h3>
       <a href="/telemetry/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
