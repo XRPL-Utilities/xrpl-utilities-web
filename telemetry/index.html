@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=free-web"></script>
+  <script src="/assets/telemetry-flow.js?v=samples-out"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -92,11 +92,10 @@
       <div class="flex gap-1 items-center text-sm whitespace-nowrap">
         <span class="text-muted text-xs uppercase tracking-wider px-3 shrink-0">Jump to</span>
         <a href="#top" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">&uarr; Top</a>
-        <a href="#snapshots" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Samples</a>
+        <a href="#try-it" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Live snapshot</a>
         <a href="#active-float" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Active Float</a>
         <a href="#burst-math" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Burst Math</a>
         <a href="#floor-matrix" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Floor Matrix</a>
-        <a href="#try-it" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Try it</a>
         <a href="#for-agents" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">How it works</a>
         <a href="#output-shape" class="text-muted hover:text-white transition px-3 py-1.5 rounded hover:bg-panel">Output shape</a>
       </div>
@@ -114,31 +113,21 @@
     </div>
   </section>
 
-  <section id="snapshots">
+  <section id="try-it">
     <div class="max-w-5xl mx-auto px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-8">
-        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Free preview · cached samples</div>
-        <h2 class="text-2xl font-bold mb-4">See the payload shape, no payment</h2>
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Live snapshot</div>
+        <h2 class="text-2xl font-bold mb-2">Run a real snapshot</h2>
         <p class="text-sm text-muted mb-6">
-          Click any sample to render a static, illustrative response in place. The Burst Math and Floor Matrix calculators below also work entirely on cached data, so you can stress-test scenarios before deciding to pay.
+          Free from this page. No wallet, no payment, no inputs. The same payload agents pay for over the
+          x402 API at <code class="font-mono text-white">telemetry.xrpl-utilities.io</code>.
         </p>
-        <div class="flex flex-wrap gap-2">
-          <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="supply">Today's supply constriction</button>
-          <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="drain">Last weekend's exchange drain</button>
-          <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="amm">Top 5 AMM pools</button>
-          <button class="sample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-sample="floor">Utility floor reading</button>
-        </div>
-        <div class="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div class="text-sm text-muted">
-            Want a real one? The live snapshot below is free from this page.
-          </div>
-          <a href="#try-it" class="bg-accent hover:bg-accent-dim text-ink font-semibold text-sm px-5 py-2.5 rounded-lg transition whitespace-nowrap">
-            Run a live snapshot (free) &rarr;
-          </a>
-        </div>
+        <button id="snap-btn" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
+          Run live snapshot
+        </button>
       </div>
 
-      <div id="sample-result" class="mt-6 hidden"></div>
+      <div id="result" class="mt-6 hidden"></div>
     </div>
   </section>
 
@@ -424,23 +413,6 @@
     </div>
   </section>
 
-  <section id="try-it" class="border-t border-border bg-panel/30">
-    <div class="max-w-3xl mx-auto px-6 py-20">
-      <div class="bg-panel border border-border rounded-2xl p-8">
-        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Live snapshot</div>
-        <h3 class="text-2xl font-bold mb-2">Run a real snapshot</h3>
-        <p class="text-sm text-muted mb-6">
-          Free from this page. No wallet, no payment, no inputs. The same payload agents pay for over the
-          x402 API at <code class="font-mono text-white">telemetry.xrpl-utilities.io</code>.
-        </p>
-        <button id="snap-btn" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
-          Run live snapshot
-        </button>
-      </div>
-
-      <div id="result" class="mt-6 hidden"></div>
-    </div>
-  </section>
 
   <section id="for-agents" class="border-t border-border">
     <div class="max-w-6xl mx-auto px-6 py-20">
@@ -592,153 +564,6 @@ payload = requests.get(
     };
     const DEFAULTS = { Q: 10_000_000_000, V: 6 }; // $10B settlement window, velocity 6
     const SNAPSHOT_AS_OF = '2026-04-28';
-
-    // ---- Cached sample TelemetryPayloads (illustrative) ----
-    // All values track the live additive Active Float methodology shipped
-    // 2026-04-29: M = exchange omnibus * 10% proxy + AMM-locked + DEX
-    // orderbook depth. baseline_usd = $10B / (6 * 1.644B) ~= $1.014.
-    const SAMPLES = {
-      supply: {
-        generated_at: '2026-04-29T22:00:00Z',
-        supply: {
-          total_xrp: 100_000_000_000,
-          circulating_xrp: 66_800_000_000,
-          escrowed_xrp: 33_200_000_000,
-          dormant_xrp: 4_779_688_113,
-          amm_locked_xrp: 200_000_000,
-          exchange_omnibus_xrp: 14_433_293_926,
-          exchange_venue_count: 37,
-          exchange_address_count: 85,
-          dex_orderbook_depth_xrp: 874_471,
-          hodl_wave_pct: 4.78,
-          exchange_outflow_24h_xrp: 43_863_636,
-          escrow_release_vs_relock_ratio: 1.000,
-        },
-        derived_models: {
-          active_float: {
-            thesis: 'Modeled XRP available to absorb a multi-billion institutional block trade inside a single 3-5 second XRPL ledger close.',
-            kind: 'derived_model',
-            confidence: 'low_to_moderate',
-            value_xrp: 1_644_203_864,
-            value_xrp_24h_ago: 1_679_203_864,
-            delta_24h_xrp: -35_000_000,
-            delta_24h_pct: -2.08,
-            proxy_ratio: 0.10,
-            mathematical_bridge: {
-              starting: { label: 'Active Float (additive construction)', value_xrp: 0 },
-              additions: [
-                { label: 'Hot/warm exchange omnibus * 10.0% active-depth proxy ratio',
-                  value_xrp: 1_443_329_393,
-                  source: '14,433,293,926 XRP raw omnibus across 37 venues (85 addresses) * 0.10 ratio = 1,443,329,393 XRP. Industry-cited 5-15% range; 10% midpoint.' },
-                { label: 'AMM-locked XRP (XRPL on-chain pools)',
-                  value_xrp: 200_000_000,
-                  source: 'sum of XRP-side reserves across amm.pairs[]; live amm_info per refresh, half-of-TVL by AMM-balanced invariant.' },
-                { label: 'DEX orderbook XRP-side resting depth',
-                  value_xrp: 874_471,
-                  source: 'sum of TakerGets across sell-XRP offers in book_offers for 3 curated XRP/quote pairs.' },
-              ],
-              result: { label: 'Modeled Active Float', value_xrp: 1_644_203_864 },
-            },
-            methodology_note: 'Active Float is a derived model output, not a measurement.',
-          },
-        },
-        utility_floor: {
-          baseline_usd: 1.0140,
-          current_price_usd: 1.37,
-          available_liquid_supply_xrp: 1_644_203_864,
-          q_assumed_usd: 10_000_000_000,
-          v_assumed: 6,
-        },
-      },
-      // Cached samples reflect Telemetry's live response shape on 2026-04-28.
-      // Drain block tracks the live regional aggregation pattern. AMM block
-      // shows the top 5 pairs the live /scan actually returns (XRP/RLUSD
-      // through XRP/CSC). Vaults stays empty pending SingleAssetVault
-      // amendment activation.
-      drain: {
-        generated_at: '2026-04-28T17:00:00Z',
-        liquidity: [
-          { region: 'NA',   inflow_24h_xrp:  3_200_000, outflow_24h_xrp:  4_100_000, net_flow_24h_xrp:    900_000, top_venues: ['Coinbase', 'Kraken', 'Mercado Bitcoin'] },
-          { region: 'EU',   inflow_24h_xrp:  1_800_000, outflow_24h_xrp:  2_400_000, net_flow_24h_xrp:    600_000, top_venues: ['Bitstamp', 'Bitfinex', 'eToro'] },
-          { region: 'MENA', inflow_24h_xrp:          0, outflow_24h_xrp:          0, net_flow_24h_xrp:          0, top_venues: [] },
-          { region: 'APAC', inflow_24h_xrp: 32_400_000, outflow_24h_xrp: 70_700_000, net_flow_24h_xrp: 38_300_000, top_venues: ['Binance', 'UPbit', 'Bithumb'] },
-        ],
-      },
-      amm: {
-        generated_at: '2026-04-29T00:00:00Z',
-        amm: {
-          pairs: [
-            { pair: 'XRP/RLUSD',         base_asset: 'XRP', quote_asset: 'RLUSD',        tvl_xrp: 3_934_772, tvl_usd: 5_429_985, depth_1pct_xrp: 9_837, apr_pct: 0.0, fee_pct: 0.223 },
-            { pair: 'XRP/SOLO',          base_asset: 'XRP', quote_asset: 'SOLO',         tvl_xrp:    93_196, tvl_usd:   128_611, depth_1pct_xrp:   233, apr_pct: 0.0, fee_pct: 0.789 },
-            { pair: 'XRP/CSC',           base_asset: 'XRP', quote_asset: 'CSC',          tvl_xrp:    57_867, tvl_usd:    79_856, depth_1pct_xrp:   145, apr_pct: 0.0, fee_pct: 0.987 },
-            { pair: 'XRP/USD-Gatehub',   base_asset: 'XRP', quote_asset: 'USD-Gatehub',  tvl_xrp:    17_991, tvl_usd:    24_828, depth_1pct_xrp:    45, apr_pct: 0.0, fee_pct: 0.462 },
-            { pair: 'XRP/USD-Bitstamp',  base_asset: 'XRP', quote_asset: 'USD-Bitstamp', tvl_xrp:     7_171, tvl_usd:     9_896, depth_1pct_xrp:    18, apr_pct: 0.0, fee_pct: 0.219 },
-          ],
-          vaults: [],
-        },
-      },
-      floor: {
-        generated_at: '2026-04-29T22:00:00Z',
-        utility_floor: {
-          baseline_usd: 1.0140,
-          current_price_usd: 1.37,
-          available_liquid_supply_xrp: 1_644_203_864,
-          q_assumed_usd: 10_000_000_000,
-          v_assumed: 6,
-        },
-        supply: {
-          total_xrp: 100_000_000_000,
-          circulating_xrp: 66_800_000_000,
-          escrowed_xrp: 33_200_000_000,
-          dormant_xrp: 4_779_688_113,
-          amm_locked_xrp: 200_000_000,
-          exchange_omnibus_xrp: 14_433_293_926,
-          exchange_venue_count: 37,
-          exchange_address_count: 85,
-          dex_orderbook_depth_xrp: 874_471,
-          hodl_wave_pct: 4.78,
-          exchange_outflow_24h_xrp: 43_863_636,
-          escrow_release_vs_relock_ratio: 1.000,
-        },
-        derived_models: {
-          active_float: {
-            kind: 'derived_model',
-            confidence: 'low_to_moderate',
-            value_xrp: 1_644_203_864,
-            value_xrp_24h_ago: 1_679_203_864,
-            delta_24h_xrp: -35_000_000,
-            delta_24h_pct: -2.08,
-            proxy_ratio: 0.10,
-            mathematical_bridge: {
-              starting: { label: 'Active Float (additive construction)', value_xrp: 0 },
-              additions: [
-                { label: 'Hot/warm exchange omnibus * 10.0% active-depth proxy ratio',
-                  value_xrp: 1_443_329_393, source: '14.43B raw * 0.10 ratio.' },
-                { label: 'AMM-locked XRP (XRPL on-chain pools)',
-                  value_xrp: 200_000_000, source: 'live amm_info aggregation.' },
-                { label: 'DEX orderbook XRP-side resting depth',
-                  value_xrp: 874_471, source: 'book_offers across 3 pairs.' },
-              ],
-              result: { label: 'Modeled Active Float', value_xrp: 1_644_203_864 },
-            },
-          },
-        },
-      },
-    };
-
-    const sampleResultEl = document.getElementById('sample-result');
-    document.querySelectorAll('.sample-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const data = SAMPLES[btn.dataset.sample];
-        if (!data) return;
-        sampleResultEl.classList.remove('hidden');
-        window.XRTelemetryScan.renderResults(sampleResultEl, data, null);
-        const banner = document.createElement('div');
-        banner.className = 'mb-4 text-xs uppercase tracking-wider text-accent';
-        banner.textContent = 'Cached sample (illustrative)';
-        sampleResultEl.insertBefore(banner, sampleResultEl.firstChild);
-      });
-    });
 
     // ---- Burst Math ----
     const fmtXrp = n => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' XRP';
