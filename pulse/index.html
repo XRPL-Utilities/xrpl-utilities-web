@@ -45,7 +45,8 @@
     .source-bank_of_england   { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background: rgba(244, 114, 182, 0.12); }
     .source-rba_australia     { color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.12); }
     .source-cointelegraph_xrp { color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.12); }
-    .source-decrypt_xrp       { color: #a78bfa; border-color: rgba(167, 139, 250, 0.3); background: rgba(167, 139, 250, 0.12); }
+    .source-crypto_news_xrp   { color: #a78bfa; border-color: rgba(167, 139, 250, 0.3); background: rgba(167, 139, 250, 0.12); }
+    .source-coinspeaker_xrp   { color: #f87171; border-color: rgba(248, 113, 113, 0.3); background: rgba(248, 113, 113, 0.12); }
     .verified-pill            { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.12); }
     .utility-pill             { color: #facc15; border-color: rgba(250, 204, 21, 0.4); background: rgba(250, 204, 21, 0.14); font-weight: 600; }
     .signal-pill              { color: #fde68a; border-color: rgba(252, 211, 77, 0.3); background: rgba(252, 211, 77, 0.08); font-size: 0.65rem; }
@@ -329,7 +330,8 @@ feed = session.post(
       bank_of_england: 'Bank of England news RSS. Central bank.',
       rba_australia: 'Reserve Bank of Australia media releases. Central bank.',
       cointelegraph_xrp: "Cointelegraph's XRP tag RSS. Crypto press, source-side tag-filtered.",
-      decrypt_xrp: "Decrypt's XRP category RSS. Crypto press, with client-side keyword safety filter.",
+      crypto_news_xrp: "crypto.news XRP tag RSS. Crypto press, ~94% XRP-relevant on probe.",
+      coinspeaker_xrp: "Coinspeaker XRP search RSS. Crypto press, ~50% XRP-relevant on probe.",
     };
 
     async function loadSourceGrid() {
