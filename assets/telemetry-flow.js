@@ -369,6 +369,56 @@
     return card;
   }
 
+  function renderBridgeFlowsCard(supply) {
+    // Cross-chain flow strip: outflow (XRP leaving XRPL via bridges),
+    // inflow (XRP arriving from other chains), net. Renders only when
+    // the snapshot carries the bridge_*_24h_xrp fields (Telemetry slow-
+    // task may be cold on first deploy, in which case all three are 0).
+    if (typeof supply.bridge_outflow_24h_xrp !== 'number' &&
+        typeof supply.bridge_inflow_24h_xrp !== 'number') {
+      return null;
+    }
+    const card = sectionCard('Cross-chain flow (24h)');
+    const outflow = Number(supply.bridge_outflow_24h_xrp) || 0;
+    const inflow = Number(supply.bridge_inflow_24h_xrp) || 0;
+    const net = Number(supply.bridge_net_flow_24h_xrp);
+    const netSafe = isFinite(net) ? net : (inflow - outflow);
+    const exchOutflow = Number(supply.exchange_outflow_24h_xrp) || 0;
+
+    const grid = el('div', 'grid grid-cols-3 gap-3 mb-3');
+    [
+      ['Outflow', outflow, 'XRP leaving XRPL'],
+      ['Inflow',  inflow,  'XRP arriving from other chains'],
+      ['Net',     netSafe, netSafe > 0 ? 'XRPL net-receiver' : (netSafe < 0 ? 'XRPL net-sender' : 'Balanced')],
+    ].forEach(([k, v, sub], idx) => {
+      const cell = el('div', 'bg-ink border border-border rounded-lg p-3');
+      cell.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-1', k));
+      const colorClass = idx === 2
+        ? (v > 0 ? 'text-good' : (v < 0 ? 'text-bad' : 'text-white'))
+        : 'text-white';
+      const sign = idx === 2 && v > 0 ? '+' : '';
+      cell.appendChild(el('div', 'font-mono text-base ' + colorClass, sign + fmtXrpAmount(v)));
+      cell.appendChild(el('div', 'text-[11px] text-muted mt-1', sub));
+      grid.appendChild(cell);
+    });
+    card.appendChild(grid);
+
+    // Honest framing line. Compare to exchange outflow magnitude so a
+    // reader can see whether bridge flow is a meaningful share or a
+    // rounding error today. Hidden when exchange data is missing.
+    let footer;
+    if (exchOutflow > 0) {
+      const totalBridge = outflow + inflow;
+      const ratio = (totalBridge / exchOutflow) * 100;
+      footer = `Total bridge magnitude is ${ratio.toFixed(2)}% of 24h exchange outflow. ` +
+               `XRPL is bridge-poor today; this signal grows if/when cross-chain settlement does.`;
+    } else {
+      footer = 'Bridge flow is one signal among many. Cross-chain volume is historically modest on XRPL.';
+    }
+    card.appendChild(el('div', 'text-xs text-muted leading-relaxed', footer));
+    return card;
+  }
+
   function renderLiquidityCard(liquidity) {
     const card = sectionCard('Regional liquidity (24h)');
     // Stacked region cards. 1-up on mobile, 2-up at sm+. Each region gets
@@ -542,6 +592,10 @@
     // shrinkage delta. Pulls fields from supply + derived_models.
     if (payload.supply || payload.derived_models) stack.appendChild(renderActiveFloatCard(payload));
     if (payload.supply)        stack.appendChild(renderSupplyCard(payload.supply));
+    if (payload.supply) {
+      const bridgeCard = renderBridgeFlowsCard(payload.supply);
+      if (bridgeCard) stack.appendChild(bridgeCard);
+    }
     if (payload.liquidity)     stack.appendChild(renderLiquidityCard(payload.liquidity));
     if (payload.amm)           stack.appendChild(renderAmmCard(payload.amm));
     if (payload.utility_floor) stack.appendChild(renderUtilityFloorCard(payload.utility_floor));
