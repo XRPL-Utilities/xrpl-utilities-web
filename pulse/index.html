@@ -263,15 +263,32 @@ feed = session.post(
       let corrLine = '';
       if (e.correlation && e.correlation.available) {
         const c = e.correlation;
-        corrLine = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
-          <span class="text-white">T+${escapeHtml(String(c.window_hours || 4))}h delta</span>
-          &middot; price ${escapeHtml(fmtPct(c.current_price_usd_delta_pct))}
-          &middot; active float ${escapeHtml(fmtPct(c.active_float_xrp_delta_pct))}
-          <span class="opacity-70 ml-2">heuristic_only</span>
+        const windowH = c.window_hours || 4;
+        const deltaPct = c.current_price_usd_delta_pct;
+        // Tooltip carries the spec watermark for the curious; the inline
+        // text stays plain. Field names + watermark also live in /schema
+        // and the JSON response so agents always see them.
+        const tooltip = 'Mechanical t1 minus t0 measurement. Temporal proximity is not causation.';
+        corrLine = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border" title="${escapeHtml(tooltip)}">
+          <span class="text-white">XRPL price ${escapeHtml(windowH)}h after this story</span>
+          &middot; ${escapeHtml(fmtPct(deltaPct))}
         </div>`;
       } else if (e.correlation && e.correlation.captured_t0_at) {
-        corrLine = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border opacity-60">
-          T+4h correlation pending; t0 baseline captured.
+        const windowH = e.correlation.window_hours || 4;
+        const elapsedSec = Math.max(0, (Date.now() / 1000) - (e.published_at || 0));
+        const remainingSec = Math.max(0, windowH * 3600 - elapsedSec);
+        let label;
+        if (remainingSec <= 0) {
+          label = 'Ledger check landing on the next pass';
+        } else if (remainingSec < 3600) {
+          label = `Ledger check in ${Math.max(1, Math.round(remainingSec / 60))} minutes`;
+        } else {
+          const h = Math.floor(remainingSec / 3600);
+          const m = Math.round((remainingSec % 3600) / 60);
+          label = m > 0 ? `Ledger check in ${h}h ${m}m` : `Ledger check in ${h}h`;
+        }
+        corrLine = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border opacity-60" title="t0 XRPL price baseline captured at ingestion; t1 measurement runs after the correlation window closes.">
+          ${escapeHtml(label)}
         </div>`;
       }
 
