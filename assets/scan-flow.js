@@ -151,6 +151,29 @@
     const isError = report.error;
     const card = el('div', 'bg-panel border border-border rounded-2xl p-6');
 
+    // Identity banner (only renders when XRPScan has labeled the address).
+    // Surfaced from /scan response's top-level `identity` block (schema 2.4.0+).
+    // Renders display_name, watchlist role pill, verified badge, and optional
+    // domain. Hidden cleanly for unlabeled wallets so retail addresses don't
+    // get a half-empty header.
+    if (!isError && report.identity && report.identity.labeled) {
+      const id = report.identity;
+      const banner = el('div', 'flex flex-wrap items-center gap-2 mb-4 pb-3 border-b border-border');
+      banner.appendChild(el('div', 'text-xs text-muted uppercase tracking-wider mr-1', 'Identity'));
+      banner.appendChild(el('span', 'font-semibold text-white text-base', id.display_name));
+      if (id.role) {
+        banner.appendChild(el('span', 'border border-accent/40 text-accent text-xs uppercase tracking-wider px-2 py-0.5 rounded', id.role));
+      }
+      if (id.verified) {
+        banner.appendChild(el('span', 'text-xs text-green-400', '✓ Verified'));
+      }
+      if (id.domain) {
+        banner.appendChild(el('span', 'font-mono text-xs text-muted', id.domain));
+      }
+      banner.appendChild(el('span', 'text-xs text-muted ml-auto', 'via XRPScan'));
+      card.appendChild(banner);
+    }
+
     const head = el('div', 'flex items-start justify-between gap-4 mb-4');
     const left = el('div', 'min-w-0');
     left.appendChild(el('div', 'text-xs text-muted mb-1', 'Address'));
