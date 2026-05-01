@@ -38,13 +38,15 @@
   <style>
     body { background: #0a0a0a; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
-    .source-sec_press        { color: #c084fc; border-color: rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.12); }
-    .source-federal_reserve  { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); background: rgba(251, 146, 60, 0.12); }
-    .source-bis_speeches     { color: #2dd4bf; border-color: rgba(20, 184, 166, 0.3); background: rgba(20, 184, 166, 0.12); }
-    .source-ecb_press        { color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.12); }
-    .source-bank_of_england  { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background: rgba(244, 114, 182, 0.12); }
-    .source-rba_australia    { color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.12); }
-    .verified-pill           { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.12); }
+    .source-sec_press         { color: #c084fc; border-color: rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.12); }
+    .source-federal_reserve   { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); background: rgba(251, 146, 60, 0.12); }
+    .source-bis_speeches      { color: #2dd4bf; border-color: rgba(20, 184, 166, 0.3); background: rgba(20, 184, 166, 0.12); }
+    .source-ecb_press         { color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.12); }
+    .source-bank_of_england   { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background: rgba(244, 114, 182, 0.12); }
+    .source-rba_australia     { color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.12); }
+    .source-cointelegraph_xrp { color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.12); }
+    .source-decrypt_xrp       { color: #a78bfa; border-color: rgba(167, 139, 250, 0.3); background: rgba(167, 139, 250, 0.12); }
+    .verified-pill            { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.12); }
 
     @keyframes shimmer {
       0%   { background-position: -200% 0; }
@@ -85,11 +87,11 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse</h1>
       <p class="text-xl text-muted">Public-source XRPL event feed</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        XR-Pulse pulls events from official institutional RSS feeds (SEC, Federal Reserve, BIS, ECB, Bank of England, RBA), normalizes them into one time-ordered stream, and measures XRPL on-chain price movement in the four-hour window after each event. No editorial scoring. No source ranking. When two sources cover the same story we mark it cross-verified by mechanical title-similarity, not by editorial review.
+        XR-Pulse pulls events from regulatory press (SEC, Federal Reserve), central banks (BIS, ECB, Bank of England, RBA), and Ripple-specific crypto press (Cointelegraph XRP, Decrypt XRP). Every entry must mention <code class="font-mono text-white">ripple</code>, <code class="font-mono text-white">xrp</code>, <code class="font-mono text-white">rlusd</code>, or <code class="font-mono text-white">xrpl</code> in the title or summary. No editorial scoring, no source ranking, no social scraping. Each event captures a t0 XRPL price baseline at ingestion and a t1 measurement four hours later.
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        Source integrity &middot; 100% institutional RSS &middot; no social scraping &middot; no rumors
+        Source integrity &middot; official RSS only &middot; no social scraping &middot; no rumors &middot; tight Ripple/XRP filter
       </div>
     </div>
   </section>
@@ -182,12 +184,12 @@ feed = session.post(
   <section id="how-it-works" class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
-      <h3 class="text-3xl font-bold mb-6">Six institutional feeds, one stream, mechanical correlation</h3>
+      <h3 class="text-3xl font-bold mb-6">Eight feeds, tight Ripple/XRP filter, mechanical correlation</h3>
       <div id="source-grid" class="grid md:grid-cols-2 gap-4 mb-8">
         <!-- populated from /stats by the script below; sources with errors are auto-suppressed -->
       </div>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        Each feed is filtered for entries that mention <code class="font-mono text-white">ripple</code>, <code class="font-mono text-white">xrp</code>, <code class="font-mono text-white">rlusd</code>, or <code class="font-mono text-white">digital asset</code> in the title or summary. Without that filter the stream would be flooded with unrelated central-bank items.
+        Every entry must mention <code class="font-mono text-white">ripple</code>, <code class="font-mono text-white">xrp</code>, <code class="font-mono text-white">rlusd</code>, or <code class="font-mono text-white">xrpl</code> in the title or summary. Institutional sources will fire rarely under this filter (they don't typically name Ripple); when they do, the events are high-signal. The crypto-press sources carry most of the volume and are themselves source-side tag-filtered to XRP coverage.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
         When two sources publish the same story under different URLs, we cluster them by title similarity. If their normalized title tokens overlap by Jaccard ≥ 0.5 within a 48-hour window, the cluster collapses into one record with <code class="font-mono text-white">cross_verified: true</code> and a <code class="font-mono text-white">cluster_members</code> list so you can verify the merge. Mechanical, not editorial.
@@ -280,12 +282,14 @@ feed = session.post(
     }
 
     const SOURCE_DESCRIPTIONS = {
-      sec_press: 'U.S. Securities and Exchange Commission press release RSS. Regulatory press.',
+      sec_press: 'U.S. Securities and Exchange Commission press releases. Regulatory press.',
       federal_reserve: 'U.S. Federal Reserve press releases. Central bank.',
-      bis_speeches: 'Bank for International Settlements central-bank speeches RSS. Central bank.',
+      bis_speeches: 'Bank for International Settlements central-bank speeches. Central bank.',
       ecb_press: 'European Central Bank press releases. Central bank.',
       bank_of_england: 'Bank of England news RSS. Central bank.',
       rba_australia: 'Reserve Bank of Australia media releases. Central bank.',
+      cointelegraph_xrp: "Cointelegraph's XRP tag RSS. Crypto press, source-side tag-filtered.",
+      decrypt_xrp: "Decrypt's XRP category RSS. Crypto press, with client-side keyword safety filter.",
     };
 
     async function loadSourceGrid() {
