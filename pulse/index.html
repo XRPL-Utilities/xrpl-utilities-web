@@ -76,12 +76,31 @@
         <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-8 w-8" />
         <span class="font-bold tracking-tight">XRPL-Utilities</span>
       </a>
-      <nav class="flex items-center gap-6 text-sm text-muted">
+      <nav class="hidden md:flex items-center gap-x-5 lg:gap-x-6 text-sm text-muted whitespace-nowrap">
         <a href="/" class="hover:text-white transition">Home</a>
-        <a href="/sentinel/" class="hover:text-white transition">Sentinel</a>
-        <a href="/telemetry/" class="hover:text-white transition">Telemetry</a>
-        <a href="/pulse/" class="text-white">Pulse</a>
+        <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
+        <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
+        <a href="/pulse/" class="text-accent font-medium">XR-Pulse</a>
+        <a href="/manifest/" class="hover:text-white transition">Manifest</a>
+        <a href="/terms/" class="hover:text-white transition">Terms</a>
+        <a href="/contact/" class="hover:text-white transition">Contact</a>
       </nav>
+      <details class="md:hidden relative">
+        <summary class="cursor-pointer list-none [&amp;::-webkit-details-marker]:hidden p-2 -mr-2 text-muted hover:text-white transition select-none">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </summary>
+        <div class="absolute right-0 top-full mt-2 bg-panel border border-border rounded-lg p-4 flex flex-col gap-3 z-50 min-w-[200px] shadow-xl">
+          <a href="/" class="hover:text-white transition text-sm text-muted">Home</a>
+          <a href="/sentinel/" class="hover:text-white transition text-sm text-muted">XR-Sentinel</a>
+          <a href="/telemetry/" class="hover:text-white transition text-sm text-muted">XR-Telemetry</a>
+          <a href="/pulse/" class="text-sm text-accent font-medium">XR-Pulse</a>
+          <a href="/manifest/" class="hover:text-white transition text-sm text-muted">Manifest</a>
+          <a href="/terms/" class="hover:text-white transition text-sm text-muted">Terms</a>
+          <a href="/contact/" class="hover:text-white transition text-sm text-muted">Contact</a>
+        </div>
+      </details>
     </div>
   </header>
 
