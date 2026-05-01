@@ -38,11 +38,13 @@
   <style>
     body { background: #0a0a0a; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
-    .source-bis_speeches         { color: #2dd4bf; border-color: rgba(20, 184, 166, 0.3); background: rgba(20, 184, 166, 0.12); }
-    .source-sec_press            { color: #c084fc; border-color: rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.12); }
-    .source-cointelegraph_ripple { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); background: rgba(251, 146, 60, 0.12); }
-    .source-decrypt_ripple       { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background: rgba(244, 114, 182, 0.12); }
-    .verified-pill               { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.12); }
+    .source-sec_press        { color: #c084fc; border-color: rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.12); }
+    .source-federal_reserve  { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); background: rgba(251, 146, 60, 0.12); }
+    .source-bis_speeches     { color: #2dd4bf; border-color: rgba(20, 184, 166, 0.3); background: rgba(20, 184, 166, 0.12); }
+    .source-ecb_press        { color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.12); }
+    .source-bank_of_england  { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background: rgba(244, 114, 182, 0.12); }
+    .source-rba_australia    { color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.12); }
+    .verified-pill           { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.12); }
 
     @keyframes shimmer {
       0%   { background-position: -200% 0; }
@@ -83,8 +85,12 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse</h1>
       <p class="text-xl text-muted">Public-source XRPL event feed</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        XR-Pulse pulls events from four primary feeds, normalizes them into one time-ordered stream, and measures XRPL on-chain price movement in the four-hour window after each event. No editorial scoring. No source ranking. When two sources cover the same story we mark it cross-verified by mechanical title-similarity, not by editorial review.
+        XR-Pulse pulls events from official institutional RSS feeds (SEC, Federal Reserve, BIS, ECB, Bank of England, RBA), normalizes them into one time-ordered stream, and measures XRPL on-chain price movement in the four-hour window after each event. No editorial scoring. No source ranking. When two sources cover the same story we mark it cross-verified by mechanical title-similarity, not by editorial review.
       </p>
+      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
+        <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+        Source integrity &middot; 100% institutional RSS &middot; no social scraping &middot; no rumors
+      </div>
     </div>
   </section>
 
@@ -176,30 +182,18 @@ feed = session.post(
   <section id="how-it-works" class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
-      <h3 class="text-3xl font-bold mb-6">Four feeds, one stream, mechanical correlation</h3>
-      <div class="grid md:grid-cols-2 gap-4 mb-8">
-        <div class="bg-panel border border-border rounded-lg p-5">
-          <div class="text-xs uppercase tracking-wider mb-2 source-bis_speeches inline-block px-2 py-1 rounded border">bis_speeches</div>
-          <p class="text-sm text-muted leading-relaxed mt-3">Bank for International Settlements RSS for central-bank speeches. Source type: central bank. Captures CBDC, cross-border settlement, and monetary policy framing.</p>
-        </div>
-        <div class="bg-panel border border-border rounded-lg p-5">
-          <div class="text-xs uppercase tracking-wider mb-2 source-sec_press inline-block px-2 py-1 rounded border">sec_press</div>
-          <p class="text-sm text-muted leading-relaxed mt-3">SEC press release RSS, filtered post-fetch for entries that mention "ripple" or "xrp" in title or summary. Source type: regulatory press.</p>
-        </div>
-        <div class="bg-panel border border-border rounded-lg p-5">
-          <div class="text-xs uppercase tracking-wider mb-2 source-cointelegraph_ripple inline-block px-2 py-1 rounded border">cointelegraph_ripple</div>
-          <p class="text-sm text-muted leading-relaxed mt-3">Cointelegraph's Ripple tag RSS. Source type: crypto news. Source-side topic-filtered, no client-side keyword filter applied.</p>
-        </div>
-        <div class="bg-panel border border-border rounded-lg p-5">
-          <div class="text-xs uppercase tracking-wider mb-2 source-decrypt_ripple inline-block px-2 py-1 rounded border">decrypt_ripple</div>
-          <p class="text-sm text-muted leading-relaxed mt-3">Decrypt's Ripple category RSS. Source type: crypto news. Source-side topic-filtered, no client-side keyword filter applied.</p>
-        </div>
+      <h3 class="text-3xl font-bold mb-6">Six institutional feeds, one stream, mechanical correlation</h3>
+      <div id="source-grid" class="grid md:grid-cols-2 gap-4 mb-8">
+        <!-- populated from /stats by the script below; sources with errors are auto-suppressed -->
       </div>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        When two sources publish the same story under different URLs, we cluster them by title similarity. If their normalized title tokens overlap by Jaccard ≥ 0.5 within a 48-hour window, the cluster collapses into one record with <code class="font-mono text-white">cross_verified: true</code> and a <code class="font-mono text-white">cluster_members</code> list so you can verify the merge. The threshold is mechanical, not editorial.
+        Each feed is filtered for entries that mention <code class="font-mono text-white">ripple</code>, <code class="font-mono text-white">xrp</code>, <code class="font-mono text-white">rlusd</code>, or <code class="font-mono text-white">digital asset</code> in the title or summary. Without that filter the stream would be flooded with unrelated central-bank items.
+      </p>
+      <p class="text-sm text-muted leading-relaxed mb-4">
+        When two sources publish the same story under different URLs, we cluster them by title similarity. If their normalized title tokens overlap by Jaccard ≥ 0.5 within a 48-hour window, the cluster collapses into one record with <code class="font-mono text-white">cross_verified: true</code> and a <code class="font-mono text-white">cluster_members</code> list so you can verify the merge. Mechanical, not editorial.
       </p>
       <p class="text-sm text-muted leading-relaxed">
-        Events older than the four-hour correlation window also carry an optional measurement of XRPL <code class="font-mono text-white">current_price_usd</code> drawn from XR-Telemetry. Every correlation block is watermarked <code class="font-mono text-white">"correlation": "heuristic_only"</code> because temporal proximity is not causation.
+        Each event captures a t0 baseline of XRPL <code class="font-mono text-white">current_price_usd</code> and <code class="font-mono text-white">active_float_xrp</code> from XR-Telemetry at ingestion. Four hours later, the correlation engine captures t1 and computes the delta. Every correlation block is watermarked <code class="font-mono text-white">"correlation": "heuristic_only"</code> because temporal proximity is not causation.
       </p>
     </div>
   </section>
@@ -244,6 +238,12 @@ feed = session.post(
       }[c]));
     }
 
+    function fmtPct(p) {
+      if (p === null || p === undefined) return '—';
+      const sign = p > 0 ? '+' : '';
+      return `${sign}${p.toFixed(2)}%`;
+    }
+
     function renderEvent(e) {
       const sources = (e.source_appearances || []).map(s =>
         `<span class="text-xs px-2 py-0.5 rounded source-${escapeHtml(s)} border">${escapeHtml(s)}</span>`
@@ -251,9 +251,20 @@ feed = session.post(
       const verifiedPill = e.cross_verified
         ? `<span class="text-xs px-2 py-0.5 rounded verified-pill border">cross_verified</span>`
         : '';
-      const corrLine = e.correlation && e.correlation.available
-        ? `<div class="text-xs text-muted mt-2">Telemetry · current XRPL price ${escapeHtml('$' + (e.correlation.current_price_usd || 0).toFixed(4))} · window ${escapeHtml(String(e.correlation.window_hours || 4))}h · <span class="opacity-70">heuristic_only</span></div>`
-        : '';
+      let corrLine = '';
+      if (e.correlation && e.correlation.available) {
+        const c = e.correlation;
+        corrLine = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+          <span class="text-white">T+${escapeHtml(String(c.window_hours || 4))}h delta</span>
+          &middot; price ${escapeHtml(fmtPct(c.current_price_usd_delta_pct))}
+          &middot; active float ${escapeHtml(fmtPct(c.active_float_xrp_delta_pct))}
+          <span class="opacity-70 ml-2">heuristic_only</span>
+        </div>`;
+      } else if (e.correlation && e.correlation.captured_t0_at) {
+        corrLine = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border opacity-60">
+          T+4h correlation pending; t0 baseline captured.
+        </div>`;
+      }
       const link = escapeHtml(e.primary_url || '#');
       return `
         <article class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition">
@@ -267,6 +278,43 @@ feed = session.post(
         </article>
       `;
     }
+
+    const SOURCE_DESCRIPTIONS = {
+      sec_press: 'U.S. Securities and Exchange Commission press release RSS. Regulatory press.',
+      federal_reserve: 'U.S. Federal Reserve press releases. Central bank.',
+      bis_speeches: 'Bank for International Settlements central-bank speeches RSS. Central bank.',
+      ecb_press: 'European Central Bank press releases. Central bank.',
+      bank_of_england: 'Bank of England news RSS. Central bank.',
+      rba_australia: 'Reserve Bank of Australia media releases. Central bank.',
+    };
+
+    async function loadSourceGrid() {
+      const grid = document.getElementById('source-grid');
+      if (!grid) return;
+      try {
+        const r = await fetch(`${API_BASE}/stats`);
+        if (!r.ok) return;
+        const stats = await r.json();
+        const feeds = stats.feeds || {};
+        const cards = Object.entries(feeds)
+          .filter(([_, f]) => f.is_active || (f.last_status && f.last_status.error === null))
+          .map(([name, _]) => {
+            const desc = SOURCE_DESCRIPTIONS[name] || '';
+            return `<div class="bg-panel border border-border rounded-lg p-5">
+              <div class="text-xs uppercase tracking-wider mb-2 source-${escapeHtml(name)} inline-block px-2 py-1 rounded border">${escapeHtml(name)}</div>
+              <p class="text-sm text-muted leading-relaxed mt-3">${escapeHtml(desc)}</p>
+            </div>`;
+          });
+        if (cards.length === 0) {
+          grid.innerHTML = `<div class="md:col-span-2 bg-panel border border-border rounded-lg p-5 text-sm text-muted">Source list initializing; check back in a moment.</div>`;
+          return;
+        }
+        grid.innerHTML = cards.join('');
+      } catch (e) {
+        // Silent failure on the secondary panel; main feed is the priority surface.
+      }
+    }
+    loadSourceGrid();
 
     async function loadFeed() {
       const list = document.getElementById('feed-list');
