@@ -306,6 +306,15 @@ feed = session.post(
       return `${sign}${p.toFixed(2)}%`;
     }
 
+    function fmtUsd(n) {
+      if (n === null || n === undefined || isNaN(n)) return '—';
+      const a = Math.abs(n);
+      if (a >= 1_000_000_000) return '$' + (n / 1_000_000_000).toFixed(2) + 'B';
+      if (a >= 1_000_000) return '$' + (n / 1_000_000).toFixed(2) + 'M';
+      if (a >= 1_000) return '$' + (n / 1_000).toFixed(1) + 'k';
+      return '$' + n.toFixed(0);
+    }
+
     function renderEvent(e) {
       const sources = (e.source_appearances || []).map(s =>
         `<span class="text-xs px-2 py-0.5 rounded source-${escapeHtml(s)} border">${escapeHtml(s)}</span>`
@@ -340,14 +349,28 @@ feed = session.post(
 
       let utilityBlock = '';
       if (e.active_utility && e.active_utility.active) {
+        // Humanize each signal pill: friendly label + magnitude when the
+        // payload carries one. Falls back to the raw signal name only
+        // when we genuinely have no extra context to render.
         const pills = (e.active_utility.signals || []).map(s => {
-          let label = s.signal;
-          if (s.signal === 'price_moved' && s.delta_pct !== undefined) {
-            label = `price_moved · ${fmtPct(s.delta_pct)}`;
+          let label;
+          if (s.signal === 'cross_verified') {
+            label = `Cross-verified`;
+          } else if (s.signal === 'price_moved' && s.delta_pct !== undefined) {
+            label = `Price moved · ${fmtPct(s.delta_pct)}`;
+          } else if (s.signal === 'volume_moved' && s.delta_pct !== undefined) {
+            label = `Volume moved · ${fmtPct(s.delta_pct)}`;
           } else if (s.signal === 'rlusd_mint_observed' && s.mint_count) {
-            label = `rlusd_mint · ${s.mint_count} tx`;
+            label = `RLUSD minted · ${s.mint_count} tx`;
+          } else if (s.signal === 'watchlist_activity_observed') {
+            const txCount = s.tx_count || 0;
+            const totalUsd = fmtUsd(s.total_amount_usd);
+            const roles = Array.isArray(s.roles) && s.roles.length ? ` · ${s.roles.join(' + ')}` : '';
+            label = `Institutional flow · ${txCount} tx · ${totalUsd}${roles}`;
           } else if (s.signal === 'high_activity_target' && s.addresses) {
-            label = `high_activity_target · ${s.addresses.length}`;
+            label = `High-activity target · ${s.addresses.length} address${s.addresses.length === 1 ? '' : 'es'}`;
+          } else {
+            label = s.signal;
           }
           return `<span class="px-2 py-0.5 rounded signal-pill border">${escapeHtml(label)}</span>`;
         }).join(' ');
