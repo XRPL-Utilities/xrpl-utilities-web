@@ -77,6 +77,7 @@
         <span class="font-bold tracking-tight">XRPL-Utilities</span>
       </a>
       <nav class="flex items-center gap-6 text-sm text-muted">
+        <a href="/" class="hover:text-white transition">Home</a>
         <a href="/sentinel/" class="hover:text-white transition">Sentinel</a>
         <a href="/telemetry/" class="hover:text-white transition">Telemetry</a>
         <a href="/pulse/" class="text-white">Pulse</a>
@@ -198,8 +199,45 @@ feed = session.post(
         When two sources publish the same story, we collapse them into a single record by comparing the titles. If the wording overlaps enough within a 48-hour window, the entry gets a <span class="text-white">cross-verified</span> flag and the secondary URLs are listed alongside, so you can confirm the match yourself.
       </p>
       <p class="text-sm text-muted leading-relaxed">
-        At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim. Agents that need the precise field names, schema, or measurement watermark can read the JSON spec at <a href="https://pulse.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono">/schema</code></a>.
+        At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim.
       </p>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Sister products</h2>
+      <h3 class="text-2xl font-bold mb-6">Also part of the XRPL-Utilities Portfolio</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/sentinel/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-sentinel.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Sentinel</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  XRPL wallet activity pattern classifier. Reads on-chain behavior and tells you how automated it looks. Free on the web, $0.10 per scan over the agent API.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+        <a href="/telemetry/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-telemetry.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  XRPL macro telemetry: supply, regional liquidity, AMM depth, an Active Float model, and a utility-floor projection. Free on the web, $0.10 per snapshot over the agent API.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+      </div>
     </div>
   </section>
 
