@@ -854,41 +854,51 @@ payload = requests.get(
     // page load, without requiring the user to pay for a snapshot first.
     // /healthz exposes the oracle's last-known-good price (free; CORS-allowed
     // for the .com origin). Falls back silently to the static placeholder if
-    // the fetch fails.
-    fetch('https://telemetry.xrpl-utilities.io/healthz')
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        const spot = d && d.checks && d.checks.xrp_price && d.checks.xrp_price.last_good_usd;
-        if (typeof spot !== 'number' || spot <= 0) {
-          // Fetch returned but no usable spot - fall back to the static
-          // SNAPSHOT (last-shipped) so the tile shows something rather than
-          // an em-dash forever.
+    // the fetch fails. Re-polled every 60s while the tab is visible — matches
+    // the backend oracle's TTL so CoinGecko load stays at one fetch / 60s
+    // regardless of how many tabs are open.
+    function refreshSpot() {
+      fetch('https://telemetry.xrpl-utilities.io/healthz')
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          const spot = d && d.checks && d.checks.xrp_price && d.checks.xrp_price.last_good_usd;
+          if (typeof spot !== 'number' || spot <= 0) {
+            bmSpot.textContent = fmtUsd4(SNAPSHOT.current_price_usd);
+            bmSpotAsOf.textContent = 'as of ' + SNAPSHOT_AS_OF + ' (live fetch unavailable)';
+            return;
+          }
+          SNAPSHOT.current_price_usd = spot;
+          bmSpot.textContent = fmtUsd4(spot);
+          bmSpotAsOf.textContent = 'live spot, just now';
+          const ch = d.checks.xrp_price.usd_24h_change_pct;
+          const bm24 = document.getElementById('bm-spot-24h');
+          if (bm24 && typeof ch === 'number') {
+            const arrow = ch > 0 ? '↑' : (ch < 0 ? '↓' : '·');
+            const sign = ch > 0 ? '+' : '';
+            bm24.textContent = arrow + ' ' + sign + ch.toFixed(2) + '% 24h';
+            bm24.className = 'text-sm font-mono mt-1 ' + (ch > 0 ? 'text-good' : (ch < 0 ? 'text-bad' : 'text-muted'));
+          }
+          recompute();
+        })
+        .catch(() => {
           bmSpot.textContent = fmtUsd4(SNAPSHOT.current_price_usd);
-          bmSpotAsOf.textContent = 'as of ' + SNAPSHOT_AS_OF + ' (live fetch unavailable)';
-          return;
-        }
-        SNAPSHOT.current_price_usd = spot;
-        bmSpot.textContent = fmtUsd4(spot);
-        bmSpotAsOf.textContent = 'live spot, just now';
-        // 24h change banner under the spot tile (filled from /healthz).
-        // Hidden cleanly when the field is missing (cold cache / oracle
-        // miss). Color: green up, red down, muted when zero.
-        const ch = d.checks.xrp_price.usd_24h_change_pct;
-        const bm24 = document.getElementById('bm-spot-24h');
-        if (bm24 && typeof ch === 'number') {
-          const arrow = ch > 0 ? '↑' : (ch < 0 ? '↓' : '·');
-          const sign = ch > 0 ? '+' : '';
-          bm24.textContent = arrow + ' ' + sign + ch.toFixed(2) + '% 24h';
-          bm24.className = 'text-sm font-mono mt-1 ' + (ch > 0 ? 'text-good' : (ch < 0 ? 'text-bad' : 'text-muted'));
-        }
-        recompute();
-      })
-      .catch(() => {
-        // Network error / CORS rejection. Fall back to the static SNAPSHOT
-        // so the tile is filled rather than blank.
-        bmSpot.textContent = fmtUsd4(SNAPSHOT.current_price_usd);
-        bmSpotAsOf.textContent = 'as of ' + SNAPSHOT_AS_OF + ' (live fetch failed)';
-      });
+          bmSpotAsOf.textContent = 'as of ' + SNAPSHOT_AS_OF + ' (live fetch failed)';
+        });
+    }
+    refreshSpot();
+    let spotPollId = setInterval(refreshSpot, 60_000);
+    // Pause polling in background tabs; resume + immediate refresh on focus
+    // so a user returning to a stale tab gets a fresh value without waiting
+    // for the next interval tick.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearInterval(spotPollId);
+        spotPollId = 0;
+      } else if (!spotPollId) {
+        refreshSpot();
+        spotPollId = setInterval(refreshSpot, 60_000);
+      }
+    });
 
     // Development banner + payment-disabled handling. Reads /agents.json
     // for service_status and payments_enabled. Banner stays up while
