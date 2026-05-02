@@ -110,7 +110,7 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Telemetry</h1>
       <p class="text-xl text-muted">XRPL Macro Telemetry</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        On-chain XRPL macro telemetry served over a 5-minute snapshot. Supply breakdown, regional exchange flows, AMM depth and APR, DEX orderbook depth, and a modeled Active Float that estimates how much XRP can actually clear inside a 3-5 second ledger close. $0.10 per snapshot, paid in XRP, no API key. Same payload over x402 for agents and the invoice flow for browsers.
+        Live on-chain telemetry for XRP. Supply, regional flows, AMM depth, and a modeled Active Float showing how much XRP can clear inside a single 3-5 second ledger close. Free preview right here. $0.10 per paid snapshot for agents and developers.
       </p>
     </div>
   </section>
@@ -138,12 +138,7 @@
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Active Float</h2>
       <h3 class="text-3xl font-bold mb-2">3-second settlement supply</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-3xl">
-        <strong class="text-white">Total Circulating Supply</strong> is how much XRP exists outside Ripple's
-        escrow program. <strong class="text-white">Modeled Active Float</strong> is how much of that supply is
-        actually available to absorb a settlement burst inside a single 3-5 second XRPL ledger close. The two
-        differ because most XRP held at exchanges sits in customer accounts, not posted on the order book, so
-        we estimate the slice that is actually quoted and add the XRP committed to AMM pools and the XRP
-        resting on the on-chain DEX.
+        <strong class="text-white">Total Circulating Supply</strong> is how much XRP exists outside Ripple's escrow. <strong class="text-white">Modeled Active Float</strong> is how much of that can actually clear inside a single 3-5 second ledger close. Most XRP held at exchanges is sitting in customer balances, not posted on the order book, so the active slice is much smaller than the headline number.
       </p>
 
       <div class="grid sm:grid-cols-2 gap-4">
@@ -166,20 +161,10 @@
       <div class="mt-6 bg-panel border border-border rounded-2xl p-6">
         <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Why these numbers differ</div>
         <p class="text-sm text-muted leading-relaxed mb-3">
-          Most XRP held at exchanges is sitting in customer accounts, not posted on the order book. When an
-          exchange wallet holds 6.5B XRP, the vast majority of that is user balances backing withdrawals and trades,
-          not depth a market sweep can actually hit inside a few seconds. Counting it as "available" overstates
-          how much can really clear in a settlement burst.
-        </p>
-        <p class="text-sm text-muted leading-relaxed mb-3">
-          We don't count the full exchange holdings. We apply a 10% multiplier as an estimate of how much is
-          genuinely on the book at any moment. Only a small slice of any exchange's holdings is actively quoted
-          at one time. We then add the XRP committed to XRPL AMM pools, which is always swappable inside a single
-          ledger close, plus the XRP resting in the on-chain DEX order book.
+          When an exchange wallet holds 6.5B XRP, most of that is user balances backing trades and withdrawals, not depth a market sweep can hit inside a few seconds. Counting full exchange holdings as "available" overstates how much can clear in a settlement burst.
         </p>
         <p class="text-sm text-muted leading-relaxed">
-          The paid <code class="font-mono text-white">/scan</code> response includes every input number and the
-          multiplier so anyone receiving the data can recompute under their own assumptions.
+          Active Float applies a 10% multiplier on exchange holdings as an estimate of what's genuinely on the book at any moment, then adds XRP committed to AMM pools (always swappable inside a single ledger close) and XRP resting in the on-chain DEX. The paid <code class="font-mono text-white">/scan</code> response includes every input number and the multiplier so anyone receiving the data can recompute under their own assumptions.
         </p>
       </div>
     </div>
@@ -190,18 +175,10 @@
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Burst Math</h2>
       <h3 class="text-3xl font-bold mb-2">Required equilibrium price calculator</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        The Equation of Exchange (<strong class="text-white font-mono">M &middot; V = P &middot; Q</strong>)
-        says the supply available for trade (<strong class="text-white">M</strong>) times how often each unit
-        changes hands per year (<strong class="text-white">V</strong>, velocity) equals the price per unit
-        (<strong class="text-white">P</strong>) times the dollar volume of transactions per year
-        (<strong class="text-white">Q</strong>). Plug in three values and you can solve for the fourth.
+        The Equation of Exchange (<strong class="text-white font-mono">M &middot; V = P &middot; Q</strong>) says supply available for trade times turnover rate equals the per-unit price times annual dollar volume. Plug in three values, solve for the fourth.
       </p>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        M is anchored at Modeled Active Float, the supply that can clear inside a single ledger close. Q is your
-        assumption about how much annual settlement volume XRPL will see. V is your assumption about how often
-        that supply turns over per year. With those three set, the math returns P: the per-XRP price the identity
-        requires under those specific assumptions. Not a forecast. Real prices come from what the next seller
-        is willing to accept, not from an identity. Read P as &quot;what the math requires.&quot;
+        M is anchored at Modeled Active Float (the supply that can clear inside a single ledger close). Set Q (your assumption about annual settlement volume on XRPL) and V (how often that supply turns over per year), and the math returns P: the per-XRP price the identity requires under those specific assumptions. Not a forecast. Read P as "what the math requires."
       </p>
 
       <div class="bg-panel border border-border rounded-2xl p-6">
@@ -256,57 +233,38 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the variables</div>
           <p class="mb-3">
-            <strong class="text-white">M</strong> &middot; Modeled Active Float. The XRP that can actually
-            clear inside a single 3-5 second ledger close. Computed as 10% of exchange-held XRP, plus all XRP
-            in AMM pools, plus XRP resting in the on-chain DEX order book.
+            <strong class="text-white">M</strong> &middot; Modeled Active Float. The supply that can clear inside a single 3-5 second ledger close. Computed as 10% of exchange holdings + all AMM-pool XRP + XRP resting on the DEX.
           </p>
           <p class="mb-3">
-            <strong class="text-white">V</strong> &middot; how many times each unit of M is reused for settlement
-            in a year. There is no canonical XRPL velocity, so this is your assumption. The default of 6 is a
-            midpoint estimate for a XRPL where ODL-style cross-border flows recycle the same liquid supply
-            multiple times a year. Today's real velocity is much lower (most XRP is held, not transacted);
-            6 reflects what a mature settlement network looks like, not what XRPL is right now.
+            <strong class="text-white">V</strong> &middot; Annual velocity. How many times each unit of M is reused for settlement per year. Your assumption. The default of 6 reflects what a mature settlement network looks like with ODL-style cross-border flows recycling supply. Today's real velocity is much lower since most XRP is held, not transacted.
           </p>
           <p class="mb-3">
-            <strong class="text-white">Q</strong> &middot; total dollar value of settlement you assume XRPL clears
-            in a year. Q and V must use the same time window, so both are annual.
+            <strong class="text-white">Q</strong> &middot; Total annual settlement volume in USD. Your assumption. Must share V's time window (both are annual).
           </p>
           <p>
-            <strong class="text-white">P</strong> &middot; the per-XRP USD price the identity requires given M,
-            V, and Q. The calculator solves for this. Not a forecast.
+            <strong class="text-white">P</strong> &middot; The per-XRP USD price the identity requires given M, V, and Q. Not a forecast.
           </p>
         </div>
 
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
           <p class="mb-3">
-            P typically comes out far below the market price. That is the point. Today's liquid XRP supply,
-            at the assumed velocity, can clear the assumed annual settlement using only a tiny fraction of
-            XRP's current market value as utility. Pure settlement-floor math does not justify today's spot price.
+            P typically comes out far below the market price. That's the point. Today's liquid supply, at the assumed velocity, can clear the assumed settlement using only a fraction of XRP's market value as utility. Pure settlement-floor math doesn't justify today's spot.
           </p>
           <p class="mb-4">
-            The gap between P and the market is everything else XRP is priced for: bets on future adoption,
-            the fixed 100B supply cap, and store-of-value behavior. None of that is in this math, by design.
-            Burst Math is settlement-only. It is a floor, not a forecast.
+            The gap between P and the market is everything else XRP is priced for: bets on future adoption, the fixed 100B supply cap, and store-of-value behavior. None of that is in this math, by design. Burst Math is settlement-only. A floor, not a forecast.
           </p>
           <p class="mb-2 text-accent font-semibold uppercase tracking-widest text-xs">What would push P up</p>
           <ul class="space-y-2 mb-4">
             <li>
-              <strong class="text-white">Q</strong> <span class="text-muted">-</span> <strong class="text-white">Rises</strong>
-              &middot; more real annual settlement on XRPL. Plausible drivers: Ripple's ODL adds new
-              cross-border corridors, treasuries adopt XRPL for B2B settlement, agent-payable x402 flows
-              scale, RLUSD volume grows.
+              <strong class="text-white">Q rises</strong> &middot; more real annual settlement on XRPL. Plausible drivers: new ODL corridors, treasury B2B adoption, agent-payable x402 flows scaling, RLUSD volume growth.
             </li>
             <li>
-              <strong class="text-white">M</strong> <span class="text-muted">-</span> <strong class="text-white">Shrinks</strong>
-              &middot; less XRP resting on open markets. Plausible drivers: institutions move XRP from exchanges
-              into long-term cold custody, AMM pool sizes grow, market makers pull back resting orderbook depth
-              as settlement volume builds.
+              <strong class="text-white">M shrinks</strong> &middot; less XRP resting on open markets. Plausible drivers: institutions move into cold custody, AMM pools grow, market makers pull back resting depth.
             </li>
           </ul>
           <p>
-            The Floor Matrix below lets you compound either dynamic forward 24 months and see what the
-            implied floor looks like under those assumptions.
+            The Floor Matrix below compounds either dynamic forward 24 months.
           </p>
         </div>
       </div>
@@ -318,11 +276,7 @@
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Predictive Floor Matrix</h2>
       <h3 class="text-3xl font-bold mb-2">24-month projection</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        Burst Math gives you a price <em>today</em>. But real networks do not sit still: supply tightens,
-        settlement grows, and both compound. Pick monthly rates for each below and the math projects the
-        implied price forward 24 months from today's anchor. The shaded band around the projection is a
-        &plusmn;15% uncertainty envelope; the grey dashed line on the chart is today's market price, drawn
-        flat for comparison.
+        Burst Math gives you a price today. Real networks compound: supply tightens, settlement grows. Pick monthly rates below and the math projects forward 24 months. Shaded band is a &plusmn;15% visual envelope, not a confidence interval. Grey dashed line is today's market price.
       </p>
 
       <div class="grid lg:grid-cols-3 gap-6">
@@ -374,42 +328,29 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the controls</div>
           <p class="mb-3">
-            <strong class="text-white">Starting price</strong> &middot; the implied floor today. Copied live
-            from Burst Math. Change Q or V there to re-anchor everything below.
+            <strong class="text-white">Starting price</strong> &middot; today's implied floor. Copied live from Burst Math. Re-anchor by tweaking Q or V there.
           </p>
           <p class="mb-3">
-            <strong class="text-white">Monthly supply constriction</strong> &middot; how fast liquid M shrinks
-            each month. A setting of 1% per month means 1% of circulating XRP exits each month into AMM pools,
-            cold custody, escrow, or dormancy.
+            <strong class="text-white">Monthly supply constriction</strong> &middot; how fast liquid M shrinks each month. 1% per month means 1% of M exits each month into AMM pools, cold custody, escrow, or dormancy.
           </p>
           <p class="mb-3">
-            <strong class="text-white">Monthly volume growth</strong> &middot; how fast annual settlement Q grows
-            each month. A setting of 3% per month compounds to roughly 1.4 times the starting volume by month 24.
+            <strong class="text-white">Monthly volume growth</strong> &middot; how fast annual settlement Q grows each month. Compounds geometrically.
           </p>
           <p>
-            <strong class="text-white">&plusmn;15% band</strong> &middot; a visual reminder that the baseline is a
-            point estimate and reality is noisier. It is not a statistical confidence interval.
+            <strong class="text-white">&plusmn;15% band</strong> &middot; visual reminder that the baseline is a point estimate. Not a statistical confidence interval.
           </p>
         </div>
 
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
           <p class="mb-3">
-            Small monthly rates compound aggressively. 1% per month of supply constriction works out to about
-            21% of supply gone in 24 months. 3% per month of volume growth works out to roughly 1.4 times the
-            starting volume by month 24. Both push P up.
+            Small monthly rates compound aggressively. 1% per month of supply constriction works out to about 21% of supply gone in 24 months. 3% per month of volume growth roughly doubles annual Q over the same window. Both push P up.
           </p>
           <p class="mb-3">
-            Watch where the projected baseline crosses the grey dashed line representing today's market price.
-            That crossover is the math saying: under these specific assumptions, the implied utility floor
-            catches up to where the market trades today, somewhere in the next 24 months. It does not mean
-            spot stays still in reality. It means the speculation and adoption premium fully materializes as
-            settlement utility on this trajectory.
+            Watch where the baseline crosses the grey dashed line representing today's market. That crossover is the math saying: under these specific assumptions, the implied floor catches up to where XRP trades today, somewhere in the next 24 months.
           </p>
           <p>
-            Sensitivity, not forecast. Regulatory regime, macro liquidity, AMM depth, and exchange behavior
-            all matter, and none of them compound smoothly. Treat the chart as &quot;what would the math say
-            if these specific rates held&quot; rather than a price target.
+            Sensitivity, not forecast. Regulatory regime, macro liquidity, AMM depth, and exchange behavior all matter, and none of them compound smoothly. Treat the chart as "what would the math say if these specific rates held" rather than a price target.
           </p>
         </div>
       </div>
@@ -533,17 +474,10 @@ payload = requests.get(
     <div class="max-w-4xl mx-auto px-6 py-12">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Safe harbor &amp; compliance</h2>
       <p class="text-muted leading-relaxed text-sm">
-        XR-Telemetry produces on-chain network telemetry and an algebraic implied-floor computation.
-        It is not a price prediction, investment recommendation, or financial advice.
-        The Burst Math and Floor Matrix outputs are sensitivity tools - they show what the math implies
-        under explicit assumptions, not what XRP will or should be priced at.
+        XR-Telemetry produces on-chain telemetry and an algebraic implied-floor computation. Not a price prediction, investment recommendation, or financial advice. Burst Math and Floor Matrix are sensitivity tools. They show what the math implies under explicit assumptions, not what XRP will or should be priced at.
       </p>
       <p class="text-muted leading-relaxed text-sm mt-4">
-        XRPL-Utilities provides behavioral data classification and technical ledger analysis.
-        We do not provide financial advice, risk ratings, or investment forensics.
-        Users are responsible for ensuring their use of these tools complies with local
-        digital asset regulations, including the California Digital Financial Assets Law
-        and the Colorado AI Act where applicable.
+        Users are responsible for ensuring their use complies with local digital asset and AI regulations, including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
       </p>
     </div>
   </section>
@@ -888,18 +822,18 @@ payload = requests.get(
       // Guard rail: warn when inputs imply implausible terminal values.
       let warning = null;
       if (cPct >= 100) {
-        warning = 'Constriction at or above 100% has no physical interpretation - supply cannot shrink to zero in one month.';
+        warning = 'Constriction at or above 100% has no physical interpretation. Supply cannot shrink to zero in one month.';
       } else if (!isFinite(p24)) {
         warning = 'Projection is undefined for these inputs.';
       } else {
         const supplyRemaining = Math.pow(1 - cPct / 100, HORIZON);
         const ratio = p24 / p0;
         if (ratio > 10) {
-          warning = `These inputs imply a ${ratio.toFixed(1)}× price by month 24. That is an extreme scenario - the model assumes V is constant and ignores velocity feedback, regulatory shocks, and AMM depth.`;
+          warning = `These inputs imply a ${ratio.toFixed(1)}× price by month 24. That's an extreme scenario. The model assumes V is constant and ignores velocity feedback, regulatory shocks, and AMM depth.`;
         } else if (ratio > 5) {
           warning = `Inputs imply a ${ratio.toFixed(1)}× projection by month 24. Constriction cannot compound indefinitely in reality; treat as sensitivity, not forecast.`;
         } else if (supplyRemaining < 0.3) {
-          warning = `At this constriction rate, only ${(supplyRemaining * 100).toFixed(0)}% of liquid supply remains by month 24 - implausible without a major regime change.`;
+          warning = `At this constriction rate, only ${(supplyRemaining * 100).toFixed(0)}% of liquid supply remains by month 24. Implausible without a major regime change.`;
         }
       }
       showWarning(warning);
@@ -915,7 +849,7 @@ payload = requests.get(
     // page load, without requiring the user to pay for a snapshot first.
     // /healthz exposes the oracle's last-known-good price (free; CORS-allowed
     // for the .com origin). Falls back silently to the static placeholder if
-    // the fetch fails. Re-polled every 60s while the tab is visible — matches
+    // the fetch fails. Re-polled every 60s while the tab is visible to match
     // the backend oracle's TTL so CoinGecko load stays at one fetch / 60s
     // regardless of how many tabs are open.
     function refreshSpot() {
