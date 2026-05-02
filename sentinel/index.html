@@ -460,23 +460,38 @@ report = session.post(
 
   <section class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Sister product</h2>
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Sister products</h2>
       <h3 class="text-2xl font-bold mb-6">Also part of the XRPL-Utilities Portfolio</h3>
-      <a href="/telemetry/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-        <div class="flex items-start justify-between gap-6">
-          <div class="flex items-start gap-5">
-            <img src="/assets/xr-telemetry.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-            <div>
-              <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
-              <div class="text-sm text-muted leading-relaxed">
-                XRPL macro telemetry: supply, regional liquidity, AMM depth, an Active Float model,
-                and a utility-floor projection. Free on the web, $0.10 per snapshot over the agent API.
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/telemetry/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-telemetry.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  XRPL macro telemetry: supply, regional liquidity, AMM depth, Active Float, and a utility-floor projection. Free on the web, $0.10 per snapshot over the agent API.
+                </div>
               </div>
             </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
           </div>
-          <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-        </div>
-      </a>
+        </a>
+        <a href="/pulse/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-pulse.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Pulse</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  Public-source XRPL event feed with on-chain correlation: 12 RSS feeds (institutional + crypto press) and an institutional wallet watchlist. Free on the web, $0.10 per query over the agent API.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+      </div>
     </div>
   </section>
 

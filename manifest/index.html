@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manifest | XRPL-Utilities</title>
-  <meta name="description" content="Human-readable view of the XR-Sentinel and XR-Telemetry agent manifests, showing what AI agents see when they discover these services." />
+  <meta name="description" content="Human-readable view of the XR-Sentinel, XR-Telemetry, and XR-Pulse agent manifests, showing what AI agents see when they discover these services." />
   <meta property="og:title" content="XRPL-Utilities | Agent Manifest" />
-  <meta property="og:description" content="What AI agents see when they discover XR-Sentinel and XR-Telemetry via /.well-known/agents.json. Capabilities, payment, endpoints, legal." />
+  <meta property="og:description" content="What AI agents see when they discover XR-Sentinel, XR-Telemetry, and XR-Pulse via /.well-known/agents.json. Capabilities, payment, endpoints, legal." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/manifest/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -67,7 +67,7 @@
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Agent manifests</h1>
       <p class="text-muted leading-relaxed">
-        This is what an AI agent or crawler sees when it discovers XR-Sentinel or XR-Telemetry via each
+        This is what an AI agent or crawler sees when it discovers XR-Sentinel, XR-Telemetry, or XR-Pulse via each
         service's
         <code class="font-mono text-sm bg-panel px-2 py-1 rounded">/.well-known/agents.json</code>,
         rendered here for human readability.
@@ -105,6 +105,31 @@
       <div>
         <h2 class="text-2xl font-bold mb-4">XR-Telemetry</h2>
         <div id="content-telemetry" class="space-y-6">
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <div class="h-3 bg-border rounded animate-pulse w-16 mb-3"></div>
+            <div class="h-6 bg-border rounded animate-pulse w-48 mb-4"></div>
+            <div class="space-y-2">
+              <div class="h-3 bg-border rounded animate-pulse w-full"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-11/12"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-3/4"></div>
+            </div>
+          </section>
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <div class="h-6 bg-border rounded animate-pulse w-40 mb-4"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3">
+              <div class="h-3 bg-border rounded animate-pulse w-24"></div>
+              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-full"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-20"></div>
+              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-2/3"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-28"></div>
+              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-3/4"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Pulse</h2>
+        <div id="content-pulse" class="space-y-6">
           <section class="bg-panel border border-border rounded-2xl p-8">
             <div class="h-3 bg-border rounded animate-pulse w-16 mb-3"></div>
             <div class="h-6 bg-border rounded animate-pulse w-48 mb-4"></div>
@@ -326,6 +351,7 @@
 
     loadOne("https://sentinel.xrpl-utilities.io/agents.json", "content-sentinel", "XR-Sentinel");
     loadOne("https://telemetry.xrpl-utilities.io/agents.json", "content-telemetry", "XR-Telemetry");
+    loadOne("https://pulse.xrpl-utilities.io/agents.json", "content-pulse", "XR-Pulse");
   </script>
 
 </body>

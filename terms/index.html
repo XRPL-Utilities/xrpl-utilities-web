@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Terms | XRPL-Utilities</title>
-  <meta name="description" content="Terms of service, fee schedule, refund policy, and compliance posture for XR-Sentinel and XR-Telemetry." />
+  <meta name="description" content="Terms of service, fee schedule, refund policy, and compliance posture for XR-Sentinel, XR-Telemetry, and XR-Pulse." />
   <meta property="og:title" content="XRPL-Utilities | Terms of Service" />
-  <meta property="og:description" content="Fee schedule, refund policy, payment protocol, data handling, and compliance posture across XR-Sentinel and XR-Telemetry." />
+  <meta property="og:description" content="Fee schedule, refund policy, payment protocol, data handling, and compliance posture across XR-Sentinel, XR-Telemetry, and XR-Pulse." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/terms/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -77,11 +77,11 @@
           <h2 class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Static summary (always available)</h2>
           <h3 class="text-xl font-bold mb-2">Pricing and finality</h3>
           <p class="text-white leading-relaxed">
-            Each XR-Sentinel scan and each XR-Telemetry snapshot is priced at
+            Each XR-Sentinel scan, each XR-Telemetry snapshot, and each XR-Pulse query is priced at
             <strong class="text-white">$0.10 USD</strong>, payable in XRP. Drops are computed at request time
             from the live XRP/USD spot, so the advertised USD amount stays accurate as the spot moves.
             Successful payloads are paid in full; payment is final on settlement. If a request fails before
-            settlement (verify-then-work-then-settle is enforced on both services), no charge occurs and the
+            settlement (verify-then-work-then-settle is enforced on all three services), no charge occurs and the
             presigned transaction is never broadcast. The 30-minute payment freshness window applies to web
             invoices; the 600-second window applies to x402.
           </p>
@@ -90,8 +90,9 @@
           <h3 class="text-xl font-bold mb-2">What we provide</h3>
           <p class="text-white leading-relaxed">
             XR-Sentinel returns behavioral pattern classifications for XRPL accounts. XR-Telemetry returns
-            an XRPL macro telemetry snapshot. Both are best-effort, on-chain-derived data products.
-            Sanity bounds and per-field provenance are declared in each service's
+            an XRPL macro telemetry snapshot. XR-Pulse returns a public-source event feed with on-chain
+            correlation against an institutional wallet watchlist. All three are best-effort, on-chain-derived
+            data products. Sanity bounds and per-field provenance are declared in each service's
             <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/agents.json</code>
             and
             <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/schema</code>.
@@ -125,8 +126,8 @@
             XRPL-Utilities is not liable for direct, indirect, consequential, or incidental damages arising
             from use, misuse, downtime, misclassification, data inaccuracy, sanity-bound rejections, oracle
             staleness, third-party dependency degradation, or any other failure mode. Third-party
-            dependencies (QuickNode, the t54 facilitator, XRPSCAN, CoinGecko, the AI provider for XR-Sentinel)
-            may degrade or change availability without notice.
+            dependencies (QuickNode, the t54 facilitator, XRPSCAN, CoinGecko, the AI provider for XR-Sentinel,
+            and the public RSS sources XR-Pulse aggregates) may degrade or change availability without notice.
           </p>
         </div>
       </div>
@@ -147,6 +148,8 @@
              class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">XR-Sentinel /tos &rarr;</a>
           <a href="https://telemetry.xrpl-utilities.io/tos" target="_blank" rel="noopener noreferrer"
              class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">XR-Telemetry /tos &rarr;</a>
+          <a href="https://pulse.xrpl-utilities.io/tos" target="_blank" rel="noopener noreferrer"
+             class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">XR-Pulse /tos &rarr;</a>
         </div>
       </div>
     </div>
