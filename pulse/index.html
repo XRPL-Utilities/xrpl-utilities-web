@@ -168,26 +168,48 @@
   </section>
 
   <section id="feed">
-    <div class="max-w-4xl mx-auto px-6 pb-16">
+    <div class="max-w-6xl mx-auto px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-6 md:p-8">
         <div class="flex items-center justify-between gap-4 mb-6">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Live feed</h2>
           <button id="refresh-btn" class="text-xs text-muted hover:text-white transition">Refresh</button>
         </div>
-        <div id="feed-list" class="space-y-3">
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
-            <div class="skeleton-bar h-3 w-1/2"></div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-xs uppercase tracking-[0.2em] text-muted font-semibold">News</h3>
+              <span id="news-count" class="text-[10px] text-muted font-mono"></span>
+            </div>
+            <div id="news-list" class="space-y-3">
+              <div class="bg-ink border border-border rounded-lg p-4">
+                <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
+                <div class="skeleton-bar h-3 w-1/2"></div>
+              </div>
+              <div class="bg-ink border border-border rounded-lg p-4">
+                <div class="skeleton-bar h-4 w-2/3 mb-3"></div>
+                <div class="skeleton-bar h-3 w-1/3"></div>
+              </div>
+            </div>
           </div>
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="skeleton-bar h-4 w-2/3 mb-3"></div>
-            <div class="skeleton-bar h-3 w-1/3"></div>
-          </div>
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="skeleton-bar h-4 w-3/5 mb-3"></div>
-            <div class="skeleton-bar h-3 w-2/5"></div>
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-xs uppercase tracking-[0.2em] text-muted font-semibold">XRPL Activity</h3>
+              <span id="activity-count" class="text-[10px] text-muted font-mono"></span>
+            </div>
+            <div id="activity-list" class="space-y-3">
+              <div class="bg-ink border border-border rounded-lg p-4">
+                <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
+                <div class="skeleton-bar h-3 w-2/5"></div>
+              </div>
+              <div class="bg-ink border border-border rounded-lg p-4">
+                <div class="skeleton-bar h-4 w-3/5 mb-3"></div>
+                <div class="skeleton-bar h-3 w-1/3"></div>
+              </div>
+            </div>
           </div>
         </div>
+
         <p class="text-xs text-muted mt-6 leading-relaxed">
           Free from this page. Agents pay $0.10 per query over the x402 API at
           <code class="font-mono text-white">pulse.xrpl-utilities.io</code>.
@@ -703,56 +725,101 @@ feed = session.post(
     loadStats();
 
     const FEED_INITIAL = 6;
-    let _feedEvents = [];
-    let _feedShown = 0;
+    // Two parallel column states. Each tracks its own slice of the same
+    // underlying response so an expand on one side doesn't disturb the
+    // other.
+    const _columns = {
+      news: {
+        events: [],
+        shown: 0,
+        listId: 'news-list',
+        countId: 'news-count',
+        moreBtnId: 'news-show-more',
+        emptyMsg: 'No news events stored yet. Ingestion runs every 15 minutes; check back shortly.',
+      },
+      activity: {
+        events: [],
+        shown: 0,
+        listId: 'activity-list',
+        countId: 'activity-count',
+        moreBtnId: 'activity-show-more',
+        emptyMsg: 'No on-chain activity above the storage floor stored yet. The watcher polls the validated ledger every 60s.',
+      },
+    };
 
-    function renderFeedSlice() {
-      const list = document.getElementById('feed-list');
-      const slice = _feedEvents.slice(0, _feedShown);
-      const moreCount = _feedEvents.length - _feedShown;
+    function renderColumn(key) {
+      const col = _columns[key];
+      const list = document.getElementById(col.listId);
+      const countEl = document.getElementById(col.countId);
+      if (countEl) {
+        countEl.textContent = col.events.length
+          ? `${col.events.length} event${col.events.length === 1 ? '' : 's'}`
+          : '';
+      }
+      if (col.events.length === 0) {
+        list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">${col.emptyMsg}</div>`;
+        return;
+      }
+      const slice = col.events.slice(0, col.shown);
+      const moreCount = col.events.length - col.shown;
       const moreBtn = moreCount > 0
-        ? `<button id="show-more-btn" class="w-full bg-ink border border-border hover:border-accent text-sm text-muted hover:text-white transition rounded-lg p-3 mt-2">Show ${moreCount} more</button>`
+        ? `<button id="${col.moreBtnId}" class="w-full bg-ink border border-border hover:border-accent text-sm text-muted hover:text-white transition rounded-lg p-3 mt-2">Show ${moreCount} more</button>`
         : '';
       list.innerHTML = slice.map(renderEvent).join('') + moreBtn;
-      const btn = document.getElementById('show-more-btn');
+      const btn = document.getElementById(col.moreBtnId);
       if (btn) btn.addEventListener('click', () => {
-        _feedShown = _feedEvents.length;
-        renderFeedSlice();
+        col.shown = col.events.length;
+        renderColumn(key);
       });
     }
 
+    function splitEventsByKind(events) {
+      const news = [];
+      const activity = [];
+      for (const e of events) {
+        if ((e.source_appearances || []).indexOf('whale_xrpl') !== -1) {
+          activity.push(e);
+        } else {
+          news.push(e);
+        }
+      }
+      return { news, activity };
+    }
+
     async function loadFeed() {
-      const list = document.getElementById('feed-list');
       const errBox = (msg) => `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">${msg} <button id="retry-link" class="text-accent hover:underline ml-1">Retry</button></div>`;
       try {
         const ctl = new AbortController();
         const timeoutId = setTimeout(() => ctl.abort(), 30000);
+        // Bumped limit from 50 to 100 since whale events can dominate the
+        // recent window once the watcher accumulates traffic; the higher
+        // limit ensures both columns have depth even if one source is
+        // sparse. min_whale_usd:0 keeps every stored on-chain event in
+        // the response so the activity column populates fully.
         const r = await fetch(`${API_BASE}/events/recent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          // min_whale_usd:0 surfaces every stored on-chain event alongside
-          // RSS news. The API default (5e5) is whale-grade for agent
-          // consumers; the marketing site wants the full activity stream
-          // visible so visitors see the feed alive.
-          body: JSON.stringify({ limit: 50, min_whale_usd: 0 }),
+          body: JSON.stringify({ limit: 100, min_whale_usd: 0 }),
           signal: ctl.signal,
         });
         clearTimeout(timeoutId);
         if (!r.ok) {
-          list.innerHTML = errBox(`Feed returned HTTP ${r.status}.`);
+          document.getElementById('news-list').innerHTML = errBox(`Feed returned HTTP ${r.status}.`);
+          document.getElementById('activity-list').innerHTML = '';
           attachRetry();
           return;
         }
         const data = await r.json();
-        if (!data.events || data.events.length === 0) {
-          list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">No events stored yet. Ingestion runs every 15 minutes; check back shortly.</div>`;
-          return;
-        }
-        _feedEvents = data.events;
-        _feedShown = Math.min(FEED_INITIAL, _feedEvents.length);
-        renderFeedSlice();
+        const { news, activity } = splitEventsByKind(data.events || []);
+        _columns.news.events = news;
+        _columns.news.shown = Math.min(FEED_INITIAL, news.length);
+        _columns.activity.events = activity;
+        _columns.activity.shown = Math.min(FEED_INITIAL, activity.length);
+        renderColumn('news');
+        renderColumn('activity');
       } catch (e) {
-        list.innerHTML = errBox('Could not reach the feed. This usually clears on a retry; the API is at <code class="font-mono text-white">pulse.xrpl-utilities.io</code>.');
+        document.getElementById('news-list').innerHTML = errBox('Could not reach the feed. This usually clears on a retry; the API is at <code class="font-mono text-white">pulse.xrpl-utilities.io</code>.');
+        document.getElementById('activity-list').innerHTML = '';
         attachRetry();
       }
     }
@@ -763,13 +830,17 @@ feed = session.post(
     }
 
     document.getElementById('refresh-btn').addEventListener('click', () => {
-      const list = document.getElementById('feed-list');
-      list.innerHTML = `
+      // Reset both columns to skeleton state on manual refresh.
+      const skeleton = `
         <div class="bg-ink border border-border rounded-lg p-4">
           <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
           <div class="skeleton-bar h-3 w-1/2"></div>
         </div>
       `;
+      document.getElementById('news-list').innerHTML = skeleton;
+      document.getElementById('activity-list').innerHTML = skeleton;
+      document.getElementById('news-count').textContent = '';
+      document.getElementById('activity-count').textContent = '';
       loadFeed();
     });
 
