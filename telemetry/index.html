@@ -249,7 +249,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
           <p class="mb-3">
-            P typically comes out far below the market price. That's the point. Today's liquid supply, at the assumed velocity, can clear the assumed settlement using only a fraction of XRP's market value as utility. Pure settlement-floor math doesn't justify today's spot.
+            <strong class="text-accent">P</strong> typically comes out far below the market price. That's the point. Today's liquid supply, at the assumed velocity, can clear the assumed settlement using only a fraction of XRP's market value as utility. Pure settlement-floor math doesn't justify today's spot.
           </p>
           <p class="mb-4">
             The gap between P and the market is everything else XRP is priced for: bets on future adoption, the fixed 100B supply cap, and store-of-value behavior. None of that is in this math, by design. Burst Math is settlement-only. A floor, not a forecast.
@@ -257,10 +257,10 @@
           <p class="mb-2 text-accent font-semibold uppercase tracking-widest text-xs">What would push P up</p>
           <ul class="space-y-2 mb-4">
             <li>
-              <strong class="text-accent">Q rises</strong> &middot; more real annual settlement on XRPL. Plausible drivers: new ODL corridors, treasury B2B adoption, agent-payable x402 flows scaling, RLUSD volume growth.
+              <strong class="text-accent">Q</strong> rises &middot; more real annual settlement on XRPL. Plausible drivers: new ODL corridors, treasury B2B adoption, agent-payable x402 flows scaling, RLUSD volume growth.
             </li>
             <li>
-              <strong class="text-accent">M shrinks</strong> &middot; less XRP resting on open markets. Plausible drivers: institutions move into cold custody, AMM pools grow, market makers pull back resting depth.
+              <strong class="text-accent">M</strong> shrinks &middot; less XRP resting on open markets. Plausible drivers: institutions move into cold custody, AMM pools grow, market makers pull back resting depth.
             </li>
           </ul>
           <p>
@@ -430,6 +430,9 @@ payload = requests.get(
         <li><code class="font-mono text-white">utility_floor</code>: baseline (= P at the assumed Q, V, and Active Float as M), current spot, premium ratio</li>
         <li><code class="font-mono text-white">generated_at</code>: ISO timestamp the snapshot was computed</li>
       </ul>
+      <p class="text-xs text-muted mt-6 leading-relaxed">
+        Full field-level details at <a href="https://telemetry.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
+      </p>
     </div>
   </section>
 
