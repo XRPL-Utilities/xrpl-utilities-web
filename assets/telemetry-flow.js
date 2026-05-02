@@ -587,10 +587,12 @@
     target.appendChild(summary);
 
     const stack = el('div', 'space-y-4');
-    // Active Float dual-card surfaces the headline narrative first: total
-    // circulating vs modeled active settlement supply, with the 24h
-    // shrinkage delta. Pulls fields from supply + derived_models.
-    if (payload.supply || payload.derived_models) stack.appendChild(renderActiveFloatCard(payload));
+    // Active Float dual-card removed from this render stack: the hero tiles
+    // at the top of the page (Total Circulating Supply + Modeled Active
+    // Float, populated by populateActiveFloatCard() / setActiveFloatDelta()
+    // when a snapshot loads) already carry the same data. Re-rendering it
+    // here was duplicating headline content. Snapshot stack now starts
+    // straight at Supply.
     if (payload.supply)        stack.appendChild(renderSupplyCard(payload.supply));
     if (payload.supply) {
       const bridgeCard = renderBridgeFlowsCard(payload.supply);
