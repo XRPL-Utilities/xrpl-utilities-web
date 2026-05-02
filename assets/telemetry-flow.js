@@ -551,7 +551,17 @@
     // where 2 decimals is plenty.
     const rows = [['Required floor', fmtUsdEq(uf.baseline_usd) + ' / XRP']];
     if (hasSpot) {
-      rows.push(['Current spot', fmtUsdPrice(uf.current_price_usd) + ' / XRP']);
+      // Annotate spot with 24h change % when CoinGecko provided one.
+      // Render '$1.38 / XRP · ↑ +2.34% 24h' so a reader sees direction
+      // without a separate row.
+      let spotText = fmtUsdPrice(uf.current_price_usd) + ' / XRP';
+      const ch = uf.current_price_usd_24h_change_pct;
+      if (typeof ch === 'number') {
+        const arrow = ch > 0 ? '↑' : (ch < 0 ? '↓' : '·');
+        const sign = ch > 0 ? '+' : '';
+        spotText += ' · ' + arrow + ' ' + sign + ch.toFixed(2) + '% 24h';
+      }
+      rows.push(['Current spot', spotText]);
       if (uf.baseline_usd > 0) {
         rows.push(['Premium', (uf.current_price_usd / uf.baseline_usd).toFixed(2) + '×']);
       }

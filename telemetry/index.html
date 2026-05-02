@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=dedupe-active-float"></script>
+  <script src="/assets/telemetry-flow.js?v=24h-change"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -238,6 +238,7 @@
           <div class="bg-ink border border-border rounded-lg p-6 text-center">
             <div class="text-xs uppercase tracking-widest text-muted font-semibold mb-1">Current spot</div>
             <div id="bm-spot" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
+            <div id="bm-spot-24h" class="text-sm font-mono mt-1"></div>
             <div id="bm-spot-as-of" class="text-xs text-muted mt-2"></div>
           </div>
         </div>
@@ -855,6 +856,17 @@ payload = requests.get(
         SNAPSHOT.current_price_usd = spot;
         bmSpot.textContent = fmtUsd4(spot);
         bmSpotAsOf.textContent = 'live spot, just now';
+        // 24h change banner under the spot tile (filled from /healthz).
+        // Hidden cleanly when the field is missing (cold cache / oracle
+        // miss). Color: green up, red down, muted when zero.
+        const ch = d.checks.xrp_price.usd_24h_change_pct;
+        const bm24 = document.getElementById('bm-spot-24h');
+        if (bm24 && typeof ch === 'number') {
+          const arrow = ch > 0 ? '↑' : (ch < 0 ? '↓' : '·');
+          const sign = ch > 0 ? '+' : '';
+          bm24.textContent = arrow + ' ' + sign + ch.toFixed(2) + '% 24h';
+          bm24.className = 'text-sm font-mono mt-1 ' + (ch > 0 ? 'text-good' : (ch < 0 ? 'text-bad' : 'text-muted'));
+        }
         recompute();
       })
       .catch(() => {

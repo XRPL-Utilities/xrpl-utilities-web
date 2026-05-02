@@ -212,6 +212,75 @@
     });
     card.appendChild(meta);
 
+    // Trajectory block. Renders only when the API response carries a
+    // _delta block (Sentinel populates it when the address has a prior
+    // recorded paid scan). Score / level / tx-count / cadence deltas
+    // each get a directional arrow + color so a returning user sees
+    // the change at a glance instead of having to compare reports.
+    const delta = report._delta;
+    if (delta && typeof delta === 'object') {
+      const trajWrap = el('div', 'bg-ink border border-border rounded-lg p-4 mb-4');
+      const head = el('div', 'flex items-baseline justify-between mb-3');
+      head.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent font-semibold', 'Since prior scan'));
+      const since = (delta.hours_since_prior_scan != null)
+        ? (delta.hours_since_prior_scan + 'h ago')
+        : '';
+      if (since) head.appendChild(el('div', 'text-xs text-muted', since));
+      trajWrap.appendChild(head);
+
+      const cells = el('div', 'grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm');
+      function deltaCell(label, value, opts) {
+        opts = opts || {};
+        const c = el('div');
+        c.appendChild(el('div', 'text-xs text-muted mb-0.5', label));
+        if (value == null) {
+          c.appendChild(el('div', 'font-medium text-muted', '—'));
+          return c;
+        }
+        // For score / tx_count / level transitions: positive = "more
+        // automated / more activity" which Sentinel narrates as
+        // tone-good for analysts watching for bot onboarding etc, but
+        // is neutral information not "good for the user". We use the
+        // accent palette (blue) for positive moves and muted-red for
+        // negative so the directional cue is clear without implying
+        // moral valence.
+        let tone = 'text-white';
+        let arrow = '';
+        if (opts.directional && typeof value === 'number') {
+          if (value > 0) { tone = 'text-accent'; arrow = '↑ '; }
+          else if (value < 0) { tone = 'text-red-400'; arrow = '↓ '; }
+        }
+        const sign = (typeof value === 'number' && value > 0) ? '+' : '';
+        const display = (typeof value === 'number')
+          ? (arrow + sign + value)
+          : String(value);
+        c.appendChild(el('div', 'font-medium ' + tone, display));
+        return c;
+      }
+      cells.appendChild(deltaCell('Score Δ', delta.score_delta, { directional: true }));
+      cells.appendChild(deltaCell('Level', delta.level_change));
+      cells.appendChild(deltaCell('Tx count Δ', delta.tx_count_delta, { directional: true }));
+      // Negative cadence delta = tighter cadence (faster). For the
+      // analyst this is the "interesting" direction so flip the tone:
+      // negative renders accent (notable), positive renders muted-red
+      // (cadence loosened).
+      const cadence = delta.median_seconds_between_tx_delta;
+      const cadenceCell = el('div');
+      cadenceCell.appendChild(el('div', 'text-xs text-muted mb-0.5', 'Cadence Δ (s)'));
+      if (cadence == null) {
+        cadenceCell.appendChild(el('div', 'font-medium text-muted', '—'));
+      } else {
+        const tighter = cadence < 0;
+        const tone = tighter ? 'text-accent' : (cadence > 0 ? 'text-muted' : 'text-white');
+        const arrow = tighter ? '↓ ' : (cadence > 0 ? '↑ ' : '');
+        const sign = cadence > 0 ? '+' : '';
+        cadenceCell.appendChild(el('div', 'font-medium ' + tone, arrow + sign + cadence));
+      }
+      cells.appendChild(cadenceCell);
+      trajWrap.appendChild(cells);
+      card.appendChild(trajWrap);
+    }
+
     if ((report.signals || []).length) {
       card.appendChild(el('div', 'text-xs text-muted uppercase tracking-wider mb-2', 'Signals'));
       const pills = el('div', 'flex flex-wrap gap-2 mb-4');
