@@ -1,3 +1,8 @@
+// HYGIENE: this file is committed to a PUBLIC repo. Never inline
+// account_id, kv_namespaces, secrets, or any account-bound IDs here.
+// Sensitive bits go in .dev.vars (gitignored) or are set via the Cloudflare
+// dashboard / `wrangler secret put`. If we ever wire real Workers state,
+// keep this file structural (name, compatibility_date, flags) only.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "xrpl-utilities-web",
