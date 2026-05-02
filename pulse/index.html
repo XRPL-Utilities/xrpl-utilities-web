@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>XR-Pulse | Public-source XRPL event feed</title>
-  <meta name="description" content="Normalized event feed bridging public-source news (Ripple Insights, BIS, SEC EDGAR) to XRPL on-chain measurements. Free on the web, agent-payable via x402." />
+  <meta name="description" content="Normalized XRPL signal feed: public-source news (regulatory press, central banks, crypto media) plus on-chain whale activity for every XRPL Payment above the storage threshold, all with institutional-watchlist labels. Free on the web, agent-payable via x402." />
   <meta property="og:title" content="XR-Pulse" />
-  <meta property="og:description" content="Public-source XRPL event feed. Free on the web, $0.10 per query for agents over x402." />
+  <meta property="og:description" content="XRPL signal feed: public-source news + on-chain whale activity in one normalized stream. Free on the web, $0.10 per query for agents over x402." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/xr-pulse.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/pulse/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -133,11 +133,11 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse</h1>
       <p class="text-xl text-muted">Public-source XRPL event feed</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        XR-Pulse pulls Ripple, XRP, RLUSD, and XRPL coverage from a curated feed set spanning regulatory press, central banks, and crypto media. Every event captures the XRPL price at ingestion and again four hours later, putting the news and the ledger side by side. No editorial scoring. No source ranking. No social scraping.
+        XR-Pulse normalizes XRPL signal into one time-ordered feed: public-source news (regulatory press, central banks, crypto media) alongside on-chain whale activity (every successful XRP or RLUSD Payment above the storage threshold). News events carry a four-hour price-window correlation; whale events carry sender and receiver addresses with institutional-watchlist labels when known. No editorial scoring. No source ranking. No social scraping.
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        Source integrity &middot; official RSS only &middot; no social scraping &middot; no rumors &middot; tight Ripple/XRP filter
+        News from official RSS only &middot; on-chain from validated XRPL ledgers &middot; deterministic heuristic data only
       </div>
     </div>
   </section>
@@ -279,14 +279,15 @@ feed = session.post(
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-3 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">events</code>: array of normalized records, newest-first</li>
+        <li><code class="font-mono text-white">events</code>: array of normalized records, newest-first; mixes news and whale events in one stream</li>
         <li><code class="font-mono text-white">events[].title</code>, <code class="font-mono text-white">primary_url</code>, <code class="font-mono text-white">brief</code>, <code class="font-mono text-white">published_at</code> (UNIX seconds)</li>
-        <li><code class="font-mono text-white">events[].source_appearances</code>: which feeds carried the story (e.g. coindesk, sec_press, bank_of_japan)</li>
-        <li><code class="font-mono text-white">events[].appearance_count</code>: how many sources independently reported it; <code class="font-mono text-white">cross_verified</code> set when 2+ within a 48-hour window</li>
-        <li><code class="font-mono text-white">events[].correlation</code>: XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim</li>
-        <li><code class="font-mono text-white">events[].active_utility</code>: signal flags fired against the event (cross-verification, on-chain activity, watchlisted-wallet hits)</li>
-        <li><code class="font-mono text-white">events[].sentinel_context</code>, <code class="font-mono text-white">target_addresses</code>: any XRPL addresses or Sentinel context the ingestion stage attached</li>
-        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">schema_url</code>: response envelope</li>
+        <li><code class="font-mono text-white">events[].source_appearances</code>: which feed produced the event &mdash; news sources (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>, <code class="font-mono text-white">bank_of_japan</code>) or <code class="font-mono text-white">whale_xrpl</code> for on-chain</li>
+        <li><code class="font-mono text-white">events[].appearance_count</code>: how many sources independently reported the same news; <code class="font-mono text-white">cross_verified</code> set when 2+ within a 48-hour window. Whale events are always 1 (single-source by design)</li>
+        <li><code class="font-mono text-white">events[].correlation</code> (news only): XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim</li>
+        <li><code class="font-mono text-white">events[].active_utility</code> shape varies by source. News: <code class="font-mono text-white">{active, signals[]}</code> covering cross-verification, on-chain activity, watchlist hits. Whale (<code class="font-mono text-white">whale_xrpl</code>): <code class="font-mono text-white">{signal: 'whale_transfer', currency, usd_value, sender_address, sender_label, receiver_address, receiver_label, ledger_index, tx_hash, amount_display, xrp_spot_at_emit}</code></li>
+        <li><code class="font-mono text-white">events[].target_addresses</code>: XRPL addresses attached to the event (for whale events, sender + receiver; for news, any addresses extracted from title/brief)</li>
+        <li><code class="font-mono text-white">events[].sentinel_context</code>: best-effort XR-Sentinel cross-reference for any embedded XRPL addresses</li>
+        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $500,000 surfaces only whale-grade events; pass 0 in the request body to see the full $50k+ activity stream)</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
         Full field-level details at <a href="https://pulse.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
@@ -297,20 +298,23 @@ feed = session.post(
   <section id="how-it-works" class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
-      <h3 class="text-3xl font-bold mb-6">Curated feeds, tight Ripple/XRP filter, mechanical correlation</h3>
+      <h3 class="text-3xl font-bold mb-6">Two streams, one feed: curated news + on-chain whale activity</h3>
       <div id="source-carousel" class="relative overflow-hidden mb-8" tabindex="0" role="group" aria-label="Source feeds carousel - auto-rotates; hover or focus to pause">
         <div id="source-grid" class="flex transition-transform duration-500 ease-in-out">
           <!-- populated from /stats by the script below; sources with errors are auto-suppressed -->
         </div>
       </div>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        Every entry must mention Ripple, XRP, RLUSD, or XRPL. The institutional sources rarely name Ripple, so they fire infrequently but high-signal when they do. The crypto-press sources are tagged for XRP at the source and carry most of the volume.
+        <span class="text-white">News stream.</span> Every entry must mention Ripple, XRP, RLUSD, or XRPL. The institutional sources rarely name Ripple, so they fire infrequently but high-signal when they do. The crypto-press sources are tagged for XRP at the source and carry most of the volume.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        When two sources publish the same story (titles overlap within a 48-hour window), we collapse them into one record with a <span class="text-white">cross-verified</span> flag and the secondary URLs listed alongside.
+        When two news sources publish the same story (titles overlap within a 48-hour window), we collapse them into one record with a <span class="text-white">cross-verified</span> flag and the secondary URLs listed alongside.
+      </p>
+      <p class="text-sm text-muted leading-relaxed mb-4">
+        At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim.
       </p>
       <p class="text-sm text-muted leading-relaxed">
-        At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim.
+        <span class="text-white">On-chain stream.</span> The watcher polls validated XRPL ledgers every 60 seconds. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger index, currency (XRP or RLUSD), and full sender + receiver addresses. Where XRPScan recognizes either address as a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
       </p>
     </div>
   </section>
