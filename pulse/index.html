@@ -472,6 +472,16 @@ feed = session.post(
       return '$' + n.toFixed(0);
     }
 
+    function fmtXrpAmount(n) {
+      if (n === null || n === undefined || isNaN(n)) return '-';
+      const a = Math.abs(n);
+      const sign = n < 0 ? '-' : '';
+      if (a >= 1_000_000_000) return sign + (a / 1_000_000_000).toFixed(2) + 'B XRP';
+      if (a >= 1_000_000) return sign + (a / 1_000_000).toFixed(2) + 'M XRP';
+      if (a >= 1_000) return sign + (a / 1_000).toFixed(1) + 'k XRP';
+      return sign + a.toFixed(0) + ' XRP';
+    }
+
     function renderEvent(e) {
       // Whale events get the tier badge as their identity marker; the
       // technical 'whale_xrpl' source name on a sub-whale ($50k-$500k)
@@ -539,6 +549,58 @@ feed = session.post(
           <span class="font-mono">${escapeHtml(receiverShort)}${receiverLabel}</span> ·
           ledger ${escapeHtml(String(whaleAU.ledger_index || '?'))}
         </div>`;
+
+        // Sentinel cross-reference enrichment (sender + receiver
+        // activity classification, advisory flags, score-trajectory
+        // delta when prior history exists). Skip the line entirely
+        // when both sides are Unknown so we don't add empty noise.
+        const ss = whaleAU.sender_sentinel || null;
+        const rs = whaleAU.receiver_sentinel || null;
+        function fmtSentinelBit(role, sx) {
+          if (!sx || !sx.activity_level || sx.activity_level === 'Unknown') return null;
+          let bit = `<span class="text-white">${role}</span> ${escapeHtml(sx.activity_level)}`;
+          if (typeof sx.activity_score === 'number') bit += ` (${sx.activity_score})`;
+          if (sx.identity && sx.identity.advisory) {
+            bit += ` <span class="text-bad font-semibold">&#9888; advisory</span>`;
+          }
+          if (sx.identity && sx.identity.verified) {
+            bit += ` <span class="text-good">&#10003; verified</span>`;
+          }
+          if (sx.delta && typeof sx.delta.score_change === 'number' &&
+              Math.abs(sx.delta.score_change) >= 5) {
+            const arrow = sx.delta.score_change > 0 ? '&uarr;' : '&darr;';
+            const sign = sx.delta.score_change > 0 ? '+' : '';
+            bit += ` <span class="text-accent">${arrow} ${sign}${sx.delta.score_change} pts</span>`;
+          }
+          return bit;
+        }
+        const senderBit   = fmtSentinelBit('Sender',   ss);
+        const receiverBit = fmtSentinelBit('Receiver', rs);
+        const sBits = [senderBit, receiverBit].filter(Boolean);
+        if (sBits.length) {
+          whaleBlock += `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+            <span class="text-white mr-2">Sentinel cross-ref</span>
+            ${sBits.join(' &middot; ')}
+          </div>`;
+        }
+
+        // Telemetry macro context: only render when we got a paid
+        // /scan response (active_float_xrp present). /healthz fallback
+        // returns price only and isn't worth a separate line since
+        // it's already on the spot tile elsewhere.
+        const tc = whaleAU.telemetry_context;
+        if (tc && typeof tc.active_float_xrp === 'number') {
+          const tcBits = [];
+          tcBits.push(`Active Float ${escapeHtml(fmtXrpAmount(tc.active_float_xrp))}`);
+          if (typeof tc.exchange_outflow_24h_xrp === 'number') {
+            const sign = tc.exchange_outflow_24h_xrp > 0 ? '+' : '';
+            tcBits.push(`24h exch outflow ${sign}${escapeHtml(fmtXrpAmount(tc.exchange_outflow_24h_xrp))}`);
+          }
+          whaleBlock += `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+            <span class="text-white mr-2">Macro at emit</span>
+            ${tcBits.join(' &middot; ')}
+          </div>`;
+        }
       }
 
       // Per-event correlation line policy: render only when there is a
@@ -608,6 +670,26 @@ feed = session.post(
         </div>`;
       }
 
+      // Cross-stream link annotation (option D): when this is a news
+      // event whose target_addresses intersect a recent whale event's
+      // sender/receiver within 4 hours, render a small badge inviting
+      // the reader to look at the linked on-chain activity. Mechanical
+      // cross-reference, not a causal claim.
+      let crossLinkBlock = '';
+      if (!isWhale && Array.isArray(e._linked_whales) && e._linked_whales.length) {
+        const lines = e._linked_whales.slice(0, 3).map(w => {
+          const wau = w.active_utility || {};
+          const usd = typeof wau.usd_value === 'number' ? fmtUsd(wau.usd_value) : '?';
+          const sl = wau.sender_label || (wau.sender_address ? wau.sender_address.slice(0, 8) + '…' : '?');
+          const rl = wau.receiver_label || (wau.receiver_address ? wau.receiver_address.slice(0, 8) + '…' : '?');
+          return `${escapeHtml(usd)} &middot; ${escapeHtml(sl)} &rarr; ${escapeHtml(rl)}`;
+        }).join(' &middot; ');
+        crossLinkBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+          <span class="text-accent mr-2">Linked on-chain</span>
+          ${lines}
+        </div>`;
+      }
+
       const link = escapeHtml(e.primary_url || '#');
       const titleText = whaleTitle || e.title;
       // Brief is the article-summary line for RSS events. For whale events
@@ -628,6 +710,7 @@ feed = session.post(
           ${utilityBlock}
           ${whaleBlock}
           ${sentinelBlock}
+          ${crossLinkBlock}
         </article>
       `;
     }
@@ -820,6 +903,35 @@ feed = session.post(
         } else {
           news.push(e);
         }
+      }
+      // Cross-stream linking: build an address -> whale-event map from
+      // the activity column, then annotate any news event whose
+      // target_addresses intersects with a whale event's sender or
+      // receiver. Within a 4-hour window of each other (matches Pulse's
+      // existing correlation window). Pure best-effort visual link;
+      // doesn't change the underlying API response.
+      const FOUR_HOURS = 4 * 60 * 60;
+      const addrIndex = {};
+      for (const w of activity) {
+        const au = w.active_utility || {};
+        const senderAddr   = au.sender_address;
+        const receiverAddr = au.receiver_address;
+        const ts = w.published_at || 0;
+        if (senderAddr)   (addrIndex[senderAddr]   = addrIndex[senderAddr]   || []).push({ ev: w, ts });
+        if (receiverAddr) (addrIndex[receiverAddr] = addrIndex[receiverAddr] || []).push({ ev: w, ts });
+      }
+      for (const e of news) {
+        const newsTs = e.published_at || 0;
+        const linked = [];
+        for (const addr of (e.target_addresses || [])) {
+          for (const candidate of (addrIndex[addr] || [])) {
+            if (Math.abs(newsTs - candidate.ts) <= FOUR_HOURS) {
+              linked.push(candidate.ev);
+              break;  // one link per matched address is enough
+            }
+          }
+        }
+        if (linked.length) e._linked_whales = linked;
       }
       return { news, activity };
     }
