@@ -459,6 +459,19 @@
       flow.appendChild(outCol);
       r.appendChild(flow);
 
+      // Coverage caveat: when both flows are zero AND no venues are listed,
+      // the region is in the schema but the labeled venues don't have any
+      // wallets large enough to surface in XRPSCAN's holder-list discovery
+      // cutoff. Currently the case for MENA (Rain / BitOasis / CoinMENA all
+      // below the cutoff). Surface this honestly instead of letting humans
+      // read 0 / 0 as 'no activity'.
+      const inflowZero = Number(row.inflow_24h_xrp) === 0;
+      const outflowZero = Number(row.outflow_24h_xrp) === 0;
+      const noVenues = !(row.top_venues && row.top_venues.length);
+      if (inflowZero && outflowZero && noVenues) {
+        r.appendChild(el('div', 'text-[10px] text-muted leading-relaxed', 'No labeled wallets here clear the holder-list discovery cutoff. Zero reflects coverage, not absence of activity.'));
+      }
+
       if (row.top_venues && row.top_venues.length) {
         const venuesWrap = el('div');
         venuesWrap.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-1', 'Top venues'));
