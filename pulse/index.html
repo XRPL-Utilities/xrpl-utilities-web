@@ -60,6 +60,10 @@
     .verified-pill            { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.12); }
     .utility-pill             { color: #facc15; border-color: rgba(250, 204, 21, 0.4); background: rgba(250, 204, 21, 0.14); font-weight: 600; }
     .signal-pill              { color: #fde68a; border-color: rgba(252, 211, 77, 0.3); background: rgba(252, 211, 77, 0.08); font-size: 0.65rem; }
+    .source-whale_xrpl        { color: #67e8f9; border-color: rgba(103, 232, 249, 0.35); background: rgba(103, 232, 249, 0.10); }
+    .tier-whale               { color: #facc15; border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.16); font-weight: 700; letter-spacing: 0.06em; }
+    .tier-notable             { color: #00b8ff; border-color: rgba(0, 184, 255, 0.45); background: rgba(0, 184, 255, 0.14); font-weight: 600; }
+    .tier-activity            { color: #94a3b8; border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.10); }
 
     @keyframes shimmer {
       0%   { background-position: -200% 0; }
@@ -454,6 +458,36 @@ feed = session.post(
         ? `<span class="text-xs px-2 py-0.5 rounded utility-pill border">● active utility</span>`
         : '';
 
+      // Whale events use a different active_utility shape than RSS events:
+      // top-level signal='whale_transfer' with usd_value, sender_label,
+      // receiver_label, currency, etc. Tier the badge so a $50k tx reads
+      // as 'Activity' and a $1M+ tx reads as 'WHALE'.
+      const isWhale = (e.source_appearances || []).indexOf('whale_xrpl') !== -1;
+      const whaleAU = isWhale && e.active_utility && e.active_utility.signal === 'whale_transfer'
+        ? e.active_utility : null;
+      let tierBadge = '';
+      let whaleBlock = '';
+      if (whaleAU && typeof whaleAU.usd_value === 'number') {
+        const usd = whaleAU.usd_value;
+        let cls, label;
+        if (usd >= 1_000_000)      { cls = 'tier-whale';    label = 'WHALE'; }
+        else if (usd >= 100_000)   { cls = 'tier-notable';  label = 'Notable'; }
+        else                       { cls = 'tier-activity'; label = 'Activity'; }
+        tierBadge = `<span class="text-xs px-2 py-0.5 rounded ${cls} border uppercase">${label} · ${escapeHtml(fmtUsd(usd))}</span>`;
+        // Per-whale-event detail strip: currency, sender, receiver, ledger.
+        const senderLabel  = whaleAU.sender_label  ? ` (${escapeHtml(whaleAU.sender_label)})`   : '';
+        const receiverLabel = whaleAU.receiver_label ? ` (${escapeHtml(whaleAU.receiver_label)})` : '';
+        const senderShort  = (whaleAU.sender_address  || '').slice(0, 8) + '...';
+        const receiverShort = (whaleAU.receiver_address || '').slice(0, 8) + '...';
+        whaleBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+          <span class="text-white mr-2">On-chain transfer</span>
+          ${escapeHtml(whaleAU.amount_display || '')} ·
+          <span class="font-mono">${escapeHtml(senderShort)}${senderLabel}</span> →
+          <span class="font-mono">${escapeHtml(receiverShort)}${receiverLabel}</span> ·
+          ledger ${escapeHtml(String(whaleAU.ledger_index || '?'))}
+        </div>`;
+      }
+
       // Per-event correlation line policy: render only when there is a
       // signal worth showing to a human. A 0.00% move or a "still pending"
       // countdown is filler that adds noise without information; agents
@@ -529,9 +563,10 @@ feed = session.post(
             <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">${escapeHtml(e.brief)}</p>
-          <div class="flex items-center gap-2 flex-wrap">${sources}${verifiedPill}${utilityPill}<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span></div>
+          <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${utilityPill}<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span></div>
           ${corrLine}
           ${utilityBlock}
+          ${whaleBlock}
           ${sentinelBlock}
         </article>
       `;
@@ -695,7 +730,11 @@ feed = session.post(
         const r = await fetch(`${API_BASE}/events/recent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ limit: 50 }),
+          // min_whale_usd:0 surfaces every stored on-chain event alongside
+          // RSS news. The API default (5e5) is whale-grade for agent
+          // consumers; the marketing site wants the full activity stream
+          // visible so visitors see the feed alive.
+          body: JSON.stringify({ limit: 50, min_whale_usd: 0 }),
           signal: ctl.signal,
         });
         clearTimeout(timeoutId);
