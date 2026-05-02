@@ -80,69 +80,138 @@
 
   <section>
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
-      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Terms of Service</h1>
-      <p class="text-muted">Static summary plus the live, canonical terms from each product's <code class="font-mono text-xs bg-panel border border-border rounded px-1.5 py-0.5">/tos</code> endpoint.</p>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3">Terms of Service</h1>
+      <p class="text-sm text-muted">Effective Date: May 2, 2026</p>
+      <p class="text-sm text-muted mt-1">Provider: XRPL-Utilities LLC ("The Company," "We," "Us," or "Our").</p>
     </div>
   </section>
 
   <section>
     <div class="max-w-3xl mx-auto px-6 pb-12">
-      <div class="bg-panel border border-border rounded-2xl p-8 space-y-5">
+      <div class="bg-panel border border-border rounded-2xl p-8 space-y-7">
+
         <div>
-          <h2 class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Static summary (always available)</h2>
-          <h3 class="text-xl font-bold mb-2">Pricing and finality</h3>
+          <h2 class="text-xl font-bold mb-2">1. Scope of Service</h2>
           <p class="text-white leading-relaxed">
-            Each XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> scan, each XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> snapshot, and each XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> query is priced at
-            <strong class="text-white">$0.10 USD</strong>, payable in XRP. Drops are computed at request time
-            from the live XRP/USD spot, so the advertised USD amount stays accurate as the spot moves.
-            Successful payloads are paid in full; payment is final on settlement. If a request fails before
-            settlement (verify-then-work-then-settle is enforced on all three services), no charge occurs and the
-            presigned transaction is never broadcast. The 30-minute payment freshness window applies to web
-            invoices; the 600-second window applies to x402.
+            XRPL-Utilities operates a dual-infrastructure ecosystem: a human-facing research terminal
+            (<a href="https://xrpl-utilities.com" class="underline hover:text-accent">xrpl-utilities.com</a>)
+            and a machine-to-machine API execution layer
+            (<a href="https://xrpl-utilities.io" class="underline hover:text-accent">xrpl-utilities.io</a>).
+            The Company provides a "Reputation Oracle" suite including, but not limited to,
+            XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
+            XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and
+            XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>.
           </p>
         </div>
+
         <div>
-          <h3 class="text-xl font-bold mb-2">What we provide</h3>
+          <h2 class="text-xl font-bold mb-2">2. Nature of Data ("Deterministic Heuristics")</h2>
+          <p class="text-white leading-relaxed mb-3">
+            All data provided by Our services is generated through deterministic algorithms and heuristic pattern matching.
+          </p>
+          <p class="text-white leading-relaxed mb-2">
+            <strong class="text-white">No accuracy guarantee.</strong> While We strive for high-fidelity intelligence,
+            blockchain data and behavioral classifications are subject to interpretation. We do not guarantee
+            the 100% accuracy of wallet classifications or "Whale" event reporting.
+          </p>
           <p class="text-white leading-relaxed">
-            XR-Sentinel returns behavioral pattern classifications for XRPL accounts. XR-Telemetry returns
-            an XRPL macro telemetry snapshot. XR-Pulse returns a normalized event feed combining public-source
-            news with on-chain whale activity, both labeled against an institutional wallet watchlist. All
-            three are best-effort, on-chain-derived
-            data products. Sanity bounds and per-field provenance are declared in each service's
-            <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/agents.json</code>
-            and
-            <code class="font-mono text-xs bg-ink border border-border rounded px-1.5 py-0.5">/schema</code>.
-            Each field's value reads from a sanity-bounded cache, with the appropriate fallback applied when
-            the cache is stale.
+            <strong class="text-white">Third-party content.</strong>
+            XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> aggregates institutional news from third-party RSS feeds.
+            We are not responsible for the accuracy, legitimacy, or reliability of external broadcasts.
           </p>
         </div>
+
         <div>
-          <h3 class="text-xl font-bold mb-2">What we do not provide</h3>
+          <h2 class="text-xl font-bold mb-2">3. Limitation of Liability for AI Agents</h2>
+          <p class="text-white leading-relaxed mb-3">
+            By accessing Our API layer (.io), you acknowledge that:
+          </p>
+          <p class="text-white leading-relaxed mb-2">
+            <strong class="text-white">Autonomous actions.</strong> You are solely responsible for the actions, trades, or logic
+            executed by any AI agent, bot, or script that utilizes Our data payloads.
+          </p>
+          <p class="text-white leading-relaxed mb-2">
+            <strong class="text-white">Decision support only.</strong> Our data is intended as a "Reputation Signal" for decision support.
+            It is not an instruction to trade, move capital, or interact with specific ledger objects.
+          </p>
           <p class="text-white leading-relaxed">
-            None of these services produce risk scores, AML or sanctions determinations, compliance products, investment recommendations, trading signals, price predictions, or financial advice. The Burst Math output in XR-Telemetry is a sensitivity tool that shows what the math implies under explicit operator assumptions; it is not a forecast. Always do your own research before transacting.
+            <strong class="text-white">Indirect damages.</strong> In no event shall XRPL-Utilities LLC be liable for any financial loss,
+            liquidations, or "agentic errors" resulting from the use of Our data.
           </p>
         </div>
+
         <div>
-          <h3 class="text-xl font-bold mb-2">User responsibility and jurisdiction</h3>
+          <h2 class="text-xl font-bold mb-2">4. x402 Protocol &amp; Payments</h2>
+          <p class="text-white leading-relaxed mb-3">
+            Access to specific data payloads is gated by the x402 (HTTP 402 "Payment Required") protocol.
+          </p>
+          <p class="text-white leading-relaxed mb-2">
+            <strong class="text-white">Finality.</strong> Payments made via native XRP or RLUSD are settled on-chain
+            and are final once the payload is delivered.
+          </p>
+          <p class="text-white leading-relaxed mb-2">
+            <strong class="text-white">Technical guarantee (verify-then-work-then-settle).</strong>
+            Our system follows a deterministic execution pipeline. If a data request fails or encounters a
+            system error prior to settlement, the presigned transaction is never broadcast to the ledger.
+            Users are only charged upon successful generation of the cryptographic data signal.
+          </p>
           <p class="text-white leading-relaxed">
-            XRPL-Utilities provides on-chain data classification and technical ledger analysis. Users are
-            responsible for ensuring their use of these tools complies with local digital-asset regulations,
-            including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
-            <strong class="text-white">This service is offered void where prohibited; use is not authorized
-            in California or Colorado.</strong>
+            <strong class="text-white">Non-custodial.</strong> XRPL-Utilities LLC never requests, stores, or interacts
+            with your private keys. All payments must be initiated by the user or their authorized agent.
           </p>
         </div>
+
         <div>
-          <h3 class="text-xl font-bold mb-2">Liability disclaimer</h3>
+          <h2 class="text-xl font-bold mb-2">5. No Investment or Legal Advice</h2>
+          <p class="text-white leading-relaxed mb-3">
+            The content provided across all XRPL-Utilities domains is for informational and research purposes only.
+          </p>
+          <p class="text-white leading-relaxed mb-2">
+            <strong class="text-white">Not financial advice.</strong> We are not a registered investment advisor.
+          </p>
           <p class="text-white leading-relaxed">
-            Services are provided <em>as is</em>, without warranty of any kind, express or implied.
-            XRPL-Utilities is not liable for direct, indirect, consequential, or incidental damages arising
-            from use, misuse, downtime, misclassification, data inaccuracy, sanity-bound rejections, oracle
-            staleness, third-party dependency degradation, or any other failure mode. Third-party
-            dependencies (QuickNode, the t54 facilitator, XRPSCAN, CoinGecko, the AI provider for XR-Sentinel,
-            and the public RSS sources XR-Pulse aggregates) may degrade or change availability without notice.
+            <strong class="text-white">Not compliance advice.</strong>
+            XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> behavioral flags do not constitute a legal
+            "KYC" or "AML" determination. Entities must perform their own due diligence.
           </p>
         </div>
+
+        <div>
+          <h2 class="text-xl font-bold mb-2">6. Intellectual Property</h2>
+          <p class="text-white leading-relaxed">
+            XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
+            XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and
+            XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are proprietary marks of XRPL-Utilities LLC.
+            Users are granted a limited, non-exclusive license to ingest Our data for internal research or
+            agentic operation but may not scrape, mirror, or resell Our "Reputation Signals" without express written consent.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold mb-2">7. Governance, Jurisdiction &amp; Void Areas</h2>
+          <p class="text-white leading-relaxed mb-3">
+            These terms are governed by the laws of the State of Wyoming, USA.
+          </p>
+          <p class="text-white leading-relaxed mb-2">
+            <strong class="text-white">Arbitration.</strong> Any disputes arising from the use of Our services shall be
+            resolved through binding arbitration in the State of Wyoming.
+          </p>
+          <p class="text-white leading-relaxed">
+            <strong class="text-white">Void where prohibited.</strong> This service is offered void where prohibited by law.
+            Use is not authorized for residents of, or entities operating within, California or Colorado.
+            Users in these jurisdictions are prohibited from accessing Our AI-driven behavioral telemetry or
+            automated decision-support data.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold mb-2">8. Safe Harbor Statement</h2>
+          <p class="text-white leading-relaxed">
+            XRPL-Utilities LLC is an independent infrastructure provider and is not affiliated with Ripple Labs,
+            the XRPL Foundation, or any central banking authority.
+          </p>
+        </div>
+
       </div>
     </div>
   </section>
@@ -206,7 +275,7 @@
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice.</div>
+        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>
