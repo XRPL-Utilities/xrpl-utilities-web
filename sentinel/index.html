@@ -39,7 +39,7 @@
     };
   </script>
   <style>
-    html, body { background: #0a0a0a; overflow-x: hidden; }
+    html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
     .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
@@ -130,7 +130,7 @@
     </div>
   </div>
 
-  <nav aria-label="Page sections" class="border-b border-border">
+  <nav aria-label="Page sections" class="hidden md:block border-b border-border">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2 overflow-x-auto">
       <div class="flex gap-1 items-center text-sm whitespace-nowrap">
         <span class="text-muted text-xs uppercase tracking-wider px-3 shrink-0">Jump to</span>
