@@ -110,7 +110,7 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse</h1>
       <p class="text-xl text-muted">Public-source XRPL event feed</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        XR-Pulse pulls Ripple, XRP, RLUSD, and XRPL coverage from nine feeds spanning regulatory press, central banks, and crypto media. Every event captures the XRPL price at ingestion and again four hours later, putting the news and the ledger side by side. No editorial scoring. No source ranking. No social scraping.
+        XR-Pulse pulls Ripple, XRP, RLUSD, and XRPL coverage from a curated feed set spanning regulatory press, central banks, and crypto media. Every event captures the XRPL price at ingestion and again four hours later, putting the news and the ledger side by side. No editorial scoring. No source ranking. No social scraping.
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
@@ -207,7 +207,7 @@ feed = session.post(
   <section id="how-it-works" class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
-      <h3 class="text-3xl font-bold mb-6">Eight feeds, tight Ripple/XRP filter, mechanical correlation</h3>
+      <h3 class="text-3xl font-bold mb-6">Curated feeds, tight Ripple/XRP filter, mechanical correlation</h3>
       <div id="source-grid" class="grid md:grid-cols-2 gap-4 mb-8">
         <!-- populated from /stats by the script below; sources with errors are auto-suppressed -->
       </div>
@@ -416,6 +416,9 @@ feed = session.post(
       ecb_press: 'European Central Bank press releases. Central bank.',
       bank_of_england: 'Bank of England news RSS. Central bank.',
       rba_australia: 'Reserve Bank of Australia media releases. Central bank.',
+      bank_of_japan: 'Bank of Japan English-language news RSS. Central bank.',
+      bank_of_canada: 'Bank of Canada news RSS. Central bank.',
+      coindesk: 'CoinDesk outbound feed. Crypto press, broad coverage filtered to Ripple/XRP/RLUSD/XRPL mentions.',
       cointelegraph_xrp: "Cointelegraph's XRP tag RSS. Crypto press, source-side tag-filtered.",
       crypto_news_xrp: "crypto.news XRP tag RSS. Crypto press, ~94% XRP-relevant on probe.",
       coinspeaker_xrp: "Coinspeaker XRP search RSS. Crypto press, ~50% XRP-relevant on probe.",
