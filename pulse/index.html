@@ -62,8 +62,7 @@
     .signal-pill              { color: #fde68a; border-color: rgba(252, 211, 77, 0.3); background: rgba(252, 211, 77, 0.08); font-size: 0.65rem; }
     .source-whale_xrpl        { color: #67e8f9; border-color: rgba(103, 232, 249, 0.35); background: rgba(103, 232, 249, 0.10); }
     .tier-whale               { color: #facc15; border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.16); font-weight: 700; letter-spacing: 0.06em; }
-    .tier-notable             { color: #00b8ff; border-color: rgba(0, 184, 255, 0.45); background: rgba(0, 184, 255, 0.14); font-weight: 600; }
-    .tier-activity            { color: #94a3b8; border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.10); }
+    .tier-activity            { color: #67e8f9; border-color: rgba(103, 232, 249, 0.35); background: rgba(103, 232, 249, 0.10); font-weight: 600; }
 
     @keyframes shimmer {
       0%   { background-position: -200% 0; }
@@ -194,7 +193,7 @@
           </div>
           <div>
             <div class="flex items-center justify-between mb-3">
-              <h3 class="text-xs uppercase tracking-[0.2em] text-muted font-semibold">XRPL Activity</h3>
+              <h3 class="text-xs uppercase tracking-[0.2em] text-accent font-semibold">XRPL Activity</h3>
               <span id="activity-count" class="text-[10px] text-muted font-mono"></span>
             </div>
             <div id="activity-list" class="space-y-3">
@@ -482,25 +481,44 @@ feed = session.post(
 
       // Whale events use a different active_utility shape than RSS events:
       // top-level signal='whale_transfer' with usd_value, sender_label,
-      // receiver_label, currency, etc. Tier the badge so a $50k tx reads
-      // as 'Activity' and a $1M+ tx reads as 'WHALE'.
+      // receiver_label, currency, etc. Two tiers, $500k cutoff (matches
+      // the API's WHALE_FEED_MIN_USD default for institutional consumers).
       const isWhale = (e.source_appearances || []).indexOf('whale_xrpl') !== -1;
       const whaleAU = isWhale && e.active_utility && e.active_utility.signal === 'whale_transfer'
         ? e.active_utility : null;
       let tierBadge = '';
       let whaleBlock = '';
+      let whaleTitle = null;  // when set, overrides e.title for cleaner rendering
       if (whaleAU && typeof whaleAU.usd_value === 'number') {
         const usd = whaleAU.usd_value;
-        let cls, label;
-        if (usd >= 1_000_000)      { cls = 'tier-whale';    label = 'WHALE'; }
-        else if (usd >= 100_000)   { cls = 'tier-notable';  label = 'Notable'; }
-        else                       { cls = 'tier-activity'; label = 'Activity'; }
-        tierBadge = `<span class="text-xs px-2 py-0.5 rounded ${cls} border uppercase">${label} · ${escapeHtml(fmtUsd(usd))}</span>`;
-        // Per-whale-event detail strip: currency, sender, receiver, ledger.
-        const senderLabel  = whaleAU.sender_label  ? ` (${escapeHtml(whaleAU.sender_label)})`   : '';
-        const receiverLabel = whaleAU.receiver_label ? ` (${escapeHtml(whaleAU.receiver_label)})` : '';
-        const senderShort  = (whaleAU.sender_address  || '').slice(0, 8) + '...';
-        const receiverShort = (whaleAU.receiver_address || '').slice(0, 8) + '...';
+        const cls = usd >= 500_000 ? 'tier-whale'    : 'tier-activity';
+        const lbl = usd >= 500_000 ? 'WHALE'         : 'Activity';
+        tierBadge = `<span class="text-xs px-2 py-0.5 rounded ${cls} border uppercase">${lbl} · ${escapeHtml(fmtUsd(usd))}</span>`;
+
+        // Compact title: lead with the dollar amount, then either the
+        // labeled venues or a generic 'transfer'. Avoids the
+        // parenthesis-inside-parenthesis form of the server-side title.
+        const sl = whaleAU.sender_label;
+        const rl = whaleAU.receiver_label;
+        const usdStr = fmtUsd(usd);
+        if (sl && rl) {
+          whaleTitle = `${usdStr} · ${sl} → ${rl}`;
+        } else if (sl) {
+          whaleTitle = `${usdStr} · ${sl} → unlabeled`;
+        } else if (rl) {
+          whaleTitle = `${usdStr} · unlabeled → ${rl}`;
+        } else {
+          whaleTitle = `${usdStr} ${whaleAU.currency || 'XRP'} transfer`;
+        }
+
+        // Detail strip is the primary content area for whale cards
+        // (the brief paragraph is suppressed below since it'd just
+        // restate the same fields). Shows full truncated addresses
+        // alongside whatever labels resolved.
+        const senderLabel   = sl ? ` (${escapeHtml(sl)})` : '';
+        const receiverLabel = rl ? ` (${escapeHtml(rl)})` : '';
+        const senderShort   = (whaleAU.sender_address   || '').slice(0, 10) + '…';
+        const receiverShort = (whaleAU.receiver_address || '').slice(0, 10) + '…';
         whaleBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
           <span class="text-white mr-2">On-chain transfer</span>
           ${escapeHtml(whaleAU.amount_display || '')} ·
@@ -578,13 +596,20 @@ feed = session.post(
       }
 
       const link = escapeHtml(e.primary_url || '#');
+      const titleText = whaleTitle || e.title;
+      // Brief is the article-summary line for RSS events. For whale events
+      // it just restates the title + detail strip in different words and
+      // makes the card feel cluttered, so suppress it on whale rows.
+      const briefHtml = isWhale
+        ? ''
+        : `<p class="text-sm text-muted leading-relaxed mb-3">${escapeHtml(e.brief)}</p>`;
       return `
         <article class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition">
           <div class="flex items-start justify-between gap-3 mb-2">
-            <a href="${link}" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:text-accent transition leading-snug">${escapeHtml(e.title)}</a>
+            <a href="${link}" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:text-accent transition leading-snug">${escapeHtml(titleText)}</a>
             <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
           </div>
-          <p class="text-sm text-muted leading-relaxed mb-3">${escapeHtml(e.brief)}</p>
+          ${briefHtml}
           <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${utilityPill}<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span></div>
           ${corrLine}
           ${utilityBlock}
