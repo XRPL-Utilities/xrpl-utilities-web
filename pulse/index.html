@@ -119,6 +119,30 @@
     </div>
   </section>
 
+  <section id="activity">
+    <div class="max-w-4xl mx-auto px-6 pb-10">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Events tracked</div>
+          <div id="stat-events" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">On-chain hits</div>
+          <div id="stat-onchain" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="text-[10px] text-muted mt-1">at watchlisted wallets</div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Sources active</div>
+          <div id="stat-sources" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Last ingestion</div>
+          <div id="stat-fresh" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="feed">
     <div class="max-w-4xl mx-auto px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-6 md:p-8">
@@ -424,33 +448,95 @@ feed = session.post(
       coinspeaker_xrp: "Coinspeaker XRP search RSS. Crypto press, ~50% XRP-relevant on probe.",
     };
 
-    async function loadSourceGrid() {
+    function fmtCount(n) {
+      if (typeof n !== 'number') return '—';
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+      if (n >= 1_000) return (n / 1_000).toFixed(1) + 'k';
+      return String(n);
+    }
+
+    function renderStatTiles(stats) {
+      const store = stats.store || {};
+      const feeds = stats.feeds || {};
+      const ev = document.getElementById('stat-events');
+      const oc = document.getElementById('stat-onchain');
+      const sc = document.getElementById('stat-sources');
+      const fr = document.getElementById('stat-fresh');
+      if (ev) ev.textContent = fmtCount(store.event_count);
+      if (oc) oc.textContent = fmtCount(store.watchlist_activity_count);
+      const activeCount = Object.values(feeds).filter(f => f && f.is_active).length;
+      if (sc) sc.textContent = String(activeCount);
+      // Freshness = most recent last_run_at across all feeds. /stats reports
+      // server-side timestamps in seconds; render as 'Xm ago' style.
+      const lastRuns = Object.values(feeds)
+        .map(f => f && f.last_status && f.last_status.last_run_at)
+        .filter(t => typeof t === 'number' && t > 0);
+      if (fr) {
+        if (lastRuns.length === 0) {
+          fr.textContent = '—';
+        } else {
+          const newest = Math.max(...lastRuns);
+          fr.textContent = fmtAgo(newest);
+        }
+      }
+    }
+
+    function renderSourceGrid(stats) {
       const grid = document.getElementById('source-grid');
       if (!grid) return;
+      const feeds = stats.feeds || {};
+      const cards = Object.entries(feeds)
+        .filter(([_, f]) => f.is_active || (f.last_status && f.last_status.error === null))
+        .map(([name, _]) => {
+          const desc = SOURCE_DESCRIPTIONS[name] || '';
+          return `<div class="bg-panel border border-border rounded-lg p-5">
+            <div class="text-xs uppercase tracking-wider mb-2 source-${escapeHtml(name)} inline-block px-2 py-1 rounded border">${escapeHtml(name)}</div>
+            <p class="text-sm text-muted leading-relaxed mt-3">${escapeHtml(desc)}</p>
+          </div>`;
+        });
+      if (cards.length === 0) {
+        grid.innerHTML = `<div class="md:col-span-2 bg-panel border border-border rounded-lg p-5 text-sm text-muted">Source list initializing; check back in a moment.</div>`;
+        return;
+      }
+      grid.innerHTML = cards.join('');
+    }
+
+    async function loadStats() {
+      // Single /stats fetch feeds both the activity tiles up top and the
+      // source grid in 'How it works' below. /stats is a memory read on the
+      // backend, so reusing the fetch is the cheap thing to do; failure on
+      // either surface is silent (main live feed is the priority surface).
       try {
         const r = await fetch(`${API_BASE}/stats`);
         if (!r.ok) return;
         const stats = await r.json();
-        const feeds = stats.feeds || {};
-        const cards = Object.entries(feeds)
-          .filter(([_, f]) => f.is_active || (f.last_status && f.last_status.error === null))
-          .map(([name, _]) => {
-            const desc = SOURCE_DESCRIPTIONS[name] || '';
-            return `<div class="bg-panel border border-border rounded-lg p-5">
-              <div class="text-xs uppercase tracking-wider mb-2 source-${escapeHtml(name)} inline-block px-2 py-1 rounded border">${escapeHtml(name)}</div>
-              <p class="text-sm text-muted leading-relaxed mt-3">${escapeHtml(desc)}</p>
-            </div>`;
-          });
-        if (cards.length === 0) {
-          grid.innerHTML = `<div class="md:col-span-2 bg-panel border border-border rounded-lg p-5 text-sm text-muted">Source list initializing; check back in a moment.</div>`;
-          return;
-        }
-        grid.innerHTML = cards.join('');
+        renderStatTiles(stats);
+        renderSourceGrid(stats);
       } catch (e) {
-        // Silent failure on the secondary panel; main feed is the priority surface.
+        // Silent failure - tiles stay in skeleton state, source grid stays
+        // in its placeholder. Main feed is the priority surface.
       }
     }
-    loadSourceGrid();
+    loadStats();
+
+    const FEED_INITIAL = 15;
+    let _feedEvents = [];
+    let _feedShown = 0;
+
+    function renderFeedSlice() {
+      const list = document.getElementById('feed-list');
+      const slice = _feedEvents.slice(0, _feedShown);
+      const moreCount = _feedEvents.length - _feedShown;
+      const moreBtn = moreCount > 0
+        ? `<button id="show-more-btn" class="w-full bg-ink border border-border hover:border-accent text-sm text-muted hover:text-white transition rounded-lg p-3 mt-2">Show ${moreCount} more</button>`
+        : '';
+      list.innerHTML = slice.map(renderEvent).join('') + moreBtn;
+      const btn = document.getElementById('show-more-btn');
+      if (btn) btn.addEventListener('click', () => {
+        _feedShown = _feedEvents.length;
+        renderFeedSlice();
+      });
+    }
 
     async function loadFeed() {
       const list = document.getElementById('feed-list');
@@ -475,7 +561,9 @@ feed = session.post(
           list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">No events stored yet. Ingestion runs every 15 minutes; check back shortly.</div>`;
           return;
         }
-        list.innerHTML = data.events.map(renderEvent).join('');
+        _feedEvents = data.events;
+        _feedShown = Math.min(FEED_INITIAL, _feedEvents.length);
+        renderFeedSlice();
       } catch (e) {
         list.innerHTML = errBox('Could not reach the feed. This usually clears on a retry; the API is at <code class="font-mono text-white">pulse.xrpl-utilities.io</code>.');
         attachRetry();
