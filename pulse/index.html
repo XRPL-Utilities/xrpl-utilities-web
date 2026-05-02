@@ -260,10 +260,10 @@ feed = session.post(
         </div>
       </div>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        Every entry must mention Ripple, XRP, RLUSD, or XRPL in the title or summary. The institutional sources rarely name Ripple, so they fire infrequently. When they do, the events are high-signal. The crypto-press sources are tagged for XRP at the source and carry most of the volume.
+        Every entry must mention Ripple, XRP, RLUSD, or XRPL. The institutional sources rarely name Ripple, so they fire infrequently but high-signal when they do. The crypto-press sources are tagged for XRP at the source and carry most of the volume.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        When two sources publish the same story, we collapse them into a single record by comparing the titles. If the wording overlaps enough within a 48-hour window, the entry gets a <span class="text-white">cross-verified</span> flag and the secondary URLs are listed alongside, so you can confirm the match yourself.
+        When two sources publish the same story (titles overlap within a 48-hour window), we collapse them into one record with a <span class="text-white">cross-verified</span> flag and the secondary URLs listed alongside.
       </p>
       <p class="text-sm text-muted leading-relaxed">
         At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim.
@@ -315,7 +315,7 @@ feed = session.post(
         XR-Pulse is a deterministic event feed, not an editorial product. Source presence is reported as a property of an event, not a verdict on the source. Correlation against XR-Telemetry is a measurement, not a causal claim.
       </p>
       <p class="text-muted leading-relaxed text-sm mt-4">
-        XRPL-Utilities provides public-source data normalization and on-chain measurement. We do not provide financial advice, risk ratings, source credibility assessments, or investment forensics. Users are responsible for ensuring their use of these tools complies with local digital asset and AI regulations, including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
+        Users are responsible for ensuring their use complies with local digital asset and AI regulations, including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
       </p>
     </div>
   </section>
@@ -411,13 +411,13 @@ feed = session.post(
     }
 
     function fmtPct(p) {
-      if (p === null || p === undefined) return '—';
+      if (p === null || p === undefined) return '-';
       const sign = p > 0 ? '+' : '';
       return `${sign}${p.toFixed(2)}%`;
     }
 
     function fmtUsd(n) {
-      if (n === null || n === undefined || isNaN(n)) return '—';
+      if (n === null || n === undefined || isNaN(n)) return '-';
       const a = Math.abs(n);
       if (a >= 1_000_000_000) return '$' + (n / 1_000_000_000).toFixed(2) + 'B';
       if (a >= 1_000_000) return '$' + (n / 1_000_000).toFixed(2) + 'M';
@@ -535,7 +535,7 @@ feed = session.post(
     };
 
     function fmtCount(n) {
-      if (typeof n !== 'number') return '—';
+      if (typeof n !== 'number') return '-';
       if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
       if (n >= 1_000) return (n / 1_000).toFixed(1) + 'k';
       return String(n);
@@ -559,7 +559,7 @@ feed = session.post(
         .filter(t => typeof t === 'number' && t > 0);
       if (fr) {
         if (lastRuns.length === 0) {
-          fr.textContent = '—';
+          fr.textContent = '-';
         } else {
           const newest = Math.max(...lastRuns);
           fr.textContent = fmtAgo(newest);
