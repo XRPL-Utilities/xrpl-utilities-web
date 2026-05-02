@@ -86,8 +86,13 @@
     };
   </script>
   <style>
-    body { background: #0a0a0a; }
+    html, body { background: #0a0a0a; overflow-x: hidden; }
+    body { min-width: 0; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
     .accent-gradient { background: linear-gradient(135deg, #00b8ff 0%, #0091cc 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .grid-bg {
       background-image:
@@ -99,39 +104,51 @@
 </head>
 <body class="bg-ink text-white font-sans antialiased">
 
-  <header class="border-b border-border">
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-      <a href="/" class="flex items-center gap-2 sm:gap-3 whitespace-nowrap min-w-0">
-        <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-11 w-11 rounded shrink-0" />
-        <span class="font-semibold tracking-tight">XRPL-Utilities</span>
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities</span>
       </a>
-      <nav class="hidden md:flex items-center gap-x-5 lg:gap-x-6 text-sm text-muted whitespace-nowrap">
-        <a href="/" class="hover:text-white transition">Home</a>
-        <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
-        <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
-        <a href="/pulse/" class="hover:text-white transition">XR-Pulse</a>
-        <a href="/manifest/" class="hover:text-white transition">Manifest</a>
-        <a href="/terms/" class="hover:text-white transition">Terms</a>
-        <a href="/contact/" class="hover:text-white transition">Contact</a>
+      <nav class="hidden md:flex items-center gap-x-8 lg:gap-x-10 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/status/"    class="text-muted hover:text-white transition">Status</a>
       </nav>
-      <details class="md:hidden relative">
-        <summary class="cursor-pointer list-none [&amp;::-webkit-details-marker]:hidden p-2 -mr-2 text-muted hover:text-white transition select-none">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </summary>
-        <div class="absolute right-0 top-full mt-2 bg-panel border border-border rounded-lg p-4 flex flex-col gap-3 z-50 min-w-[200px] shadow-xl">
-          <a href="/" class="hover:text-white transition text-sm text-muted">Home</a>
-          <a href="/sentinel/" class="hover:text-white transition text-sm text-muted">XR-Sentinel</a>
-          <a href="/telemetry/" class="hover:text-white transition text-sm text-muted">XR-Telemetry</a>
-          <a href="/pulse/" class="hover:text-white transition text-sm text-muted">XR-Pulse</a>
-          <a href="/manifest/" class="hover:text-white transition text-sm text-muted">Manifest</a>
-          <a href="/terms/" class="hover:text-white transition text-sm text-muted">Terms</a>
-          <a href="/contact/" class="hover:text-white transition text-sm text-muted">Contact</a>
-        </div>
-      </details>
+      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
     </div>
   </header>
+
+  <!-- Mobile slide-in nav. Same dark palette as desktop; opens on hamburger
+       tap. Body scroll locks while open; Escape, overlay tap, link tap, or
+       resize past md all close it. -->
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities</span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/status/"    class="py-5 text-muted hover:text-white transition">Status</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities &copy; 2026
+    </div>
+  </div>
 
   <section class="grid-bg">
     <div class="max-w-6xl mx-auto px-6 py-24 md:py-32 text-center">
@@ -284,27 +301,81 @@ report = session.post(
     </div>
   </section>
 
-  <footer class="border-t border-border">
+  <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="flex items-center gap-3">
-          <img src="/assets/logo.png" alt="" class="h-8 w-8 rounded" />
-          <div class="text-sm">
-            <div class="font-semibold">XRPL-Utilities</div>
-            <div class="text-muted text-xs">XRPL AI Agent Applications · &copy; 2026</div>
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities</span>
           </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
         </div>
-        <div class="flex items-center gap-6 text-sm text-muted">
-          <a href="/sentinel/" class="hover:text-white transition">XR-Sentinel</a>
-          <a href="/telemetry/" class="hover:text-white transition">XR-Telemetry</a>
-          <a href="/pulse/" class="hover:text-white transition">XR-Pulse</a>
-          <a href="/manifest/" class="hover:text-white transition">Manifest</a>
-          <a href="/terms/" class="hover:text-white transition">Terms</a>
-          <a href="/status/" class="hover:text-white transition">Status</a>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/manifest/" class="text-muted hover:text-white transition">Manifest</a></li>
+            <li><a href="/status/"   class="text-muted hover:text-white transition">System Status</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 flex flex-col md:flex-row md:items-start md:justify-between gap-3 text-xs text-muted">
+        <div class="shrink-0">XRPL-Utilities &copy; 2026 &middot; Powered by XRPL</div>
+        <div class="md:text-right md:max-w-xl leading-relaxed">
+          Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment/legal advice.
         </div>
       </div>
     </div>
   </footer>
+
+  <script>
+    // Mobile nav overlay. Opens on hamburger, closes on Escape, link tap,
+     // close-X tap, OR resize past the md breakpoint (so a desktop user who
+     // shrinks then grows their window doesn't end up with a stuck overlay).
+    (function setupMobileNav() {
+      const openBtn  = document.getElementById('nav-open');
+      const closeBtn = document.getElementById('nav-close');
+      const overlay  = document.getElementById('mobile-nav');
+      if (!openBtn || !closeBtn || !overlay) return;
+      const open  = () => {
+        overlay.style.display = 'flex';
+        openBtn.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      };
+      const close = () => {
+        overlay.style.display = 'none';
+        openBtn.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      };
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      overlay.querySelectorAll('a[href]').forEach(a => a.addEventListener('click', close));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.style.display !== 'none') close();
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) close();
+      });
+    })();
+  </script>
 
 </body>
 </html>
