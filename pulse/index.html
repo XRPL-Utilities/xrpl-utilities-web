@@ -323,7 +323,7 @@ feed = session.post(
         ? `<span class="text-xs px-2 py-0.5 rounded verified-pill border">cross_verified</span>`
         : '';
       const utilityPill = e.active_utility && e.active_utility.active
-        ? `<span class="text-xs px-2 py-0.5 rounded utility-pill border">active_utility (${e.active_utility.signal_count})</span>`
+        ? `<span class="text-xs px-2 py-0.5 rounded utility-pill border">● active utility</span>`
         : '';
 
       // Per-event correlation line policy: render only when there is a
@@ -366,7 +366,8 @@ feed = session.post(
             const txCount = s.tx_count || 0;
             const totalUsd = fmtUsd(s.total_amount_usd);
             const roles = Array.isArray(s.roles) && s.roles.length ? ` · ${s.roles.join(' + ')}` : '';
-            label = `Institutional flow · ${txCount} tx · ${totalUsd}${roles}`;
+            const windowH = s.window_hours || 4;
+            label = `Institutional flow · ${txCount} tx · ${totalUsd}${roles} · in ${windowH}h after publish`;
           } else if (s.signal === 'high_activity_target' && s.addresses) {
             label = `High-activity target · ${s.addresses.length} address${s.addresses.length === 1 ? '' : 'es'}`;
           } else {
