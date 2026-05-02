@@ -232,8 +232,10 @@ feed = session.post(
     <div class="max-w-4xl mx-auto px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
       <h3 class="text-3xl font-bold mb-6">Curated feeds, tight Ripple/XRP filter, mechanical correlation</h3>
-      <div id="source-grid" class="grid md:grid-cols-2 gap-4 mb-8">
-        <!-- populated from /stats by the script below; sources with errors are auto-suppressed -->
+      <div id="source-carousel" class="relative overflow-hidden mb-8" tabindex="0" role="group" aria-label="Source feeds carousel - auto-rotates; hover or focus to pause">
+        <div id="source-grid" class="flex transition-transform duration-500 ease-in-out">
+          <!-- populated from /stats by the script below; sources with errors are auto-suppressed -->
+        </div>
       </div>
       <p class="text-sm text-muted leading-relaxed mb-4">
         Every entry must mention Ripple, XRP, RLUSD, or XRPL in the title or summary. The institutional sources rarely name Ripple, so they fire infrequently. When they do, the events are high-signal. The crypto-press sources are tagged for XRP at the source and carry most of the volume.
@@ -485,20 +487,64 @@ feed = session.post(
       const grid = document.getElementById('source-grid');
       if (!grid) return;
       const feeds = stats.feeds || {};
+      // Each card: full-width on mobile, 1/3 on md+ so 3 are visible at once.
+      // px-2 gives inter-card spacing without flex 'gap' (which complicates
+      // pixel-based translate math in the carousel).
       const cards = Object.entries(feeds)
         .filter(([_, f]) => f.is_active || (f.last_status && f.last_status.error === null))
         .map(([name, _]) => {
           const desc = SOURCE_DESCRIPTIONS[name] || '';
-          return `<div class="bg-panel border border-border rounded-lg p-5">
-            <div class="text-xs uppercase tracking-wider mb-2 source-${escapeHtml(name)} inline-block px-2 py-1 rounded border">${escapeHtml(name)}</div>
-            <p class="text-sm text-muted leading-relaxed mt-3">${escapeHtml(desc)}</p>
+          return `<div class="flex-shrink-0 w-full md:w-1/3 px-2">
+            <div class="bg-panel border border-border rounded-lg p-5 h-full">
+              <div class="text-xs uppercase tracking-wider mb-2 source-${escapeHtml(name)} inline-block px-2 py-1 rounded border">${escapeHtml(name)}</div>
+              <p class="text-sm text-muted leading-relaxed mt-3">${escapeHtml(desc)}</p>
+            </div>
           </div>`;
         });
       if (cards.length === 0) {
-        grid.innerHTML = `<div class="md:col-span-2 bg-panel border border-border rounded-lg p-5 text-sm text-muted">Source list initializing; check back in a moment.</div>`;
+        grid.innerHTML = `<div class="bg-panel border border-border rounded-lg p-5 text-sm text-muted w-full">Source list initializing; check back in a moment.</div>`;
         return;
       }
       grid.innerHTML = cards.join('');
+      setupSourceCarousel();
+    }
+
+    function setupSourceCarousel() {
+      const viewport = document.getElementById('source-carousel');
+      const track = document.getElementById('source-grid');
+      if (!viewport || !track || track.children.length === 0) return;
+      // Honor reduced-motion: skip auto-rotation entirely. The first 3 cards
+      // stay visible; the rest are still in the DOM (off-screen) for SEO and
+      // keyboard reachability.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      let index = 0;
+      let timer = null;
+      const visiblePerView = () => (window.innerWidth >= 768 ? 3 : 1);
+      const maxIndex = () => Math.max(0, track.children.length - visiblePerView());
+      const applyOffset = () => {
+        const w = track.children[0].getBoundingClientRect().width;
+        track.style.transform = `translateX(-${index * w}px)`;
+      };
+      const advance = () => {
+        index = index >= maxIndex() ? 0 : index + 1;
+        applyOffset();
+      };
+      const start = () => { stop(); timer = setInterval(advance, 5000); };
+      const stop  = () => { if (timer) { clearInterval(timer); timer = null; } };
+      viewport.addEventListener('mouseenter', stop);
+      viewport.addEventListener('mouseleave', start);
+      viewport.addEventListener('focusin', stop);
+      viewport.addEventListener('focusout', start);
+      window.addEventListener('resize', () => {
+        if (index > maxIndex()) index = maxIndex();
+        applyOffset();
+      });
+      // Pause when the page tab is hidden so we don't drift while the user
+      // is elsewhere; resume on return so they don't see a stale slide.
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stop(); else start();
+      });
+      start();
     }
 
     async function loadStats() {
@@ -519,7 +565,7 @@ feed = session.post(
     }
     loadStats();
 
-    const FEED_INITIAL = 15;
+    const FEED_INITIAL = 6;
     let _feedEvents = [];
     let _feedShown = 0;
 
