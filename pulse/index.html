@@ -177,7 +177,7 @@
         <div class="grid md:grid-cols-2 gap-6">
           <div>
             <div class="flex items-center justify-between mb-3">
-              <h3 class="text-xs uppercase tracking-[0.2em] text-muted font-semibold">News</h3>
+              <h3 class="text-xs uppercase tracking-[0.2em] text-accent font-semibold">News</h3>
               <span id="news-count" class="text-[10px] text-muted font-mono"></span>
             </div>
             <div id="news-list" class="space-y-3">
@@ -469,9 +469,18 @@ feed = session.post(
     }
 
     function renderEvent(e) {
-      const sources = (e.source_appearances || []).map(s =>
-        `<span class="text-xs px-2 py-0.5 rounded source-${escapeHtml(s)} border">${escapeHtml(s)}</span>`
-      ).join(' ');
+      // Whale events get the tier badge as their identity marker; the
+      // technical 'whale_xrpl' source name on a sub-whale ($50k-$500k)
+      // tier card reads as misleading, so suppress source pills entirely
+      // on those rows. RSS cards keep their source pills since
+      // bis_speeches / coindesk / cointelegraph_xrp etc. carry real
+      // information about which feed broke a story.
+      const isWhaleSrc = (e.source_appearances || []).indexOf('whale_xrpl') !== -1;
+      const sources = isWhaleSrc
+        ? ''
+        : (e.source_appearances || []).map(s =>
+            `<span class="text-xs px-2 py-0.5 rounded source-${escapeHtml(s)} border">${escapeHtml(s)}</span>`
+          ).join(' ');
       const verifiedPill = e.cross_verified
         ? `<span class="text-xs px-2 py-0.5 rounded verified-pill border">cross_verified</span>`
         : '';
@@ -610,7 +619,7 @@ feed = session.post(
             <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
           </div>
           ${briefHtml}
-          <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${utilityPill}<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span></div>
+          <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${utilityPill}${isWhale ? '' : `<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span>`}</div>
           ${corrLine}
           ${utilityBlock}
           ${whaleBlock}
