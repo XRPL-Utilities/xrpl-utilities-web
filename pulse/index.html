@@ -203,7 +203,8 @@
           <p class="text-muted leading-relaxed mb-6">
             XR-Pulse implements <strong class="text-white">x402 v2</strong> with the
             <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
-            One paid call returns the normalized event log so you do not have to maintain N RSS parsers yourself.
+            Verification and settlement are delegated to the
+            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator.
           </p>
           <ol class="space-y-4 text-sm text-muted">
             <li class="flex gap-4">
@@ -247,6 +248,26 @@ feed = session.post(
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="output-shape" class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
+      <h3 class="text-3xl font-bold mb-6">What you get back</h3>
+      <ul class="space-y-3 text-muted leading-relaxed">
+        <li><code class="font-mono text-white">events</code>: array of normalized records, newest-first</li>
+        <li><code class="font-mono text-white">events[].title</code>, <code class="font-mono text-white">primary_url</code>, <code class="font-mono text-white">brief</code>, <code class="font-mono text-white">published_at</code> (UNIX seconds)</li>
+        <li><code class="font-mono text-white">events[].source_appearances</code>: which feeds carried the story (e.g. coindesk, sec_press, bank_of_japan)</li>
+        <li><code class="font-mono text-white">events[].appearance_count</code>: how many sources independently reported it; <code class="font-mono text-white">cross_verified</code> set when 2+ within a 48-hour window</li>
+        <li><code class="font-mono text-white">events[].correlation</code>: XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim</li>
+        <li><code class="font-mono text-white">events[].active_utility</code>: signal flags fired against the event (cross-verification, on-chain activity, watchlisted-wallet hits)</li>
+        <li><code class="font-mono text-white">events[].sentinel_context</code>, <code class="font-mono text-white">target_addresses</code>: any XRPL addresses or Sentinel context the ingestion stage attached</li>
+        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">schema_url</code>: response envelope</li>
+      </ul>
+      <p class="text-xs text-muted mt-6 leading-relaxed">
+        Full schema at <a href="https://pulse.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live agent manifest at <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
+      </p>
     </div>
   </section>
 

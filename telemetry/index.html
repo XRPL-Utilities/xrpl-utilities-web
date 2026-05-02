@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="/assets/telemetry-flow.js?v=24h-change"></script>
+  <script src="/assets/telemetry-flow.js?v=spot-arrow-color"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -233,16 +233,16 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the variables</div>
           <p class="mb-3">
-            <strong class="text-white">M</strong> &middot; Modeled Active Float. The supply that can clear inside a single 3-5 second ledger close. Computed as 10% of exchange holdings + all AMM-pool XRP + XRP resting on the DEX.
+            <strong class="text-accent">M</strong> &middot; Modeled Active Float. The supply that can clear inside a single 3-5 second ledger close. Computed as 10% of exchange holdings + all AMM-pool XRP + XRP resting on the DEX.
           </p>
           <p class="mb-3">
-            <strong class="text-white">V</strong> &middot; Annual velocity. How many times each unit of M is reused for settlement per year. Your assumption. The default of 6 reflects what a mature settlement network looks like with ODL-style cross-border flows recycling supply. Today's real velocity is much lower since most XRP is held, not transacted.
+            <strong class="text-accent">V</strong> &middot; Annual velocity. How many times each unit of M is reused for settlement per year. Your assumption. The default of 6 reflects what a mature settlement network looks like with ODL-style cross-border flows recycling supply. Today's real velocity is much lower since most XRP is held, not transacted.
           </p>
           <p class="mb-3">
-            <strong class="text-white">Q</strong> &middot; Total annual settlement volume in USD. Your assumption. Must share V's time window (both are annual).
+            <strong class="text-accent">Q</strong> &middot; Total annual settlement volume in USD. Your assumption. Must share V's time window (both are annual).
           </p>
           <p>
-            <strong class="text-white">P</strong> &middot; The per-XRP USD price the identity requires given M, V, and Q. Not a forecast.
+            <strong class="text-accent">P</strong> &middot; The per-XRP USD price the identity requires given M, V, and Q. Not a forecast.
           </p>
         </div>
 
@@ -257,10 +257,10 @@
           <p class="mb-2 text-accent font-semibold uppercase tracking-widest text-xs">What would push P up</p>
           <ul class="space-y-2 mb-4">
             <li>
-              <strong class="text-white">Q rises</strong> &middot; more real annual settlement on XRPL. Plausible drivers: new ODL corridors, treasury B2B adoption, agent-payable x402 flows scaling, RLUSD volume growth.
+              <strong class="text-accent">Q rises</strong> &middot; more real annual settlement on XRPL. Plausible drivers: new ODL corridors, treasury B2B adoption, agent-payable x402 flows scaling, RLUSD volume growth.
             </li>
             <li>
-              <strong class="text-white">M shrinks</strong> &middot; less XRP resting on open markets. Plausible drivers: institutions move into cold custody, AMM pools grow, market makers pull back resting depth.
+              <strong class="text-accent">M shrinks</strong> &middot; less XRP resting on open markets. Plausible drivers: institutions move into cold custody, AMM pools grow, market makers pull back resting depth.
             </li>
           </ul>
           <p>
@@ -328,16 +328,16 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the controls</div>
           <p class="mb-3">
-            <strong class="text-white">Starting price</strong> &middot; today's implied floor. Copied live from Burst Math. Re-anchor by tweaking Q or V there.
+            <strong class="text-accent">Starting price</strong> &middot; today's implied floor. Copied live from Burst Math. Re-anchor by tweaking Q or V there.
           </p>
           <p class="mb-3">
-            <strong class="text-white">Monthly supply constriction</strong> &middot; how fast liquid M shrinks each month. 1% per month means 1% of M exits each month into AMM pools, cold custody, escrow, or dormancy.
+            <strong class="text-accent">Monthly supply constriction</strong> &middot; how fast liquid M shrinks each month. 1% per month means 1% of M exits each month into AMM pools, cold custody, escrow, or dormancy.
           </p>
           <p class="mb-3">
-            <strong class="text-white">Monthly volume growth</strong> &middot; how fast annual settlement Q grows each month. Compounds geometrically.
+            <strong class="text-accent">Monthly volume growth</strong> &middot; how fast annual settlement Q grows each month. Compounds geometrically.
           </p>
           <p>
-            <strong class="text-white">&plusmn;15% band</strong> &middot; visual reminder that the baseline is a point estimate. Not a statistical confidence interval.
+            <strong class="text-accent">&plusmn;15% band</strong> &middot; visual reminder that the baseline is a point estimate. Not a statistical confidence interval.
           </p>
         </div>
 

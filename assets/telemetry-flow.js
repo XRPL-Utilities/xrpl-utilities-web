@@ -278,7 +278,16 @@
     rows.forEach(([k, v]) => {
       const cell = el('div');
       cell.appendChild(el('div', 'text-xs text-muted mb-1', k));
-      cell.appendChild(el('div', 'font-medium break-all', String(v)));
+      // Allow callers to pass a pre-built DOM node when the value needs
+      // styled inline pieces (e.g. a colored 24h-change arrow on the spot
+      // row). Plain strings still go through textContent for safety.
+      if (v instanceof Node) {
+        const wrap = el('div', 'font-medium break-all');
+        wrap.appendChild(v);
+        cell.appendChild(wrap);
+      } else {
+        cell.appendChild(el('div', 'font-medium break-all', String(v)));
+      }
       grid.appendChild(cell);
     });
     return grid;
@@ -551,17 +560,21 @@
     // where 2 decimals is plenty.
     const rows = [['Required floor', fmtUsdEq(uf.baseline_usd) + ' / XRP']];
     if (hasSpot) {
-      // Annotate spot with 24h change % when CoinGecko provided one.
-      // Render '$1.38 / XRP · ↑ +2.34% 24h' so a reader sees direction
-      // without a separate row.
-      let spotText = fmtUsdPrice(uf.current_price_usd) + ' / XRP';
+      // Build the spot row as a DOM node so the 24h arrow + change % can
+      // carry its own color (green up, red down, muted on zero), matching
+      // the Burst Math hero tile. Plain text rows in kvGrid go through
+      // textContent and can't carry colored spans.
+      const spotNode = el('span');
+      spotNode.appendChild(document.createTextNode(fmtUsdPrice(uf.current_price_usd) + ' / XRP'));
       const ch = uf.current_price_usd_24h_change_pct;
-      if (typeof ch === 'number') {
+      if (typeof ch === 'number' && isFinite(ch)) {
         const arrow = ch > 0 ? '↑' : (ch < 0 ? '↓' : '·');
-        const sign = ch > 0 ? '+' : '';
-        spotText += ' · ' + arrow + ' ' + sign + ch.toFixed(2) + '% 24h';
+        const sign  = ch > 0 ? '+' : '';
+        const cls   = ch > 0 ? 'text-good' : (ch < 0 ? 'text-bad' : 'text-muted');
+        spotNode.appendChild(document.createTextNode(' · '));
+        spotNode.appendChild(el('span', cls, arrow + ' ' + sign + ch.toFixed(2) + '% 24h'));
       }
-      rows.push(['Current spot', spotText]);
+      rows.push(['Current spot', spotNode]);
       if (uf.baseline_usd > 0) {
         rows.push(['Premium', (uf.current_price_usd / uf.baseline_usd).toFixed(2) + '×']);
       }
