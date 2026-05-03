@@ -940,15 +940,17 @@ feed = session.post(
       try {
         const ctl = new AbortController();
         const timeoutId = setTimeout(() => ctl.abort(), 30000);
-        // Bumped limit from 50 to 100 since whale events can dominate the
-        // recent window once the watcher accumulates traffic; the higher
-        // limit ensures both columns have depth even if one source is
-        // sparse. min_whale_usd:0 keeps every stored on-chain event in
-        // the response so the activity column populates fully.
+        // Request the server cap (Pulse Pydantic le=200) so both
+        // columns get full available depth. The server-side greedy
+        // clustering's output count varies with the candidate-row count
+        // it sees; asking for 200 lands us in the high-resolution
+        // regime where news isn't accidentally collapsed to a handful
+        // of clusters. min_whale_usd:0 keeps every stored on-chain
+        // event in the response so the activity column populates fully.
         const r = await fetch(`${API_BASE}/events/recent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ limit: 100, min_whale_usd: 0 }),
+          body: JSON.stringify({ limit: 200, min_whale_usd: 0 }),
           signal: ctl.signal,
         });
         clearTimeout(timeoutId);
