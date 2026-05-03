@@ -98,6 +98,22 @@
       <article class="bg-panel border border-border rounded-2xl p-8">
         <div class="flex flex-wrap items-center gap-3 mb-3">
           <span class="font-mono text-xs text-muted">2026-05-03</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Trust · 2026-09</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">Derived institutional-issuer signal on every domain</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          Every domain record now carries <code class="font-mono text-white">institutional_issuer_count</code> (count of distinct, non-self, XRPScan-labeled credential issuers)
+          and <code class="font-mono text-white">institutional_issuers</code> (sorted unique display names). Available in both the <code class="font-mono text-white">/domains</code> list view and
+          <code class="font-mono text-white">/domain/{id}</code> drill-down because the warmer now fetches issuer labels too (deduped across all domains, 24h-cached).
+          A cheap proxy for "this domain accepts credentials from N recognized stablecoin issuers, custodians, exchanges, or infrastructure operators."
+          Self-issued credentials (where the issuer equals the domain owner) are intentionally excluded — that's a different signal. Today's first walk surfaces
+          one domain accepting KYC credentials from Circle (USDC), Ripple (RLUSD), and Quantoz simultaneously; the directory row badges this directly.
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-03</span>
           <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Trust · 2026-08</span>
         </div>
         <h2 class="text-xl font-bold mb-3">PermissionedDomain drill-down enrichment: decoded credential type, issuer labels, lifecycle</h2>

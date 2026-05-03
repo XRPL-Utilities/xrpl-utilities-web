@@ -254,7 +254,8 @@ record = session.post(
         <li><code class="font-mono text-white">domains[].domain_id</code>: 64-hex LedgerIndex of the PermissionedDomain object (XLS-80)</li>
         <li><code class="font-mono text-white">domains[].owner_address</code>: XRPL classic address of the domain owner (the on-chain <code class="font-mono text-white">Owner</code> field)</li>
         <li><code class="font-mono text-white">domains[].owner_label</code>: XRPScan label for the owner when available, with shape <code class="font-mono text-white">{name, desc, domain, verified, twitter}</code>. <code class="font-mono text-white">null</code> when no label exists.</li>
-        <li><code class="font-mono text-white">domains[].accepted_credentials</code>: array of <code class="font-mono text-white">{issuer, credential_type, credential_type_decoded, issuer_label}</code> the domain accepts. <code class="font-mono text-white">credential_type</code> is the raw hex per XLS-80; <code class="font-mono text-white">credential_type_decoded</code> is best-effort hex→ASCII (e.g. <code class="font-mono text-white">"4B5943"</code> → <code class="font-mono text-white">"KYC"</code>), <code class="font-mono text-white">null</code> when bytes are not printable ASCII; <code class="font-mono text-white">issuer_label</code> is XRPScan's <code class="font-mono text-white">accountName</code> for the issuer when available (drill-down only — <code class="font-mono text-white">null</code> in <code class="font-mono text-white">/domains</code> list view).</li>
+        <li><code class="font-mono text-white">domains[].accepted_credentials</code>: array of <code class="font-mono text-white">{issuer, credential_type, credential_type_decoded, issuer_label}</code> the domain accepts. <code class="font-mono text-white">credential_type</code> is the raw hex per XLS-80; <code class="font-mono text-white">credential_type_decoded</code> is best-effort hex→ASCII (e.g. <code class="font-mono text-white">"4B5943"</code> → <code class="font-mono text-white">"KYC"</code>), <code class="font-mono text-white">null</code> when bytes are not printable ASCII; <code class="font-mono text-white">issuer_label</code> is XRPScan's <code class="font-mono text-white">accountName</code> for the issuer when available.</li>
+        <li><code class="font-mono text-white">domains[].institutional_issuer_count</code> + <code class="font-mono text-white">domains[].institutional_issuers</code>: count and sorted unique display names of distinct, non-self, XRPScan-labeled credential issuers accepted by the domain. A cheap proxy for "domain accepts credentials from N recognized stablecoin issuers / custodians / exchanges". Available in both list view and drill-down.</li>
         <li><code class="font-mono text-white">domain.lifecycle</code> (drill-down only): <code class="font-mono text-white">{created_at_iso, created_at_unix, created_ledger, created_tx_id, last_modified_at_iso, last_modified_at_unix, last_modified_ledger, last_modified_tx_id, modification_count, lifecycle_status}</code>. Derived by walking the on-chain meta chain backwards from <code class="font-mono text-white">PreviousTxnID</code> to the <code class="font-mono text-white">CreatedNode</code>. <code class="font-mono text-white">lifecycle_status</code> is one of <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">partial_history_truncated</code>, <code class="font-mono text-white">partial_history_error</code>, <code class="font-mono text-white">partial_history_chain_broken</code>, <code class="font-mono text-white">no_last_txn_id</code>.</li>
         <li><code class="font-mono text-white">domains[].sequence</code>, <code class="font-mono text-white">previous_txn_id</code>, <code class="font-mono text-white">previous_txn_lgr_seq</code>, <code class="font-mono text-white">flags</code>: full ledger-object metadata</li>
         <li><code class="font-mono text-white">walk_status</code>: one of <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">warming</code> (initial), <code class="font-mono text-white">truncated_total</code>, <code class="font-mono text-white">error_&lt;status&gt;</code>. Tells the caller whether the response carries a complete enumeration.</li>
@@ -551,6 +552,19 @@ record = session.post(
           const issuers = Array.from(new Set((d.accepted_credentials || []).map(c => c.issuer))).slice(0, 3);
           credCell.appendChild(el('div', 'text-xs text-muted font-mono mt-1', issuers.map(shorten).join(', ') + (credCount > 3 ? ', …' : '')));
         }
+        // Institutional-issuer badge: surfaces when the warmer found one or
+        // more XRPScan-labeled credential issuers on this domain. Cheap
+        // proxy for "domain accepts credentials from N recognized
+        // stablecoin issuers / custodians / exchanges".
+        const instCount = d.institutional_issuer_count || 0;
+        if (instCount > 0) {
+          const inst = el('div', 'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border border-accent/40 text-accent text-xs');
+          const names = (d.institutional_issuers || []).slice(0, 3).join(' · ');
+          const more = (d.institutional_issuers || []).length > 3 ? ' +' + ((d.institutional_issuers || []).length - 3) : '';
+          inst.textContent = String(instCount) + ' institutional · ' + names + more;
+          inst.title = (d.institutional_issuers || []).join(', ');
+          credCell.appendChild(inst);
+        }
         tr.appendChild(credCell);
 
         tr.appendChild(el('td', 'px-6 py-4 text-xs text-muted', String(d.sequence || '—')));
@@ -646,6 +660,17 @@ record = session.post(
               'lifecycle_status: ' + lc.lifecycle_status);
         lcWrap.appendChild(lcGrid);
         wrap.appendChild(lcWrap);
+      }
+
+      // Institutional-issuer summary callout (drill-down version, more
+      // prominent than the directory-row badge).
+      const instCount = d.institutional_issuer_count || 0;
+      if (instCount > 0) {
+        const inst = el('div', 'mb-6 p-4 bg-ink border border-accent/40 rounded-lg');
+        inst.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent mb-1', 'Institutional credential issuers'));
+        inst.appendChild(el('div', 'text-sm text-white', (d.institutional_issuers || []).join(', ')));
+        inst.appendChild(el('div', 'text-xs text-muted mt-1', String(instCount) + ' distinct, XRPScan-labeled, non-self issuer' + (instCount === 1 ? '' : 's') + ' accepted by this domain'));
+        wrap.appendChild(inst);
       }
 
       const credHead = el('div', 'mb-3');
