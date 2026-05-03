@@ -185,6 +185,25 @@
       if (id.domain) {
         banner.appendChild(el('span', 'font-mono text-xs text-muted', id.domain));
       }
+      // Surface XRPScan advisory in the identity banner so a viewer who
+      // only skims the header still sees the warning. The TARGET_ADVISORY
+      // signal in the signals list also covers it, but identity-banner
+      // placement is much harder to miss. Tooltip carries the full
+      // provider/category/trusted shape so an analyst can judge weight
+      // (CHAINABUSE phishing reports against a verified exchange wallet
+      // are typically `trusted: false` and represent a depositor losing
+      // funds upstream, not the exchange itself being compromised).
+      if (id.advisory) {
+        const adv = id.advisory;
+        const cat = adv.scamCategory || adv.report?.scamCategory || adv.type || 'advisory';
+        const provider = adv.provider || adv.report?.provider || 'unknown';
+        const trusted = (adv.trusted ?? adv.report?.trusted) === true ? 'trusted' : 'untrusted reporter';
+        const tip = `${provider} ${cat.toLowerCase()} report (${trusted}). Source: XRPScan advisory.`;
+        const pill = el('span', 'border border-red-500/50 text-red-300 text-xs uppercase tracking-wider px-2 py-0.5 rounded font-semibold');
+        pill.title = tip;
+        pill.textContent = '⚠ ' + cat.toLowerCase();
+        banner.appendChild(pill);
+      }
       banner.appendChild(el('span', 'text-xs text-muted ml-auto', 'via XRPScan'));
       card.appendChild(banner);
     }
