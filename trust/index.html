@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XR-Trust | XRPL Permissioned Domain Directory</title>
-  <meta name="description" content="Public directory and explorer for XRPL Permissioned Domains (XLS-80). Lists active domains, their accepted credentials, and credential issuers. Descriptive only; not a compliance verdict." />
+  <title>XR-Trust | XRPL Permissioned Domain Watcher</title>
+  <meta name="description" content="Watcher for XRPL Permissioned Domains (XLS-80). The XLS-80 amendment activated on mainnet in February 2026 and adopters are still in private testing. The moment a domain publishes on mainnet it appears here with owner, accepted credentials, and credential issuers." />
   <meta property="og:title" content="XR-Trust" />
-  <meta property="og:description" content="XRPL Permissioned Domain Directory: lists active domains and credential issuers from the validated ledger. Free on the web, $0.10 per query for agents over x402." />
+  <meta property="og:description" content="XRPL Permissioned Domain Watcher: catches the first PermissionedDomain (XLS-80) the moment it publishes on mainnet. Free on the web, $0.10 per query for agents over x402." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/xr-trust.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/trust/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -109,13 +109,13 @@
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <img src="/assets/xr-trust.png" alt="XR-Trust" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" onerror="this.style.display='none'" />
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted">XRPL Permissioned Domain Directory</p>
+      <p class="text-xl text-muted">XRPL Permissioned Domain Watcher</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        Public directory and explorer for XRPL Permissioned Domains (XLS-80). Lists every active domain on the validated ledger, what credentials each accepts, and which addresses issue those credentials. Descriptive only &mdash; not a compliance verdict, certification, or endorsement of any domain or its members.
+        XR-Trust watches the validated XRPL ledger for PermissionedDomain objects (XLS-80). The XRPL permissioning stack activated on mainnet in February 2026 and institutional adopters are still in private testing. The moment a domain publishes on mainnet it appears here with owner address, accepted credentials, and credential issuers. No editorial filter. No scoring. No endorsement.
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        Sourced from validated XRPL ledger only &middot; no editorial, no scoring, no endorsement
+        Re-walks the validated XRPL ledger every 6h &middot; alerts the moment a domain goes live
       </div>
     </div>
   </section>
@@ -253,10 +253,10 @@ record = session.post(
         <li><code class="font-mono text-white">domains</code>: array of normalized records, one per PermissionedDomain ledger object</li>
         <li><code class="font-mono text-white">domains[].domain_id</code>: 64-hex LedgerIndex of the PermissionedDomain object (XLS-80)</li>
         <li><code class="font-mono text-white">domains[].owner_address</code>: XRPL classic address of the domain owner (the on-chain <code class="font-mono text-white">Owner</code> field)</li>
-        <li><code class="font-mono text-white">domains[].owner_label</code>: XRPScan label for the owner when available &mdash; <code class="font-mono text-white">{name, desc, domain, verified, twitter}</code> &mdash; or <code class="font-mono text-white">null</code></li>
+        <li><code class="font-mono text-white">domains[].owner_label</code>: XRPScan label for the owner when available, with shape <code class="font-mono text-white">{name, desc, domain, verified, twitter}</code>. <code class="font-mono text-white">null</code> when no label exists.</li>
         <li><code class="font-mono text-white">domains[].accepted_credentials</code>: array of <code class="font-mono text-white">{issuer, credential_type}</code> the domain accepts; credential_type is hex-encoded per XLS-80</li>
         <li><code class="font-mono text-white">domains[].sequence</code>, <code class="font-mono text-white">previous_txn_id</code>, <code class="font-mono text-white">previous_txn_lgr_seq</code>, <code class="font-mono text-white">flags</code>: full ledger-object metadata</li>
-        <li><code class="font-mono text-white">walk_status</code>: <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">warming</code> (initial), <code class="font-mono text-white">truncated_total</code>, or <code class="font-mono text-white">error_&lt;status&gt;</code> &mdash; honest signal of whether the response carries a complete enumeration</li>
+        <li><code class="font-mono text-white">walk_status</code>: one of <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">warming</code> (initial), <code class="font-mono text-white">truncated_total</code>, <code class="font-mono text-white">error_&lt;status&gt;</code>. Tells the caller whether the response carries a complete enumeration.</li>
         <li><code class="font-mono text-white">total</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">offset</code>, <code class="font-mono text-white">next_offset</code>: pagination envelope</li>
         <li><code class="font-mono text-white">issuers[]</code> on <code class="font-mono text-white">/credentials/issuers</code>: each entry has <code class="font-mono text-white">issuer_address</code>, <code class="font-mono text-white">issuer_label</code>, <code class="font-mono text-white">domains_referencing</code> (count), <code class="font-mono text-white">credential_types_issued</code> (sorted unique list)</li>
         <li><code class="font-mono text-white">schema_version</code>, <code class="font-mono text-white">generated_at</code>: response envelope</li>
@@ -279,7 +279,7 @@ record = session.post(
         <span class="text-white">Materialization.</span> A background warmer task walks the full PermissionedDomain set every six hours and atomically swaps the in-memory snapshot. The previous snapshot keeps serving while the next walk runs, so reads stay instant. Every response carries a <code class="font-mono text-white">walk_status</code> field so you can tell whether the snapshot is complete, warming on first boot, or partial.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Drill-down vs enumeration.</span> Looking up a single domain by its <code class="font-mono text-white">domain_id</code> is O(1) regardless of warmer state &mdash; the service goes straight to <code class="font-mono text-white">ledger_entry</code>. Whole-network enumeration relies on the materialized snapshot.
+        <span class="text-white">Drill-down vs enumeration.</span> Looking up a single domain by its <code class="font-mono text-white">domain_id</code> is O(1) regardless of warmer state. The service goes straight to <code class="font-mono text-white">ledger_entry</code>. Whole-network enumeration relies on the materialized snapshot.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
         <span class="text-white">Owner labels.</span> Where XRPScan recognizes a domain owner (banks, asset managers, infrastructure providers), the label appears on the directory row and the drill-down panel. Unlabeled owners surface their raw classic address.
@@ -303,7 +303,7 @@ record = session.post(
         <li>&middot; Not a certification of any credential issuer's authority to attest the credentials they issue</li>
         <li>&middot; Not an endorsement of any domain owner's identity, jurisdiction, or business practice</li>
         <li>&middot; Not legal, regulatory, or investment advice</li>
-        <li>&middot; Not a member-eligibility check &mdash; membership in a permissioned domain is implicit (any address holding an accepted credential), and v1 does not yet estimate member counts</li>
+        <li>&middot; Not a member-eligibility check. Membership in a permissioned domain is implicit (any address holding an accepted credential), and v1 does not estimate member counts</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
         XR-Trust describes what's on-chain. Compliance, verification, and trust judgments remain the responsibility of the consumer.
@@ -404,7 +404,7 @@ record = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment, legal, or compliance advice. XR-Trust does not certify, endorse, or assess the legitimacy of any permissioned domain, owner, credential issuer, or member. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data passthrough only. Not investment, legal, or compliance advice. XR-Trust does not certify, endorse, or assess the legitimacy of any permissioned domain, owner, credential issuer, or member. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>
@@ -482,12 +482,12 @@ record = session.post(
         head.innerHTML = '<span class="pulse-dot"></span><span class="text-2xl font-bold">Indexing the ledger</span>';
         wrap.appendChild(head);
         const p = el('p', 'text-muted leading-relaxed max-w-xl mx-auto text-sm');
-        p.innerHTML = 'The background warmer is walking the validated XRPL ledger to materialize the directory snapshot. First-pass walks can take a few minutes. Refresh this page in a moment, or check back &mdash; the indexer self-recovers.';
+        p.innerHTML = 'The background warmer is walking the validated XRPL ledger to build the first snapshot. The XLS-80 amendment activated on mainnet in February 2026 and institutional adopters are still in private testing, so the most likely outcome of this first walk is zero domains. Refresh in a few minutes for the verdict.';
         wrap.appendChild(p);
       } else {
-        wrap.appendChild(el('div', 'text-2xl font-bold mb-3', 'No domains match your filter yet.'));
+        wrap.appendChild(el('div', 'text-2xl font-bold mb-3', 'No permissioned domains on mainnet yet.'));
         const p = el('p', 'text-muted leading-relaxed max-w-xl mx-auto text-sm');
-        p.innerHTML = 'The XRPL permissioning stack (XLS-80) activated in February 2026 &mdash; institutional adoption is in early days. Watch this directory grow as banks and asset managers configure their first domains.';
+        p.innerHTML = 'Permissioned Domains are new. The XLS-80 amendment activated on XRPL mainnet in February 2026 and the early enterprise adopters are still in private testing. XR-Trust will catch the first one the moment it lands on mainnet. The indexer re-walks every 6 hours and an operator alert fires on the first non-empty snapshot.';
         wrap.appendChild(p);
       }
       target.appendChild(wrap);
@@ -600,7 +600,7 @@ record = session.post(
       wrap.appendChild(credHead);
 
       if (credCount === 0) {
-        wrap.appendChild(el('div', 'text-xs text-muted', 'This domain accepts no credentials — it is configured but not yet active.'));
+        wrap.appendChild(el('div', 'text-xs text-muted', 'This domain accepts no credentials. It is configured but not yet active.'));
       } else {
         const list = el('div', 'space-y-2');
         (d.accepted_credentials || []).forEach(c => {
@@ -699,7 +699,7 @@ record = session.post(
         setStat('stat-domains', String(total));
         setStat('stat-issuers', String(_allIssuers.length));
         if (ws === 'warming') {
-          status.innerHTML = 'Indexer ' + statusPill('warming') + ' &mdash; first walk in progress; check back in a minute.';
+          status.innerHTML = 'Indexer ' + statusPill('warming') + ' &middot; first walk in progress, check back shortly.';
         } else {
           status.textContent = total + (total === 1 ? ' domain' : ' domains') + ' on validated ledger · indexer ' + ws;
         }
