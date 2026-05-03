@@ -553,11 +553,22 @@ feed = session.post(
         // activity classification, advisory flags, score-trajectory
         // delta when prior history exists). Skip the line entirely
         // when both sides are Unknown so we don't add empty noise.
+        // The role label (Sender/Receiver) is wrapped in a click-through
+        // to /sentinel/?address=rXXX so a reader can pull a fresh
+        // Sentinel scan on either party in one click. The Sentinel page
+        // accepts ?address= as a prefill + auto-trigger.
         const ss = whaleAU.sender_sentinel || null;
         const rs = whaleAU.receiver_sentinel || null;
-        function fmtSentinelBit(role, sx) {
+        function fmtSentinelBit(role, sx, addr) {
           if (!sx || !sx.activity_level || sx.activity_level === 'Unknown') return null;
-          let bit = `<span class="text-white">${role}</span> ${escapeHtml(sx.activity_level)}`;
+          const linkable = !!addr;
+          const tip = linkable
+            ? `Open Sentinel scan for ${addr}`
+            : '';
+          const roleHtml = linkable
+            ? `<a href="/sentinel/?address=${encodeURIComponent(addr)}" target="_blank" rel="noopener noreferrer" class="text-white underline decoration-dotted underline-offset-2 hover:text-accent transition" title="${escapeHtml(tip)}">${role}</a>`
+            : `<span class="text-white">${role}</span>`;
+          let bit = `${roleHtml} ${escapeHtml(sx.activity_level)}`;
           if (typeof sx.activity_score === 'number') bit += ` (${sx.activity_score})`;
           if (sx.identity && sx.identity.advisory) {
             bit += ` <span class="text-bad font-semibold">&#9888; advisory</span>`;
@@ -573,8 +584,8 @@ feed = session.post(
           }
           return bit;
         }
-        const senderBit   = fmtSentinelBit('Sender',   ss);
-        const receiverBit = fmtSentinelBit('Receiver', rs);
+        const senderBit   = fmtSentinelBit('Sender',   ss, whaleAU.sender_address);
+        const receiverBit = fmtSentinelBit('Receiver', rs, whaleAU.receiver_address);
         const sBits = [senderBit, receiverBit].filter(Boolean);
         if (sBits.length) {
           whaleBlock += `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">

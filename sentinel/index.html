@@ -631,6 +631,22 @@ report = session.post(
         btn.textContent = "Scan";
       });
     });
+
+    // URL prefill: deep links from Pulse cross-ref (Sender/Receiver
+    // clickthrough) and from any other surface that wants to open
+    // Sentinel pre-targeted at a specific wallet land here with
+    // ?address=rXXX. Validate against ADDR_RE, populate the input,
+    // then synthesise a click on the Scan button so the user lands on
+    // a live result without an extra interaction. Malformed values
+    // fall through silently and the page renders its empty state.
+    (function applyUrlAddressParam() {
+      try {
+        const qsAddr = (new URLSearchParams(window.location.search).get("address") || "").trim();
+        if (!qsAddr || !ADDR_RE.test(qsAddr)) return;
+        document.getElementById("address").value = qsAddr;
+        document.getElementById("scan-btn").click();
+      } catch (_) { /* no-op */ }
+    })();
   </script>
 
 </body>
