@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog | XRPL-Utilities</title>
+  <meta name="description" content="Append-only changelog for XR-Sentinel, XR-Telemetry, and XR-Pulse. Every schema bump, new feature, and meaningful product change since launch." />
+  <meta property="og:title" content="XRPL-Utilities | Changelog" />
+  <meta property="og:description" content="Append-only changelog for the XRPL-Utilities portfolio. Schema versions, new features, and meaningful product changes since launch." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/changelog/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc' },
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
+      }},
+    };
+  </script>
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-x-8 lg:gap-x-10 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+      </nav>
+      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Changelog</h1>
+      <p class="text-muted leading-relaxed mb-2">
+        Append-only public record of every schema bump, new feature, and meaningful product change across
+        the <a href="/sentinel/" class="text-accent hover:underline">XR-Sentinel</a>,
+        <a href="/telemetry/" class="text-accent hover:underline">XR-Telemetry</a>, and
+        <a href="/pulse/" class="text-accent hover:underline">XR-Pulse</a> services.
+      </p>
+      <p class="text-xs text-muted leading-relaxed">
+        Newest first. Each entry is dated <code class="font-mono text-white">YYYY-MM-DD</code> and tagged with the affected service + schema version.
+        For exact code changes, every commit is on the public repos linked from each service's <code class="font-mono text-white">/docs</code>.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pb-24 space-y-8">
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-03</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Sentinel · 2.6.0</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">Schema-version stamping, currency_net_flows overflow flag, bulk-scan agent docs</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          Every paid <code class="font-mono text-white">/scan</code> response now carries a top-level <code class="font-mono text-white">schema_version</code>
+          field so caching agents can pin which manifest version each cached blob was generated under.
+          <code class="font-mono text-white">features.currency_net_flows</code> buckets exceeding 1e15 (XRPL issuer-side accounting artifacts where
+          the issuer's "obligation" leg is the negation of all outstanding tokens) get a sibling
+          <code class="font-mono text-white">_overflow:&nbsp;true</code> flag so display layers know to render them as artifacts rather than meaningful flow.
+          Bulk-scan async invoice flow promoted from human-only to advertised agent capability in <code class="font-mono text-white">agents.json</code>.
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-03</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Telemetry · 1.1.0</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">Renamed baseline_usd → implied_floor_usd_assumptions; schema-version stamping</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          <code class="font-mono text-white">utility_floor.baseline_usd</code> renamed to <code class="font-mono text-white">implied_floor_usd_assumptions</code> to make the
+          field name as honest as the docs &mdash; the old name read like a price prediction or fair-value claim when screenshotted
+          out of context. The deprecated alias is retained for one schema cycle so the shipped frontend doesn't break; it will be
+          removed in 1.2.0. Every snapshot payload now stamps a top-level <code class="font-mono text-white">schema_version</code>.
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-03</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Pulse · 1.8.0</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">Three new institutional feeds, schema-version stamping, recipient clarifier</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          Source expansion: probed the institutional / regulator / standards candidate set; added the three that returned working RSS
+          (<span class="font-mono text-white">FCA UK</span>, <span class="font-mono text-white">ESMA EU</span>, <span class="font-mono text-white">FSB</span>)
+          to the news ingestor with the same Ripple/XRP/RLUSD/XRPL keyword filter. The 11 candidates that did NOT return parseable RSS
+          (BaFin, FINMA, FATF, IOSCO, HKMA, MAS-v2, IMF, RippleX Medium, Ripple Insights/Press) are documented under
+          <code class="font-mono text-white">/stats.dropped_sources_v1_1</code> with the specific failure mode for each &mdash; no roadmap stubs.
+          <code class="font-mono text-white">capabilities.sources</code> restructured from a flat (and stale) array to a tiered object with
+          <span class="font-mono text-white">regulatory_primary</span> / <span class="font-mono text-white">central_bank</span> /
+          <span class="font-mono text-white">standards_body</span> / <span class="font-mono text-white">crypto_press</span>.
+          <code class="font-mono text-white">/events/recent</code> payloads now stamp <code class="font-mono text-white">schema_version</code>.
+          Payment block gains <code class="font-mono text-white">recipient_resolution: per_invoice_via_facilitator</code> so callers know
+          why no static recipient is advertised here.
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-02</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Sentinel · 2.5.0</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">Issuer enrichment: blackhole posture, supply, domain</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          When the target wallet looks like an IOU issuer (existing <code class="font-mono text-white">_looks_like_issuer</code> gate),
+          <code class="font-mono text-white">/scan</code> now issues one extra <code class="font-mono text-white">account_info</code> RPC
+          alongside the existing <code class="font-mono text-white">gateway_balances</code> call and surfaces blackhole status
+          (<span class="font-mono text-white">lsfDisableMaster</span> + RegularKey burn-address detection), owner-object count,
+          and the XRPScan domain on file. Response gains an optional top-level <code class="font-mono text-white">issuer_profile</code> string
+          (a 2-3 sentence narrative scoped strictly to on-chain evidence &mdash; no off-ledger context) and
+          <code class="font-mono text-white">features.account_flags</code> with the structured flags. Both fields are omitted entirely for non-issuer wallets.
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-02</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Org · LLC + ™</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">XRPL-Utilities LLC formed; ™ rollout across .com and .io</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          Wyoming LLC formed. Common-law trademark notation (™) added to the brand and pillars (XR-Sentinel™, XR-Pulse™, XR-Telemetry™) across the
+          <span class="font-mono text-white">xrpl-utilities.com</span> surface (header, mobile drawer, footer, first prominent pillar mention per page)
+          and on each <code class="font-mono text-white">.io</code> service's <code class="font-mono text-white">agents.json</code>, <code class="font-mono text-white">/schema</code>,
+          and FastAPI app metadata. Footer legal block replaced with a 3-line institutional anchor (© LLC / TM ownership / safe harbor
+          including the "Void in CA/CO" jurisdictional clause). <code class="font-mono text-white">/terms/</code> rewritten as the new 8-section ToS
+          (effective 2026-05-02).
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-04-30</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Sentinel · 2.2.0</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">Scan history endpoint, _delta block, second-order signals</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          Schema 2.0.0 → 2.2.0. Sentinel gained 7 cheap feature signals plus the
+          <code class="font-mono text-white">issuer_summary</code> via <code class="font-mono text-white">gateway_balances</code>, an aiosqlite scan
+          recorder mounted on a fresh 50GB Railway volume at <code class="font-mono text-white">/data/sentinel.db</code>, a paid
+          <code class="font-mono text-white">POST /scan/history</code> endpoint, an optional <code class="font-mono text-white">_delta</code> block
+          on <code class="font-mono text-white">/scan</code> responses when a prior recorded scan exists, and three second-order signals
+          (<span class="font-mono text-white">SCORE_TRAJECTORY_BOT_ONBOARDING</span>, <span class="font-mono text-white">CADENCE_TIGHTENING</span>,
+          <span class="font-mono text-white">COUNTERPARTY_BURST</span>). Catalog grew 17 → 20 signals.
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-04-25</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Portfolio · v1</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">Public launch of the XRPL-Utilities portfolio</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          Three services live: XR-Sentinel (behavioral pattern classifier), XR-Telemetry (XRPL macro snapshot + algebraic implied floor),
+          and XR-Pulse (normalized event feed combining public-source news + on-chain whale activity). All three expose
+          <code class="font-mono text-white">/agents.json</code>, <code class="font-mono text-white">/.well-known/agents.json</code>, and
+          <code class="font-mono text-white">/llms.txt</code> for agent discovery, settle through the
+          <a href="https://xrpl-facilitator-mainnet.t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54 x402 facilitator</a>
+          on XRPL mainnet, accept XRP or RLUSD, and ship with verify-then-work-then-settle payment finality.
+        </p>
+      </article>
+
+    </div>
+  </section>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/manifest/"  class="text-muted hover:text-white transition">Manifest</a></li>
+            <li><a href="/changelog/" class="text-muted hover:text-white transition">Changelog</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function setupMobileNav() {
+      const openBtn  = document.getElementById('nav-open');
+      const closeBtn = document.getElementById('nav-close');
+      const overlay  = document.getElementById('mobile-nav');
+      if (!openBtn || !closeBtn || !overlay) return;
+      const open  = () => { overlay.style.display = 'flex'; openBtn.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; };
+      const close = () => { overlay.style.display = 'none'; openBtn.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; };
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      overlay.querySelectorAll('a[href]').forEach(a => a.addEventListener('click', close));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display !== 'none') close(); });
+      window.addEventListener('resize', () => { if (window.innerWidth >= 768) close(); });
+    })();
+  </script>
+
+</body>
+</html>

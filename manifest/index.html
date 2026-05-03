@@ -95,25 +95,40 @@
       <div>
         <h2 class="text-2xl font-bold mb-4">XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
         <div id="content-sentinel" class="space-y-6">
+          <!--
+            Static fallback rendered from a snapshot of the live agents.json
+            (refreshed manually; live URL canonical). Visible to crawlers,
+            screenshot tools, and any visitor with JS disabled or blocked.
+            JS still runs loadOne() below and replaces this block in place
+            with the richer live render.
+          -->
           <section class="bg-panel border border-border rounded-2xl p-8">
-            <div class="h-3 bg-border rounded animate-pulse w-16 mb-3"></div>
-            <div class="h-6 bg-border rounded animate-pulse w-48 mb-4"></div>
-            <div class="space-y-2">
-              <div class="h-3 bg-border rounded animate-pulse w-full"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-11/12"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-3/4"></div>
-            </div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
+            <h3 class="text-xl font-bold mb-3">XR-Sentinel</h3>
+            <p class="text-white text-sm leading-relaxed mb-3">AI-assisted behavioral pattern classifier for XRP Ledger wallets. Describes how automated and service-like a wallet's recent activity appears. Not a risk, compliance, or sanctions service.</p>
+            <p class="text-xs text-muted">Schema 2026-05 · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://sentinel.xrpl-utilities.io</span></p>
           </section>
           <section class="bg-panel border border-border rounded-2xl p-8">
-            <div class="h-6 bg-border rounded animate-pulse w-40 mb-4"></div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3">
-              <div class="h-3 bg-border rounded animate-pulse w-24"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-full"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-20"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-2/3"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-28"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-3/4"></div>
-            </div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2</div>
+            <h3 class="text-xl font-bold mb-3">Payment</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">price</dt><dd class="sm:col-span-2">$0.10 USD per scan</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">currencies</dt><dd class="sm:col-span-2">XRP or RLUSD</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">recipient</dt><dd class="sm:col-span-2 font-mono break-all">rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">facilitator</dt><dd class="sm:col-span-2 font-mono break-all">https://xrpl-facilitator-mainnet.t54.ai</dd>
+            </dl>
+          </section>
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <h3 class="text-xl font-bold mb-3">Endpoints</h3>
+            <ul class="space-y-2 text-sm font-mono">
+              <li><span class="text-muted">scan</span> &nbsp; /scan</li>
+              <li><span class="text-muted">scan_history</span> &nbsp; /scan/history</li>
+              <li><span class="text-muted">bulk_quote</span> &nbsp; /bulk/quote</li>
+              <li><span class="text-muted">bulk_results</span> &nbsp; /bulk/results/{invoice_id}</li>
+              <li><span class="text-muted">schema</span> &nbsp; /schema</li>
+              <li><span class="text-muted">manifest</span> &nbsp; /agents.json</li>
+              <li><span class="text-muted">health</span> &nbsp; /healthz</li>
+            </ul>
           </section>
         </div>
       </div>
@@ -121,24 +136,32 @@
         <h2 class="text-2xl font-bold mb-4">XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
         <div id="content-telemetry" class="space-y-6">
           <section class="bg-panel border border-border rounded-2xl p-8">
-            <div class="h-3 bg-border rounded animate-pulse w-16 mb-3"></div>
-            <div class="h-6 bg-border rounded animate-pulse w-48 mb-4"></div>
-            <div class="space-y-2">
-              <div class="h-3 bg-border rounded animate-pulse w-full"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-11/12"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-3/4"></div>
-            </div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
+            <h3 class="text-xl font-bold mb-3">XR-Telemetry</h3>
+            <p class="text-white text-sm leading-relaxed mb-3">Agent-payable XRPL macro telemetry. Returns a network snapshot: supply, per-region liquidity flows, AMM pool depth and APR, and an algebraic implied price-floor derived from assumed institutional settlement volume and velocity.</p>
+            <p class="text-xs text-muted">Schema 1.1.0 · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://telemetry.xrpl-utilities.io</span></p>
           </section>
           <section class="bg-panel border border-border rounded-2xl p-8">
-            <div class="h-6 bg-border rounded animate-pulse w-40 mb-4"></div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3">
-              <div class="h-3 bg-border rounded animate-pulse w-24"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-full"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-20"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-2/3"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-28"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-3/4"></div>
-            </div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2 + invoice flow</div>
+            <h3 class="text-xl font-bold mb-3">Payment</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">price</dt><dd class="sm:col-span-2">$0.10 USD per snapshot</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">currencies</dt><dd class="sm:col-span-2">XRP or RLUSD</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">recipient</dt><dd class="sm:col-span-2 font-mono break-all">rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">facilitator</dt><dd class="sm:col-span-2 font-mono break-all">https://xrpl-facilitator-mainnet.t54.ai</dd>
+            </dl>
+          </section>
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <h3 class="text-xl font-bold mb-3">Endpoints</h3>
+            <ul class="space-y-2 text-sm font-mono">
+              <li><span class="text-muted">scan (x402)</span> &nbsp; /scan</li>
+              <li><span class="text-muted">quote (invoice)</span> &nbsp; /quote</li>
+              <li><span class="text-muted">status</span> &nbsp; /status/{invoice_id}</li>
+              <li><span class="text-muted">results</span> &nbsp; /results/{invoice_id}</li>
+              <li><span class="text-muted">schema</span> &nbsp; /schema</li>
+              <li><span class="text-muted">manifest</span> &nbsp; /agents.json</li>
+              <li><span class="text-muted">health</span> &nbsp; /healthz</li>
+            </ul>
           </section>
         </div>
       </div>
@@ -146,24 +169,30 @@
         <h2 class="text-2xl font-bold mb-4">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
         <div id="content-pulse" class="space-y-6">
           <section class="bg-panel border border-border rounded-2xl p-8">
-            <div class="h-3 bg-border rounded animate-pulse w-16 mb-3"></div>
-            <div class="h-6 bg-border rounded animate-pulse w-48 mb-4"></div>
-            <div class="space-y-2">
-              <div class="h-3 bg-border rounded animate-pulse w-full"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-11/12"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-3/4"></div>
-            </div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
+            <h3 class="text-xl font-bold mb-3">XR-Pulse</h3>
+            <p class="text-white text-sm leading-relaxed mb-3">Normalized event feed for XRPL agents. One time-ordered stream combining public-source news (regulatory press, central banks, crypto-press coverage of Ripple/XRP/RLUSD/XRPL) and on-chain whale activity (every successful XRPL Payment above the storage threshold). Mechanical cross-verification + 4h price-window correlation; institutional-watchlist labels on every whale.</p>
+            <p class="text-xs text-muted">Schema 1.8.0 · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://pulse.xrpl-utilities.io</span></p>
           </section>
           <section class="bg-panel border border-border rounded-2xl p-8">
-            <div class="h-6 bg-border rounded animate-pulse w-40 mb-4"></div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3">
-              <div class="h-3 bg-border rounded animate-pulse w-24"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-full"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-20"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-2/3"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-28"></div>
-              <div class="h-3 bg-border rounded animate-pulse sm:col-span-2 w-3/4"></div>
-            </div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2</div>
+            <h3 class="text-xl font-bold mb-3">Payment</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">price</dt><dd class="sm:col-span-2">$0.10 USD per query</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">currencies</dt><dd class="sm:col-span-2">XRP or RLUSD</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">recipient</dt><dd class="sm:col-span-2">resolved per-invoice via the t54 facilitator</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">facilitator</dt><dd class="sm:col-span-2 font-mono break-all">https://xrpl-facilitator-mainnet.t54.ai</dd>
+            </dl>
+          </section>
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <h3 class="text-xl font-bold mb-3">Endpoints</h3>
+            <ul class="space-y-2 text-sm font-mono">
+              <li><span class="text-muted">events_recent</span> &nbsp; /events/recent</li>
+              <li><span class="text-muted">schema</span> &nbsp; /schema</li>
+              <li><span class="text-muted">manifest</span> &nbsp; /agents.json</li>
+              <li><span class="text-muted">health</span> &nbsp; /healthz</li>
+              <li><span class="text-muted">stats</span> &nbsp; /stats</li>
+            </ul>
           </section>
         </div>
       </div>
@@ -192,6 +221,7 @@
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
           <ul class="space-y-3 text-sm">
             <li><a href="/manifest/" class="text-muted hover:text-white transition">Manifest</a></li>
+            <li><a href="/changelog/" class="text-muted hover:text-white transition">Changelog</a></li>
             <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
             <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
             <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
