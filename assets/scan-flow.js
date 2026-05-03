@@ -22,6 +22,21 @@
     return m[level] || 'badge-unknown';
   }
 
+  // Plain-English caption for the activity level so first-time readers
+  // see immediately that "High" is a behavioral classification, not a
+  // risk score. Vocabulary mirrors the long-form disclaimer at the
+  // bottom of /sentinel/.
+  function levelMeaning(level) {
+    const m = {
+      High:    'Bot / Exchange / AMM Cadence',
+      Medium:  'Active Wallet — Mixed Cadence',
+      Low:     'Occasional Retail-Pattern Activity',
+      Dormant: 'Inactive — No Recent On-Chain Activity',
+      Unknown: 'Insufficient Data to Classify',
+    };
+    return m[level] || '';
+  }
+
   function copyButton(text) {
     const btn = el('button', 'text-xs text-accent hover:underline', 'Copy');
     btn.type = 'button';
@@ -181,12 +196,18 @@
     head.appendChild(left);
 
     if (!isError) {
-      const right = el('div', 'flex items-center gap-3 shrink-0');
-      right.appendChild(el('span', 'border ' + levelBadgeClass(report.activity_level) + ' rounded-full px-3 py-1 text-xs font-semibold', report.activity_level));
+      const right = el('div', 'flex flex-col items-end gap-1 shrink-0');
+      const rightTop = el('div', 'flex items-center gap-3');
+      rightTop.appendChild(el('span', 'border ' + levelBadgeClass(report.activity_level) + ' rounded-full px-3 py-1 text-xs font-semibold', report.activity_level));
       const score = el('span', 'text-2xl font-bold', String(report.activity_score));
       const scoreSuffix = el('span', 'text-muted text-sm', '/100');
       score.appendChild(scoreSuffix);
-      right.appendChild(score);
+      rightTop.appendChild(score);
+      right.appendChild(rightTop);
+      const meaning = levelMeaning(report.activity_level);
+      if (meaning) {
+        right.appendChild(el('div', 'text-xs text-muted text-right max-w-[200px] leading-snug', meaning));
+      }
       head.appendChild(right);
     } else {
       head.appendChild(el('span', 'text-xs uppercase tracking-wider text-red-400', report.error));
@@ -291,6 +312,15 @@
     if (report.reasoning) {
       card.appendChild(el('div', 'text-xs text-muted uppercase tracking-wider mb-2', 'Reasoning'));
       card.appendChild(el('p', 'text-white text-sm leading-relaxed', report.reasoning));
+    }
+    // Optional second narrative block, only present when the target wallet
+    // is a token issuer (Sentinel schema 2.5.0+). Sourced exclusively from
+    // on-chain account_info + gateway_balances + the XRPScan domain - no
+    // off-ledger context. Rendered with a margin-top so it visually pairs
+    // with Reasoning rather than blending into it.
+    if (report.issuer_profile) {
+      card.appendChild(el('div', 'text-xs text-muted uppercase tracking-wider mb-2 mt-4', 'Issuer profile'));
+      card.appendChild(el('p', 'text-white text-sm leading-relaxed', report.issuer_profile));
     }
     return card;
   }
