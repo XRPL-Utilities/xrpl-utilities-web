@@ -139,7 +139,7 @@
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        News from official RSS only &middot; on-chain from validated XRPL ledgers &middot; deterministic heuristic data only
+        News from official RSS only &middot; on-chain from validated XRPL ledgers &middot; no editorial scoring
       </div>
     </div>
   </section>
@@ -283,7 +283,7 @@ feed = session.post(
       <ul class="space-y-3 text-muted leading-relaxed">
         <li><code class="font-mono text-white">events</code>: array of normalized records, newest-first; mixes news and whale events in one stream</li>
         <li><code class="font-mono text-white">events[].title</code>, <code class="font-mono text-white">primary_url</code>, <code class="font-mono text-white">brief</code>, <code class="font-mono text-white">published_at</code> (UNIX seconds)</li>
-        <li><code class="font-mono text-white">events[].source_appearances</code>: which feed produced the event &mdash; news sources (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>, <code class="font-mono text-white">bank_of_japan</code>) or <code class="font-mono text-white">whale_xrpl</code> for on-chain</li>
+        <li><code class="font-mono text-white">events[].source_appearances</code>: which feed produced the event. One of the news sources (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>, <code class="font-mono text-white">bank_of_japan</code>) or <code class="font-mono text-white">whale_xrpl</code> for on-chain.</li>
         <li><code class="font-mono text-white">events[].appearance_count</code>: how many sources independently reported the same news; <code class="font-mono text-white">cross_verified</code> set when 2+ within a 48-hour window. Whale events are always 1 (single-source by design)</li>
         <li><code class="font-mono text-white">events[].correlation</code> (news only): XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim</li>
         <li><code class="font-mono text-white">events[].active_utility</code> shape varies by source. News: <code class="font-mono text-white">{active, signals[]}</code> covering cross-verification, on-chain activity, watchlist hits. Whale (<code class="font-mono text-white">whale_xrpl</code>): <code class="font-mono text-white">{signal: 'whale_transfer', currency, usd_value, sender_address, sender_label, receiver_address, receiver_label, ledger_index, tx_hash, amount_display, xrp_spot_at_emit}</code></li>
@@ -362,7 +362,7 @@ feed = session.post(
     <div class="max-w-4xl mx-auto px-6 py-12">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Safe harbor &amp; compliance</h2>
       <p class="text-muted leading-relaxed text-sm">
-        XR-Pulse is a deterministic event feed, not an editorial product. Source presence is reported as a property of an event, not a verdict on the source. Correlation against XR-Telemetry is a measurement, not a causal claim.
+        XR-Pulse is a measurement-only event feed, not an editorial product. Source presence is reported as a property of an event, not a verdict on the source. Correlation against XR-Telemetry is a measurement, not a causal claim.
       </p>
       <p class="text-muted leading-relaxed text-sm mt-4">
         Users are responsible for ensuring their use complies with local digital asset and AI regulations, including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
@@ -411,7 +411,7 @@ feed = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>
