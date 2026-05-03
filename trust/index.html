@@ -111,7 +111,7 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
       <p class="text-xl text-muted">XRPL Permissioned Domain Watcher</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        XR-Trust watches the validated XRPL ledger for PermissionedDomain objects (XLS-80). The XRPL permissioning stack activated on mainnet in February 2026 and institutional adopters are still in private testing. The moment a domain publishes on mainnet it appears here with owner address, accepted credentials, and credential issuers. No editorial filter. No scoring. No endorsement.
+        XR-Trust watches the validated XRPL ledger for PermissionedDomain objects (XLS-80). Mainnet has its first such objects as of May 2026; most look like experimenters or bots and the institutional pilots widely speculated about appear to still be in private testing. The directory below shows what's on-ledger today and updates as new domains publish. No editorial filter. No scoring. No endorsement.
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
@@ -464,12 +464,20 @@ record = session.post(
       if (html) e.innerHTML = value; else e.textContent = value;
     }
 
-    function statusPill(status) {
+    function statusPill(status, hasData) {
+      // Treat "complete" or "any error_*/timeout/truncated WITH rows>0" as
+      // partial-success — yellow, not red. Pure error states (no data
+      // surfaced) stay red. Avoids alarming the reader when the warmer
+      // surfaced real domains but the upstream timed out at the very end
+      // of the walk (the "error_502 with 4 domains found" case).
+      const isPartialSuccess = hasData && status && status !== 'complete' && status !== 'warming';
       const cls = status === 'complete' ? 'status-complete'
                 : status === 'warming'  ? 'status-warming'
+                : isPartialSuccess      ? 'status-warming'
                 : 'status-error';
       const label = status === 'complete' ? '✓ complete'
                   : status === 'warming'  ? '◴ warming'
+                  : isPartialSuccess      ? '⚠ partial'
                   : '⚠ ' + (status || 'error');
       return `<span class="${cls} border rounded-full px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5">${escapeHtml(label)}</span>`;
     }
@@ -662,7 +670,8 @@ record = session.post(
         const s = await r.json();
         const w = s.warmer || {};
         const cache = s.caches || {};
-        setStat('stat-status', statusPill(w.status || 'warming'), true);
+        const hasData = (cache.domains_list_size || 0) > 0;
+        setStat('stat-status', statusPill(w.status || 'warming', hasData), true);
         setStat('stat-refresh', fmtAge(w.age_since_completed_s));
       } catch (e) { /* non-fatal */ }
     }
@@ -699,9 +708,10 @@ record = session.post(
         setStat('stat-domains', String(total));
         setStat('stat-issuers', String(_allIssuers.length));
         if (ws === 'warming') {
-          status.innerHTML = 'Indexer ' + statusPill('warming') + ' &middot; first walk in progress, check back shortly.';
+          status.innerHTML = 'Indexer ' + statusPill('warming', false) + ' &middot; first walk in progress, check back shortly.';
         } else {
-          status.textContent = total + (total === 1 ? ' domain' : ' domains') + ' on validated ledger · indexer ' + ws;
+          const totalLabel = total + (total === 1 ? ' domain' : ' domains') + ' on validated ledger';
+          status.innerHTML = totalLabel + ' &middot; indexer ' + statusPill(ws, total > 0);
         }
         renderTable(target, _allDomains, ws);
       } catch (e) {
