@@ -44,6 +44,7 @@
         <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
         <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
         <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
       </nav>
       <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -72,6 +73,7 @@
       <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
       <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
       <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
     </nav>
     <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
@@ -196,6 +198,39 @@
           </section>
         </div>
       </div>
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
+        <div id="content-trust" class="space-y-6">
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
+            <h3 class="text-xl font-bold mb-3">XR-Trust</h3>
+            <p class="text-white text-sm leading-relaxed mb-3">Public directory + explorer for XRPL Permissioned Domains (XLS-80). Lists active domains, their accepted credentials, and credential issuers. Descriptive only; not a compliance verdict, certification, or endorsement of any domain or its members.</p>
+            <p class="text-xs text-muted">Schema 2026-05 · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://trust.xrpl-utilities.io</span></p>
+          </section>
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2</div>
+            <h3 class="text-xl font-bold mb-3">Payment</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">price</dt><dd class="sm:col-span-2">$0.10 USD per call</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">currencies</dt><dd class="sm:col-span-2">XRP</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">recipient</dt><dd class="sm:col-span-2 font-mono break-all">rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">facilitator</dt><dd class="sm:col-span-2 font-mono break-all">https://xrpl-facilitator-mainnet.t54.ai</dd>
+            </dl>
+          </section>
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <h3 class="text-xl font-bold mb-3">Endpoints</h3>
+            <ul class="space-y-2 text-sm font-mono">
+              <li><span class="text-muted">list_domains</span> &nbsp; /domains</li>
+              <li><span class="text-muted">domain_drilldown</span> &nbsp; /domain/{domain_id}</li>
+              <li><span class="text-muted">credential_issuers</span> &nbsp; /credentials/issuers</li>
+              <li><span class="text-muted">scan</span> &nbsp; /scan</li>
+              <li><span class="text-muted">schema</span> &nbsp; /schema</li>
+              <li><span class="text-muted">manifest</span> &nbsp; /agents.json</li>
+              <li><span class="text-muted">health</span> &nbsp; /healthz</li>
+            </ul>
+          </section>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -215,6 +250,7 @@
             <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
             <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
           </ul>
         </div>
         <div>
@@ -225,6 +261,7 @@
             <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
             <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
             <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
           </ul>
         </div>
         <div>
@@ -237,7 +274,7 @@
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
@@ -458,6 +495,7 @@
     loadOne("https://sentinel.xrpl-utilities.io/agents.json", "content-sentinel", "XR-Sentinel");
     loadOne("https://telemetry.xrpl-utilities.io/agents.json", "content-telemetry", "XR-Telemetry");
     loadOne("https://pulse.xrpl-utilities.io/agents.json", "content-pulse", "XR-Pulse");
+    loadOne("https://trust.xrpl-utilities.io/agents.json", "content-trust", "XR-Trust");
   </script>
 
 </body>

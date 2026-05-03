@@ -43,6 +43,7 @@
         <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
         <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
         <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
       </nav>
       <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -68,6 +69,7 @@
       <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
       <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
       <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
     </nav>
     <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
@@ -92,6 +94,23 @@
 
   <section>
     <div class="max-w-3xl mx-auto px-6 pb-24 space-y-8">
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-03</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Trust · v1 · 2026-05</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">XR-Trust v1 launched: public directory for XRPL Permissioned Domains</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          Fourth pillar of the XR-* portfolio. <code class="font-mono text-white">trust.xrpl-utilities.io</code> serves a public directory and explorer for XRPL
+          Permissioned Domains (XLS-80, mainnet-active since February 2026): list every active domain on the validated ledger, see what credentials each accepts,
+          aggregate credential issuers across domains, and drill down by <code class="font-mono text-white">domain_id</code> or <code class="font-mono text-white">owner_address</code>.
+          New <code class="font-mono text-white">/trust/</code> directory page on the .com with search, issuer filter, JSON download, empty-state copy that handles
+          the early-adoption phase honestly. Free for the marketing-site origin; $0.10 per call via x402 for agents.
+          v1 is intentionally minimal &mdash; member-count estimation, self-attested domain ownership (T.7), Sentinel/Telemetry/Pulse cross-references, and Pulse's
+          <code class="font-mono text-white">permissioned_domain_lifecycle</code> event source are deferred to v2. Schema 2026-05.
+        </p>
+      </article>
 
       <article class="bg-panel border border-border rounded-2xl p-8">
         <div class="flex flex-wrap items-center gap-3 mb-3">
@@ -229,6 +248,7 @@
             <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
             <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
           </ul>
         </div>
         <div>
@@ -239,6 +259,7 @@
             <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
             <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
             <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
           </ul>
         </div>
         <div>
@@ -251,7 +272,7 @@
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>

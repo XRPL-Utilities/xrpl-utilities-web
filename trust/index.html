@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XR-Trust | Permissioned Domain Directory</title>
+  <meta name="description" content="Public directory and explorer for XRPL Permissioned Domains (XLS-80). Lists active domains, their accepted credentials, and credential issuers. Descriptive only; not a compliance verdict." />
+  <meta property="og:title" content="XR-Trust | XRPL Permissioned Domain Directory" />
+  <meta property="og:description" content="Directory + explorer for XRPL Permissioned Domains (XLS-80). Free on the web, $0.10 per query for agents over x402." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/trust/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc', good: '#22c55e' },
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
+      }},
+    };
+  </script>
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+    .skeleton-bar {
+      background: linear-gradient(90deg, rgba(38,38,38,0.6) 0%, rgba(64,64,64,0.9) 50%, rgba(38,38,38,0.6) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+      border-radius: 0.375rem;
+    }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-x-8 lg:gap-x-10 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="nav-link-active">Trust</a>
+      </nav>
+      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 nav-link-active">Trust</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+      <p class="text-xl text-muted">XRPL Permissioned Domain Directory</p>
+      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
+        Public directory and explorer for XRPL Permissioned Domains (XLS-80). Lists every active domain on the ledger, what credentials each one accepts, and which addresses issue those credentials. Descriptive only &mdash; this is not a compliance verdict, certification, or endorsement of any domain or its members.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-5xl mx-auto px-6 pb-12">
+      <div class="bg-panel border border-border rounded-2xl p-6">
+        <div class="grid gap-3 sm:grid-cols-3 mb-4">
+          <input id="q-search" type="text" placeholder="Search by domain_id, owner address, or owner label" class="sm:col-span-2 bg-ink border border-border rounded-lg px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-accent" />
+          <select id="q-issuer" class="bg-ink border border-border rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent">
+            <option value="">All credential issuers</option>
+          </select>
+        </div>
+        <div class="flex items-center justify-between gap-3 text-xs text-muted">
+          <div id="q-status">Loading directory&hellip;</div>
+          <div class="flex gap-2">
+            <button id="dl-json" class="border border-border hover:border-accent text-white px-3 py-2 rounded-lg transition" type="button">Download JSON</button>
+            <button id="refresh" class="border border-border hover:border-accent text-white px-3 py-2 rounded-lg transition" type="button">Refresh</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-5xl mx-auto px-6 pb-24">
+      <div id="results" class="bg-panel border border-border rounded-2xl overflow-hidden">
+        <div class="p-8 space-y-3">
+          <div class="skeleton-bar h-4 w-3/4"></div>
+          <div class="skeleton-bar h-3 w-1/2"></div>
+          <div class="skeleton-bar h-3 w-2/3"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-3xl mx-auto px-6 pb-24">
+      <div class="bg-panel border border-border rounded-2xl p-8">
+        <h2 class="text-2xl font-bold mb-4">For agents</h2>
+        <p class="text-muted leading-relaxed mb-4">
+          Same directory + drill-down available as a paid <code class="font-mono text-white text-sm">x402</code> API at
+          <code class="font-mono text-white text-sm">trust.xrpl-utilities.io</code>. $0.10 per query, XRP via the
+          <a href="https://xrpl-facilitator-mainnet.t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54 facilitator</a>.
+          Free from this origin.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI</a>
+          <a href="https://trust.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec</a>
+          <a href="https://trust.xrpl-utilities.io/agents.json"   target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json</a>
+          <a href="https://trust.xrpl-utilities.io/schema"       target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">/schema</a>
+          <a href="/manifest/" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">All manifests</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/manifest/"  class="text-muted hover:text-white transition">Manifest</a></li>
+            <li><a href="/changelog/" class="text-muted hover:text-white transition">Changelog</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment, legal, or compliance advice. XR-Trust does not certify, endorse, or assess the legitimacy of any permissioned domain, owner, credential issuer, or member. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function setupMobileNav() {
+      const openBtn  = document.getElementById('nav-open');
+      const closeBtn = document.getElementById('nav-close');
+      const overlay  = document.getElementById('mobile-nav');
+      if (!openBtn || !closeBtn || !overlay) return;
+      const open  = () => { overlay.style.display = 'flex'; openBtn.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; };
+      const close = () => { overlay.style.display = 'none'; openBtn.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; };
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      overlay.querySelectorAll('a[href]').forEach(a => a.addEventListener('click', close));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display !== 'none') close(); });
+      window.addEventListener('resize', () => { if (window.innerWidth >= 768) close(); });
+    })();
+  </script>
+
+  <script>
+    // ----- Trust directory client -----
+    const API_BASE = 'https://trust.xrpl-utilities.io';
+
+    function el(tag, cls, text) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text != null) e.textContent = text;
+      return e;
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[c]);
+    }
+
+    function shorten(addr) {
+      if (!addr) return '';
+      if (addr.length <= 14) return addr;
+      return addr.slice(0, 8) + '…' + addr.slice(-4);
+    }
+
+    let _allDomains = [];
+    let _allIssuers = [];
+    let _lastResponse = null;
+
+    function renderEmpty(target) {
+      target.innerHTML = '';
+      const wrap = el('div', 'p-12 text-center');
+      wrap.appendChild(el('div', 'text-2xl font-bold mb-3', 'No domains match your filter yet.'));
+      const p = el('p', 'text-muted leading-relaxed max-w-xl mx-auto text-sm');
+      p.innerHTML = 'The XRPL permissioning stack (XLS-80) activated in February 2026 &mdash; institutional adoption is in early days. Watch this directory grow as banks and asset managers configure their first domains.';
+      wrap.appendChild(p);
+      target.appendChild(wrap);
+    }
+
+    function renderError(target, msg) {
+      target.innerHTML = '';
+      const wrap = el('div', 'p-8');
+      wrap.appendChild(el('div', 'text-red-400 font-semibold mb-2', 'Couldn’t reach the directory'));
+      wrap.appendChild(el('div', 'text-muted text-sm leading-relaxed', msg));
+      target.appendChild(wrap);
+    }
+
+    function renderTable(target, rows) {
+      target.innerHTML = '';
+      if (!rows || rows.length === 0) {
+        renderEmpty(target);
+        return;
+      }
+      const tbl = el('table', 'w-full text-sm');
+      const thead = el('thead', 'text-xs uppercase tracking-wider text-muted border-b border-border');
+      const trh = el('tr');
+      ['Domain Owner', 'Domain ID', 'Accepted Credentials', 'Sequence', ''].forEach(h => {
+        trh.appendChild(el('th', 'text-left px-6 py-3 font-medium', h));
+      });
+      thead.appendChild(trh);
+      tbl.appendChild(thead);
+
+      const tbody = el('tbody', 'divide-y divide-border');
+      rows.forEach(d => {
+        const tr = el('tr', 'hover:bg-ink/50 transition');
+        const ownerCell = el('td', 'px-6 py-4');
+        const ownerLabel = (d.owner_label && d.owner_label.name) ? d.owner_label.name : null;
+        const ownerName = el('div', 'font-semibold text-white text-sm', ownerLabel || shorten(d.owner_address));
+        ownerCell.appendChild(ownerName);
+        if (d.owner_label && d.owner_label.domain) {
+          ownerCell.appendChild(el('div', 'text-xs text-muted font-mono', d.owner_label.domain));
+        }
+        if (ownerLabel) {
+          ownerCell.appendChild(el('div', 'text-xs text-muted font-mono', shorten(d.owner_address)));
+        }
+        tr.appendChild(ownerCell);
+
+        const idCell = el('td', 'px-6 py-4 font-mono text-xs text-muted', shorten(d.domain_id));
+        idCell.title = d.domain_id || '';
+        tr.appendChild(idCell);
+
+        const credCount = (d.accepted_credentials || []).length;
+        const credCell = el('td', 'px-6 py-4');
+        credCell.appendChild(el('div', 'text-sm font-semibold', String(credCount) + (credCount === 1 ? ' credential' : ' credentials')));
+        if (credCount > 0) {
+          const issuers = Array.from(new Set((d.accepted_credentials || []).map(c => c.issuer))).slice(0, 3);
+          credCell.appendChild(el('div', 'text-xs text-muted font-mono mt-1', issuers.map(shorten).join(', ') + (credCount > 3 ? ', …' : '')));
+        }
+        tr.appendChild(credCell);
+
+        tr.appendChild(el('td', 'px-6 py-4 text-xs text-muted', String(d.sequence || '-')));
+
+        const linkCell = el('td', 'px-6 py-4 text-right');
+        const link = el('a', 'text-accent hover:underline text-sm', 'Details →');
+        link.href = '#domain-' + (d.domain_id || '').slice(0, 12);
+        link.dataset.domainId = d.domain_id;
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          renderDetail(d);
+        });
+        linkCell.appendChild(link);
+        tr.appendChild(linkCell);
+
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody);
+      target.appendChild(tbl);
+    }
+
+    function renderDetail(d) {
+      const target = document.getElementById('results');
+      target.innerHTML = '';
+      const wrap = el('div', 'p-8');
+
+      const back = el('button', 'text-xs text-accent hover:underline mb-4', '← Back to directory');
+      back.type = 'button';
+      back.addEventListener('click', () => renderTable(target, applyFilters()));
+      wrap.appendChild(back);
+
+      const ownerLabel = (d.owner_label && d.owner_label.name) ? d.owner_label.name : null;
+      const head = el('div', 'mb-6 pb-4 border-b border-border');
+      head.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-1', 'Domain'));
+      head.appendChild(el('div', 'font-mono text-sm text-white break-all', d.domain_id));
+      wrap.appendChild(head);
+
+      const grid = el('div', 'grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4 mb-8');
+      function row(k, v) {
+        grid.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted sm:text-right', k));
+        const dd = el('div', 'sm:col-span-2 text-white text-sm break-all');
+        dd.textContent = v == null ? '—' : String(v);
+        grid.appendChild(dd);
+      }
+      row('Owner', ownerLabel ? (ownerLabel + ' (' + d.owner_address + ')') : d.owner_address);
+      if (d.owner_label && d.owner_label.domain) row('Owner domain', d.owner_label.domain);
+      if (d.owner_label && d.owner_label.verified) row('Owner verified', '✓ verified by XRPScan');
+      row('Sequence', d.sequence);
+      row('Owner node', d.owner_node);
+      row('Last txn', d.previous_txn_id);
+      row('Last txn ledger', d.previous_txn_lgr_seq);
+      row('Flags', d.flags);
+      wrap.appendChild(grid);
+
+      const credHead = el('div', 'mb-3');
+      credHead.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Accepted credentials'));
+      const credCount = (d.accepted_credentials || []).length;
+      credHead.appendChild(el('div', 'text-sm', String(credCount) + (credCount === 1 ? ' credential type accepted' : ' credential types accepted')));
+      wrap.appendChild(credHead);
+
+      if (credCount === 0) {
+        wrap.appendChild(el('div', 'text-xs text-muted', 'This domain accepts no credentials — it is configured but not yet active.'));
+      } else {
+        const list = el('div', 'space-y-2');
+        (d.accepted_credentials || []).forEach(c => {
+          const card = el('div', 'bg-ink border border-border rounded-lg p-3');
+          card.appendChild(el('div', 'text-xs text-muted mb-1', 'Issuer'));
+          card.appendChild(el('div', 'font-mono text-sm break-all', c.issuer));
+          card.appendChild(el('div', 'text-xs text-muted mt-2 mb-1', 'Credential type (hex)'));
+          card.appendChild(el('div', 'font-mono text-sm break-all', c.credential_type));
+          list.appendChild(card);
+        });
+        wrap.appendChild(list);
+      }
+
+      // Cross-link side panel
+      const xref = el('div', 'mt-8 pt-6 border-t border-border');
+      xref.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-3', 'Cross-reference'));
+      const xrefLink = el('a', 'inline-block border border-border hover:border-accent px-4 py-2 rounded-lg text-sm transition mr-2');
+      xrefLink.href = '/sentinel/?address=' + encodeURIComponent(d.owner_address);
+      xrefLink.target = '_blank';
+      xrefLink.rel = 'noopener noreferrer';
+      xrefLink.textContent = 'Owner’s Sentinel scan →';
+      xref.appendChild(xrefLink);
+      wrap.appendChild(xref);
+
+      target.appendChild(wrap);
+      window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+    }
+
+    function applyFilters() {
+      const q = (document.getElementById('q-search').value || '').trim().toLowerCase();
+      const issuerFilter = document.getElementById('q-issuer').value;
+      let rows = _allDomains;
+      if (q) {
+        rows = rows.filter(d => {
+          const id = (d.domain_id || '').toLowerCase();
+          const owner = (d.owner_address || '').toLowerCase();
+          const label = ((d.owner_label || {}).name || '').toLowerCase();
+          const dom = ((d.owner_label || {}).domain || '').toLowerCase();
+          return id.includes(q) || owner.includes(q) || label.includes(q) || dom.includes(q);
+        });
+      }
+      if (issuerFilter) {
+        rows = rows.filter(d => (d.accepted_credentials || []).some(c => c.issuer === issuerFilter));
+      }
+      return rows;
+    }
+
+    function rerender() {
+      renderTable(document.getElementById('results'), applyFilters());
+    }
+
+    async function loadDirectory() {
+      const target = document.getElementById('results');
+      const status = document.getElementById('q-status');
+      status.textContent = 'Loading directory…';
+      try {
+        const r = await fetch(API_BASE + '/domains?limit=200&offset=0');
+        if (!r.ok) {
+          renderError(target, 'The directory is temporarily unreachable. Try refreshing in a moment. (HTTP ' + r.status + ')');
+          status.textContent = 'Error.';
+          return;
+        }
+        _lastResponse = await r.json();
+        _allDomains = _lastResponse.domains || [];
+        // Populate issuer filter
+        const issuers = new Set();
+        _allDomains.forEach(d => (d.accepted_credentials || []).forEach(c => issuers.add(c.issuer)));
+        _allIssuers = Array.from(issuers).sort();
+        const sel = document.getElementById('q-issuer');
+        sel.innerHTML = '<option value="">All credential issuers</option>';
+        _allIssuers.forEach(i => {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = shorten(i);
+          opt.title = i;
+          sel.appendChild(opt);
+        });
+        const total = _lastResponse.total || _allDomains.length;
+        status.textContent = total + (total === 1 ? ' domain' : ' domains') + ' on validated ledger';
+        renderTable(target, _allDomains);
+      } catch (e) {
+        renderError(target, 'Couldn’t reach trust.xrpl-utilities.io. The service may not be live in your region or may be undergoing initial deployment. Try refreshing.');
+        status.textContent = 'Error.';
+      }
+    }
+
+    document.getElementById('q-search').addEventListener('input', rerender);
+    document.getElementById('q-issuer').addEventListener('change', rerender);
+    document.getElementById('refresh').addEventListener('click', loadDirectory);
+    document.getElementById('dl-json').addEventListener('click', () => {
+      if (!_lastResponse) return;
+      const blob = new Blob([JSON.stringify(_lastResponse, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'xr-trust-domains.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    loadDirectory();
+  </script>
+
+</body>
+</html>
