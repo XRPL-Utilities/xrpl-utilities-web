@@ -254,7 +254,8 @@ record = session.post(
         <li><code class="font-mono text-white">domains[].domain_id</code>: 64-hex LedgerIndex of the PermissionedDomain object (XLS-80)</li>
         <li><code class="font-mono text-white">domains[].owner_address</code>: XRPL classic address of the domain owner (the on-chain <code class="font-mono text-white">Owner</code> field)</li>
         <li><code class="font-mono text-white">domains[].owner_label</code>: XRPScan label for the owner when available, with shape <code class="font-mono text-white">{name, desc, domain, verified, twitter}</code>. <code class="font-mono text-white">null</code> when no label exists.</li>
-        <li><code class="font-mono text-white">domains[].accepted_credentials</code>: array of <code class="font-mono text-white">{issuer, credential_type}</code> the domain accepts; credential_type is hex-encoded per XLS-80</li>
+        <li><code class="font-mono text-white">domains[].accepted_credentials</code>: array of <code class="font-mono text-white">{issuer, credential_type, credential_type_decoded, issuer_label}</code> the domain accepts. <code class="font-mono text-white">credential_type</code> is the raw hex per XLS-80; <code class="font-mono text-white">credential_type_decoded</code> is best-effort hex→ASCII (e.g. <code class="font-mono text-white">"4B5943"</code> → <code class="font-mono text-white">"KYC"</code>), <code class="font-mono text-white">null</code> when bytes are not printable ASCII; <code class="font-mono text-white">issuer_label</code> is XRPScan's <code class="font-mono text-white">accountName</code> for the issuer when available (drill-down only — <code class="font-mono text-white">null</code> in <code class="font-mono text-white">/domains</code> list view).</li>
+        <li><code class="font-mono text-white">domain.lifecycle</code> (drill-down only): <code class="font-mono text-white">{created_at_iso, created_at_unix, created_ledger, created_tx_id, last_modified_at_iso, last_modified_at_unix, last_modified_ledger, last_modified_tx_id, modification_count, lifecycle_status}</code>. Derived by walking the on-chain meta chain backwards from <code class="font-mono text-white">PreviousTxnID</code> to the <code class="font-mono text-white">CreatedNode</code>. <code class="font-mono text-white">lifecycle_status</code> is one of <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">partial_history_truncated</code>, <code class="font-mono text-white">partial_history_error</code>, <code class="font-mono text-white">partial_history_chain_broken</code>, <code class="font-mono text-white">no_last_txn_id</code>.</li>
         <li><code class="font-mono text-white">domains[].sequence</code>, <code class="font-mono text-white">previous_txn_id</code>, <code class="font-mono text-white">previous_txn_lgr_seq</code>, <code class="font-mono text-white">flags</code>: full ledger-object metadata</li>
         <li><code class="font-mono text-white">walk_status</code>: one of <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">warming</code> (initial), <code class="font-mono text-white">truncated_total</code>, <code class="font-mono text-white">error_&lt;status&gt;</code>. Tells the caller whether the response carries a complete enumeration.</li>
         <li><code class="font-mono text-white">total</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">offset</code>, <code class="font-mono text-white">next_offset</code>: pagination envelope</li>
@@ -570,6 +571,23 @@ record = session.post(
 
     function renderDetail(d) {
       const target = document.getElementById('results');
+      // Render what we have from the list view immediately, then async-fetch
+      // /domain/{id} for the enriched record (lifecycle + per-credential
+      // issuer labels) and re-render in place when it lands.
+      _renderDetailPanel(target, d, /* enriched */ false);
+      window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+      if (!d.domain_id) return;
+      fetch(API_BASE + '/domain/' + encodeURIComponent(d.domain_id))
+        .then(r => r.ok ? r.json() : null)
+        .then(body => {
+          if (body && body.domain && body.domain.domain_id === d.domain_id) {
+            _renderDetailPanel(target, body.domain, /* enriched */ true);
+          }
+        })
+        .catch(() => { /* keep the list-view fallback render */ });
+    }
+
+    function _renderDetailPanel(target, d, enriched) {
       target.innerHTML = '';
       const wrap = el('div', 'p-8');
 
@@ -582,6 +600,9 @@ record = session.post(
       const head = el('div', 'mb-6 pb-4 border-b border-border');
       head.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-1', 'Domain'));
       head.appendChild(el('div', 'font-mono text-sm text-white break-all', d.domain_id));
+      if (!enriched) {
+        head.appendChild(el('div', 'text-xs text-muted mt-2', 'Loading lifecycle and issuer labels…'));
+      }
       wrap.appendChild(head);
 
       const grid = el('div', 'grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4 mb-8');
@@ -601,6 +622,32 @@ record = session.post(
       row('Flags', d.flags);
       wrap.appendChild(grid);
 
+      // Lifecycle block (drill-down only). Surfaces creation date,
+      // last-modified date, and modification count when available.
+      const lc = d.lifecycle;
+      if (lc && lc.lifecycle_status) {
+        const lcWrap = el('div', 'mb-8 pb-6 border-b border-border');
+        lcWrap.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-3', 'Lifecycle'));
+        const lcGrid = el('div', 'grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3');
+        function lcRow(k, v, sub) {
+          lcGrid.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted sm:text-right', k));
+          const dd = el('div', 'sm:col-span-2 text-white text-sm');
+          dd.textContent = v == null ? '—' : String(v);
+          if (sub) {
+            const s = el('div', 'text-xs text-muted font-mono mt-1 break-all');
+            s.textContent = sub;
+            dd.appendChild(s);
+          }
+          lcGrid.appendChild(dd);
+        }
+        lcRow('Created', formatTimeAgo(lc.created_at_unix, lc.created_at_iso), lc.created_tx_id);
+        lcRow('Last modified', formatTimeAgo(lc.last_modified_at_unix, lc.last_modified_at_iso), lc.last_modified_tx_id);
+        lcRow('Modifications', (lc.modification_count != null ? lc.modification_count : '—'),
+              'lifecycle_status: ' + lc.lifecycle_status);
+        lcWrap.appendChild(lcGrid);
+        wrap.appendChild(lcWrap);
+      }
+
       const credHead = el('div', 'mb-3');
       credHead.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Accepted credentials'));
       const credCount = (d.accepted_credentials || []).length;
@@ -615,8 +662,18 @@ record = session.post(
           const card = el('div', 'bg-ink border border-border rounded-lg p-3');
           card.appendChild(el('div', 'text-xs text-muted mb-1', 'Issuer'));
           card.appendChild(el('div', 'font-mono text-sm break-all', c.issuer));
-          card.appendChild(el('div', 'text-xs text-muted mt-2 mb-1', 'Credential type (hex)'));
-          card.appendChild(el('div', 'font-mono text-sm break-all', c.credential_type));
+          if (c.issuer_label && c.issuer_label.name) {
+            const lbl = el('div', 'text-xs text-accent mt-1', c.issuer_label.name);
+            if (c.issuer_label.verified) lbl.textContent += ' ✓';
+            card.appendChild(lbl);
+          }
+          card.appendChild(el('div', 'text-xs text-muted mt-2 mb-1', 'Credential type'));
+          if (c.credential_type_decoded) {
+            card.appendChild(el('div', 'text-sm text-white', c.credential_type_decoded));
+            card.appendChild(el('div', 'font-mono text-xs text-muted mt-0.5 break-all', c.credential_type));
+          } else {
+            card.appendChild(el('div', 'font-mono text-sm break-all', c.credential_type));
+          }
           list.appendChild(card);
         });
         wrap.appendChild(list);
@@ -633,7 +690,21 @@ record = session.post(
       wrap.appendChild(xref);
 
       target.appendChild(wrap);
-      window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+    }
+
+    function formatTimeAgo(unix, iso) {
+      if (unix == null) return iso || '—';
+      const now = Math.floor(Date.now() / 1000);
+      const delta = now - unix;
+      if (delta < 0) return iso;
+      let rel;
+      if (delta < 60) rel = delta + 's ago';
+      else if (delta < 3600) rel = Math.floor(delta / 60) + 'm ago';
+      else if (delta < 86400) rel = Math.floor(delta / 3600) + 'h ago';
+      else if (delta < 86400 * 30) rel = Math.floor(delta / 86400) + 'd ago';
+      else rel = Math.floor(delta / 86400) + 'd ago';
+      const d = iso ? iso.replace('T', ' ').replace('Z', ' UTC').slice(0, 19) : '';
+      return rel + (d ? ' (' + d + ')' : '');
     }
 
     function getCurrentWalkStatus() {
