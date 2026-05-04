@@ -169,15 +169,15 @@
   </section>
 
   <section id="feed">
-    <div class="max-w-6xl mx-auto px-6 pb-16">
-      <div class="bg-panel border border-border rounded-2xl p-6 md:p-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
         <div class="flex items-center justify-between gap-4 mb-6">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Live feed</h2>
           <button id="refresh-btn" class="text-xs text-muted hover:text-white transition">Refresh</button>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6">
-          <div>
+          <div class="min-w-0">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-xs uppercase tracking-[0.2em] text-accent font-semibold">News</h3>
               <span id="news-count" class="text-[10px] text-muted font-mono"></span>
@@ -193,7 +193,7 @@
               </div>
             </div>
           </div>
-          <div>
+          <div class="min-w-0">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-xs uppercase tracking-[0.2em] text-accent font-semibold">XRPL Activity</h3>
               <span id="activity-count" class="text-[10px] text-muted font-mono"></span>
@@ -546,11 +546,11 @@ feed = session.post(
         const receiverLabel = rl ? ` (${escapeHtml(rl)})` : '';
         const senderShort   = (whaleAU.sender_address   || '').slice(0, 10) + '…';
         const receiverShort = (whaleAU.receiver_address || '').slice(0, 10) + '…';
-        whaleBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+        whaleBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border break-words">
           <span class="text-white mr-2">On-chain transfer</span>
           ${escapeHtml(whaleAU.amount_display || '')} ·
-          <span class="font-mono">${escapeHtml(senderShort)}${senderLabel}</span> →
-          <span class="font-mono">${escapeHtml(receiverShort)}${receiverLabel}</span> ·
+          <span class="font-mono break-all">${escapeHtml(senderShort)}${senderLabel}</span> →
+          <span class="font-mono break-all">${escapeHtml(receiverShort)}${receiverLabel}</span> ·
           ledger ${escapeHtml(String(whaleAU.ledger_index || '?'))}
         </div>`;
 
@@ -712,11 +712,17 @@ feed = session.post(
       // makes the card feel cluttered, so suppress it on whale rows.
       const briefHtml = isWhale
         ? ''
-        : `<p class="text-sm text-muted leading-relaxed mb-3">${escapeHtml(e.brief)}</p>`;
+        : `<p class="text-sm text-muted leading-relaxed mb-3 break-words">${escapeHtml(e.brief)}</p>`;
+      // min-w-0 + break-words on the article and inner blocks: long
+      // monospace addresses and unbreakable URL strings would otherwise
+      // expand the card past the column on narrow viewports. The grid
+      // cell already has min-w-0 so the column is bounded; this just
+      // tells the article + its long-string children to wrap rather
+      // than grow horizontally.
       return `
-        <article class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition">
+        <article class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition min-w-0 overflow-hidden">
           <div class="flex items-start justify-between gap-3 mb-2">
-            <a href="${link}" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:text-accent transition leading-snug">${escapeHtml(titleText)}</a>
+            <a href="${link}" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:text-accent transition leading-snug break-words min-w-0">${escapeHtml(titleText)}</a>
             <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
           </div>
           ${briefHtml}
