@@ -860,7 +860,8 @@ feed = session.post(
     }
     loadStats();
 
-    const FEED_INITIAL = 6;
+    const FEED_INITIAL = 10;
+    const FEED_PAGE_INCREMENT = 10;
     // Two parallel column states. Each tracks its own slice of the same
     // underlying response so an expand on one side doesn't disturb the
     // other.
@@ -897,14 +898,18 @@ feed = session.post(
         return;
       }
       const slice = col.events.slice(0, col.shown);
-      const moreCount = col.events.length - col.shown;
-      const moreBtn = moreCount > 0
-        ? `<button id="${col.moreBtnId}" class="w-full bg-ink border border-border hover:border-accent text-sm text-muted hover:text-white transition rounded-lg p-3 mt-2">Show ${moreCount} more</button>`
+      const remaining = col.events.length - col.shown;
+      // Reveal up to FEED_PAGE_INCREMENT more per click; final click reveals
+      // whatever remains. Button label reflects exactly how many will appear
+      // on the next click so the user knows what they're getting.
+      const nextChunk = Math.min(remaining, FEED_PAGE_INCREMENT);
+      const moreBtn = remaining > 0
+        ? `<button id="${col.moreBtnId}" class="w-full bg-ink border border-border hover:border-accent text-sm text-muted hover:text-white transition rounded-lg p-3 mt-2">Show ${nextChunk} more${remaining > nextChunk ? ` (${remaining} total remaining)` : ''}</button>`
         : '';
       list.innerHTML = slice.map(renderEvent).join('') + moreBtn;
       const btn = document.getElementById(col.moreBtnId);
       if (btn) btn.addEventListener('click', () => {
-        col.shown = col.events.length;
+        col.shown = Math.min(col.events.length, col.shown + FEED_PAGE_INCREMENT);
         renderColumn(key);
       });
     }
