@@ -158,8 +158,8 @@
 
   <!-- LIVE DIRECTORY -->
   <section id="directory">
-    <div class="max-w-6xl mx-auto px-6 pb-16">
-      <div class="bg-panel border border-border rounded-2xl p-6 md:p-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
         <div class="flex items-center justify-between gap-4 mb-6">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Live directory</h2>
           <button id="refresh" class="text-xs text-muted hover:text-white transition" type="button">Refresh</button>
@@ -177,7 +177,7 @@
         </div>
 
         <div id="results" class="bg-ink border border-border rounded-lg overflow-hidden">
-          <div class="p-8 space-y-3">
+          <div class="p-4 sm:p-8 space-y-3">
             <div class="skeleton-bar h-4 w-3/4"></div>
             <div class="skeleton-bar h-3 w-1/2"></div>
             <div class="skeleton-bar h-3 w-2/3"></div>
@@ -497,7 +497,7 @@ record = session.post(
 
     function renderEmpty(target, walkStatus) {
       target.innerHTML = '';
-      const wrap = el('div', 'p-12 text-center');
+      const wrap = el('div', 'p-6 sm:p-12 text-center');
       if (walkStatus === 'warming') {
         const head = el('div', 'flex items-center justify-center gap-3 mb-3');
         head.innerHTML = '<span class="pulse-dot"></span><span class="text-2xl font-bold">Indexing the ledger</span>';
@@ -516,7 +516,7 @@ record = session.post(
 
     function renderError(target, msg) {
       target.innerHTML = '';
-      const wrap = el('div', 'p-8');
+      const wrap = el('div', 'p-4 sm:p-6 md:p-8');
       wrap.appendChild(el('div', 'text-red-400 font-semibold mb-2', 'Couldn’t reach the directory'));
       wrap.appendChild(el('div', 'text-muted text-sm leading-relaxed', msg));
       target.appendChild(wrap);
@@ -528,11 +528,25 @@ record = session.post(
         renderEmpty(target, walkStatus);
         return;
       }
-      const tbl = el('table', 'w-full text-sm');
+      // Wrap the table in an overflow-x-auto scroller so wide rows can
+      // pan horizontally on narrow screens instead of getting clipped
+      // by the rounded #results wrapper. On `<sm` we also drop the
+      // Domain ID and Sequence columns (least essential, most
+      // monospace-heavy) and tighten cell padding so the remaining
+      // three columns fit a 360px viewport without truncation.
+      const scroller = el('div', 'overflow-x-auto');
+      const tbl = el('table', 'w-full text-sm min-w-full');
       const thead = el('thead', 'text-xs uppercase tracking-wider text-muted border-b border-border');
       const trh = el('tr');
-      ['Domain Owner', 'Domain ID', 'Accepted Credentials', 'Sequence', ''].forEach(h => {
-        trh.appendChild(el('th', 'text-left px-6 py-3 font-medium', h));
+      const headers = [
+        { label: 'Domain Owner', cls: '' },
+        { label: 'Domain ID', cls: 'hidden md:table-cell' },
+        { label: 'Accepted Credentials', cls: '' },
+        { label: 'Sequence', cls: 'hidden md:table-cell' },
+        { label: '', cls: '' },
+      ];
+      headers.forEach(h => {
+        trh.appendChild(el('th', 'text-left px-3 sm:px-6 py-3 font-medium ' + h.cls, h.label));
       });
       thead.appendChild(trh);
       tbl.appendChild(thead);
@@ -541,27 +555,27 @@ record = session.post(
       rows.forEach(d => {
         const tr = el('tr', 'hover:bg-ink/40 transition');
 
-        const ownerCell = el('td', 'px-6 py-4');
+        const ownerCell = el('td', 'px-3 sm:px-6 py-4 align-top');
         const ownerLabel = (d.owner_label && d.owner_label.name) ? d.owner_label.name : null;
-        ownerCell.appendChild(el('div', 'font-semibold text-white text-sm', ownerLabel || shorten(d.owner_address)));
+        ownerCell.appendChild(el('div', 'font-semibold text-white text-sm break-words', ownerLabel || shorten(d.owner_address)));
         if (d.owner_label && d.owner_label.domain) {
-          ownerCell.appendChild(el('div', 'text-xs text-muted font-mono', d.owner_label.domain));
+          ownerCell.appendChild(el('div', 'text-xs text-muted font-mono break-all', d.owner_label.domain));
         }
         if (ownerLabel) {
           ownerCell.appendChild(el('div', 'text-xs text-muted font-mono', shorten(d.owner_address)));
         }
         tr.appendChild(ownerCell);
 
-        const idCell = el('td', 'px-6 py-4 font-mono text-xs text-muted', shorten(d.domain_id));
+        const idCell = el('td', 'px-3 sm:px-6 py-4 font-mono text-xs text-muted hidden md:table-cell', shorten(d.domain_id));
         idCell.title = d.domain_id || '';
         tr.appendChild(idCell);
 
         const credCount = (d.accepted_credentials || []).length;
-        const credCell = el('td', 'px-6 py-4');
+        const credCell = el('td', 'px-3 sm:px-6 py-4 align-top');
         credCell.appendChild(el('div', 'text-sm font-semibold', String(credCount) + (credCount === 1 ? ' credential' : ' credentials')));
         if (credCount > 0) {
           const issuers = Array.from(new Set((d.accepted_credentials || []).map(c => c.issuer))).slice(0, 3);
-          credCell.appendChild(el('div', 'text-xs text-muted font-mono mt-1', issuers.map(shorten).join(', ') + (credCount > 3 ? ', …' : '')));
+          credCell.appendChild(el('div', 'text-xs text-muted font-mono mt-1 break-all', issuers.map(shorten).join(', ') + (credCount > 3 ? ', …' : '')));
         }
         // Institutional-issuer badge: surfaces when the warmer found one or
         // more XRPScan-labeled credential issuers on this domain. Cheap
@@ -569,7 +583,7 @@ record = session.post(
         // stablecoin issuers / custodians / exchanges".
         const instCount = d.institutional_issuer_count || 0;
         if (instCount > 0) {
-          const inst = el('div', 'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border border-accent/40 text-accent text-xs');
+          const inst = el('div', 'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border border-accent/40 text-accent text-xs max-w-full break-words');
           const names = (d.institutional_issuers || []).slice(0, 3).join(' · ');
           const more = (d.institutional_issuers || []).length > 3 ? ' +' + ((d.institutional_issuers || []).length - 3) : '';
           inst.textContent = String(instCount) + ' institutional · ' + names + more;
@@ -578,10 +592,10 @@ record = session.post(
         }
         tr.appendChild(credCell);
 
-        tr.appendChild(el('td', 'px-6 py-4 text-xs text-muted', String(d.sequence || '—')));
+        tr.appendChild(el('td', 'px-3 sm:px-6 py-4 text-xs text-muted hidden md:table-cell', String(d.sequence || '—')));
 
-        const linkCell = el('td', 'px-6 py-4 text-right');
-        const link = el('a', 'text-accent hover:underline text-sm', 'Details →');
+        const linkCell = el('td', 'px-3 sm:px-6 py-4 text-right align-top');
+        const link = el('a', 'text-accent hover:underline text-sm whitespace-nowrap', 'Details →');
         link.href = '#domain-' + (d.domain_id || '').slice(0, 12);
         link.dataset.domainId = d.domain_id;
         link.addEventListener('click', (e) => { e.preventDefault(); renderDetail(d); });
@@ -591,7 +605,8 @@ record = session.post(
         tbody.appendChild(tr);
       });
       tbl.appendChild(tbody);
-      target.appendChild(tbl);
+      scroller.appendChild(tbl);
+      target.appendChild(scroller);
     }
 
     function renderDetail(d) {
@@ -614,7 +629,7 @@ record = session.post(
 
     function _renderDetailPanel(target, d, enriched) {
       target.innerHTML = '';
-      const wrap = el('div', 'p-8');
+      const wrap = el('div', 'p-4 sm:p-6 md:p-8');
 
       const back = el('button', 'text-xs text-accent hover:underline mb-4', '← Back to directory');
       back.type = 'button';
