@@ -109,13 +109,22 @@
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <img src="/assets/xr-trust.png" alt="XR-Trust" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" onerror="this.style.display='none'" />
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted">XRPL Permissioned Domain Watcher</p>
+      <p class="text-xl text-muted">Permissioned-XRPL directory + explorer</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        XR-Trust watches the validated XRPL ledger for PermissionedDomain objects (XLS-80). Mainnet has its first such objects as of May 2026; most look like experimenters or bots and the institutional pilots widely speculated about appear to still be in private testing. The directory below shows what's on-ledger today and updates as new domains publish. No editorial filter. No scoring. No endorsement.
+        XR-Trust indexes the validated XRPL ledger across the permissioned-XRPL stack:
+        domains (XLS-80), accepted credentials (XLS-70), permissioned DEX activity (XLS-81),
+        and on-chain DID records that publish off-chain operator identity (XLS-40).
+        Mainnet has its first named institutional venue actively running permissioned
+        offers, alongside a small set of experimenters and bots. The directory below
+        shows what's on-ledger today and updates as the network changes. No editorial
+        filter. No scoring. No endorsement.
       </p>
-      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
-        <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        Re-walks the validated XRPL ledger every 6h &middot; alerts the moment a domain goes live
+      <div class="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
+        <span class="inline-flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-accent"></span>Live XRPL subscribe captures lifecycle + DEX events in seconds</span>
+        <span>&middot;</span>
+        <span>5-min owner-state refresh</span>
+        <span>&middot;</span>
+        <span>24h discovery walk for new owners</span>
       </div>
     </div>
   </section>
