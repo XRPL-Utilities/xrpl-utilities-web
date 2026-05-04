@@ -97,6 +97,36 @@
 
       <article class="bg-panel border border-border rounded-2xl p-8">
         <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-04</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Trust · 2026-11 + Pulse · 1.10.0</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">XLS-81 (Permissioned DEX) trade indexing + DID identity bridge</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          A live probe of mainnet surfaced four active XLS-81 permissioned offers from one domain owner — selling XRP for Circle USDC, Ripple RLUSD,
+          and Quantoz EURQ. Same wallet runs an on-chain DID record pointing to a published <code class="font-mono text-white">.well-known/xrp-ledger.toml</code>
+          identifying the operator (org name + principal). Trust now indexes both signals.
+        </p>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          The streaming subscribe loop's filter expanded from XLS-70/80 lifecycle to ALSO capture <code class="font-mono text-white">OfferCreate</code>,
+          <code class="font-mono text-white">OfferCancel</code>, <code class="font-mono text-white">AMMCreate</code>, <code class="font-mono text-white">AMMDeposit</code>,
+          <code class="font-mono text-white">AMMWithdraw</code>, <code class="font-mono text-white">AMMVote</code>, <code class="font-mono text-white">AMMBid</code>, and
+          <code class="font-mono text-white">Payment</code> txs — gated on <code class="font-mono text-white">DomainID</code> presence so we only capture permissioned activity
+          (ordinary DEX traffic stays out of scope; whale_watcher already covers it).
+          New <code class="font-mono text-white">domain.permissioned_market</code> drill-down block enumerates owner-side offers/AMMs that target the domain.
+          New <code class="font-mono text-white">domain.identity</code> drill-down block decodes the owner's DID record and chases the
+          <code class="font-mono text-white">.well-known/xrp-ledger.toml</code> when the URI points at one — turning "anonymous wallet with credentials" into
+          "named operator with public profile" the moment the operator publishes one.
+        </p>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          XR-Pulse's permissioned-domain watcher recognizes the new XLS-81 tx types from Trust's <code class="font-mono text-white">/events</code>, splits
+          <code class="font-mono text-white">active_utility.signal</code> into <code class="font-mono text-white">permissioned_domain_lifecycle</code> (XLS-70/80) and
+          <code class="font-mono text-white">permissioned_dex_event</code> (XLS-81), and renders briefs with hex-decoded currency pairs
+          ("1 XRP → 1.6 RLUSD" instead of raw hex). Schema bumps: Trust 2026-10 → 2026-11, Pulse 1.9.0 → 1.10.0.
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
           <span class="font-mono text-xs text-muted">2026-05-03</span>
           <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Trust · 2026-09</span>
         </div>

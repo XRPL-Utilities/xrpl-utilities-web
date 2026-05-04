@@ -257,6 +257,8 @@ record = session.post(
         <li><code class="font-mono text-white">domains[].accepted_credentials</code>: array of <code class="font-mono text-white">{issuer, credential_type, credential_type_decoded, issuer_label}</code> the domain accepts. <code class="font-mono text-white">credential_type</code> is the raw hex per XLS-80; <code class="font-mono text-white">credential_type_decoded</code> is best-effort hex→ASCII (e.g. <code class="font-mono text-white">"4B5943"</code> → <code class="font-mono text-white">"KYC"</code>), <code class="font-mono text-white">null</code> when bytes are not printable ASCII; <code class="font-mono text-white">issuer_label</code> is XRPScan's <code class="font-mono text-white">accountName</code> for the issuer when available.</li>
         <li><code class="font-mono text-white">domains[].institutional_issuer_count</code> + <code class="font-mono text-white">domains[].institutional_issuers</code>: count and sorted unique display names of distinct, non-self, XRPScan-labeled credential issuers accepted by the domain. A cheap proxy for "domain accepts credentials from N recognized stablecoin issuers / custodians / exchanges". Available in both list view and drill-down.</li>
         <li><code class="font-mono text-white">domain.lifecycle</code> (drill-down only): <code class="font-mono text-white">{created_at_iso, created_at_unix, created_ledger, created_tx_id, last_modified_at_iso, last_modified_at_unix, last_modified_ledger, last_modified_tx_id, modification_count, lifecycle_status}</code>. Derived by walking the on-chain meta chain backwards from <code class="font-mono text-white">PreviousTxnID</code> to the <code class="font-mono text-white">CreatedNode</code>. <code class="font-mono text-white">lifecycle_status</code> is one of <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">partial_history_truncated</code>, <code class="font-mono text-white">partial_history_error</code>, <code class="font-mono text-white">partial_history_chain_broken</code>, <code class="font-mono text-white">no_last_txn_id</code>.</li>
+        <li><code class="font-mono text-white">domain.permissioned_market</code> (drill-down only): XLS-81 Permissioned DEX state. Shape <code class="font-mono text-white">{offer_count, amm_count, offers: [{sequence, taker_gets, taker_pays, flags, ledger_index}], amms: [{account, asset, asset2, ledger_index}], scope_note}</code>. v1 is owner-side only — enumerates permissioned offers and AMMs *the domain owner has placed* that target their own domain. Permissioned market objects placed by other accounts that reference this domain are not enumerated in v1.</li>
+        <li><code class="font-mono text-white">domain.identity</code> (drill-down only): off-chain identity bridge for the domain owner. Shape <code class="font-mono text-white">{uri, did_document, data, ledger_index, toml_source_url, toml_org_name, toml_org_url, toml_description, toml_principals: [{name, email, twitter}], toml_accounts_count}</code>. Derived from the owner's DID ledger object (XLS-40); when the URI points at a https <code class="font-mono text-white">.well-known/xrp-ledger.toml</code>, the canonical XRPL identity manifest is fetched and parsed (6h cached). <code class="font-mono text-white">null</code> when the owner has not published a DID record.</li>
         <li><code class="font-mono text-white">domains[].sequence</code>, <code class="font-mono text-white">previous_txn_id</code>, <code class="font-mono text-white">previous_txn_lgr_seq</code>, <code class="font-mono text-white">flags</code>: full ledger-object metadata</li>
         <li><code class="font-mono text-white">walk_status</code>: one of <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">warming</code> (initial), <code class="font-mono text-white">truncated_total</code>, <code class="font-mono text-white">error_&lt;status&gt;</code>. Tells the caller whether the response carries a complete enumeration.</li>
         <li><code class="font-mono text-white">total</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">offset</code>, <code class="font-mono text-white">next_offset</code>: pagination envelope</li>
@@ -673,6 +675,92 @@ record = session.post(
         wrap.appendChild(inst);
       }
 
+      // Identity block (DID + .well-known/xrp-ledger.toml). Surfaces the
+      // off-chain organization name + principal when the owner has
+      // published one. Strong "this address belongs to a real,
+      // self-identified operator" signal.
+      const ident = d.identity;
+      if (ident && (ident.toml_org_name || ident.uri)) {
+        const idBox = el('div', 'mb-6 p-4 bg-ink border border-accent/60 rounded-lg');
+        idBox.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent mb-2', 'Verified identity (XLS-40 DID + .well-known TOML)'));
+        if (ident.toml_org_name) {
+          const head = el('div', 'flex items-baseline gap-2 mb-1');
+          head.appendChild(el('div', 'text-base font-semibold text-white', ident.toml_org_name));
+          if (ident.toml_org_url) {
+            const a = el('a', 'text-xs text-accent hover:underline', ident.toml_org_url.replace(/^https?:\/\//, ''));
+            a.href = ident.toml_org_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+            head.appendChild(a);
+          }
+          idBox.appendChild(head);
+        }
+        if (ident.toml_description) {
+          idBox.appendChild(el('div', 'text-sm text-muted mb-2', ident.toml_description));
+        }
+        if ((ident.toml_principals || []).length) {
+          const pHead = el('div', 'text-xs uppercase tracking-wider text-muted mt-3 mb-1', 'Principals');
+          idBox.appendChild(pHead);
+          (ident.toml_principals || []).forEach(p => {
+            const row = el('div', 'text-sm text-white');
+            row.textContent = p.name || p.email || '(unknown)';
+            const meta = [];
+            if (p.email) meta.push(p.email);
+            if (p.twitter) meta.push('@' + p.twitter);
+            if (meta.length) {
+              const m = el('span', 'text-xs text-muted ml-2');
+              m.textContent = meta.join(' · ');
+              row.appendChild(m);
+            }
+            idBox.appendChild(row);
+          });
+        }
+        const footer = el('div', 'text-xs text-muted mt-3');
+        const parts = [];
+        if (ident.toml_source_url) {
+          parts.push('Source: ' + ident.toml_source_url.replace(/^https?:\/\//, ''));
+        } else if (ident.uri) {
+          parts.push('DID URI: ' + ident.uri);
+        }
+        if (ident.toml_accounts_count) {
+          parts.push(ident.toml_accounts_count + ' account' + (ident.toml_accounts_count === 1 ? '' : 's') + ' declared in TOML');
+        }
+        footer.textContent = parts.join(' · ');
+        idBox.appendChild(footer);
+        wrap.appendChild(idBox);
+      }
+
+      // Permissioned market block (XLS-81). Owner-side offers + AMMs
+      // that target this domain. v1 is owner-side only; whole-ledger
+      // enumeration of all permissioned market makers requires a full
+      // walk and is deferred.
+      const market = d.permissioned_market;
+      if (market && ((market.offer_count || 0) + (market.amm_count || 0) > 0)) {
+        const mBox = el('div', 'mb-6 p-4 bg-ink border border-accent/40 rounded-lg');
+        mBox.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent mb-2', 'Permissioned market activity (XLS-81)'));
+        const counts = el('div', 'text-sm text-white mb-2');
+        const cParts = [];
+        if (market.offer_count) cParts.push(market.offer_count + ' active offer' + (market.offer_count === 1 ? '' : 's'));
+        if (market.amm_count) cParts.push(market.amm_count + ' permissioned AMM' + (market.amm_count === 1 ? '' : 's'));
+        counts.textContent = cParts.join(' · ') + ' from this domain owner';
+        mBox.appendChild(counts);
+        // Render up to 6 individual offers
+        if ((market.offers || []).length) {
+          const list = el('div', 'space-y-1.5 mt-2');
+          (market.offers || []).slice(0, 6).forEach(o => {
+            const row = el('div', 'text-xs font-mono text-muted');
+            row.textContent = '#' + (o.sequence || '?') + ': ' + _formatXrplAmount(o.taker_gets) + ' → ' + _formatXrplAmount(o.taker_pays);
+            list.appendChild(row);
+          });
+          if ((market.offers || []).length > 6) {
+            list.appendChild(el('div', 'text-xs text-muted', '… and ' + ((market.offers || []).length - 6) + ' more'));
+          }
+          mBox.appendChild(list);
+        }
+        if (market.scope_note) {
+          mBox.appendChild(el('div', 'text-xs text-muted mt-3 italic', market.scope_note));
+        }
+        wrap.appendChild(mBox);
+      }
+
       const credHead = el('div', 'mb-3');
       credHead.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Accepted credentials'));
       const credCount = (d.accepted_credentials || []).length;
@@ -730,6 +818,33 @@ record = session.post(
       else rel = Math.floor(delta / 86400) + 'd ago';
       const d = iso ? iso.replace('T', ' ').replace('Z', ' UTC').slice(0, 19) : '';
       return rel + (d ? ' (' + d + ')' : '');
+    }
+
+    // Format an XRPL Amount field for compact display. String -> drops -> XRP;
+    // {currency, value, issuer} -> 'value CURRENCY' with hex-decoded currency.
+    function _formatXrplAmount(amt) {
+      if (amt == null) return '—';
+      if (typeof amt === 'string') {
+        const drops = parseInt(amt, 10);
+        if (!isNaN(drops)) return (drops / 1_000_000) + ' XRP';
+        return amt + ' drops';
+      }
+      if (typeof amt === 'object') {
+        let currency = amt.currency || '';
+        if (currency.length === 40) {
+          try {
+            const decoded = currency
+              .match(/.{1,2}/g)
+              .map(b => String.fromCharCode(parseInt(b, 16)))
+              .join('')
+              .replace(/\x00+$/, '')
+              .trim();
+            if (/^[\x20-\x7E]+$/.test(decoded)) currency = decoded;
+          } catch (e) { /* keep hex on error */ }
+        }
+        return (amt.value || '?') + ' ' + (currency || 'IOU');
+      }
+      return String(amt);
     }
 
     function getCurrentWalkStatus() {
