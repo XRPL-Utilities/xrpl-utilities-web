@@ -780,6 +780,24 @@ payload = requests.get(
     bmQ.addEventListener('input', recompute);
     bmV.addEventListener('input', recompute);
 
+    // Restore the DEFAULTS value if the user clears Q or V to empty (or
+    // to a non-positive number) and tabs/clicks away. Without this, an
+    // accidental backspace-to-clear during testing leaves the forecast
+    // stuck in the empty 'Enter a positive Q and V...' state, which
+    // reads like a broken section even though the page is healthy.
+    bmQ.addEventListener('blur', () => {
+      if (!bmQ.value || Number(bmQ.value) <= 0) {
+        bmQ.value = DEFAULTS.Q;
+        recompute();
+      }
+    });
+    bmV.addEventListener('blur', () => {
+      if (!bmV.value || Number(bmV.value) <= 0) {
+        bmV.value = DEFAULTS.V;
+        recompute();
+      }
+    });
+
     // ---- Predictive Floor Matrix ----
     const fmConstriction = document.getElementById('fm-constriction');
     const fmGrowth = document.getElementById('fm-growth');
