@@ -57,6 +57,40 @@
           "priceCurrency": "USD",
           "description": "Per-snapshot fee, payable in XRP via x402 protocol"
         }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/pulse/#app",
+        "name": "XR-Pulse",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP API)",
+        "description": "Normalized event feed for XRPL agents: public-source news, on-chain whale activity, and XLS-70/80/81 permissioned-domain + permissioned-DEX lifecycle in one time-ordered stream.",
+        "url": "https://xrpl-utilities.com/pulse/",
+        "image": "https://xrpl-utilities.com/assets/xr-pulse.png",
+        "publisher": { "@id": "https://xrpl-utilities.com/#org" },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.10",
+          "priceCurrency": "USD",
+          "description": "Per-query fee, payable in XRP or RLUSD via x402 protocol"
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/trust/#app",
+        "name": "XR-Trust",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP API)",
+        "description": "Public directory + explorer for XRPL Permissioned Domains (XLS-80) and Permissioned DEX activity (XLS-81). Lists active domains, accepted credentials, credential issuers, owner identity (DID + .well-known TOML), and permissioned market state.",
+        "url": "https://xrpl-utilities.com/trust/",
+        "image": "https://xrpl-utilities.com/assets/xr-trust.png",
+        "publisher": { "@id": "https://xrpl-utilities.com/#org" },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.10",
+          "priceCurrency": "USD",
+          "description": "Per-call fee, payable in XRP via x402 protocol; free until the directory has data"
+        }
       }
     ]
   }
@@ -184,7 +218,7 @@
         <h3 class="text-4xl font-bold">The portfolio</h3>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
         <a href="/sentinel/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
           <div class="flex items-center justify-between mb-4">
@@ -241,6 +275,25 @@
           </p>
           <div class="flex items-center justify-between text-sm">
             <span class="text-muted">Free on the web &middot; $0.10 per query for agents</span>
+            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
+          </div>
+        </a>
+
+        <a href="/trust/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
+              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
+            </div>
+            <img src="/assets/xr-trust.png" alt="" class="h-14 w-14 rounded-lg" />
+          </div>
+          <h4 class="text-2xl font-bold mb-3">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
+          <p class="text-white leading-relaxed mb-3 font-medium">Index the XRPL permissioned web.</p>
+          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
+            Public directory + explorer for PermissionedDomains (XLS-80) and Permissioned DEX activity (XLS-81). Surfaces accepted credentials, credential issuer identities, owner DID + TOML manifests, and live permissioned offers/AMMs. For agents discovering institutional venues on the XRP Ledger.
+          </p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-muted">Free on the web &middot; $0.10 per call for agents</span>
             <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
           </div>
         </a>
