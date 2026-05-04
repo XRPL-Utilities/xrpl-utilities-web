@@ -267,8 +267,8 @@
         <h2 class="text-xl font-bold mb-3">Scan history endpoint, _delta block, second-order signals</h2>
         <p class="text-white text-sm leading-relaxed mb-2">
           Schema 2.0.0 → 2.2.0. Sentinel gained 7 cheap feature signals plus the
-          <code class="font-mono text-white">issuer_summary</code> via <code class="font-mono text-white">gateway_balances</code>, an aiosqlite scan
-          recorder mounted on a fresh 50GB Railway volume at <code class="font-mono text-white">/data/sentinel.db</code>, a paid
+          <code class="font-mono text-white">issuer_summary</code> via <code class="font-mono text-white">gateway_balances</code>, a persistent
+          aiosqlite-backed scan recorder, a paid
           <code class="font-mono text-white">POST /scan/history</code> endpoint, an optional <code class="font-mono text-white">_delta</code> block
           on <code class="font-mono text-white">/scan</code> responses when a prior recorded scan exists, and three second-order signals
           (<span class="font-mono text-white">SCORE_TRAJECTORY_BOT_ONBOARDING</span>, <span class="font-mono text-white">CADENCE_TIGHTENING</span>,
