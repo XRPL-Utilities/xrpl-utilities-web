@@ -153,9 +153,31 @@
           <div id="af-value" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
           <div id="af-delta" class="text-sm mt-3 flex items-center gap-2"></div>
           <div class="text-xs text-muted mt-3">
-            10% of exchange-held XRP, plus all XRP locked in AMM pools, plus XRP resting on the XRPL DEX.
+            <span id="af-ratio-label">10%</span> of exchange-held XRP, plus all XRP locked in AMM pools, plus XRP resting on the XRPL DEX.
           </div>
         </div>
+      </div>
+
+      <!-- Sensitivity slider: lets the reader sweep the proxy ratio across
+           the empirically-defensible 5-15% band cited in burst_math.py.
+           Recomputes Active Float in JS using the raw components already
+           in the response (exchange_omnibus, amm_locked, dex_orderbook),
+           then cascades to the M tile + P calc in Burst Math below. -->
+      <div class="mt-6 bg-panel border border-border rounded-2xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 mb-3">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold">Active depth proxy ratio</div>
+          <div class="text-xs text-muted">Industry range 5–15% &middot; default 10%</div>
+        </div>
+        <div class="flex items-center gap-4">
+          <input id="af-ratio-slider" type="range" min="5" max="15" step="0.5" value="10"
+                 class="flex-1 accent-accent" aria-label="Active depth proxy ratio" />
+          <div class="font-mono text-2xl font-semibold text-accent w-20 text-right">
+            <span id="af-ratio-display">10.0</span>%
+          </div>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mt-3">
+          What fraction of custodial exchange holdings is genuinely posted on the book at any given moment, available to be hit by a market sweep within a few seconds. The midpoint (10%) is the default; the slider sweeps the empirically-defensible band so you can see how sensitive Active Float — and the Burst Math equilibrium price below — is to this assumption.
+        </p>
       </div>
 
       <div class="mt-6 bg-panel border border-border rounded-2xl p-6">
@@ -164,7 +186,7 @@
           When an exchange wallet holds 6.5B XRP, most of that is user balances backing trades and withdrawals, not depth a market sweep can hit inside a few seconds. Counting full exchange holdings as "available" overstates how much can clear in a settlement burst.
         </p>
         <p class="text-sm text-muted leading-relaxed">
-          Active Float applies a 10% multiplier on exchange holdings as an estimate of what's genuinely on the book at any moment, then adds XRP committed to AMM pools (always swappable inside a single ledger close) and XRP resting in the on-chain DEX. The paid <code class="font-mono text-white">/scan</code> response includes every input number and the multiplier so anyone receiving the data can recompute under their own assumptions.
+          Active Float applies an <span id="af-ratio-prose">10%</span> multiplier on exchange holdings as an estimate of what's genuinely on the book at any moment, then adds XRP committed to AMM pools (always swappable inside a single ledger close) and XRP resting in the on-chain DEX. The paid <code class="font-mono text-white">/scan</code> response includes every input number and the multiplier so anyone receiving the data can recompute under their own assumptions.
         </p>
       </div>
     </div>
@@ -197,7 +219,7 @@
           <div class="bg-ink border border-border rounded-lg p-4">
             <div class="text-xs text-muted uppercase tracking-wider mb-1">M &middot; Active Float (XRP)</div>
             <div id="bm-m" class="font-mono font-medium"></div>
-            <div class="text-xs text-muted mt-1">exchange omnibus &times; 10% + AMM-locked + DEX depth</div>
+            <div class="text-xs text-muted mt-1">exchange omnibus &times; <span id="bm-m-ratio">10%</span> + AMM-locked + DEX depth</div>
           </div>
           <div class="bg-ink border border-border rounded-lg p-4">
             <div class="text-xs text-muted uppercase tracking-wider mb-1">Formula</div>
@@ -225,7 +247,7 @@
         </div>
 
         <div class="mt-4 text-xs text-muted leading-relaxed text-center">
-          M = 10% of exchange-held XRP + XRP in AMM pools + XRP resting on the XRPL DEX.
+          M = <span class="bm-m-ratio-prose">10%</span> of exchange-held XRP + XRP in AMM pools + XRP resting on the XRPL DEX.
         </div>
       </div>
 
@@ -576,6 +598,14 @@ payload = requests.get(
       // the 1.5-2B range; ~14.4B exchange omnibus * 0.10 + ~0.2B AMM +
       // ~0.001B DEX = ~1.64B. /scan results overwrite this on success.
       available_liquid_supply:   1_644_000_000,
+      // Raw Active Float components. Stored separately so the slider
+      // below can recompute available_liquid_supply at any ratio in the
+      // 5-15% band without a backend round-trip. reanchorFromPayload
+      // overwrites these with the live values from /scan.
+      exchange_omnibus_xrp:     14_400_000_000,
+      amm_locked_xrp:              200_000_000,
+      dex_orderbook_depth_xrp:       1_000_000,
+      proxy_ratio:                        0.10,
       current_price_usd:                 1.37, // overwritten by /healthz on load
     };
     const DEFAULTS = { Q: 10_000_000_000, V: 6 }; // $10B settlement window, velocity 6
@@ -670,6 +700,53 @@ payload = requests.get(
     }
 
     populateActiveFloatCard();
+
+    // ---- Active Float proxy-ratio slider ----
+    // The 5-15% band is the empirically-defensible range for market-maker
+    // active orderbook depth as a fraction of custodial inventory (cited
+    // in burst_math.py). The slider lets a reader sweep that band and
+    // see the sensitivity downstream. M = (omnibus * ratio) + AMM + DEX,
+    // where the three components are pulled from the live /scan payload
+    // (or seeded from SNAPSHOT defaults until a live snapshot lands).
+    const afSlider = document.getElementById('af-ratio-slider');
+    const afRatioDisplay = document.getElementById('af-ratio-display');
+    const afRatioLabel = document.getElementById('af-ratio-label');
+    const afRatioProse = document.getElementById('af-ratio-prose');
+    const bmMRatio = document.getElementById('bm-m-ratio');
+    const bmMRatioProse = document.querySelectorAll('.bm-m-ratio-prose');
+
+    function fmtRatioPct(ratio) {
+      const pct = ratio * 100;
+      // Slider step is 0.5%, so one decimal is the meaningful precision.
+      // Keep the trailing zero on whole numbers so "10.0%" doesn't jump
+      // to "10%" mid-drag (small but visible alignment shift).
+      return pct.toFixed(1) + '%';
+    }
+
+    function applyActiveFloatRatio(ratio) {
+      SNAPSHOT.proxy_ratio = ratio;
+      const af = (SNAPSHOT.exchange_omnibus_xrp * ratio)
+               + SNAPSHOT.amm_locked_xrp
+               + SNAPSHOT.dex_orderbook_depth_xrp;
+      SNAPSHOT.available_liquid_supply = af;
+      if (afValueEl) afValueEl.textContent = fmtXrpCompactInline(af);
+      if (bmM) bmM.textContent = fmtXrp(af) + (ratio === 0.10 ? '' : ' (at ' + fmtRatioPct(ratio) + ')');
+      const pctText = fmtRatioPct(ratio);
+      if (afRatioDisplay) afRatioDisplay.textContent = (ratio * 100).toFixed(1);
+      if (afRatioLabel) afRatioLabel.textContent = pctText;
+      if (afRatioProse) afRatioProse.textContent = pctText;
+      if (bmMRatio) bmMRatio.textContent = pctText;
+      bmMRatioProse.forEach(el => { el.textContent = pctText; });
+      // Recompute the Burst Math equilibrium price: P = Q / (V * M).
+      recompute();
+    }
+
+    if (afSlider) {
+      afSlider.addEventListener('input', () => {
+        const ratio = Number(afSlider.value) / 100;
+        if (isFinite(ratio) && ratio > 0) applyActiveFloatRatio(ratio);
+      });
+    }
     // Skeleton placeholder until /healthz fetch lands the live oracle value.
     // Pulsing grey block sized to the eventual $1.3700 text so the tile has
     // visual weight on first paint instead of a hyphen and 'loading…' flash.
@@ -959,6 +1036,51 @@ payload = requests.get(
         setActiveFloatDelta(af.delta_24h_xrp, af.delta_24h_pct);
         bmM.textContent = fmtXrp(af.value_xrp) + ' (live)';
         touched = true;
+
+        // Extract the raw Active Float components from the bridge so the
+        // slider can recompute at any ratio without another /scan call.
+        // additions[] has three entries by contract: exchange-proxy
+        // (carries _components.exchange_omnibus_xrp + proxy_ratio),
+        // AMM-locked, DEX-orderbook. Match by label substring rather
+        // than index so ordering changes upstream don't silently break
+        // the slider.
+        if (typeof af.proxy_ratio === 'number' && af.proxy_ratio > 0) {
+          SNAPSHOT.proxy_ratio = af.proxy_ratio;
+        }
+        const additions = (af.mathematical_bridge || {}).additions || [];
+        for (const a of additions) {
+          const lbl = (a.label || '').toLowerCase();
+          const comps = a._components || {};
+          if (lbl.includes('omnibus') || lbl.includes('exchange')) {
+            if (typeof comps.exchange_omnibus_xrp === 'number') {
+              SNAPSHOT.exchange_omnibus_xrp = comps.exchange_omnibus_xrp;
+            }
+            if (typeof comps.proxy_ratio === 'number' && comps.proxy_ratio > 0) {
+              SNAPSHOT.proxy_ratio = comps.proxy_ratio;
+            }
+          } else if (lbl.includes('amm')) {
+            if (typeof a.value_xrp === 'number') {
+              SNAPSHOT.amm_locked_xrp = a.value_xrp;
+            }
+          } else if (lbl.includes('dex') || lbl.includes('orderbook')) {
+            if (typeof a.value_xrp === 'number') {
+              SNAPSHOT.dex_orderbook_depth_xrp = a.value_xrp;
+            }
+          }
+        }
+        // Snap the slider to the live ratio so the UI reads what the
+        // backend actually used; subsequent slider drags recompute from
+        // there.
+        if (afSlider) {
+          const livePct = Math.max(5, Math.min(15, SNAPSHOT.proxy_ratio * 100));
+          afSlider.value = livePct.toFixed(1);
+          if (afRatioDisplay) afRatioDisplay.textContent = livePct.toFixed(1);
+          const pctText = fmtRatioPct(SNAPSHOT.proxy_ratio);
+          if (afRatioLabel) afRatioLabel.textContent = pctText;
+          if (afRatioProse) afRatioProse.textContent = pctText;
+          if (bmMRatio) bmMRatio.textContent = pctText;
+          bmMRatioProse.forEach(el => { el.textContent = pctText; });
+        }
       }
       if (payload.supply && typeof payload.supply.circulating_xrp === 'number') {
         SNAPSHOT.circulating_supply_xrp = payload.supply.circulating_xrp;
