@@ -97,6 +97,34 @@
 
       <article class="bg-panel border border-border rounded-2xl p-8">
         <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="font-mono text-xs text-muted">2026-05-05</span>
+          <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">MCP · launch</span>
+        </div>
+        <h2 class="text-xl font-bold mb-3">XRPL-Utilities MCP server live: 11 tools across all four services</h2>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          The portfolio is now consumable via the
+          <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Model Context Protocol</a>.
+          A fifth service at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code> exposes Sentinel, Pulse, Telemetry, and Trust as
+          <strong class="text-white">11 read tools</strong> any MCP client can call (Claude Desktop, Anthropic SDK, custom integrations).
+          Source is open at <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">github.com/XRPL-Utilities/xrpl-utilities-mcp</code></a>;
+          published to npm as <code class="font-mono text-white">@xrpl-utilities/mcp</code> with sigstore provenance attestation.
+        </p>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          The MCP server is a <strong class="text-white">stateless passthrough proxy</strong>. It holds no wallets, takes no cut, and runs no proprietary logic — every paid call uses the caller's
+          own x402 v2 payment header (XRP or RLUSD), settled inline via the t54 facilitator on XRPL mainnet. Same $0.10 per call, same treasury wallet, same
+          schema-discipline guard pinging each backend's <code class="font-mono text-white">/agents.json</code> on startup so a registry/manifest drift fails loud.
+          Tools are namespaced (<code class="font-mono text-white">xrpl_sentinel_scan</code>, <code class="font-mono text-white">xrpl_pulse_recent_events</code>,
+          <code class="font-mono text-white">xrpl_trust_list_domains</code>, etc.) so they never collide with other MCP servers a user has connected.
+        </p>
+        <p class="text-white text-sm leading-relaxed mb-2">
+          To use locally with Claude Desktop, add to your config:
+          <code class="font-mono text-white">"xrpl-utilities": { "command": "npx", "args": ["-y", "@xrpl-utilities/mcp", "--transport", "stdio"] }</code>.
+          To connect remotely, point any MCP client at <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code>. Submitted to mcp.so directory.
+        </p>
+      </article>
+
+      <article class="bg-panel border border-border rounded-2xl p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
           <span class="font-mono text-xs text-muted">2026-05-04</span>
           <span class="text-xs uppercase tracking-wider px-2 py-0.5 rounded border border-accent/40 text-accent">Trust · 2026-11 + Pulse · 1.10.0</span>
         </div>
