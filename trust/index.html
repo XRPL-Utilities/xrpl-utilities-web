@@ -523,6 +523,35 @@ record = session.post(
         if (ownerLabel) {
           ownerCell.appendChild(el('div', 'text-xs text-muted font-mono', shorten(d.owner_address)));
         }
+        // On-chain identity (XLS-40 DID + linked .well-known/xrp-ledger.toml).
+        // owner_did is null for owners with no DID record - the badge only
+        // surfaces when the owner has actually published identity on-chain.
+        const did = d.owner_did;
+        if (did && did.org_name) {
+          const idBadge = el('div', 'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border border-accent/40 text-accent text-xs max-w-full break-words');
+          idBadge.textContent = 'ID · ' + did.org_name;
+          const tooltipParts = [];
+          if (did.principal_names && did.principal_names.length) {
+            tooltipParts.push(did.principal_names.join(', '));
+          }
+          if (did.description) tooltipParts.push(did.description);
+          if (did.source_toml_url) tooltipParts.push('Source: ' + did.source_toml_url);
+          idBadge.title = tooltipParts.join(' · ');
+          ownerCell.appendChild(idBadge);
+          if (did.org_url) {
+            const linkEl = el('a', 'text-xs text-muted underline hover:text-white block mt-1 break-all');
+            linkEl.href = did.org_url;
+            linkEl.textContent = did.org_url.replace(/^https?:\/\//, '');
+            linkEl.target = '_blank';
+            linkEl.rel = 'noopener noreferrer';
+            ownerCell.appendChild(linkEl);
+          }
+        } else if (did && did.has_did_document) {
+          // Thin DID: published on-chain but no parseable TOML. Still
+          // worth flagging - tells the reader the owner is at least in
+          // the XLS-40 stack, even if their identity payload is sparse.
+          ownerCell.appendChild(el('div', 'text-[11px] text-muted mt-1.5', 'On-chain DID (no TOML)'));
+        }
         tr.appendChild(ownerCell);
 
         const idCell = el('td', 'px-3 sm:px-6 py-4 font-mono text-xs text-muted hidden md:table-cell', shorten(d.domain_id));
