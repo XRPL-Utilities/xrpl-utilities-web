@@ -132,7 +132,7 @@
   <!-- STATS GRID -->
   <section>
     <div class="max-w-4xl mx-auto px-6 pb-10">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="grid grid-cols-2 gap-3">
         <div class="bg-panel border border-border rounded-xl p-4">
           <div class="text-xs uppercase tracking-wider text-muted mb-1">Domains tracked</div>
           <div id="stat-domains" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
@@ -141,16 +141,6 @@
           <div class="text-xs uppercase tracking-wider text-muted mb-1">Credential issuers</div>
           <div id="stat-issuers" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
           <div class="text-[10px] text-muted mt-1">addresses issuing in-use credentials</div>
-        </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Indexer status</div>
-          <div id="stat-status" class="text-sm font-bold"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="text-[10px] text-muted mt-1">background warmer</div>
-        </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Last refresh</div>
-          <div id="stat-refresh" class="text-sm font-bold"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="text-[10px] text-muted mt-1">re-walks every 6h</div>
         </div>
       </div>
     </div>
@@ -460,14 +450,6 @@ record = session.post(
       if (addr.length <= 14) return addr;
       return addr.slice(0, 8) + '…' + addr.slice(-4);
     }
-    function fmtAge(seconds) {
-      if (seconds == null) return '—';
-      if (seconds < 60) return seconds + 's ago';
-      if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
-      if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
-      return Math.floor(seconds / 86400) + 'd ago';
-    }
-
     let _allDomains = [];
     let _allIssuers = [];
     let _lastResponse = null;
@@ -476,24 +458,6 @@ record = session.post(
       const e = document.getElementById(id);
       if (!e) return;
       if (html) e.innerHTML = value; else e.textContent = value;
-    }
-
-    function statusPill(status, hasData) {
-      // Treat "complete" or "any error_*/timeout/truncated WITH rows>0" as
-      // partial-success — yellow, not red. Pure error states (no data
-      // surfaced) stay red. Avoids alarming the reader when the warmer
-      // surfaced real domains but the upstream timed out at the very end
-      // of the walk (the "error_502 with 4 domains found" case).
-      const isPartialSuccess = hasData && status && status !== 'complete' && status !== 'warming';
-      const cls = status === 'complete' ? 'status-complete'
-                : status === 'warming'  ? 'status-warming'
-                : isPartialSuccess      ? 'status-warming'
-                : 'status-error';
-      const label = status === 'complete' ? '✓ complete'
-                  : status === 'warming'  ? '◴ warming'
-                  : isPartialSuccess      ? '⚠ partial'
-                  : '⚠ ' + (status || 'error');
-      return `<span class="${cls} border rounded-full px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5">${escapeHtml(label)}</span>`;
     }
 
     function renderEmpty(target, walkStatus) {
@@ -899,19 +863,6 @@ record = session.post(
       renderTable(document.getElementById('results'), applyFilters(), getCurrentWalkStatus());
     }
 
-    async function loadStats() {
-      try {
-        const r = await fetch(API_BASE + '/stats');
-        if (!r.ok) return;
-        const s = await r.json();
-        const w = s.warmer || {};
-        const cache = s.caches || {};
-        const hasData = (cache.domains_list_size || 0) > 0;
-        setStat('stat-status', statusPill(w.status || 'warming', hasData), true);
-        setStat('stat-refresh', fmtAge(w.age_since_completed_s));
-      } catch (e) { /* non-fatal */ }
-    }
-
     async function loadDirectory() {
       const target = document.getElementById('results');
       const status = document.getElementById('q-status');
@@ -944,10 +895,9 @@ record = session.post(
         setStat('stat-domains', String(total));
         setStat('stat-issuers', String(_allIssuers.length));
         if (ws === 'warming') {
-          status.innerHTML = 'Indexer ' + statusPill('warming', false) + ' &middot; first walk in progress, check back shortly.';
+          status.textContent = 'Loading directory…';
         } else {
-          const totalLabel = total + (total === 1 ? ' domain' : ' domains') + ' on validated ledger';
-          status.innerHTML = totalLabel + ' &middot; indexer ' + statusPill(ws, total > 0);
+          status.textContent = total + (total === 1 ? ' domain' : ' domains') + ' on validated ledger';
         }
         renderTable(target, _allDomains, ws);
       } catch (e) {
@@ -960,7 +910,7 @@ record = session.post(
 
     document.getElementById('q-search').addEventListener('input', rerender);
     document.getElementById('q-issuer').addEventListener('change', rerender);
-    document.getElementById('refresh').addEventListener('click', () => { loadStats(); loadDirectory(); });
+    document.getElementById('refresh').addEventListener('click', () => loadDirectory());
     document.getElementById('dl-json').addEventListener('click', () => {
       if (!_lastResponse) return;
       const blob = new Blob([JSON.stringify(_lastResponse, null, 2)], { type: 'application/json' });
@@ -971,7 +921,6 @@ record = session.post(
       URL.revokeObjectURL(url);
     });
 
-    loadStats();
     loadDirectory();
   </script>
 
