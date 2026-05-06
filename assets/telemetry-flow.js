@@ -689,9 +689,12 @@
     target.appendChild(el('div', 'bg-panel border border-border rounded-2xl p-6 text-muted', 'Requesting quote…'));
     let quote;
     try {
+      const previewHeaders = await (global.PreviewToken
+        ? global.PreviewToken.authHeaders()
+        : Promise.resolve({}));
       const r = await fetch(`${API_BASE}/quote`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
         body: JSON.stringify({}),
       });
       if (!r.ok) {
@@ -716,17 +719,21 @@
     return null;
   }
 
-  // Free web-preview path. Marketing site posts /scan directly with no
-  // PAYMENT-SIGNATURE; the backend's web-origin check returns the
-  // snapshot without taking payment. Skips the entire /quote ->
-  // /status -> /results dance the agent x402 path uses.
+  // Free web-preview path. Marketing site posts /scan with a short-TTL
+  // preview-token JWT (Authorization: Bearer ...) minted via Turnstile;
+  // the backend verifies the signature and returns the snapshot without
+  // taking payment. Skips the entire /quote -> /status -> /results
+  // dance the agent x402 path uses.
   async function startTelemetryPreview(target) {
     renderBuilding(target);
     let payload;
     try {
+      const previewHeaders = await (global.PreviewToken
+        ? global.PreviewToken.authHeaders()
+        : Promise.resolve({}));
       const r = await fetch(`${API_BASE}/scan`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
         body: JSON.stringify({}),
       });
       if (!r.ok) {

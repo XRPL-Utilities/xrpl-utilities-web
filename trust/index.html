@@ -15,6 +15,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="/assets/preview-token.js?v=v1"></script>
   <script>
     tailwind.config = {
       theme: { extend: {
@@ -605,7 +607,8 @@ record = session.post(
       _renderDetailPanel(target, d, /* enriched */ false);
       window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
       if (!d.domain_id) return;
-      fetch(API_BASE + '/domain/' + encodeURIComponent(d.domain_id))
+      (window.PreviewToken ? window.PreviewToken.authHeaders() : Promise.resolve({}))
+        .then(headers => fetch(API_BASE + '/domain/' + encodeURIComponent(d.domain_id), { headers }))
         .then(r => r.ok ? r.json() : null)
         .then(body => {
           if (body && body.domain && body.domain.domain_id === d.domain_id) {
@@ -894,7 +897,10 @@ record = session.post(
       const status = document.getElementById('q-status');
       status.textContent = 'Loading directory…';
       try {
-        const r = await fetch(API_BASE + '/domains?limit=200&offset=0');
+        const previewHeaders = await (window.PreviewToken
+          ? window.PreviewToken.authHeaders()
+          : Promise.resolve({}));
+        const r = await fetch(API_BASE + '/domains?limit=200&offset=0', { headers: previewHeaders });
         if (!r.ok) {
           renderError(target, 'The directory is temporarily unreachable. Try refreshing in a moment. (HTTP ' + r.status + ')');
           status.textContent = 'Error.';

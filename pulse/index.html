@@ -15,6 +15,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="/assets/preview-token.js?v=v1"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -981,9 +983,12 @@ feed = session.post(
         // fully; at limit=200 a busy whale stream silently pushed
         // news off the back of the response, so we ask for the wider
         // window and let the per-column splitter render what fits.
+        const previewHeaders = await (window.PreviewToken
+          ? window.PreviewToken.authHeaders()
+          : Promise.resolve({}));
         const r = await fetch(`${API_BASE}/events/recent`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
           body: JSON.stringify({ limit: 500, min_whale_usd: 0 }),
           signal: ctl.signal,
         });

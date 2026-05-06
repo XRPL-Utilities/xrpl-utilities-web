@@ -580,9 +580,12 @@
 
     let report;
     try {
+      const previewHeaders = await (global.PreviewToken
+        ? global.PreviewToken.authHeaders()
+        : Promise.resolve({}));
       const r = await fetch(`${API_BASE}/scan`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
         body: JSON.stringify({ address }),
       });
       if (!r.ok) {
@@ -628,9 +631,12 @@
     target.appendChild(el('div', 'bg-panel border border-border rounded-2xl p-6 text-muted', 'Requesting quote…'));
     let quote;
     try {
+      const previewHeaders = await (global.PreviewToken
+        ? global.PreviewToken.authHeaders()
+        : Promise.resolve({}));
       const r = await fetch(`${API_BASE}/bulk/quote`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
         body: JSON.stringify({ addresses }),
       });
       if (!r.ok) {
