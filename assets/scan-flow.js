@@ -351,6 +351,18 @@
         cells.appendChild(cadenceCell);
         trajWrap.appendChild(cells);
       }
+      // One-line legend defining each metric so the abbreviated cell
+      // labels (Score Δ, Cadence Δ, etc.) read clearly without a hover.
+      // Applies to both drift and no-drift renderings - the metrics
+      // themselves are the same regardless of whether they moved.
+      const legend = el(
+        'div',
+        'text-xs text-muted mt-3 leading-relaxed',
+        'Score (0-100 activity index) · Level (behavior band) · ' +
+          'Tx count (transactions in scan window) · ' +
+          'Cadence (median seconds between transactions, lower = tighter)',
+      );
+      trajWrap.appendChild(legend);
       card.appendChild(trajWrap);
     }
 
