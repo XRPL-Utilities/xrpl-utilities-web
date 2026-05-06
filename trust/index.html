@@ -155,11 +155,8 @@
           <button id="refresh" class="text-xs text-muted hover:text-white transition" type="button">Refresh</button>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-3 mb-4">
-          <input id="q-search" type="text" placeholder="Search by domain_id, owner address, or owner label" class="sm:col-span-2 bg-ink border border-border rounded-lg px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-accent" />
-          <select id="q-issuer" class="bg-ink border border-border rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent">
-            <option value="">All credential issuers</option>
-          </select>
+        <div class="mb-4">
+          <input id="q-search" type="text" placeholder="Search by domain_id, owner, owner label, or credential issuer" class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-accent" />
         </div>
         <div class="flex items-center justify-between gap-3 text-xs text-muted mb-4">
           <div id="q-status">Loading directory&hellip;</div>
@@ -842,21 +839,24 @@ record = session.post(
 
     function applyFilters() {
       const q = (document.getElementById('q-search').value || '').trim().toLowerCase();
-      const issuerFilter = document.getElementById('q-issuer').value;
-      let rows = _allDomains;
-      if (q) {
-        rows = rows.filter(d => {
-          const id = (d.domain_id || '').toLowerCase();
-          const owner = (d.owner_address || '').toLowerCase();
-          const label = ((d.owner_label || {}).name || '').toLowerCase();
-          const dom = ((d.owner_label || {}).domain || '').toLowerCase();
-          return id.includes(q) || owner.includes(q) || label.includes(q) || dom.includes(q);
+      if (!q) return _allDomains;
+      return _allDomains.filter(d => {
+        const id = (d.domain_id || '').toLowerCase();
+        const owner = (d.owner_address || '').toLowerCase();
+        const ownerLabel = ((d.owner_label || {}).name || '').toLowerCase();
+        const ownerDomain = ((d.owner_label || {}).domain || '').toLowerCase();
+        if (id.includes(q) || owner.includes(q) || ownerLabel.includes(q) || ownerDomain.includes(q)) {
+          return true;
+        }
+        // Also match against any accepted credential issuer's address or
+        // XRPScan-resolved label, so the unified search covers the role
+        // the previous "All credential issuers" dropdown filled.
+        return (d.accepted_credentials || []).some(c => {
+          const addr = (c.issuer || '').toLowerCase();
+          const lbl  = (c.issuer_label || '').toLowerCase();
+          return addr.includes(q) || lbl.includes(q);
         });
-      }
-      if (issuerFilter) {
-        rows = rows.filter(d => (d.accepted_credentials || []).some(c => c.issuer === issuerFilter));
-      }
-      return rows;
+      });
     }
 
     function rerender() {
@@ -878,18 +878,12 @@ record = session.post(
         }
         _lastResponse = await r.json();
         _allDomains = _lastResponse.domains || [];
+        // Still aggregate distinct issuers for the stat tile count, but
+        // no longer used to populate any UI dropdown - unified search
+        // matches issuer address + label inline.
         const issuers = new Set();
         _allDomains.forEach(d => (d.accepted_credentials || []).forEach(c => issuers.add(c.issuer)));
-        _allIssuers = Array.from(issuers).sort();
-        const sel = document.getElementById('q-issuer');
-        sel.innerHTML = '<option value="">All credential issuers</option>';
-        _allIssuers.forEach(i => {
-          const opt = document.createElement('option');
-          opt.value = i;
-          opt.textContent = shorten(i);
-          opt.title = i;
-          sel.appendChild(opt);
-        });
+        _allIssuers = Array.from(issuers);
         const total = _lastResponse.total != null ? _lastResponse.total : _allDomains.length;
         const ws = _lastResponse.walk_status || 'complete';
         setStat('stat-domains', String(total));
@@ -909,7 +903,6 @@ record = session.post(
     }
 
     document.getElementById('q-search').addEventListener('input', rerender);
-    document.getElementById('q-issuer').addEventListener('change', rerender);
     document.getElementById('refresh').addEventListener('click', () => loadDirectory());
     document.getElementById('dl-json').addEventListener('click', () => {
       if (!_lastResponse) return;
