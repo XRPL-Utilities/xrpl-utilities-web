@@ -7,11 +7,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "xrpl-utilities-web",
   "compatibility_date": "2026-04-26",
+  "main": "_worker.js",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   },
   "compatibility_flags": [
     "nodejs_compat"
