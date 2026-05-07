@@ -969,11 +969,36 @@ feed = session.post(
       });
     }
 
+    // Derive the whale-tier for a single event, mirroring the same
+    // priority used by renderEvent: server-side `active_utility.tier`
+    // wins when present; otherwise fall back to value-based inference
+    // for legacy events that pre-date Pulse 1.14.0. Identity-based
+    // overrides (watchlist match) aren't reproducible client-side
+    // without the watchlist, so legacy events tier-classify by value
+    // alone.
+    function inferWhaleTier(e) {
+      const au = e.active_utility || {};
+      if (au.tier) return au.tier;
+      if (au.signal !== 'whale_transfer') return null;
+      const usd = typeof au.usd_value === 'number' ? au.usd_value : 0;
+      if (usd >= 10_000_000) return 'INSTITUTIONAL_FLOW';
+      if (usd >= 1_000_000)  return 'WHALE_MOVE';
+      return 'NORMAL_ACTIVITY';
+    }
+
     function splitEventsByKind(events) {
       const news = [];
       const activity = [];
       for (const e of events) {
         if ((e.source_appearances || []).indexOf('whale_xrpl') !== -1) {
+          // Drop NORMAL_ACTIVITY (sub-$1M anonymous) from the visible
+          // activity stream upfront. Suppressing inside renderEvent
+          // alone breaks pagination: col.shown=10 would slice 10 events
+          // but render only the non-suppressed subset, so 'show more'
+          // appeared to add < 10 rows and the user had to click 2-3
+          // times to fill a batch. Filtering here keeps the events
+          // array == visible rows and pagination exact.
+          if (inferWhaleTier(e) === 'NORMAL_ACTIVITY') continue;
           activity.push(e);
         } else {
           news.push(e);
