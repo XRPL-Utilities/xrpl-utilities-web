@@ -37,12 +37,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://xrpl-utilities.com/changelog/</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://xrpl-utilities.com/status/</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>daily</changefreq>
