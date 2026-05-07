@@ -1160,10 +1160,16 @@ feed = session.post(
           : hoursAgo === 1
           ? '1h ago'
           : `${hoursAgo}h ago`;
-        return `<div class="flex-1 flex flex-col justify-end" title="${label}: ${fmtUsd(v)}">
-          <div class="rounded-sm transition-colors ${v > 0 ? 'bg-accent/40 hover:bg-accent' : 'bg-border/40'}"
-               style="height: ${Math.max(heightPct, v > 0 ? 4 : 1)}%; min-height: 1px;"></div>
-        </div>`;
+        // Direct child of the flex-items-end container with an
+        // explicit height-% relative to that container's content box.
+        // The previous nested flex-col approach had no resolvable
+        // anchor for the inner element's height, so all bars
+        // collapsed to zero regardless of value.
+        const cls = v > 0 ? 'bg-accent/40 hover:bg-accent' : 'bg-border/40';
+        const minPx = v > 0 ? 4 : 1;
+        return `<div class="flex-1 ${cls} rounded-sm transition-colors"
+                     style="height: ${heightPct}%; min-height: ${minPx}px;"
+                     title="${label}: ${fmtUsd(v)}"></div>`;
       }).join('');
     }
 
