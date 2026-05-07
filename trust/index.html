@@ -180,21 +180,31 @@
 
   <!-- WHAT IS A PERMISSIONED DOMAIN -->
   <section id="what-is" class="border-t border-border">
-    <div class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Understanding permissioned domains</h2>
-      <h3 class="text-3xl font-bold mb-6">What it is, who uses it, how long it takes</h3>
-      <p class="text-muted leading-relaxed mb-6">
-        A Permissioned Domain (XLS-80) is an on-chain trading venue that gates participation by credential. The domain owner publishes a list of accepted credential issuers, and only accounts holding a valid credential from one of those issuers can match orders inside the domain. XLS-81 extends this to permissioned market-maker offers, so an institutional liquidity provider can post quotes that only KYC'd counterparties are allowed to fill.
-      </p>
-      <p class="text-muted leading-relaxed mb-6">
-        Institutional liquidity venues, tokenized real-world-asset issuers, KYC'd OTC desks, and regulated security tokens. The first named live example on XRPL mainnet is <a href="https://xrp-liquid.com" target="_blank" rel="noopener" class="text-accent hover:underline">xrp-liquid.com</a>, a permissioned liquidity venue with on-chain identity (XLS-40 DID) and active offers selling XRP for USDC, RLUSD, and EURQ.
-      </p>
-      <p class="text-muted leading-relaxed mb-6">
-        The on-chain side is fast. Publishing a Permissioned Domain takes one transaction, about 30 seconds, and roughly $0.01 in XRP fees.
-      </p>
-      <p class="text-muted leading-relaxed">
-        The off-chain side is slower. A useful domain needs a credential issuer (your own or a third party), legal review of who you intend to serve, and a credential-issuance flow that gets attestations into participants' wallets. With your own issuer and self-attested credentials this can be done in hours. Third-party KYC and AML attestations typically take days to weeks.
-      </p>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding permissioned domains</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What it is</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            A Permissioned Domain (XLS-80) is an on-chain trading venue that gates participation by credential. The owner publishes a list of accepted credential issuers, and only accounts holding a valid credential from one of those issuers can match orders inside. XLS-81 extends this to permissioned market-maker offers.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Who uses them</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Institutional liquidity venues, tokenized real-world-asset issuers, KYC'd OTC desks, and regulated security tokens. The first named live example on XRPL mainnet is <a href="https://xrp-liquid.com" target="_blank" rel="noopener" class="text-accent hover:underline">xrp-liquid.com</a>, with on-chain identity (XLS-40 DID) and active offers selling XRP for USDC, RLUSD, and EURQ.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">How long it takes</h3>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            The on-chain side is fast. Publishing a Permissioned Domain takes one transaction, about 30 seconds, and roughly $0.01 in XRP fees.
+          </p>
+          <p class="text-sm text-muted leading-relaxed">
+            The off-chain side is slower. A useful domain needs a credential issuer, legal review, and a credential-issuance flow that gets attestations into participants' wallets. Self-attested credentials: hours. Third-party KYC and AML: days to weeks.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 
