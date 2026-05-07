@@ -389,6 +389,13 @@ report = session.post(
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_SCALE_FLOW</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Size-based companion to <code class="font-mono text-white">COUNTERPARTY_INSTITUTIONAL</code>. Catches institutional-scale relationships when the counterparty isn't on the curated watchlist but the volume signature is unmistakable. Behavioral context, not a risk verdict.
+              <span class="block text-xs mt-2 opacity-70">Fires when: aggregate XRP-denominated Payment volume with at least one top counterparty clears $10M USD within the scan window (current XRP spot). IOU Payments are excluded.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">BRIDGE_INTERACTION</dt>
             <dd class="text-sm text-muted leading-relaxed">
               The wallet has sent to or received from a labeled cross-chain bridge wallet (Wanchain, Allbridge, Axelar, Coreum Bridge, Wrapped XRP, XPR Bridge). Indicates the wallet routes XRP value cross-chain. Behavioral context, not a risk verdict.
