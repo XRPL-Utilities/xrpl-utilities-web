@@ -577,6 +577,12 @@ feed = session.post(
       // Legacy events without a `tier` field (pre-1.14.0 emits) fall back
       // to value-based inference matching the same thresholds.
       const isWhale = (e.source_appearances || []).indexOf('whale_xrpl') !== -1;
+      const isPermDomain = (e.source_appearances || []).indexOf('permissioned_domain_lifecycle') !== -1;
+      // On-chain rows (whale_xrpl, permissioned_domain_lifecycle) have
+      // appearance_count stripped server-side because each event has a
+      // unique tx-hash-derived id (always 1, never cross-verified). Skip
+      // the badge to avoid rendering "appearance_count: undefined".
+      const isOnChainOnly = isWhale || isPermDomain;
       const whaleAU = isWhale && e.active_utility && e.active_utility.signal === 'whale_transfer'
         ? e.active_utility : null;
       let tierBadge = '';
@@ -818,7 +824,7 @@ feed = session.post(
             <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
           </div>
           ${briefHtml}
-          <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${utilityPill}${isWhale ? '' : `<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span>`}</div>
+          <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${utilityPill}${isOnChainOnly ? '' : `<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span>`}</div>
           ${corrLine}
           ${utilityBlock}
           ${whaleBlock}
