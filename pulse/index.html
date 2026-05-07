@@ -63,8 +63,16 @@
     .utility-pill             { color: #facc15; border-color: rgba(250, 204, 21, 0.4); background: rgba(250, 204, 21, 0.14); font-weight: 600; }
     .signal-pill              { color: #fde68a; border-color: rgba(252, 211, 77, 0.3); background: rgba(252, 211, 77, 0.08); font-size: 0.65rem; }
     .source-whale_xrpl        { color: #67e8f9; border-color: rgba(103, 232, 249, 0.35); background: rgba(103, 232, 249, 0.10); }
-    .tier-whale               { color: #facc15; border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.16); font-weight: 700; letter-spacing: 0.06em; }
-    .tier-activity            { color: #67e8f9; border-color: rgba(103, 232, 249, 0.35); background: rgba(103, 232, 249, 0.10); font-weight: 600; }
+    /* Tier badges. INSTITUTIONAL is the high-signal tag (watchlisted entity
+       OR >= $10M); rendered with strong gold to draw the eye. WHALE is
+       anonymous $1M-$10M flow - meaningful but unattributed. EXCHANGE is
+       Hot/Cold rebalancing inside one venue - logistics, not sentiment.
+       NORMAL is < $1M with both sides unlabeled; suppressed from the feed
+       by default since the spec defines it as 'network noise'. */
+    .tier-institutional       { color: #facc15; border-color: rgba(250, 204, 21, 0.6); background: rgba(250, 204, 21, 0.18); font-weight: 700; letter-spacing: 0.06em; }
+    .tier-whale               { color: #67e8f9; border-color: rgba(103, 232, 249, 0.45); background: rgba(103, 232, 249, 0.12); font-weight: 700; letter-spacing: 0.06em; }
+    .tier-exchange            { color: #94a3b8; border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.10); font-weight: 600; letter-spacing: 0.04em; }
+    .tier-normal              { color: #64748b; border-color: rgba(100, 116, 139, 0.30); background: rgba(100, 116, 139, 0.08); font-weight: 500; }
 
     @keyframes shimmer {
       0%   { background-position: -200% 0; }
@@ -298,7 +306,7 @@ feed = session.post(
         <li><code class="font-mono text-white">correlation</code> (news only): XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim.</li>
         <li><code class="font-mono text-white">active_utility</code>: signal payload, shape varies by source — news carries <code class="font-mono text-white">{active, signals[]}</code>; whale rows carry transfer details + Sentinel cross-ref; permissioned rows carry tx + domain + credential or XLS-81 trade economics. See <code class="font-mono text-white">/schema</code> for the full per-source field list.</li>
         <li><code class="font-mono text-white">target_addresses[]</code>, <code class="font-mono text-white">sentinel_context</code>: XRPL addresses attached to the event + best-effort XR-Sentinel cross-reference</li>
-        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $500k; pass 0 to see the full $50k+ stream).</li>
+        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $1M; pass 0 to see the full $50k+ stream).</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
         Full field-level details at <a href="https://pulse.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
@@ -517,19 +525,46 @@ feed = session.post(
 
       // Whale events use a different active_utility shape than RSS events:
       // top-level signal='whale_transfer' with usd_value, sender_label,
-      // receiver_label, currency, etc. Two tiers, $500k cutoff (matches
-      // the API's WHALE_FEED_MIN_USD default for institutional consumers).
+      // receiver_label, currency, plus a `tier` classification (Pulse
+      // schema 1.14.0+):
+      //   INSTITUTIONAL_FLOW - watchlisted side OR >= $10M. Gold badge.
+      //   WHALE_MOVE         - $1M-$10M, both sides unwatchlisted. Cyan.
+      //   EXCHANGE_LOGISTICS - same exchange family rebalancing. Muted.
+      //   NORMAL_ACTIVITY    - < $1M, anonymous. Suppressed by default.
+      // Legacy events without a `tier` field (pre-1.14.0 emits) fall back
+      // to value-based inference matching the same thresholds.
       const isWhale = (e.source_appearances || []).indexOf('whale_xrpl') !== -1;
       const whaleAU = isWhale && e.active_utility && e.active_utility.signal === 'whale_transfer'
         ? e.active_utility : null;
       let tierBadge = '';
       let whaleBlock = '';
       let whaleTitle = null;  // when set, overrides e.title for cleaner rendering
+      let suppressRow = false;  // true => skip rendering this row entirely (NORMAL tier)
       if (whaleAU && typeof whaleAU.usd_value === 'number') {
         const usd = whaleAU.usd_value;
-        const cls = usd >= 500_000 ? 'tier-whale'    : 'tier-activity';
-        const lbl = usd >= 500_000 ? 'WHALE'         : 'Activity';
-        tierBadge = `<span class="text-xs px-2 py-0.5 rounded ${cls} border uppercase">${lbl} · ${escapeHtml(fmtUsd(usd))}</span>`;
+        // Read tier from server when present; fall back to value-based
+        // inference for legacy events (sender/receiver_label-aware
+        // identity check isn't possible client-side without the watchlist,
+        // so legacy events are tier-classified by value alone).
+        let tier = whaleAU.tier;
+        if (!tier) {
+          if (usd >= 10_000_000)      tier = 'INSTITUTIONAL_FLOW';
+          else if (usd >= 1_000_000)  tier = 'WHALE_MOVE';
+          else                        tier = 'NORMAL_ACTIVITY';
+        }
+        // Hide NORMAL_ACTIVITY rows from the activity column. The data is
+        // still queryable via the API with min_whale_usd:0, but the UI
+        // surface defines its own institutional-utility floor.
+        if (tier === 'NORMAL_ACTIVITY') {
+          suppressRow = true;
+        }
+        const tierStyle = {
+          'INSTITUTIONAL_FLOW': { cls: 'tier-institutional', lbl: 'INSTITUTIONAL' },
+          'WHALE_MOVE':         { cls: 'tier-whale',         lbl: 'WHALE'         },
+          'EXCHANGE_LOGISTICS': { cls: 'tier-exchange',      lbl: 'EXCHANGE'      },
+          'NORMAL_ACTIVITY':    { cls: 'tier-normal',        lbl: 'NORMAL'        },
+        }[tier] || { cls: 'tier-whale', lbl: 'WHALE' };
+        tierBadge = `<span class="text-xs px-2 py-0.5 rounded ${tierStyle.cls} border uppercase">${tierStyle.lbl} · ${escapeHtml(fmtUsd(usd))}</span>`;
 
         // Compact title: lead with the dollar amount, then either the
         // labeled venues or a generic 'transfer'. Avoids the
@@ -722,6 +757,11 @@ feed = session.post(
       const briefHtml = isWhale
         ? ''
         : `<p class="text-sm text-muted leading-relaxed mb-3 break-words">${escapeHtml(e.brief)}</p>`;
+      // NORMAL_ACTIVITY rows are suppressed entirely from the rendered
+      // feed - they're sub-$1M anonymous transfers ("network noise" per
+      // the tier spec). The data is still queryable via the API.
+      if (suppressRow) return '';
+
       // min-w-0 + break-words on the article and inner blocks: long
       // monospace addresses and unbreakable URL strings would otherwise
       // expand the card past the column on narrow viewports. The grid
