@@ -180,6 +180,50 @@
     </div>
   </section>
 
+  <!-- WHALE + INSTITUTIONAL SUMMARY (24H) -->
+  <section id="whale-summary">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-6">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Institutional + Whale activity</h2>
+          <span class="text-[10px] text-muted font-mono">Last 24 hours</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="bg-ink border border-border rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="tier-institutional text-[10px] px-2 py-0.5 rounded border">INSTITUTIONAL</span>
+              <span class="text-[10px] text-muted">&ge; $10M each</span>
+            </div>
+            <div id="stat-inst-usd" class="text-3xl font-bold font-mono"><span class="inline-block h-8 w-24 bg-border rounded animate-pulse"></span></div>
+            <div id="stat-inst-count" class="text-[11px] text-muted mt-1">&mdash;</div>
+          </div>
+          <div class="bg-ink border border-border rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="tier-whale text-[10px] px-2 py-0.5 rounded border">WHALE</span>
+              <span class="text-[10px] text-muted">$1M &ndash; $10M each</span>
+            </div>
+            <div id="stat-whale-usd" class="text-3xl font-bold font-mono"><span class="inline-block h-8 w-24 bg-border rounded animate-pulse"></span></div>
+            <div id="stat-whale-count" class="text-[11px] text-muted mt-1">&mdash;</div>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Hourly volume</h3>
+            <span class="text-[10px] text-muted font-mono">USD, both tiers combined</span>
+          </div>
+          <div id="hourly-chart" class="flex items-end gap-[2px] h-24 bg-ink border border-border rounded-lg p-3">
+            <div class="skeleton-bar h-full w-full"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-muted font-mono mt-2 px-1">
+            <span>24h ago</span>
+            <span>12h ago</span>
+            <span>now</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="feed">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
@@ -985,6 +1029,14 @@ feed = session.post(
       return 'NORMAL_ACTIVITY';
     }
 
+    // Visible-feed caps. The server sends many more rows than a casual
+    // visitor wants to scroll; the live feed shows the most recent N
+    // per column. The whale-summary panel above pulls aggregates from
+    // the FULL response (pre-cap) so the 24h numbers don't drift just
+    // because we're slicing the visible list.
+    const NEWS_CAP = 25;
+    const ACTIVITY_CAP = 50;
+
     function splitEventsByKind(events) {
       const news = [];
       const activity = [];
@@ -1032,7 +1084,87 @@ feed = session.post(
         }
         if (linked.length) e._linked_whales = linked;
       }
-      return { news, activity };
+      // Apply visible-feed caps after splitting + cross-linking. Events
+      // arrive newest-first from the server, so slice(0, N) keeps the
+      // most-recent N per column. Aggregates upstream of this function
+      // already consumed the uncapped response.
+      return {
+        news: news.slice(0, NEWS_CAP),
+        activity: activity.slice(0, ACTIVITY_CAP),
+      };
+    }
+
+    // Aggregate INSTITUTIONAL_FLOW + WHALE_MOVE events from the last
+    // `windowSeconds` for the summary panel. EXCHANGE_LOGISTICS and
+    // NORMAL_ACTIVITY are excluded from both stats and chart because
+    // they aren't the institutional/whale signal a visitor cares about.
+    // The hourly array has 24 buckets ordered oldest-first (index 0 =
+    // 24h ago, index 23 = current hour) so the chart renders left-to-
+    // right as time progresses.
+    function aggregateWhaleStats(events) {
+      const nowSec = Date.now() / 1000;
+      const cutoff = nowSec - 86400;
+      const inst = { total_usd: 0, count: 0 };
+      const whale = { total_usd: 0, count: 0 };
+      const hourly = new Array(24).fill(0);
+      const nowHour = Math.floor(nowSec / 3600);
+      for (const e of events) {
+        if ((e.source_appearances || []).indexOf('whale_xrpl') === -1) continue;
+        const ts = e.published_at || 0;
+        if (ts < cutoff) continue;
+        const tier = inferWhaleTier(e);
+        const usd = (e.active_utility || {}).usd_value;
+        if (typeof usd !== 'number') continue;
+        if (tier === 'INSTITUTIONAL_FLOW') {
+          inst.total_usd += usd;
+          inst.count += 1;
+        } else if (tier === 'WHALE_MOVE') {
+          whale.total_usd += usd;
+          whale.count += 1;
+        } else {
+          continue;
+        }
+        const eventHour = Math.floor(ts / 3600);
+        const bucketIdx = 23 - (nowHour - eventHour);
+        if (bucketIdx >= 0 && bucketIdx < 24) {
+          hourly[bucketIdx] += usd;
+        }
+      }
+      return { inst, whale, hourly };
+    }
+
+    function renderWhaleSummary(stats) {
+      const instUsd = document.getElementById('stat-inst-usd');
+      const instCount = document.getElementById('stat-inst-count');
+      const whaleUsd = document.getElementById('stat-whale-usd');
+      const whaleCount = document.getElementById('stat-whale-count');
+      if (instUsd) instUsd.textContent = fmtUsd(stats.inst.total_usd);
+      if (instCount) instCount.textContent = stats.inst.count === 1
+        ? 'across 1 transaction'
+        : `across ${stats.inst.count} transactions`;
+      if (whaleUsd) whaleUsd.textContent = fmtUsd(stats.whale.total_usd);
+      if (whaleCount) whaleCount.textContent = stats.whale.count === 1
+        ? 'across 1 transaction'
+        : `across ${stats.whale.count} transactions`;
+      const chart = document.getElementById('hourly-chart');
+      if (!chart) return;
+      const max = Math.max(...stats.hourly, 1);
+      // Each bar's height is its share of the busiest hour. min-height
+      // of 1px keeps zero-volume hours visually present so the timeline
+      // reads correctly (vs. disappearing entirely).
+      chart.innerHTML = stats.hourly.map((v, i) => {
+        const heightPct = (v / max) * 100;
+        const hoursAgo = 23 - i;
+        const label = hoursAgo === 0
+          ? 'this hour'
+          : hoursAgo === 1
+          ? '1h ago'
+          : `${hoursAgo}h ago`;
+        return `<div class="flex-1 flex flex-col justify-end" title="${label}: ${fmtUsd(v)}">
+          <div class="rounded-sm transition-colors ${v > 0 ? 'bg-accent/40 hover:bg-accent' : 'bg-border/40'}"
+               style="height: ${Math.max(heightPct, v > 0 ? 4 : 1)}%; min-height: 1px;"></div>
+        </div>`;
+      }).join('');
     }
 
     async function loadFeed() {
@@ -1064,7 +1196,14 @@ feed = session.post(
           return;
         }
         const data = await r.json();
-        const { news, activity } = splitEventsByKind(data.events || []);
+        const allEvents = data.events || [];
+        // Compute the 24h whale-summary aggregates from the FULL event
+        // list before splitEventsByKind applies its visible-feed caps.
+        // Otherwise the headline numbers would silently drift down as
+        // the cap was tightened (e.g., a 50-row activity cap would miss
+        // older whale events still inside the 24h window).
+        renderWhaleSummary(aggregateWhaleStats(allEvents));
+        const { news, activity } = splitEventsByKind(allEvents);
         _columns.news.events = news;
         _columns.news.shown = Math.min(FEED_INITIAL, news.length);
         _columns.activity.events = activity;
