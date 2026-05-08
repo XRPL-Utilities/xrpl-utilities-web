@@ -318,12 +318,12 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <div class="text-xs uppercase tracking-wider text-muted mb-2">Last 24 hours</div>
           <div id="sv-24h" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
-          <div class="text-xs text-muted mt-3">USD across XRP + RLUSD Payments.</div>
+          <div id="sv-24h-split" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
         </div>
         <div class="bg-panel border-2 border-accent rounded-2xl p-6">
           <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">Annualized run-rate</div>
           <div id="sv-annual" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
-          <div class="text-xs text-muted mt-3" title="This week × 52. Reflects this week's settlement pace held for a full year, not a forecast.">7d &times; 52 &middot; pace, not a forecast</div>
+          <div id="sv-annual-split" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
         </div>
       </div>
 
@@ -348,8 +348,11 @@
 
       <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
         <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading this against your Q</div>
+        <p class="mb-3">
+          The <strong class="text-accent">Q</strong> field above (in Burst Math) is your assumption about annual XRPL settlement that uses XRP as the medium. The <strong class="text-accent">annualized run-rate</strong> here is what the network actually transacted this week, projected to a year. If your Q is far above measured Q, you're betting on growth; if it's below, your model is conservative relative to current activity. Click <em>Use measured</em> next to Q to load the live number into the floor calculation.
+        </p>
         <p>
-          The <strong class="text-accent">Q</strong> field above (in Burst Math) is your assumption about annual XRPL settlement throughput. The <strong class="text-accent">annualized run-rate</strong> here is what the network actually transacted this week, projected to a year. If your Q is far above measured Q, you're betting on growth; if it's below, your model is conservative relative to current activity. Click <em>Use measured</em> next to Q to load the live number into the floor calculation.
+          <strong class="text-accent">Why XRP-only feeds Q.</strong> RLUSD&harr;RLUSD payments on XRPL clear through the issuer's stablecoin and don't consume XRP supply, so including them would inflate the demand on Active Float and overstate the equilibrium-price floor. <em>Use measured</em> prefills Q with the XRP-denominated portion of the annualized run-rate (about 96-97% of total today). The full XRP+RLUSD figure is shown above for context but isn't what feeds the floor math.
         </p>
       </div>
     </div>
@@ -878,7 +881,9 @@ payload = requests.get(
     let svActiveBucket = 'daily';
 
     const sv24h = document.getElementById('sv-24h');
+    const sv24hSplit = document.getElementById('sv-24h-split');
     const svAnnual = document.getElementById('sv-annual');
+    const svAnnualSplit = document.getElementById('sv-annual-split');
     const svBootstrap = document.getElementById('sv-bootstrap');
     const svUseMeasuredBtn = document.getElementById('bm-q-use-measured');
 
@@ -916,11 +921,28 @@ payload = requests.get(
         }
         sv24h.textContent = fmtUsdShort(d.volume_24h_usd);
         svAnnual.textContent = fmtUsdShort(d.annualized_run_rate_usd);
+        // Breakdown subtitles. Backend may not yet ship the split fields
+        // during a partial rollout — fall back to a single-line label.
+        if (typeof d.volume_24h_xrp_usd === 'number' && typeof d.volume_24h_rlusd_usd === 'number') {
+          sv24hSplit.textContent = fmtUsdShort(d.volume_24h_xrp_usd) + ' XRP · ' + fmtUsdShort(d.volume_24h_rlusd_usd) + ' RLUSD';
+        } else {
+          sv24hSplit.textContent = 'USD across XRP + RLUSD Payments';
+        }
+        if (typeof d.annualized_run_rate_xrp_usd === 'number' && typeof d.annualized_run_rate_rlusd_usd === 'number') {
+          svAnnualSplit.textContent = fmtUsdShort(d.annualized_run_rate_xrp_usd) + ' XRP · ' + fmtUsdShort(d.annualized_run_rate_rlusd_usd) + ' RLUSD';
+        } else {
+          svAnnualSplit.textContent = '7d × 52 · pace, not a forecast';
+        }
         if (d.coverage && d.coverage.bootstrap === true) {
           svBootstrap.classList.remove('hidden');
         }
-        if (typeof d.annualized_run_rate_usd === 'number' && d.annualized_run_rate_usd > 0) {
-          svMeasuredAnnualizedUsd = d.annualized_run_rate_usd;
+        // Use the XRP-only annualized run-rate for Burst Math's Q (floor-honest).
+        // Fall back to combined if backend doesn't ship the split (older deploy).
+        const measuredQ = (typeof d.annualized_run_rate_xrp_usd === 'number' && d.annualized_run_rate_xrp_usd > 0)
+          ? d.annualized_run_rate_xrp_usd
+          : d.annualized_run_rate_usd;
+        if (typeof measuredQ === 'number' && measuredQ > 0) {
+          svMeasuredAnnualizedUsd = measuredQ;
           if (svUseMeasuredBtn) svUseMeasuredBtn.disabled = false;
         }
       })
