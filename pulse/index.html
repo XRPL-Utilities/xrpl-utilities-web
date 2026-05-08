@@ -207,9 +207,9 @@
           </div>
         </div>
         <div>
-          <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center justify-between mb-3 gap-2">
             <h3 class="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Hourly volume</h3>
-            <span class="text-[10px] text-muted font-mono">USD, both tiers combined</span>
+            <span id="hourly-chart-detail" class="text-[10px] text-muted font-mono text-right" data-default="Tap a bar for the hour's USD">USD, both tiers combined</span>
           </div>
           <div id="hourly-chart" class="flex items-end gap-[2px] h-24 bg-ink border border-border rounded-lg p-3">
             <div class="skeleton-bar h-full w-full"></div>
@@ -1171,12 +1171,35 @@ feed = session.post(
         // The previous nested flex-col approach had no resolvable
         // anchor for the inner element's height, so all bars
         // collapsed to zero regardless of value.
-        const cls = v > 0 ? 'bg-accent/40 hover:bg-accent' : 'bg-border/40';
+        // The title attribute is desktop-only (iOS Safari ignores it on
+        // touch); the parent's tap handler updates the detail caption
+        // above the chart so mobile users see the same info.
+        const cls = v > 0 ? 'bg-accent/40 hover:bg-accent active:bg-accent cursor-pointer' : 'bg-border/40';
         const minPx = v > 0 ? 4 : 1;
         return `<div class="flex-1 ${cls} rounded-sm transition-colors"
                      style="height: ${heightPct}%; min-height: ${minPx}px;"
+                     data-detail="${label} · ${fmtUsd(v)}"
                      title="${label}: ${fmtUsd(v)}"></div>`;
       }).join('');
+      // Touch/click delegation: tap a bar -> update the caption above
+      // the chart. The caption falls back to the default after 4s of
+      // inactivity so the chart doesn't get stuck on a stale value.
+      const detail = document.getElementById('hourly-chart-detail');
+      if (detail && !chart._tapWired) {
+        chart._tapWired = true;
+        let resetTimer = null;
+        const showDetail = (e) => {
+          const bar = e.target.closest('[data-detail]');
+          if (!bar) return;
+          detail.textContent = bar.dataset.detail;
+          if (resetTimer) clearTimeout(resetTimer);
+          resetTimer = setTimeout(() => {
+            detail.textContent = detail.dataset.default || 'USD, both tiers combined';
+          }, 4000);
+        };
+        chart.addEventListener('click', showDetail);
+        chart.addEventListener('touchstart', showDetail, { passive: true });
+      }
     }
 
     async function loadFeed() {
