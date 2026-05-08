@@ -212,10 +212,16 @@
 
       <div class="bg-panel border border-border rounded-2xl p-6">
         <div class="grid sm:grid-cols-2 gap-4 mb-6">
-          <label class="block">
-            <div class="text-xs text-muted uppercase tracking-wider mb-2">Q &middot; Annual settlement throughput (USD)</div>
+          <div class="block">
+            <div class="flex items-center justify-between mb-2">
+              <label for="bm-q" class="text-xs text-muted uppercase tracking-wider">Q &middot; Annual settlement throughput (USD)</label>
+              <button id="bm-q-use-measured" type="button"
+                      class="text-[10px] uppercase tracking-wider border border-border hover:border-accent text-muted hover:text-accent rounded px-2 py-0.5 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                      disabled
+                      title="Load the measured annualized settlement run-rate from XRPL into Q">Use measured</button>
+            </div>
             <input id="bm-q" type="number" min="0" step="100000000" class="num-input" />
-          </label>
+          </div>
           <label class="block">
             <div class="text-xs text-muted uppercase tracking-wider mb-2">V &middot; Annual velocity</div>
             <input id="bm-v" type="number" min="0.1" step="0.1" class="num-input" />
@@ -296,6 +302,55 @@
             The Floor Matrix below compounds either dynamic forward 24 months.
           </p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="measured-volume" class="border-t border-border">
+    <div class="max-w-5xl mx-auto px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Measured settlement volume</h2>
+      <h3 class="text-3xl font-bold mb-2">What XRPL actually settled</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
+        XRP- and RLUSD-denominated successful Payment transactions on validated mainnet ledgers, USD-anchored at each ledger's close-time price. Other IOUs are excluded &mdash; without per-token oracle pricing they would distort the figure.
+      </p>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Last 24 hours</div>
+          <div id="sv-24h" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div class="text-xs text-muted mt-3">USD across XRP + RLUSD Payments.</div>
+        </div>
+        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">Annualized run-rate</div>
+          <div id="sv-annual" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div class="text-xs text-muted mt-3" title="This week × 52. Reflects this week's settlement pace held for a full year, not a forecast.">7d &times; 52 &middot; pace, not a forecast</div>
+        </div>
+      </div>
+
+      <div id="sv-bootstrap" class="hidden mt-4 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed">
+        Less than 7 days of recorded data &mdash; values are bootstrapping. Annualized figure is statistically thin.
+      </div>
+
+      <div class="mt-8 bg-panel border border-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold">Historical volume</div>
+          <div id="sv-bucket-toggle" class="flex gap-1 text-xs">
+            <button data-bucket="daily"   class="sv-bucket-btn px-3 py-1 rounded border border-accent bg-accent/20 text-accent">Daily</button>
+            <button data-bucket="weekly"  class="sv-bucket-btn px-3 py-1 rounded border border-border text-muted hover:border-accent hover:text-accent transition">Weekly</button>
+            <button data-bucket="monthly" class="sv-bucket-btn px-3 py-1 rounded border border-border text-muted hover:border-accent hover:text-accent transition">Monthly</button>
+          </div>
+        </div>
+        <div class="bg-ink border border-border rounded-lg p-4">
+          <canvas id="sv-chart" height="280"></canvas>
+        </div>
+        <div class="text-xs text-muted mt-3 text-center">USD per bucket &middot; daily 30 / weekly 12 / monthly 12</div>
+      </div>
+
+      <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading this against your Q</div>
+        <p>
+          The <strong class="text-accent">Q</strong> field above (in Burst Math) is your assumption about annual XRPL settlement throughput. The <strong class="text-accent">annualized run-rate</strong> here is what the network actually transacted this week, projected to a year. If your Q is far above measured Q, you're betting on growth; if it's below, your model is conservative relative to current activity. Click <em>Use measured</em> next to Q to load the live number into the floor calculation.
+        </p>
       </div>
     </div>
   </section>
@@ -806,6 +861,173 @@ payload = requests.get(
         bmV.value = DEFAULTS.V;
         recompute();
       }
+    });
+
+    // ---- Measured settlement volume ----
+    // /settlement/totals (free) populates Box 1 + Box 2 + bootstrap badge
+    // and unlocks the "Use measured" button next to Q. /settlement/series
+    // pre-fetches all three buckets in parallel so the daily/weekly/monthly
+    // toggle is instant. Cache TTL is 5 min per bucket.
+    const TELEMETRY_API = 'https://telemetry.xrpl-utilities.io';
+    const SV_CACHE_TTL_MS = 5 * 60 * 1000;
+    const SV_BUCKETS = ['daily', 'weekly', 'monthly'];
+    const SV_COUNTS = { daily: 30, weekly: 12, monthly: 12 };
+    const svSeriesCache = {}; // bucket -> {ts, data}
+    let svMeasuredAnnualizedUsd = null;
+    let svChart = null;
+    let svActiveBucket = 'daily';
+
+    const sv24h = document.getElementById('sv-24h');
+    const svAnnual = document.getElementById('sv-annual');
+    const svBootstrap = document.getElementById('sv-bootstrap');
+    const svUseMeasuredBtn = document.getElementById('bm-q-use-measured');
+
+    // Compact USD formatter for headline + axis ticks ($591.6M, $4.2B, $220B).
+    // Raw integers past 9 digits are unreadable as headlines.
+    const fmtUsdShort = n => {
+      const num = Number(n);
+      if (!isFinite(num) || num <= 0) return '-';
+      const abs = Math.abs(num);
+      if (abs >= 1e12) return '$' + (num / 1e12).toFixed(2) + 'T';
+      if (abs >= 1e9)  return '$' + (num / 1e9).toFixed(1) + 'B';
+      if (abs >= 1e6)  return '$' + (num / 1e6).toFixed(1) + 'M';
+      if (abs >= 1e3)  return '$' + (num / 1e3).toFixed(1) + 'K';
+      return '$' + num.toFixed(0);
+    };
+
+    const fmtBucketLabel = (ts, bucket) => {
+      const d = new Date(ts * 1000);
+      if (bucket === 'monthly') {
+        return d.toLocaleString(undefined, { month: 'short', year: '2-digit', timeZone: 'UTC' });
+      }
+      return d.toLocaleString(undefined, { month: 'short', day: '2-digit', timeZone: 'UTC' });
+    };
+
+    sv24h.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
+    svAnnual.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
+
+    fetch(TELEMETRY_API + '/settlement/totals')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) {
+          sv24h.textContent = '-';
+          svAnnual.textContent = '-';
+          return;
+        }
+        sv24h.textContent = fmtUsdShort(d.volume_24h_usd);
+        svAnnual.textContent = fmtUsdShort(d.annualized_run_rate_usd);
+        if (d.coverage && d.coverage.bootstrap === true) {
+          svBootstrap.classList.remove('hidden');
+        }
+        if (typeof d.annualized_run_rate_usd === 'number' && d.annualized_run_rate_usd > 0) {
+          svMeasuredAnnualizedUsd = d.annualized_run_rate_usd;
+          if (svUseMeasuredBtn) svUseMeasuredBtn.disabled = false;
+        }
+      })
+      .catch(() => {
+        sv24h.textContent = '-';
+        svAnnual.textContent = '-';
+      });
+
+    if (svUseMeasuredBtn) {
+      svUseMeasuredBtn.addEventListener('click', () => {
+        if (svMeasuredAnnualizedUsd && svMeasuredAnnualizedUsd > 0) {
+          bmQ.value = Math.round(svMeasuredAnnualizedUsd);
+          recompute();
+        }
+      });
+    }
+
+    function svFetchSeries(bucket) {
+      return fetch(TELEMETRY_API + '/settlement/series?bucket=' + bucket + '&count=' + SV_COUNTS[bucket])
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          if (d && Array.isArray(d.series)) {
+            svSeriesCache[bucket] = { ts: Date.now(), data: d.series };
+          }
+          return d;
+        })
+        .catch(() => null);
+    }
+
+    Promise.all(SV_BUCKETS.map(svFetchSeries)).then(() => {
+      svRenderChart('daily');
+    });
+
+    function svRenderChart(bucket) {
+      const cached = svSeriesCache[bucket];
+      const fresh = cached && (Date.now() - cached.ts) < SV_CACHE_TTL_MS;
+      if (!fresh) {
+        svFetchSeries(bucket).then(() => svRenderChart(bucket));
+        return;
+      }
+      // Series is newest-first from the API; reverse for left-to-right time axis.
+      const series = (cached.data || []).slice().reverse();
+      const labels = series.map(b => fmtBucketLabel(b.bucket_start_ts, bucket));
+      const values = series.map(b => Number(b.total_usd) || 0);
+      svActiveBucket = bucket;
+      if (svChart) {
+        svChart.data.labels = labels;
+        svChart.data.datasets[0].data = values;
+        svChart.update();
+        return;
+      }
+      const svCtx = document.getElementById('sv-chart').getContext('2d');
+      svChart = new Chart(svCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'USD volume',
+            data: values,
+            backgroundColor: 'rgba(0, 184, 255, 0.55)',
+            borderColor: '#00b8ff',
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#111111',
+              borderColor: '#262626',
+              borderWidth: 1,
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              callbacks: {
+                label: (ctx) => fmtUsdShort(ctx.raw),
+              },
+            },
+          },
+          scales: {
+            x: { ticks: { color: '#a3a3a3', font: { size: 10 } }, grid: { display: false } },
+            y: {
+              ticks: { color: '#a3a3a3', font: { size: 10 }, callback: v => fmtUsdShort(v) },
+              grid: { color: 'rgba(38, 38, 38, 0.6)' },
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    }
+
+    document.querySelectorAll('.sv-bucket-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const bucket = btn.dataset.bucket;
+        if (bucket === svActiveBucket) return;
+        document.querySelectorAll('.sv-bucket-btn').forEach(b => {
+          const active = b === btn;
+          b.classList.toggle('border-accent', active);
+          b.classList.toggle('bg-accent/20', active);
+          b.classList.toggle('text-accent', active);
+          b.classList.toggle('border-border', !active);
+          b.classList.toggle('text-muted', !active);
+        });
+        svRenderChart(bucket);
+      });
     });
 
     // ---- Predictive Floor Matrix ----
