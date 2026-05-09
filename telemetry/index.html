@@ -369,6 +369,39 @@
         Less than 7 days of recorded data. Values are bootstrapping; annualized figure is statistically thin.
       </div>
 
+      <!-- PERMISSIONED VS OPEN-MARKET SPLIT (schema 1.5.0+).
+           Renders the share of XRPL settlement that flowed through XLS-81
+           permissioned venues vs the open market. Today's number is
+           expected to be near 0% — XLS-81 mainnet is just lighting up,
+           and the walker only counts Payments where DomainID is on the
+           tx body or affected Offer/AMM node. This metric exists from
+           day one so its trajectory is observable as institutional
+           adoption ramps. -->
+      <div id="sv-permissioned" class="mt-6 bg-panel border border-border rounded-2xl p-6">
+        <div class="flex items-baseline justify-between mb-4 flex-wrap gap-2">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold">Permissioned vs open-market</div>
+            <div class="text-xs text-muted mt-1">Share of last-24h settlement routed through XLS-81 permissioned venues</div>
+          </div>
+          <div id="sv-perm-pct" class="text-3xl sm:text-4xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3 text-sm">
+          <div class="bg-ink border border-border rounded-lg px-4 py-3">
+            <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Permissioned (XLS-81)</div>
+            <div id="sv-perm-usd" class="font-mono">&hellip;</div>
+            <div id="sv-perm-count" class="text-[10px] text-muted mt-1 font-mono">&nbsp;</div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg px-4 py-3">
+            <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Open-market</div>
+            <div id="sv-open-usd" class="font-mono">&hellip;</div>
+            <div id="sv-open-pct" class="text-[10px] text-muted mt-1 font-mono">&nbsp;</div>
+          </div>
+        </div>
+        <p id="sv-perm-caveat" class="hidden text-xs text-muted leading-relaxed mt-4">
+          XLS-81 (Permissioned DEX) activated on mainnet 2026-02. Permissioned settlement classifies a Payment when the tx body or affected Offer/AMM node carries a DomainID. The metric is at or near 0% today as institutional venues come online; the trajectory becomes the signal as adoption ramps.
+        </p>
+      </div>
+
       <div class="mt-8 bg-panel border border-border rounded-2xl p-6">
         <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold">Historical volume</div>
@@ -974,6 +1007,42 @@ payload = requests.get(
         if (d.coverage && d.coverage.bootstrap === true) {
           svBootstrap.classList.remove('hidden');
         }
+
+        // Permissioned vs open-market split (schema 1.5.0+). Honest
+        // rendering: when the backend hasn't shipped these fields yet
+        // (older deploy), the section keeps its skeleton placeholders.
+        // When share is 0%, the caveat block surfaces so a visitor
+        // doesn't read "0%" as bug or stale data.
+        const permPct = d.permissioned_share_24h_pct;
+        const permUsd = d.volume_24h_permissioned_usd;
+        const openUsd = d.volume_24h_open_market_usd;
+        const permCount = d.volume_24h_permissioned_payments_count;
+        const elPermPct = document.getElementById('sv-perm-pct');
+        const elPermUsd = document.getElementById('sv-perm-usd');
+        const elOpenUsd = document.getElementById('sv-open-usd');
+        const elPermCount = document.getElementById('sv-perm-count');
+        const elOpenPct = document.getElementById('sv-open-pct');
+        const elPermCaveat = document.getElementById('sv-perm-caveat');
+        if (typeof permPct === 'number' && elPermPct) {
+          elPermPct.textContent = permPct.toFixed(2) + '%';
+          if (permPct < 0.01) elPermCaveat?.classList.remove('hidden');
+        } else if (elPermPct) {
+          elPermPct.textContent = '—';
+        }
+        if (typeof permUsd === 'number' && elPermUsd) {
+          elPermUsd.textContent = fmtUsdShort(permUsd);
+        }
+        if (typeof openUsd === 'number' && elOpenUsd) {
+          elOpenUsd.textContent = fmtUsdShort(openUsd);
+        }
+        if (typeof permCount === 'number' && elPermCount) {
+          elPermCount.textContent = permCount.toLocaleString('en-US') + ' payments';
+        }
+        if (typeof permPct === 'number' && elOpenPct) {
+          const openPctVal = Math.max(0, 100 - permPct);
+          elOpenPct.textContent = openPctVal.toFixed(2) + '% of total';
+        }
+
         // Use the XRP-only annualized run-rate for Burst Math's Q (floor-honest).
         // Fall back to combined if backend doesn't ship the split (older deploy).
         const measuredQ = (typeof d.annualized_run_rate_xrp_usd === 'number' && d.annualized_run_rate_xrp_usd > 0)
