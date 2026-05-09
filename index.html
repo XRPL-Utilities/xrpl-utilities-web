@@ -216,6 +216,50 @@
     </div>
   </section>
 
+  <!-- LIVE NETWORK STATE STRIP. Four free public read endpoints, four
+       boxes. Each box also links to the relevant product page. Skeleton
+       placeholders show while fetches resolve; auto-refresh every 60s.
+       No preview-token needed — every endpoint here is allowed
+       unauthenticated. CSP connect-src already whitelists all 4 hosts. -->
+  <section id="live-state" class="border-t border-border bg-ink">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
+          <h2 class="text-xs uppercase tracking-widest text-muted font-semibold">Live network state</h2>
+        </div>
+        <span id="live-state-asof" class="text-[10px] text-muted font-mono">loading&hellip;</span>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+
+        <a href="/telemetry/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">XRPL settlement run-rate</div>
+          <div id="ls-runrate" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+          <div class="text-[10px] text-muted mt-2">annualized, all-token, USD</div>
+        </a>
+
+        <a href="/pulse/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Events ingested</div>
+          <div id="ls-events" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+          <div class="text-[10px] text-muted mt-2">news + whale + permissioned, lifetime</div>
+        </a>
+
+        <a href="/trust/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Permissioned domains</div>
+          <div id="ls-domains" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+          <div class="text-[10px] text-muted mt-2">XLS-80 mainnet, active</div>
+        </a>
+
+        <a href="/sentinel/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Wallets classified</div>
+          <div id="ls-scans" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+          <div class="text-[10px] text-muted mt-2">unique addresses, lifetime</div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
   <section id="tools" class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-6 py-20">
       <div class="mb-12">
@@ -438,6 +482,90 @@ report = session.post(
       window.addEventListener('resize', () => {
         if (window.innerWidth >= 768) close();
       });
+    })();
+  </script>
+
+  <!-- LIVE NETWORK STATE wiring. Four parallel fetches, all free + public.
+       Skeleton ellipses persist on fetch failure (intentional: better to
+       show nothing than fake a number). 60s refresh cadence matches the
+       Telemetry oracle TTL so we don't burn upstream cache budget. -->
+  <script>
+    (function () {
+      const TELEMETRY = 'https://telemetry.xrpl-utilities.io';
+      const PULSE     = 'https://pulse.xrpl-utilities.io';
+      const TRUST     = 'https://trust.xrpl-utilities.io';
+      const SENTINEL  = 'https://sentinel.xrpl-utilities.io';
+
+      const elRunrate = document.getElementById('ls-runrate');
+      const elEvents  = document.getElementById('ls-events');
+      const elDomains = document.getElementById('ls-domains');
+      const elScans   = document.getElementById('ls-scans');
+      const elAsOf    = document.getElementById('live-state-asof');
+
+      // Compact USD: $123M / $4.2B / $1.05T. Keeps the box width stable
+      // across orders of magnitude. Below $1M we still show full digits
+      // because the run-rate would be a soft signal at that scale.
+      function fmtUsd(n) {
+        if (typeof n !== 'number' || !isFinite(n)) return '—';
+        const sign = n < 0 ? '-' : '';
+        const abs = Math.abs(n);
+        if (abs >= 1e12) return sign + '$' + (abs / 1e12).toFixed(2) + 'T';
+        if (abs >= 1e9)  return sign + '$' + (abs / 1e9).toFixed(2)  + 'B';
+        if (abs >= 1e6)  return sign + '$' + (abs / 1e6).toFixed(1)  + 'M';
+        if (abs >= 1e3)  return sign + '$' + Math.round(abs / 1e3)   + 'k';
+        return sign + '$' + Math.round(abs).toString();
+      }
+      function fmtCount(n) {
+        if (typeof n !== 'number' || !isFinite(n)) return '—';
+        return n.toLocaleString('en-US');
+      }
+      function setText(el, txt) { if (el) el.textContent = txt; }
+
+      async function fetchJson(url) {
+        try {
+          const r = await fetch(url, { mode: 'cors' });
+          if (!r.ok) return null;
+          return await r.json();
+        } catch (e) {
+          return null;
+        }
+      }
+
+      async function refresh() {
+        const [tel, pulseHc, trustStats, sentinelStats] = await Promise.all([
+          fetchJson(TELEMETRY + '/settlement/totals'),
+          fetchJson(PULSE     + '/healthz'),
+          fetchJson(TRUST     + '/stats'),
+          fetchJson(SENTINEL  + '/stats'),
+        ]);
+
+        if (tel && typeof tel.annualized_run_rate_usd === 'number') {
+          setText(elRunrate, fmtUsd(tel.annualized_run_rate_usd));
+        }
+
+        const evCount = pulseHc && pulseHc.checks && pulseHc.checks.db && pulseHc.checks.db.event_count;
+        if (typeof evCount === 'number') {
+          setText(elEvents, fmtCount(evCount));
+        }
+
+        const domSize = trustStats && trustStats.caches && trustStats.caches.domains_list_size;
+        if (typeof domSize === 'number') {
+          setText(elDomains, fmtCount(domSize));
+        }
+
+        const scanRows = sentinelStats && sentinelStats.scan_recorder && sentinelStats.scan_recorder.row_count;
+        if (typeof scanRows === 'number') {
+          setText(elScans, fmtCount(scanRows));
+        }
+
+        const now = new Date();
+        const hh = String(now.getUTCHours()).padStart(2, '0');
+        const mm = String(now.getUTCMinutes()).padStart(2, '0');
+        setText(elAsOf, 'as of ' + hh + ':' + mm + ' UTC');
+      }
+
+      refresh();
+      setInterval(refresh, 60000);
     })();
   </script>
 
