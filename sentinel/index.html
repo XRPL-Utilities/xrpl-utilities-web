@@ -231,6 +231,33 @@
     </div>
   </section>
 
+  <!-- WHAT IS WALLET CLASSIFICATION -->
+  <section id="what-is" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding wallet classification</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What it does</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Sentinel reads a wallet's last 90 days of on-chain activity and tells you what kind of actor it looks like. A 24/7 bot, a sleeping retail wallet, an exchange hot wallet, an AMM pool, an issuer, a market maker &mdash; each leaves a distinct signature in transaction cadence, counterparty mix, currency flow, and operational tempo. The output is an activity-level label (Low / Medium / High / Dormant / Unknown), a 0&ndash;100 score, an array of structured signal flags, and an AI-written narrative tying the signals to the conclusion.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Who reads the output</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Agents pricing OTC trades. Market makers vetting counterparties before quoting. Researchers writing about XRPL flows. Treasuries deciding whether a wallet is shaped like a service they'd integrate with. Anyone who's about to send funds to an address they don't fully recognize and wants 90 seconds of due diligence before clicking send. <span class="text-white">Not</span> compliance officers &mdash; see the panel to the right for what this isn't.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What it isn't</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Not a risk score. Not a sanctions screen. Not an AML or KYC determination. Not a credit rating. A "High" activity level usually means an exchange, market maker, AMM, or trading bot &mdash; neutral signals about a wallet's role on the network, not warnings. The signal catalog is published at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a> so consumers can read every flag's definition and decide their own thresholds.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="for-agents" class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
       <div class="grid md:grid-cols-2 gap-8 md:gap-12">
