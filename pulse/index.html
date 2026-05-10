@@ -1038,8 +1038,6 @@ feed = session.post(
     // could empty a freshly-fetched page.
     const ACTIVITY_FETCH_MULTIPLIER = 3;
     const REVEAL_PREFETCH_MARGIN = 5;
-    const WHALE_SUMMARY_HOURS = 24;
-    const WHALE_SUMMARY_LIMIT = 500;
 
     const _columns = {
       news: {
@@ -1260,17 +1258,33 @@ feed = session.post(
     });
 
     async function loadWhaleSummary() {
-      // Separate fetch covering the trailing 24h so the headline aggregates
-      // and hourly chart don't drift just because the activity column's
-      // current page only shows ~15 rows.
+      // Pull pre-bucketed 24h aggregates from /stats/whale-flow-24h. The
+      // server filters to INSTITUTIONAL_FLOW + WHALE_MOVE tiers and
+      // returns 24 oldest-first hourly buckets. Free endpoint, no x402.
+      // Replaces the prior /events/recent walk which got capped by the
+      // bucket allocator at limit=500 and so only covered ~6h at the
+      // dense $50k+ stream the chart asks for.
       try {
-        const since = new Date(Date.now() - WHALE_SUMMARY_HOURS * 3600 * 1000).toISOString();
-        const events = await fetchEvents({
-          kind: 'activity',
-          since_iso: since,
-          limit: WHALE_SUMMARY_LIMIT,
-        });
-        renderWhaleSummary(aggregateWhaleStats(events));
+        const r = await fetch(`${API_BASE}/stats/whale-flow-24h`);
+        if (!r.ok) return;
+        const body = await r.json();
+        if (!body || body.available === false) return;
+        const totals = body.totals || {};
+        const inst = {
+          total_usd: totals.institutional_usd || 0,
+          count: totals.institutional_count || 0,
+        };
+        const whale = {
+          total_usd: totals.whale_usd || 0,
+          count: totals.whale_count || 0,
+        };
+        const hourly = new Array(24).fill(0);
+        const buckets = body.hourly || [];
+        for (let i = 0; i < buckets.length && i < 24; i++) {
+          const b = buckets[i] || {};
+          hourly[i] = (b.institutional_usd || 0) + (b.whale_usd || 0);
+        }
+        renderWhaleSummary({ inst, whale, hourly });
       } catch {
         // Best-effort; the summary chart is decorative relative to the columns.
       }
@@ -1291,45 +1305,6 @@ feed = session.post(
       if (usd >= 10_000_000) return 'INSTITUTIONAL_FLOW';
       if (usd >= 1_000_000)  return 'WHALE_MOVE';
       return 'NORMAL_ACTIVITY';
-    }
-
-    // Aggregate INSTITUTIONAL_FLOW + WHALE_MOVE events from the last
-    // `windowSeconds` for the summary panel. EXCHANGE_LOGISTICS and
-    // NORMAL_ACTIVITY are excluded from both stats and chart because
-    // they aren't the institutional/whale signal a visitor cares about.
-    // The hourly array has 24 buckets ordered oldest-first (index 0 =
-    // 24h ago, index 23 = current hour) so the chart renders left-to-
-    // right as time progresses.
-    function aggregateWhaleStats(events) {
-      const nowSec = Date.now() / 1000;
-      const cutoff = nowSec - 86400;
-      const inst = { total_usd: 0, count: 0 };
-      const whale = { total_usd: 0, count: 0 };
-      const hourly = new Array(24).fill(0);
-      const nowHour = Math.floor(nowSec / 3600);
-      for (const e of events) {
-        if ((e.source_appearances || []).indexOf('whale_xrpl') === -1) continue;
-        const ts = e.published_at || 0;
-        if (ts < cutoff) continue;
-        const tier = inferWhaleTier(e);
-        const usd = (e.active_utility || {}).usd_value;
-        if (typeof usd !== 'number') continue;
-        if (tier === 'INSTITUTIONAL_FLOW') {
-          inst.total_usd += usd;
-          inst.count += 1;
-        } else if (tier === 'WHALE_MOVE') {
-          whale.total_usd += usd;
-          whale.count += 1;
-        } else {
-          continue;
-        }
-        const eventHour = Math.floor(ts / 3600);
-        const bucketIdx = 23 - (nowHour - eventHour);
-        if (bucketIdx >= 0 && bucketIdx < 24) {
-          hourly[bucketIdx] += usd;
-        }
-      }
-      return { inst, whale, hourly };
     }
 
     function renderWhaleSummary(stats) {
