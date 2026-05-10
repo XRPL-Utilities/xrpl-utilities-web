@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XR-Vault | Real-world assets on XRPL</title>
+  <meta name="description" content="Real-world asset tracker for the XRP Ledger. Live mint and burn flow, daily circulating snapshots, and per-issuer dashboards covering tokenized US Treasuries, EUR and BRL stablecoins, commercial paper, money-market funds, and energy commodities. Free on the web." />
+  <meta property="og:title" content="XR-Vault" />
+  <meta property="og:description" content="Real-world asset tracker for XRPL. Live mint/burn flow + daily circulating snapshots across tokenized treasuries, stablecoins, commercial paper, MMFs, and energy commodities." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/xr-vault.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/vault/" />
+  <link rel="canonical" href="https://xrpl-utilities.com/vault/" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/vault/#app",
+        "name": "XR-Vault",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP)",
+        "description": "Real-world asset tracker for the XRP Ledger. Per-issuer mint/burn flow, daily circulating snapshots, AMM-of-RWA pool surface across tokenized treasuries, stablecoins, commercial paper, MMFs, and energy commodities.",
+        "url": "https://xrpl-utilities.com/vault/",
+        "image": "https://xrpl-utilities.com/assets/xr-vault.png",
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://xrpl-utilities.com/#org",
+          "name": "XRPL-Utilities",
+          "url": "https://xrpl-utilities.com",
+          "logo": "https://xrpl-utilities.com/assets/logo.png"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "XRPL-Utilities", "item": "https://xrpl-utilities.com/" },
+          { "@type": "ListItem", "position": 2, "name": "XR-Vault", "item": "https://xrpl-utilities.com/vault/" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+
+    /* Asset-class color pills. Each class gets its own hue so the tile
+       grid reads at a glance. Treasuries gold (institutional fixed
+       income), USD stables emerald, EUR stables blue, BRL violet,
+       commercial paper amber, MMF rose, commodity energy orange,
+       AUD stables sky. */
+    .class-treasuries        { color: #facc15; border-color: rgba(250, 204, 21, 0.45); background: rgba(250, 204, 21, 0.10); }
+    .class-fiat_stable_usd   { color: #34d399; border-color: rgba(52, 211, 153, 0.45); background: rgba(52, 211, 153, 0.10); }
+    .class-fiat_stable_eur   { color: #60a5fa; border-color: rgba(96, 165, 250, 0.45); background: rgba(96, 165, 250, 0.10); }
+    .class-fiat_stable_brl   { color: #c084fc; border-color: rgba(192, 132, 252, 0.45); background: rgba(192, 132, 252, 0.10); }
+    .class-fiat_stable_aud   { color: #38bdf8; border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.10); }
+    .class-commercial_paper  { color: #fb923c; border-color: rgba(251, 146, 60, 0.45); background: rgba(251, 146, 60, 0.10); }
+    .class-money_market      { color: #f472b6; border-color: rgba(244, 114, 182, 0.45); background: rgba(244, 114, 182, 0.10); }
+    .class-commodity_energy  { color: #fdba74; border-color: rgba(253, 186, 116, 0.45); background: rgba(253, 186, 116, 0.10); }
+
+    .delta-positive { color: #4ade80; }
+    .delta-negative { color: #f87171; }
+    .delta-zero     { color: #71717a; }
+
+    .status-live        { color: #4ade80; border-color: rgba(74, 222, 128, 0.35); background: rgba(74, 222, 128, 0.10); }
+    .status-rails_only  { color: #94a3b8; border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.10); }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+    .skeleton-bar {
+      background: linear-gradient(90deg, rgba(38,38,38,0.6) 0%, rgba(64,64,64,0.9) 50%, rgba(38,38,38,0.6) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+      border-radius: 0.375rem;
+    }
+
+    .issuer-tile {
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .issuer-tile:hover {
+      border-color: rgba(0, 184, 255, 0.45);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-x-6 lg:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="nav-link-active">Vault</a>
+      </nav>
+      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 nav-link-active">Vault</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+      <img src="/assets/xr-vault.png" alt="XR-Vault" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+      <p class="text-xl text-muted">Real-world assets, on-chain in real time</p>
+      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
+        Live tracker for tokenized real-world assets on XRPL. Per-issuer
+        circulating supply, today's mint and burn flow, and the canonical
+        wallet map across treasuries, stablecoins, commercial paper,
+        money-market funds, and energy commodities.
+      </p>
+      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
+        <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+        Verified issuer wallets &middot; on-chain figures only &middot; native unit-of-account
+      </div>
+    </div>
+  </section>
+
+  <section id="vault-summary">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Tracked issuers</div>
+          <div id="stat-tracked" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-tracked-detail" class="text-[10px] text-muted mt-1">&mdash;</div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Mints (24h)</div>
+          <div id="stat-mints" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="text-[10px] text-muted mt-1">across live issuers</div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Burns (24h)</div>
+          <div id="stat-burns" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="text-[10px] text-muted mt-1">redemptions to issuer</div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Asset classes</div>
+          <div id="stat-classes" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-classes-detail" class="text-[10px] text-muted mt-1">&mdash;</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="top-movers">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-6">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Top movers</h2>
+          <span class="text-[10px] text-muted font-mono">By absolute net 24h flow</span>
+        </div>
+        <div id="top-movers-list" class="space-y-2">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-2/3 mb-2"></div>
+            <div class="skeleton-bar h-3 w-1/3"></div>
+          </div>
+        </div>
+        <p id="top-movers-empty" class="text-xs text-muted mt-4 hidden">No measurable RWA flow in the last 24 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="issuer-grid">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-6 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Per-issuer state</h2>
+          <span class="text-[10px] text-muted font-mono">Native units, no USD valuation</span>
+        </div>
+        <div id="issuer-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
+            <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
+            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
+            <div class="skeleton-bar h-3 w-2/3"></div>
+          </div>
+          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
+            <div class="skeleton-bar h-5 w-2/3 mb-4"></div>
+            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
+            <div class="skeleton-bar h-3 w-2/3"></div>
+          </div>
+          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
+            <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
+            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="flow-log">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-6 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Recent flow</h2>
+          <button id="flow-refresh" class="text-xs text-muted hover:text-white transition">Refresh</button>
+        </div>
+        <div id="flow-list" class="space-y-3">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/3"></div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-2/3 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/4"></div>
+          </div>
+        </div>
+        <p class="text-xs text-muted mt-6 leading-relaxed">
+          Mints and burns ride the XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> feed at
+          <code class="font-mono text-white">pulse.xrpl-utilities.io</code> under the
+          <code class="font-mono text-white">rwa_issuer_flow</code> source. This page surfaces the most recent entries; agents can subscribe to the full stream via x402.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">What this tracks</h2>
+      <h3 class="text-3xl font-bold mb-6">Verified issuers, native units, no USD interpretation</h3>
+      <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-muted leading-relaxed">
+        <div>
+          <p class="mb-4">
+            Every issuer wallet was verified by reading the issuer's on-chain
+            <code class="font-mono text-white">gateway_balances</code> against
+            <code class="font-mono text-white">s1.ripple.com</code> and cross-referencing
+            XRPScan's well-known label list. The canonical map is operator-curated, not scraped from a
+            third-party aggregator.
+          </p>
+          <p class="mb-4">
+            For OpenEden TBL, the displayed "circulating" subtracts the OpenEden
+            treasury wallet's holding from the issuer's
+            <code class="font-mono text-white">obligations</code> total, so the
+            number reflects supply actually distributed to holders rather
+            than the treasury-held inventory that public aggregators leave in.
+          </p>
+          <p>
+            For Justoken JMWH, the figure is in megawatt-hours, not dollars.
+            The marketed USD valuation depends on an off-chain energy price feed
+            we don't carry; the on-chain unit count is what we report.
+          </p>
+        </div>
+        <div>
+          <p class="mb-4">
+            Per-mint and per-burn events are emitted in real time as XRPL
+            ledgers close. Polling cadence is 10 minutes via
+            <code class="font-mono text-white">account_tx</code> against free
+            public XRPL nodes, with QuickNode as last-resort fallback.
+          </p>
+          <p class="mb-4">
+            Daily snapshots run once per UTC day per live issuer. Each snapshot
+            captures obligations, net circulating, trustline count, and the
+            day-over-day delta when a prior snapshot exists.
+          </p>
+          <p>
+            Issuers in <span class="text-white">rails-only</span> status (Archax/abrdn) have their
+            authorized-trustline rails configured but zero tokens minted on
+            mainnet so far. They're polled to capture the first mint when it
+            lands.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
+      <h3 class="text-3xl font-bold mb-6">Agents read the same data via XR-Pulse</h3>
+      <p class="text-muted leading-relaxed mb-6 max-w-3xl">
+        XR-Vault renders dashboards over the
+        <code class="font-mono text-white">rwa_issuer_flow</code> and
+        <code class="font-mono text-white">rwa_issuer_daily</code> event sources on XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>. Agents that want the raw stream
+        call <code class="font-mono text-white">POST /events/recent</code> on
+        <code class="font-mono text-white">pulse.xrpl-utilities.io</code> for $0.10 USD per query
+        via x402 v2 (XRP or RLUSD). The cross-issuer summary that powers this
+        page is exposed at <code class="font-mono text-white">GET /stats/rwa-summary</code>, free.
+      </p>
+      <div class="flex flex-wrap gap-3 text-sm">
+        <a href="https://pulse.xrpl-utilities.io/stats/rwa-summary" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">/stats/rwa-summary</a>
+        <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse Swagger</a>
+        <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse agents.json</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/manifest/" class="text-muted hover:text-white transition">Manifest</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav. Same logic as the other XR-* pages.
+    (function setupMobileNav() {
+      const openBtn  = document.getElementById('nav-open');
+      const closeBtn = document.getElementById('nav-close');
+      const overlay  = document.getElementById('mobile-nav');
+      if (!openBtn || !closeBtn || !overlay) return;
+      const open  = () => { overlay.style.display = 'flex'; openBtn.setAttribute('aria-expanded','true'); document.body.style.overflow = 'hidden'; };
+      const close = () => { overlay.style.display = 'none'; openBtn.setAttribute('aria-expanded','false'); document.body.style.overflow = ''; };
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+      overlay.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+      window.addEventListener('resize', () => { if (window.innerWidth >= 768) close(); });
+    })();
+
+    const API_BASE = 'https://pulse.xrpl-utilities.io';
+
+    // Display helpers. Native units only — no USD conversion. Large
+    // amounts get a compact form (1.23M, 4.56K). Small fractional
+    // values render with up to 4 decimals. Zero stays zero.
+    function fmtNumber(n) {
+      const num = typeof n === 'string' ? parseFloat(n) : n;
+      if (!isFinite(num) || num === 0) return '0';
+      const abs = Math.abs(num);
+      if (abs >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2).replace(/\.?0+$/, '') + 'B';
+      if (abs >= 1_000_000)     return (num / 1_000_000).toFixed(2).replace(/\.?0+$/, '') + 'M';
+      if (abs >= 10_000)        return (num / 1_000).toFixed(1).replace(/\.?0+$/, '') + 'K';
+      if (abs >= 1)             return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      return num.toLocaleString(undefined, { maximumFractionDigits: 4 });
+    }
+
+    function fmtAssetClass(c) {
+      if (!c) return '';
+      return c.replace('fiat_stable_', '').replace('commodity_energy', 'energy').replace('commercial_paper', 'commercial paper').replace('money_market', 'MMF').replace('treasuries', 'treasuries').toUpperCase();
+    }
+
+    function fmtAddrShort(addr) {
+      if (!addr || addr.length <= 12) return addr || '';
+      return addr.slice(0, 6) + '..' + addr.slice(-4);
+    }
+
+    function fmtRelative(ts) {
+      if (!ts) return '';
+      const diff = (Date.now() / 1000) - ts;
+      if (diff < 60)        return Math.max(1, Math.floor(diff)) + 's ago';
+      if (diff < 3600)      return Math.floor(diff / 60) + 'm ago';
+      if (diff < 86400)     return Math.floor(diff / 3600) + 'h ago';
+      return Math.floor(diff / 86400) + 'd ago';
+    }
+
+    function deltaClass(value) {
+      const n = typeof value === 'string' ? parseFloat(value) : value;
+      if (!isFinite(n) || n === 0) return 'delta-zero';
+      return n > 0 ? 'delta-positive' : 'delta-negative';
+    }
+
+    function deltaSign(value) {
+      const n = typeof value === 'string' ? parseFloat(value) : value;
+      if (!isFinite(n) || n === 0) return '';
+      return n > 0 ? '+' : '';
+    }
+
+    async function loadSummary() {
+      try {
+        const r = await fetch(`${API_BASE}/stats/rwa-summary`);
+        if (!r.ok) return;
+        const body = await r.json();
+        if (!body || body.available === false) return;
+        renderSummary(body);
+        renderTopMovers(body.top_movers_24h || []);
+        renderIssuerTiles(body.issuers || []);
+      } catch (err) {
+        // Best-effort — dashboard skeletons stay visible if Pulse is unreachable.
+      }
+    }
+
+    function renderSummary(body) {
+      const t = body.totals || {};
+      const cls = body.by_asset_class || {};
+      const trackedEl = document.getElementById('stat-tracked');
+      const trackedDetail = document.getElementById('stat-tracked-detail');
+      const mintsEl = document.getElementById('stat-mints');
+      const burnsEl = document.getElementById('stat-burns');
+      const classesEl = document.getElementById('stat-classes');
+      const classesDetail = document.getElementById('stat-classes-detail');
+      if (trackedEl)     trackedEl.textContent = String(t.tracked_issuers ?? '—');
+      if (trackedDetail) trackedDetail.textContent = `${t.live_issuers ?? 0} live · ${t.rails_only_issuers ?? 0} rails-only`;
+      if (mintsEl)       mintsEl.textContent = String(t.mints_24h_total ?? 0);
+      if (burnsEl)       burnsEl.textContent = String(t.burns_24h_total ?? 0);
+      const classCount = Object.keys(cls).length;
+      if (classesEl) classesEl.textContent = String(classCount);
+      if (classesDetail) {
+        const labels = Object.keys(cls).map(k => fmtAssetClass(k).toLowerCase()).join(', ');
+        classesDetail.textContent = labels || '—';
+      }
+    }
+
+    function renderTopMovers(movers) {
+      const el = document.getElementById('top-movers-list');
+      const empty = document.getElementById('top-movers-empty');
+      if (!el) return;
+      if (!movers.length) {
+        el.innerHTML = '';
+        if (empty) empty.classList.remove('hidden');
+        return;
+      }
+      if (empty) empty.classList.add('hidden');
+      el.innerHTML = movers.map(m => {
+        const cls = m.asset_class || '';
+        return `
+          <div class="flex items-center justify-between gap-4 bg-ink border border-border rounded-lg p-4">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-semibold text-white truncate">${escapeHtml(m.logical_label || m.label || '')}</span>
+                <span class="class-${cls} text-[10px] px-2 py-0.5 rounded border uppercase tracking-wider">${escapeHtml(fmtAssetClass(cls))}</span>
+              </div>
+              <div class="text-[11px] text-muted mt-0.5">net 24h flow</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-2xl font-bold font-mono ${deltaClass(m.net_24h)}">${escapeHtml(deltaSign(m.net_24h) + fmtNumber(m.net_24h))}</div>
+              <div class="text-[10px] text-muted font-mono uppercase">${escapeHtml(m.currency || '')}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderIssuerTiles(issuers) {
+      const el = document.getElementById('issuer-tiles');
+      if (!el) return;
+      if (!issuers.length) {
+        el.innerHTML = '<div class="text-xs text-muted">No issuers loaded.</div>';
+        return;
+      }
+      // Sort: live issuers with non-zero circulating first (by circulating
+      // desc), then live issuers with zero, then rails_only.
+      const sorted = issuers.slice().sort((a, b) => {
+        const aLive = a.mint_status === 'live' ? 1 : 0;
+        const bLive = b.mint_status === 'live' ? 1 : 0;
+        if (aLive !== bLive) return bLive - aLive;
+        const aCirc = parseFloat(a.circulating || '0') || 0;
+        const bCirc = parseFloat(b.circulating || '0') || 0;
+        return bCirc - aCirc;
+      });
+      el.innerHTML = sorted.map(i => {
+        const cls = i.asset_class || '';
+        const status = i.mint_status || 'live';
+        const caveat = i.caveat ? `<div class="text-[10px] text-muted mt-3 leading-snug border-t border-border pt-3">${escapeHtml(i.caveat)}</div>` : '';
+        const net = i.net_24h || '0';
+        const trustlines = (i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '—';
+        const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(i.wallet || '')}`;
+        return `
+          <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="issuer-tile bg-ink border border-border rounded-xl p-5 block">
+            <div class="flex items-start justify-between gap-2 mb-3">
+              <div class="min-w-0">
+                <div class="font-semibold text-white truncate">${escapeHtml(i.logical_label || i.label || '')}</div>
+                <div class="text-[11px] text-muted truncate">${escapeHtml(i.label || '')}</div>
+              </div>
+              <span class="status-${status} text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(status === 'rails_only' ? 'rails' : status)}</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-2xl font-bold font-mono">${escapeHtml(fmtNumber(i.circulating || '0'))}</span>
+              <span class="text-xs text-muted font-mono uppercase">${escapeHtml(i.currency || '')}</span>
+            </div>
+            <div class="text-[11px] text-muted mb-3">circulating</div>
+            <div class="grid grid-cols-3 gap-2 text-[11px]">
+              <div>
+                <div class="text-muted uppercase tracking-wider mb-0.5">24h Δ</div>
+                <div class="font-mono ${deltaClass(net)}">${escapeHtml(deltaSign(net) + fmtNumber(net))}</div>
+              </div>
+              <div>
+                <div class="text-muted uppercase tracking-wider mb-0.5">Trustlines</div>
+                <div class="font-mono text-white">${escapeHtml(trustlines)}</div>
+              </div>
+              <div>
+                <div class="text-muted uppercase tracking-wider mb-0.5">Class</div>
+                <div><span class="class-${cls} text-[9px] px-1.5 py-0.5 rounded border uppercase tracking-wider">${escapeHtml(fmtAssetClass(cls))}</span></div>
+              </div>
+            </div>
+            ${caveat}
+          </a>
+        `;
+      }).join('');
+    }
+
+    // ---- Recent flow log -----------------------------------------------------
+    // Drives the "Recent flow" section by reading rwa_issuer_flow events from
+    // the latest /stats/rwa-summary embed... actually we don't embed events
+    // there. Pull a small page from /events/recent without auth would 402;
+    // instead we render a compact list from /stats/rwa-summary's per-issuer
+    // mints/burns counts. For Phase 1 we keep this simple — show the per-
+    // issuer 24h aggregates as "flow rows" since that's what the summary
+    // endpoint gives us cheaply.
+    function renderFlowLog(issuers) {
+      const el = document.getElementById('flow-list');
+      if (!el) return;
+      const rows = (issuers || [])
+        .filter(i => (i.mints_24h_count || 0) > 0 || (i.burns_24h_count || 0) > 0)
+        .sort((a, b) => (b.mints_24h_count + b.burns_24h_count) - (a.mints_24h_count + a.burns_24h_count));
+      if (!rows.length) {
+        el.innerHTML = '<div class="bg-ink border border-border rounded-lg p-4 text-xs text-muted">No mints or burns recorded in the last 24 hours.</div>';
+        return;
+      }
+      el.innerHTML = rows.map(i => {
+        const minted = parseFloat(i.minted_24h || '0') || 0;
+        const burned = parseFloat(i.burned_24h || '0') || 0;
+        const net = i.net_24h || '0';
+        return `
+          <div class="bg-ink border border-border rounded-lg p-4 flex items-center justify-between gap-4">
+            <div class="min-w-0">
+              <div class="font-semibold text-white truncate">${escapeHtml(i.logical_label || i.label || '')}</div>
+              <div class="text-[11px] text-muted mt-0.5">
+                <span class="delta-positive">+${fmtNumber(minted)}</span>
+                <span class="text-muted mx-1">·</span>
+                <span class="delta-negative">-${fmtNumber(burned)}</span>
+                <span class="text-muted ml-1">${escapeHtml(i.currency || '')}</span>
+              </div>
+              <div class="text-[10px] text-muted mt-1">${i.mints_24h_count} mint${i.mints_24h_count === 1 ? '' : 's'} · ${i.burns_24h_count} burn${i.burns_24h_count === 1 ? '' : 's'} · last 24h</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-lg font-bold font-mono ${deltaClass(net)}">${escapeHtml(deltaSign(net) + fmtNumber(net))}</div>
+              <div class="text-[10px] text-muted font-mono uppercase">net</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Re-call summary so flow log renders too.
+    async function loadAll() {
+      try {
+        const r = await fetch(`${API_BASE}/stats/rwa-summary`);
+        if (!r.ok) return;
+        const body = await r.json();
+        if (!body || body.available === false) return;
+        renderSummary(body);
+        renderTopMovers(body.top_movers_24h || []);
+        renderIssuerTiles(body.issuers || []);
+        renderFlowLog(body.issuers || []);
+      } catch {}
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[c]);
+    }
+
+    document.getElementById('flow-refresh')?.addEventListener('click', loadAll);
+    loadAll();
+    // Poll every 60s so the dashboard stays current without page reload.
+    setInterval(loadAll, 60000);
+  </script>
+
+</body>
+</html>

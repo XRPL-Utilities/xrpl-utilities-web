@@ -92,6 +92,17 @@
           "priceCurrency": "USD",
           "description": "Per-call fee, payable in XRP via x402 protocol; free until the directory has data"
         }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/vault/#app",
+        "name": "XR-Vault",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP)",
+        "description": "Real-world asset tracker for the XRP Ledger. Per-issuer mint/burn flow, daily circulating snapshots, and AMM-of-RWA pool surface across tokenized treasuries, stablecoins, commercial paper, money-market funds, and energy commodities.",
+        "url": "https://xrpl-utilities.com/vault/",
+        "image": "https://xrpl-utilities.com/assets/xr-vault.png",
+        "publisher": { "@id": "https://xrpl-utilities.com/#org" }
       }
     ]
   }
@@ -150,6 +161,7 @@
         <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
         <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
         <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
       </nav>
       <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -179,6 +191,7 @@
       <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
       <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
       <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
     </nav>
     <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
@@ -267,7 +280,7 @@
         <h3 class="text-4xl font-bold">The portfolio</h3>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         <a href="/sentinel/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
           <div class="flex items-center justify-between mb-4">
@@ -343,6 +356,25 @@
           </p>
           <div class="flex items-center justify-between text-sm">
             <span class="text-muted">Free on the web &middot; $0.10 per call for agents</span>
+            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
+          </div>
+        </a>
+
+        <a href="/vault/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
+              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
+            </div>
+            <img src="/assets/xr-vault.png" alt="" class="h-14 w-14 rounded-lg" />
+          </div>
+          <h4 class="text-2xl font-bold mb-3">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
+          <p class="text-white leading-relaxed mb-3 font-medium">Real-world assets, on-chain in real time.</p>
+          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
+            Live tracker for tokenized real-world assets on XRPL. Per-issuer mint/burn flow, daily circulating snapshots, and the canonical wallet map across treasuries, stablecoins, commercial paper, money-market funds, and energy commodities. For agents and institutions watching where on-chain capital actually settles.
+          </p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-muted">Free on the web &middot; data via XR-Pulse over x402</span>
             <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
           </div>
         </a>
@@ -425,6 +457,7 @@ report = session.post(
             <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
             <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
           </ul>
         </div>
         <div>
@@ -448,7 +481,7 @@ report = session.post(
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
