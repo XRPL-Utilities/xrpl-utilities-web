@@ -289,40 +289,38 @@
       <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-muted leading-relaxed">
         <div>
           <p class="mb-4">
-            Every issuer wallet was verified by reading the issuer's on-chain
-            <code class="font-mono text-white">gateway_balances</code> against
-            <code class="font-mono text-white">s1.ripple.com</code> and cross-referencing
-            XRPScan's well-known label list. The canonical map is operator-curated, not scraped from a
-            third-party aggregator.
+            The issuer map is operator-curated and reconciled against on-chain
+            state directly, not pulled from a third-party aggregator. Each
+            issuer is included only after wallet, currency, and authority flags
+            are independently confirmed.
           </p>
           <p class="mb-4">
-            For OpenEden TBL, the displayed "circulating" subtracts the OpenEden
-            treasury wallet's holding from the issuer's
-            <code class="font-mono text-white">obligations</code> total, so the
-            number reflects supply actually distributed to holders rather
-            than the treasury-held inventory that public aggregators leave in.
+            For OpenEden TBL, the displayed "circulating" reflects supply
+            actually distributed to holders, with treasury-held inventory
+            excluded. Public aggregators report the unfiltered total and
+            overstate the figure substantially.
           </p>
           <p>
             For Justoken JMWH, the figure is in megawatt-hours, not dollars.
-            The marketed USD valuation depends on an off-chain energy price feed
-            we don't carry; the on-chain unit count is what we report.
+            The marketed USD valuation depends on an off-chain energy price
+            feed we don't carry; the on-chain unit count is what we report.
           </p>
         </div>
         <div>
           <p class="mb-4">
-            Per-mint and per-burn events are emitted in real time as XRPL
-            ledgers close. Polling cadence is 10 minutes via
-            <code class="font-mono text-white">account_tx</code> against free
-            public XRPL nodes, with QuickNode as last-resort fallback.
+            Mints and burns are picked up in near real time as XRPL ledgers
+            close. The dashboard refreshes on a short cadence so newly minted
+            supply or holder redemptions land here within minutes of settling
+            on-chain.
           </p>
           <p class="mb-4">
-            Daily snapshots run once per UTC day per live issuer. Each snapshot
-            captures obligations, net circulating, trustline count, and the
-            day-over-day delta when a prior snapshot exists.
+            Daily snapshots run once per UTC day per live issuer, capturing
+            outstanding supply, net circulating, trustline count, and the
+            day-over-day delta against the prior snapshot.
           </p>
           <p>
             Issuers in <span class="text-white">rails-only</span> status (Archax/abrdn) have their
-            authorized-trustline rails configured but zero tokens minted on
+            permissioned-trustline rails configured but zero tokens minted on
             mainnet so far. They're polled to capture the first mint when it
             lands.
           </p>
