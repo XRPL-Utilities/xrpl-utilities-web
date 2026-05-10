@@ -270,13 +270,13 @@
           <button id="refresh-btn" class="text-xs text-muted hover:text-white transition">Refresh</button>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-6">
-          <div class="min-w-0">
+        <div class="grid md:grid-cols-2 gap-6 items-stretch">
+          <div class="min-w-0 flex flex-col">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-xs uppercase tracking-[0.2em] text-accent font-semibold">News</h3>
               <span id="news-count" class="text-[10px] text-muted font-mono"></span>
             </div>
-            <div id="news-list" class="space-y-3">
+            <div id="news-list" class="space-y-3 flex-1">
               <div class="bg-ink border border-border rounded-lg p-4">
                 <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
                 <div class="skeleton-bar h-3 w-1/2"></div>
@@ -286,13 +286,14 @@
                 <div class="skeleton-bar h-3 w-1/3"></div>
               </div>
             </div>
+            <div id="news-nav"></div>
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 flex flex-col">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-xs uppercase tracking-[0.2em] text-accent font-semibold">XRPL Activity</h3>
               <span id="activity-count" class="text-[10px] text-muted font-mono"></span>
             </div>
-            <div id="activity-list" class="space-y-3">
+            <div id="activity-list" class="space-y-3 flex-1">
               <div class="bg-ink border border-border rounded-lg p-4">
                 <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
                 <div class="skeleton-bar h-3 w-2/5"></div>
@@ -302,6 +303,7 @@
                 <div class="skeleton-bar h-3 w-1/3"></div>
               </div>
             </div>
+            <div id="activity-nav"></div>
           </div>
         </div>
 
@@ -1008,11 +1010,18 @@ feed = session.post(
     // before_iso values used to walk backward; popping it returns to a
     // newer page. Both columns paginate independently against their own
     // /events/recent kind=news|activity request.
-    const PAGE_SIZE = 15;
-    // Activity fetches a buffer larger than PAGE_SIZE because the client
-    // drops sub-$1M anonymous whale events (NORMAL_ACTIVITY) post-fetch
-    // for the marketing-feed display; without the buffer a busy hour of
-    // small whales could empty the visible page.
+    // Per-column page sizes. News cards carry title + brief + correlation
+    // + sometimes linked-whale block, so they're roughly 2x the height of
+    // a whale activity row. Showing ~22 activity rows next to ~12 news
+    // rows keeps the column heights visually balanced; the flex-col
+    // wrapper + mt-auto on the nav strip then pins both nav strips to
+    // the same vertical position regardless of any remaining slack.
+    const PAGE_SIZE_NEWS = 12;
+    const PAGE_SIZE_ACTIVITY = 22;
+    // Activity fetches a buffer larger than PAGE_SIZE_ACTIVITY because the
+    // client drops sub-$1M anonymous whale events (NORMAL_ACTIVITY) for
+    // the marketing-feed display; without the buffer a busy hour of small
+    // whales could empty the visible page.
     const ACTIVITY_FETCH_MULTIPLIER = 3;
     const WHALE_SUMMARY_HOURS = 24;
     const WHALE_SUMMARY_LIMIT = 500;
@@ -1078,6 +1087,10 @@ feed = session.post(
       });
     }
 
+    function pageSizeFor(kind) {
+      return kind === 'activity' ? PAGE_SIZE_ACTIVITY : PAGE_SIZE_NEWS;
+    }
+
     async function loadColumn(key) {
       const col = _columns[key];
       col.loading = true;
@@ -1085,12 +1098,13 @@ feed = session.post(
       renderColumn(key);
       try {
         const cursor = col.cursorStack.length ? col.cursorStack[col.cursorStack.length - 1] : null;
+        const pageSize = pageSizeFor(col.kind);
         const fetchSize = col.kind === 'activity'
-          ? PAGE_SIZE * ACTIVITY_FETCH_MULTIPLIER
-          : PAGE_SIZE;
+          ? pageSize * ACTIVITY_FETCH_MULTIPLIER
+          : pageSize;
         let raw = await fetchEvents({ kind: col.kind, before_iso: cursor, limit: fetchSize });
         if (col.kind === 'activity') raw = filterActivityEvents(raw);
-        col.events = raw.slice(0, PAGE_SIZE);
+        col.events = raw.slice(0, pageSize);
         col.loading = false;
         annotateCrossLinks();
         renderColumn(key);
@@ -1169,6 +1183,7 @@ feed = session.post(
     function renderColumn(key) {
       const col = _columns[key];
       const list = document.getElementById(col.listId);
+      const nav = document.getElementById(col.navId);
       const countEl = document.getElementById(col.countId);
 
       // Header label: Page N · date-range hint.
@@ -1188,6 +1203,11 @@ feed = session.post(
         countEl.textContent = label;
       }
 
+      // Events render into the list div (which is flex-1 so it absorbs
+      // any vertical slack). The nav strip renders into its own sibling
+      // div with mt-auto so it sticks to the column bottom regardless of
+      // how much content is above it. Net effect: both columns end at the
+      // same vertical position even when one has noticeably less content.
       let body;
       if (col.loading) {
         body = `
@@ -1206,26 +1226,24 @@ feed = session.post(
       } else {
         body = col.events.map(renderEvent).join('');
       }
+      list.innerHTML = body;
 
-      // Nav strip: ← Newer | Jump to latest | Older →. The nav is always
-      // rendered (even on empty/error states) so the user can recover.
+      // Nav strip: ← Newer | Jump to latest | Older →. Always rendered so
+      // the user can recover from empty/error states.
       const canNewer = col.cursorStack.length > 0 && !col.loading;
       const canOlder = col.events.length > 0 && !col.loading;
       const showLatest = col.cursorStack.length > 0 && !col.loading;
-      const navHTML = `
-        <div id="${col.navId}" class="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-border">
-          <button data-nav="newer" data-col="${key}"
-                  class="px-3 py-1.5 text-xs rounded-md transition border ${canNewer ? 'text-white border-border hover:border-accent hover:bg-ink' : 'text-muted/40 border-border/40 cursor-not-allowed'}"
-                  ${canNewer ? '' : 'disabled'}>← Newer</button>
-          ${showLatest
-            ? `<button data-nav="latest" data-col="${key}" class="px-3 py-1.5 text-xs text-muted hover:text-white transition">Jump to latest</button>`
-            : '<span class="text-xs text-muted/40">most recent</span>'}
-          <button data-nav="older" data-col="${key}"
-                  class="px-3 py-1.5 text-xs rounded-md transition border ${canOlder ? 'text-white border-border hover:border-accent hover:bg-ink' : 'text-muted/40 border-border/40 cursor-not-allowed'}"
-                  ${canOlder ? '' : 'disabled'}>Older →</button>
-        </div>`;
-
-      list.innerHTML = body + navHTML;
+      nav.className = 'flex items-center justify-between gap-2 mt-3 pt-3 border-t border-border';
+      nav.innerHTML = `
+        <button data-nav="newer" data-col="${key}"
+                class="px-3 py-1.5 text-xs rounded-md transition border ${canNewer ? 'text-white border-border hover:border-accent hover:bg-ink' : 'text-muted/40 border-border/40 cursor-not-allowed'}"
+                ${canNewer ? '' : 'disabled'}>← Newer</button>
+        ${showLatest
+          ? `<button data-nav="latest" data-col="${key}" class="px-3 py-1.5 text-xs text-muted hover:text-white transition">Jump to latest</button>`
+          : '<span class="text-xs text-muted/40">most recent</span>'}
+        <button data-nav="older" data-col="${key}"
+                class="px-3 py-1.5 text-xs rounded-md transition border ${canOlder ? 'text-white border-border hover:border-accent hover:bg-ink' : 'text-muted/40 border-border/40 cursor-not-allowed'}"
+                ${canOlder ? '' : 'disabled'}>Older →</button>`;
     }
 
     // Delegated nav-button handler. One listener catches every column's
