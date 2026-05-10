@@ -197,7 +197,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Who issues them on XRPL</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Names you know &mdash; Ondo Finance (OUSG, BlackRock-backed treasuries), Ripple (RLUSD stablecoin), Soci&eacute;t&eacute; G&eacute;n&eacute;rale FORGE (EURCV, MiCA-licensed), OpenEden (TBL T-bills), Archax (abrdn money-market). Names you might not &mdash; Schuman Financial (EUR&Oslash;P), Braza Group (USDB, BBRL), Justoken (JMWH energy), Guggenheim / Zeconomy (commercial paper). 11 live issuers tracked here today; the universe grows as institutional rails mature.
+            Names you know: Ondo Finance (OUSG, BlackRock-backed treasuries), Ripple (RLUSD stablecoin), Soci&eacute;t&eacute; G&eacute;n&eacute;rale FORGE (EURCV, MiCA-licensed), OpenEden (TBL T-bills), Archax (abrdn money-market). Names you might not: Schuman Financial (EUR&Oslash;P), Braza Group (USDB, BBRL), Justoken (JMWH energy), Guggenheim / Zeconomy (commercial paper). 11 live issuers tracked here today; the universe grows as institutional rails mature.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -216,7 +216,7 @@
         <div class="bg-panel border border-border rounded-xl p-4">
           <div class="text-xs uppercase tracking-wider text-muted mb-1">Tracked issuers</div>
           <div id="stat-tracked" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div id="stat-tracked-detail" class="text-[10px] text-muted mt-1">&mdash;</div>
+          <div id="stat-tracked-detail" class="text-[10px] text-muted mt-1">&hellip;</div>
         </div>
         <div class="bg-panel border border-border rounded-xl p-4">
           <div class="text-xs uppercase tracking-wider text-muted mb-1">Mints (24h)</div>
@@ -266,7 +266,7 @@
           <span class="text-[10px] text-muted font-mono">Native units, no USD valuation</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-5">
-          One tile per tracked issuer. <span class="text-white">Circulating</span> is how much of the token exists on-chain right now in the issuer's native units (treasury holdings excluded where applicable, like OpenEden TBL). <span class="text-white">24h &Delta;</span> is how that number moved since yesterday's snapshot. <span class="text-white">Trustlines</span> is roughly the number of holders. The colored badge is the asset class. Ondo OUSG appears twice because Ondo operates two issuer wallets &mdash; one for institutional access (authorized-trustline gating + clawback), one for the broader retail variant. "Permissioned" here refers to those wallet-level controls, not XLS-80 PermissionedDomains (those live in <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>).
+          One tile per tracked issuer. <span class="text-white">Circulating</span> is how much of the token exists on-chain right now in the issuer's native units (treasury holdings excluded where applicable, like OpenEden TBL). <span class="text-white">24h &Delta;</span> is how that number moved since yesterday's snapshot. <span class="text-white">Trustlines</span> is roughly the number of holders. The colored badge is the asset class. Ondo OUSG appears twice because Ondo operates two issuer wallets: one for institutional access (authorized-trustline gating + clawback), one for the broader retail variant. "Permissioned" here refers to those wallet-level controls, not XLS-80 PermissionedDomains (those live in <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>).
         </p>
         <div id="issuer-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
@@ -297,7 +297,7 @@
           <span class="text-[10px] text-muted font-mono">Liquidity where RWAs trade</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-5">
-          Every Automated Market Maker pool on XRPL where one of the two tokens is a tracked RWA. AMMs are constant-product liquidity pools (XRPL's XLS-30 standard) &mdash; anyone can swap between the two tokens at any time without an order book, with the price set by the pool's reserves. These tiles tell you how much liquidity is actually sitting in each pool, which is a proxy for how tradeable the RWA is on-chain right now. Pools with dust-level balances (under a few dollars) show up too; they're the "rails set up, no real liquidity yet" signal.
+          Every Automated Market Maker pool on XRPL where one of the two tokens is a tracked RWA. AMMs are constant-product liquidity pools (XRPL's XLS-30 standard). Anyone can swap between the two tokens at any time without an order book, with the price set by the pool's reserves. These tiles tell you how much liquidity is actually sitting in each pool, which is a proxy for how tradeable the RWA is on-chain right now. Pools with dust-level balances (under a few dollars) show up too; they're the "rails set up, no real liquidity yet" signal.
         </p>
         <div id="amm-pool-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="bg-ink border border-border rounded-xl p-5">
@@ -324,7 +324,7 @@
           <button id="flow-refresh" class="text-xs text-muted hover:text-white transition">Refresh</button>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-5">
-          Per-issuer mint and burn activity over the last 24 hours. Each row shows how many new tokens were minted (green +), how many were redeemed back to the issuer (red &minus;), and the <span class="text-white">net</span> change &mdash; whether more came in than went out, or vice versa. Positive net means the issuer's outstanding supply grew; negative means it shrank.
+          Per-issuer mint and burn activity over the last 24 hours. Each row shows how many new tokens were minted (green +), how many were redeemed back to the issuer (red &minus;), and the <span class="text-white">net</span> change. Positive net means more came in than went out and the issuer's outstanding supply grew; negative means it shrank.
         </p>
         <div id="flow-list" class="space-y-3">
           <div class="bg-ink border border-border rounded-lg p-4">
@@ -355,10 +355,10 @@
             <span class="text-white">Real issuers only.</span> Every issuer on this page was checked against the XRP Ledger before being added. Wallet address, currency code, and the issuer's on-chain controls are confirmed; nobody gets on the list because a third-party aggregator says they should be there.
           </p>
           <p class="mb-4">
-            <span class="text-white">Native units, not invented dollars.</span> A money-market fund token is reported in shares. An energy token is reported in megawatt-hours. A stablecoin is reported in its peg unit. We don't multiply by an off-chain price feed and call it a USD figure &mdash; that's what creates the misleading numbers you see on aggregator dashboards. If you want a USD valuation, you bring your own price.
+            <span class="text-white">Native units, not invented dollars.</span> A money-market fund token is reported in shares. An energy token is reported in megawatt-hours. A stablecoin is reported in its peg unit. We don't multiply by an off-chain price feed and call it a USD figure. That's what creates the misleading numbers you see on aggregator dashboards. If you want a USD valuation, you bring your own price.
           </p>
           <p>
-            <span class="text-white">Treasury-aware accounting.</span> For OpenEden TBL, what's reported as "circulating" excludes the issuer's own treasury wallet &mdash; the supply actually in holders' hands. Public aggregators show the unfiltered number and overstate the figure by orders of magnitude. Same care will roll out to other issuers where the pattern applies.
+            <span class="text-white">Treasury-aware accounting.</span> For OpenEden TBL, what's reported as "circulating" excludes the issuer's own treasury wallet, leaving only the supply actually in holders' hands. Public aggregators show the unfiltered number and overstate the figure by orders of magnitude. Same care will roll out to other issuers where the pattern applies.
           </p>
         </div>
         <div>
@@ -366,7 +366,7 @@
             <span class="text-white">Mints and burns, live.</span> Every time an issuer mints new tokens or a holder redeems back to the issuer, the event lands here within minutes of settling on-chain. No batching, no waiting for an end-of-day report.
           </p>
           <p class="mb-4">
-            <span class="text-white">Daily snapshots, building history.</span> Once per UTC day, every live issuer's outstanding supply and trustline count are captured. Over time the dashboard accrues a trend you can read &mdash; is OUSG growing? Is EURCV picking up retail distribution? Is the Justoken energy token gaining trustlines or holding flat?
+            <span class="text-white">Daily snapshots, building history.</span> Once per UTC day, every live issuer's outstanding supply and trustline count are captured. Over time the dashboard accrues a trend you can read. Is OUSG growing? Is EURCV picking up retail distribution? Is the Justoken energy token gaining trustlines or holding flat?
           </p>
           <p class="mb-4">
             <span class="text-white">Rails-set-up issuers stay on the list.</span> Archax has its institutional-money-market-fund issuance rails configured but hasn't minted any tokens on mainnet yet. We track it anyway so the first mint shows up here the moment it happens.
@@ -393,7 +393,6 @@
         page is exposed at <code class="font-mono text-white">GET /stats/rwa-summary</code>, free.
       </p>
       <div class="flex flex-wrap gap-3 text-sm">
-        <a href="https://pulse.xrpl-utilities.io/stats/rwa-summary" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">/stats/rwa-summary (raw JSON)</a>
         <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse Swagger</a>
         <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse agents.json</a>
       </div>
@@ -531,7 +530,7 @@
 
     const API_BASE = 'https://pulse.xrpl-utilities.io';
 
-    // Display helpers. Native units only — no USD conversion. Large
+    // Display helpers. Native units only, no USD conversion. Large
     // amounts get a compact form (1.23M, 4.56K). Small fractional
     // values render with up to 4 decimals. Zero stays zero.
     function fmtNumber(n) {
@@ -599,7 +598,7 @@
         renderTopMovers(body.top_movers_24h || []);
         renderIssuerTiles(body.issuers || []);
       } catch (err) {
-        // Best-effort — dashboard skeletons stay visible if Pulse is unreachable.
+        // Best-effort. Dashboard skeletons stay visible if Pulse is unreachable.
       }
     }
 
@@ -612,7 +611,7 @@
       const burnsEl = document.getElementById('stat-burns');
       const ammEl = document.getElementById('stat-amm-pools');
       const ammDetail = document.getElementById('stat-amm-pools-detail');
-      if (trackedEl)     trackedEl.textContent = String(t.tracked_issuers ?? '—');
+      if (trackedEl)     trackedEl.textContent = String(t.tracked_issuers ?? '…');
       if (trackedDetail) trackedDetail.textContent = `${t.live_issuers ?? 0} live · ${t.rails_only_issuers ?? 0} rails-only`;
       if (mintsEl)       mintsEl.textContent = String(t.mints_24h_total ?? 0);
       if (burnsEl)       burnsEl.textContent = String(t.burns_24h_total ?? 0);
@@ -675,7 +674,7 @@
         const status = i.mint_status || 'live';
         const caveat = i.caveat ? `<div class="text-[10px] text-muted mt-3 leading-snug border-t border-border pt-3">${escapeHtml(i.caveat)}</div>` : '';
         const net = i.net_24h || '0';
-        const trustlines = (i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '—';
+        const trustlines = (i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '…';
         const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(i.wallet || '')}`;
         return `
           <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="issuer-tile bg-ink border border-border rounded-xl p-5 block">
@@ -754,7 +753,7 @@
     // the latest /stats/rwa-summary embed... actually we don't embed events
     // there. Pull a small page from /events/recent without auth would 402;
     // instead we render a compact list from /stats/rwa-summary's per-issuer
-    // mints/burns counts. For Phase 1 we keep this simple — show the per-
+    // mints/burns counts. For Phase 1 we keep this simple. Show the per-
     // issuer 24h aggregates as "flow rows" since that's what the summary
     // endpoint gives us cheaply.
     function renderFlowLog(issuers) {
