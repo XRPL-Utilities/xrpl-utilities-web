@@ -243,7 +243,7 @@
         </div>
         <span id="live-state-asof" class="text-[10px] text-muted font-mono">loading&hellip;</span>
       </div>
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
 
         <a href="/telemetry/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
           <div class="text-[10px] uppercase tracking-wider text-muted mb-1">XRPL settlement run-rate</div>
@@ -267,6 +267,12 @@
           <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Wallets classified</div>
           <div id="ls-scans" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
           <div class="text-[10px] text-muted mt-2">unique addresses, lifetime</div>
+        </a>
+
+        <a href="/vault/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">RWA issuers tracked</div>
+          <div id="ls-rwa-issuers" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+          <div class="text-[10px] text-muted mt-2">XRPL mainnet, live + rails-only</div>
         </a>
 
       </div>
@@ -530,11 +536,12 @@ report = session.post(
       const TRUST     = 'https://trust.xrpl-utilities.io';
       const SENTINEL  = 'https://sentinel.xrpl-utilities.io';
 
-      const elRunrate = document.getElementById('ls-runrate');
-      const elEvents  = document.getElementById('ls-events');
-      const elDomains = document.getElementById('ls-domains');
-      const elScans   = document.getElementById('ls-scans');
-      const elAsOf    = document.getElementById('live-state-asof');
+      const elRunrate    = document.getElementById('ls-runrate');
+      const elEvents     = document.getElementById('ls-events');
+      const elDomains    = document.getElementById('ls-domains');
+      const elScans      = document.getElementById('ls-scans');
+      const elRwaIssuers = document.getElementById('ls-rwa-issuers');
+      const elAsOf       = document.getElementById('live-state-asof');
 
       // Compact USD: $123M / $4.2B / $1.05T. Keeps the box width stable
       // across orders of magnitude. Below $1M we still show full digits
@@ -566,11 +573,12 @@ report = session.post(
       }
 
       async function refresh() {
-        const [tel, pulseHc, trustStats, sentinelStats] = await Promise.all([
+        const [tel, pulseHc, trustStats, sentinelStats, rwaSummary] = await Promise.all([
           fetchJson(TELEMETRY + '/settlement/totals'),
           fetchJson(PULSE     + '/healthz'),
           fetchJson(TRUST     + '/stats'),
           fetchJson(SENTINEL  + '/stats'),
+          fetchJson(PULSE     + '/stats/rwa-summary'),
         ]);
 
         if (tel && typeof tel.annualized_run_rate_usd === 'number') {
@@ -590,6 +598,11 @@ report = session.post(
         const scanRows = sentinelStats && sentinelStats.scan_recorder && sentinelStats.scan_recorder.row_count;
         if (typeof scanRows === 'number') {
           setText(elScans, fmtCount(scanRows));
+        }
+
+        const rwaTracked = rwaSummary && rwaSummary.totals && rwaSummary.totals.tracked_issuers;
+        if (typeof rwaTracked === 'number') {
+          setText(elRwaIssuers, fmtCount(rwaTracked));
         }
 
         const now = new Date();
