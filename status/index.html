@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Status | XRPL-Utilities</title>
-  <meta name="description" content="Live operational status of XR-Sentinel, XR-Telemetry, and XR-Pulse plus their upstream dependencies." />
+  <meta name="description" content="Live operational status of XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault plus their upstream dependencies." />
   <meta property="og:title" content="XRPL-Utilities | System Status" />
-  <meta property="og:description" content="Live operational status of XR-Sentinel, XR-Telemetry, and XR-Pulse: QuickNode XRPL RPC, t54 x402 facilitator, the XRP price feed, per-product slow-task caches, and the Pulse event store." />
+  <meta property="og:description" content="Live operational status of all XRPL-Utilities products: XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault. Surfaces overall health and per-service upstream dependencies." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/status/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -86,7 +86,7 @@
   <section>
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-12">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">System status</h1>
-      <p class="text-muted">Live operational status of XR-Sentinel, XR-Telemetry, and XR-Pulse. Updates every 30 seconds.</p>
+      <p class="text-muted">Live operational status of XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault. Updates every 30 seconds.</p>
     </div>
   </section>
 
@@ -178,6 +178,42 @@
         </div>
         <p id="last-checked-pulse" class="text-xs text-muted text-center mt-4"></p>
       </div>
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
+        <div id="overall-trust" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
+          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
+          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
+        </div>
+        <div id="checks-trust" class="space-y-4">
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+        </div>
+        <p id="last-checked-trust" class="text-xs text-muted text-center mt-4"></p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
+        <div id="overall-vault" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
+          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
+          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
+        </div>
+        <div id="checks-vault" class="space-y-4">
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+        </div>
+        <p id="last-checked-vault" class="text-xs text-muted text-center mt-4"></p>
+      </div>
     </div>
   </section>
 
@@ -262,9 +298,9 @@
     // key as the name so we don't drop fields when /healthz adds new
     // subsystems faster than this label dict is updated.
     const SUBSYSTEM_LABELS = {
-      quicknode:  { name: "QuickNode XRPL RPC",       desc: "Ledger data source" },
-      facilitator:{ name: "t54 x402 Facilitator",     desc: "Payment verify + settle" },
-      xrp_price:  { name: "CoinGecko XRP/USD price",  desc: "Drives dynamic XRP pricing per scan" },
+      quicknode:  { name: "XRPL RPC node",            desc: "Ledger data source" },
+      facilitator:{ name: "x402 Facilitator",         desc: "Payment verify + settle" },
+      xrp_price:  { name: "XRP/USD price oracle",     desc: "Drives dynamic XRP pricing per scan" },
       slow_tasks: { name: "Slow-task cache",          desc: "Background metric refreshers (Telemetry)" },
       db_path:    { name: "SQLite cache path",        desc: "Persistent metric cache (Telemetry)" },
       snapshot_age_seconds: { name: "Snapshot age",   desc: "Seconds since last full payload rebuild (Telemetry)" },
@@ -352,6 +388,10 @@
                  "overall-telemetry", "checks-telemetry", "last-checked-telemetry", "XR-Telemetry");
       refreshOne("https://pulse.xrpl-utilities.io/healthz",
                  "overall-pulse", "checks-pulse", "last-checked-pulse", "XR-Pulse");
+      refreshOne("https://trust.xrpl-utilities.io/healthz",
+                 "overall-trust", "checks-trust", "last-checked-trust", "XR-Trust");
+      refreshOne("https://vault.xrpl-utilities.io/healthz",
+                 "overall-vault", "checks-vault", "last-checked-vault", "XR-Vault");
     }
 
     refresh();
