@@ -127,15 +127,35 @@
       animation: shimmer 1.6s ease-in-out infinite;
       border-radius: 0.375rem;
     }
-    /* Uniform card minimum so news + activity rows visually align even
-       when one side has content-heavier cards (titles + briefs + linked-
-       whales) and the other has compact whale-transfer rows. Cards
-       grow past the minimum naturally; the floor just prevents the
-       most compact rows from looking stubby next to text-heavy ones. */
+    /* Truly uniform card height so news (title + brief + correlation +
+       linked-whales) and activity (compact whale-transfer) rows render
+       at the exact same dimensions. Brief text on news rows clamps to
+       3 lines so the title-plus-summary block stays bounded; anything
+       past the card boundary fades out via the bottom gradient (visual
+       cue that there's more on the linked source). The article's title
+       link still leads to the full content; clipping is purely cosmetic. */
     .event-card {
-      min-height: 11rem;
+      height: 13rem;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .event-card > p {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .event-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2rem;
+      background: linear-gradient(to bottom, transparent, #0a0a0a);
+      pointer-events: none;
     }
   </style>
 </head>
