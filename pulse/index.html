@@ -1002,58 +1002,261 @@ feed = session.post(
     }
     loadStats();
 
-    const FEED_INITIAL = 10;
-    const FEED_PAGE_INCREMENT = 10;
-    // Two parallel column states. Each tracks its own slice of the same
-    // underlying response so an expand on one side doesn't disturb the
-    // other.
+    // Page-style pagination. Each column shows PAGE_SIZE events at a time;
+    // Older/Newer buttons swap the contents in place rather than appending,
+    // so the page itself never grows. cursorStack tracks the trail of
+    // before_iso values used to walk backward; popping it returns to a
+    // newer page. Both columns paginate independently against their own
+    // /events/recent kind=news|activity request.
+    const PAGE_SIZE = 15;
+    // Activity fetches a buffer larger than PAGE_SIZE because the client
+    // drops sub-$1M anonymous whale events (NORMAL_ACTIVITY) post-fetch
+    // for the marketing-feed display; without the buffer a busy hour of
+    // small whales could empty the visible page.
+    const ACTIVITY_FETCH_MULTIPLIER = 3;
+    const WHALE_SUMMARY_HOURS = 24;
+    const WHALE_SUMMARY_LIMIT = 500;
+
     const _columns = {
       news: {
+        kind: 'news',
         events: [],
-        shown: 0,
+        cursorStack: [],
+        pageNum: 1,
+        loading: false,
+        error: null,
         listId: 'news-list',
         countId: 'news-count',
-        moreBtnId: 'news-show-more',
-        emptyMsg: 'No news events stored yet. Ingestion runs every 15 minutes; check back shortly.',
+        navId: 'news-nav',
+        emptyMsg: 'No news events in this window. Try Newer to step back, or Jump to latest.',
       },
       activity: {
+        kind: 'activity',
         events: [],
-        shown: 0,
+        cursorStack: [],
+        pageNum: 1,
+        loading: false,
+        error: null,
         listId: 'activity-list',
         countId: 'activity-count',
-        moreBtnId: 'activity-show-more',
-        emptyMsg: 'No on-chain activity above the storage floor stored yet. The watcher polls the validated ledger every 60s.',
+        navId: 'activity-nav',
+        emptyMsg: 'No on-chain activity in this window. Whale rows are retained for 14 days; older pages will be empty.',
       },
     };
+
+    async function fetchEvents({ kind, before_iso, since_iso, limit }) {
+      const previewHeaders = await (window.PreviewToken
+        ? window.PreviewToken.authHeaders()
+        : Promise.resolve({}));
+      const body = { kind, limit, min_whale_usd: 0 };
+      if (before_iso) body.before_iso = before_iso;
+      if (since_iso) body.since_iso = since_iso;
+      const ctl = new AbortController();
+      const tid = setTimeout(() => ctl.abort(), 30000);
+      try {
+        const r = await fetch(`${API_BASE}/events/recent`, {
+          method: 'POST',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
+          body: JSON.stringify(body),
+          signal: ctl.signal,
+        });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        return data.events || [];
+      } finally {
+        clearTimeout(tid);
+      }
+    }
+
+    function filterActivityEvents(events) {
+      // Drop sub-$1M anonymous whales (NORMAL_ACTIVITY) so the marketing
+      // feed surfaces signal not noise. sentinel_signal and
+      // permissioned_domain_lifecycle events pass through untouched.
+      return events.filter(e => {
+        if (!(e.source_appearances || []).includes('whale_xrpl')) return true;
+        return inferWhaleTier(e) !== 'NORMAL_ACTIVITY';
+      });
+    }
+
+    async function loadColumn(key) {
+      const col = _columns[key];
+      col.loading = true;
+      col.error = null;
+      renderColumn(key);
+      try {
+        const cursor = col.cursorStack.length ? col.cursorStack[col.cursorStack.length - 1] : null;
+        const fetchSize = col.kind === 'activity'
+          ? PAGE_SIZE * ACTIVITY_FETCH_MULTIPLIER
+          : PAGE_SIZE;
+        let raw = await fetchEvents({ kind: col.kind, before_iso: cursor, limit: fetchSize });
+        if (col.kind === 'activity') raw = filterActivityEvents(raw);
+        col.events = raw.slice(0, PAGE_SIZE);
+        col.loading = false;
+        annotateCrossLinks();
+        renderColumn(key);
+      } catch (e) {
+        col.loading = false;
+        col.events = [];
+        col.error = (e && e.message) || 'fetch failed';
+        renderColumn(key);
+      }
+    }
+
+    function annotateCrossLinks() {
+      // Cross-stream link: a news event whose target_addresses[] hits a
+      // currently-visible whale event's sender/receiver within a 4h window
+      // gets an _linked_whales array attached. Recomputed against the
+      // visible activity page on every column reload, so links naturally
+      // appear/disappear as the user paginates each column.
+      const FOUR_HOURS = 4 * 60 * 60;
+      const addrIndex = {};
+      for (const w of _columns.activity.events) {
+        if (!(w.source_appearances || []).includes('whale_xrpl')) continue;
+        const au = w.active_utility || {};
+        const ts = w.published_at || 0;
+        if (au.sender_address)   (addrIndex[au.sender_address]   = addrIndex[au.sender_address]   || []).push({ ev: w, ts });
+        if (au.receiver_address) (addrIndex[au.receiver_address] = addrIndex[au.receiver_address] || []).push({ ev: w, ts });
+      }
+      for (const e of _columns.news.events) {
+        delete e._linked_whales;
+        const newsTs = e.published_at || 0;
+        const linked = [];
+        for (const addr of (e.target_addresses || [])) {
+          for (const candidate of (addrIndex[addr] || [])) {
+            if (Math.abs(newsTs - candidate.ts) <= FOUR_HOURS) {
+              linked.push(candidate.ev);
+              break;
+            }
+          }
+        }
+        if (linked.length) e._linked_whales = linked;
+      }
+    }
+
+    function goOlder(key) {
+      const col = _columns[key];
+      if (!col.events.length) return;
+      const oldestTs = col.events[col.events.length - 1].published_at;
+      if (!oldestTs) return;
+      const iso = new Date(oldestTs * 1000).toISOString();
+      col.cursorStack.push(iso);
+      col.pageNum += 1;
+      loadColumn(key);
+    }
+
+    function goNewer(key) {
+      const col = _columns[key];
+      if (col.cursorStack.length === 0) return;
+      col.cursorStack.pop();
+      col.pageNum -= 1;
+      loadColumn(key);
+    }
+
+    function goLatest(key) {
+      const col = _columns[key];
+      col.cursorStack = [];
+      col.pageNum = 1;
+      loadColumn(key);
+    }
+
+    function fmtPubDate(ts) {
+      if (!ts) return '';
+      try {
+        return new Date(ts * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      } catch { return ''; }
+    }
 
     function renderColumn(key) {
       const col = _columns[key];
       const list = document.getElementById(col.listId);
       const countEl = document.getElementById(col.countId);
+
+      // Header label: Page N · date-range hint.
       if (countEl) {
-        countEl.textContent = col.events.length
-          ? `${col.events.length} event${col.events.length === 1 ? '' : 's'}`
-          : '';
+        let label = `Page ${col.pageNum}`;
+        if (col.events.length) {
+          const newest = col.events[0].published_at;
+          const oldest = col.events[col.events.length - 1].published_at;
+          if (newest && oldest) {
+            const newestDate = fmtPubDate(newest);
+            const oldestDate = fmtPubDate(oldest);
+            label += newestDate === oldestDate
+              ? ` · ${newestDate}`
+              : ` · ${oldestDate}–${newestDate}`;
+          }
+        }
+        countEl.textContent = label;
       }
-      if (col.events.length === 0) {
-        list.innerHTML = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">${col.emptyMsg}</div>`;
-        return;
+
+      let body;
+      if (col.loading) {
+        body = `
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/2"></div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-2/3 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/3"></div>
+          </div>`;
+      } else if (col.error) {
+        body = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">Couldn't load this page (${col.error}). <button data-nav="retry" data-col="${key}" class="text-accent hover:underline ml-1">Retry</button></div>`;
+      } else if (col.events.length === 0) {
+        body = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">${col.emptyMsg}</div>`;
+      } else {
+        body = col.events.map(renderEvent).join('');
       }
-      const slice = col.events.slice(0, col.shown);
-      const remaining = col.events.length - col.shown;
-      // Reveal up to FEED_PAGE_INCREMENT more per click; final click reveals
-      // whatever remains. Button label reflects exactly how many will appear
-      // on the next click so the user knows what they're getting.
-      const nextChunk = Math.min(remaining, FEED_PAGE_INCREMENT);
-      const moreBtn = remaining > 0
-        ? `<button id="${col.moreBtnId}" class="w-full bg-ink border border-border hover:border-accent text-sm text-muted hover:text-white transition rounded-lg p-3 mt-2">Show ${nextChunk} more${remaining > nextChunk ? ` (${remaining} total remaining)` : ''}</button>`
-        : '';
-      list.innerHTML = slice.map(renderEvent).join('') + moreBtn;
-      const btn = document.getElementById(col.moreBtnId);
-      if (btn) btn.addEventListener('click', () => {
-        col.shown = Math.min(col.events.length, col.shown + FEED_PAGE_INCREMENT);
-        renderColumn(key);
-      });
+
+      // Nav strip: ← Newer | Jump to latest | Older →. The nav is always
+      // rendered (even on empty/error states) so the user can recover.
+      const canNewer = col.cursorStack.length > 0 && !col.loading;
+      const canOlder = col.events.length > 0 && !col.loading;
+      const showLatest = col.cursorStack.length > 0 && !col.loading;
+      const navHTML = `
+        <div id="${col.navId}" class="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-border">
+          <button data-nav="newer" data-col="${key}"
+                  class="px-3 py-1.5 text-xs rounded-md transition border ${canNewer ? 'text-white border-border hover:border-accent hover:bg-ink' : 'text-muted/40 border-border/40 cursor-not-allowed'}"
+                  ${canNewer ? '' : 'disabled'}>← Newer</button>
+          ${showLatest
+            ? `<button data-nav="latest" data-col="${key}" class="px-3 py-1.5 text-xs text-muted hover:text-white transition">Jump to latest</button>`
+            : '<span class="text-xs text-muted/40">most recent</span>'}
+          <button data-nav="older" data-col="${key}"
+                  class="px-3 py-1.5 text-xs rounded-md transition border ${canOlder ? 'text-white border-border hover:border-accent hover:bg-ink' : 'text-muted/40 border-border/40 cursor-not-allowed'}"
+                  ${canOlder ? '' : 'disabled'}>Older →</button>
+        </div>`;
+
+      list.innerHTML = body + navHTML;
+    }
+
+    // Delegated nav-button handler. One listener catches every column's
+    // Older/Newer/Latest/Retry click without per-render rebinding.
+    document.getElementById('feed').addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button[data-nav]');
+      if (!btn) return;
+      const key = btn.dataset.col;
+      const action = btn.dataset.nav;
+      if (!_columns[key]) return;
+      if (action === 'older') goOlder(key);
+      else if (action === 'newer') goNewer(key);
+      else if (action === 'latest') goLatest(key);
+      else if (action === 'retry') loadColumn(key);
+    });
+
+    async function loadWhaleSummary() {
+      // Separate fetch covering the trailing 24h so the headline aggregates
+      // and hourly chart don't drift just because the activity column's
+      // current page only shows ~15 rows.
+      try {
+        const since = new Date(Date.now() - WHALE_SUMMARY_HOURS * 3600 * 1000).toISOString();
+        const events = await fetchEvents({
+          kind: 'activity',
+          since_iso: since,
+          limit: WHALE_SUMMARY_LIMIT,
+        });
+        renderWhaleSummary(aggregateWhaleStats(events));
+      } catch {
+        // Best-effort; the summary chart is decorative relative to the columns.
+      }
     }
 
     // Derive the whale-tier for a single event, mirroring the same
@@ -1071,71 +1274,6 @@ feed = session.post(
       if (usd >= 10_000_000) return 'INSTITUTIONAL_FLOW';
       if (usd >= 1_000_000)  return 'WHALE_MOVE';
       return 'NORMAL_ACTIVITY';
-    }
-
-    // Visible-feed caps. The server sends many more rows than a casual
-    // visitor wants to scroll; the live feed shows the most recent N
-    // per column. The whale-summary panel above pulls aggregates from
-    // the FULL response (pre-cap) so the 24h numbers don't drift just
-    // because we're slicing the visible list.
-    const NEWS_CAP = 25;
-    const ACTIVITY_CAP = 50;
-
-    function splitEventsByKind(events) {
-      const news = [];
-      const activity = [];
-      for (const e of events) {
-        if ((e.source_appearances || []).indexOf('whale_xrpl') !== -1) {
-          // Drop NORMAL_ACTIVITY (sub-$1M anonymous) from the visible
-          // activity stream upfront. Suppressing inside renderEvent
-          // alone breaks pagination: col.shown=10 would slice 10 events
-          // but render only the non-suppressed subset, so 'show more'
-          // appeared to add < 10 rows and the user had to click 2-3
-          // times to fill a batch. Filtering here keeps the events
-          // array == visible rows and pagination exact.
-          if (inferWhaleTier(e) === 'NORMAL_ACTIVITY') continue;
-          activity.push(e);
-        } else {
-          news.push(e);
-        }
-      }
-      // Cross-stream linking: build an address -> whale-event map from
-      // the activity column, then annotate any news event whose
-      // target_addresses intersects with a whale event's sender or
-      // receiver. Within a 4-hour window of each other (matches Pulse's
-      // existing correlation window). Pure best-effort visual link;
-      // doesn't change the underlying API response.
-      const FOUR_HOURS = 4 * 60 * 60;
-      const addrIndex = {};
-      for (const w of activity) {
-        const au = w.active_utility || {};
-        const senderAddr   = au.sender_address;
-        const receiverAddr = au.receiver_address;
-        const ts = w.published_at || 0;
-        if (senderAddr)   (addrIndex[senderAddr]   = addrIndex[senderAddr]   || []).push({ ev: w, ts });
-        if (receiverAddr) (addrIndex[receiverAddr] = addrIndex[receiverAddr] || []).push({ ev: w, ts });
-      }
-      for (const e of news) {
-        const newsTs = e.published_at || 0;
-        const linked = [];
-        for (const addr of (e.target_addresses || [])) {
-          for (const candidate of (addrIndex[addr] || [])) {
-            if (Math.abs(newsTs - candidate.ts) <= FOUR_HOURS) {
-              linked.push(candidate.ev);
-              break;  // one link per matched address is enough
-            }
-          }
-        }
-        if (linked.length) e._linked_whales = linked;
-      }
-      // Apply visible-feed caps after splitting + cross-linking. Events
-      // arrive newest-first from the server, so slice(0, N) keeps the
-      // most-recent N per column. Aggregates upstream of this function
-      // already consumed the uncapped response.
-      return {
-        news: news.slice(0, NEWS_CAP),
-        activity: activity.slice(0, ACTIVITY_CAP),
-      };
     }
 
     // Aggregate INSTITUTIONAL_FLOW + WHALE_MOVE events from the last
@@ -1240,77 +1378,17 @@ feed = session.post(
       }
     }
 
-    async function loadFeed() {
-      const errBox = (msg) => `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">${msg} <button id="retry-link" class="text-accent hover:underline ml-1">Retry</button></div>`;
-      try {
-        const ctl = new AbortController();
-        const timeoutId = setTimeout(() => ctl.abort(), 30000);
-        // Request the server cap (Pulse Pydantic le=500) so both
-        // columns get full available depth without crowding each
-        // other out. min_whale_usd:0 keeps every stored on-chain
-        // event in the response so the activity column populates
-        // fully; at limit=200 a busy whale stream silently pushed
-        // news off the back of the response, so we ask for the wider
-        // window and let the per-column splitter render what fits.
-        const previewHeaders = await (window.PreviewToken
-          ? window.PreviewToken.authHeaders()
-          : Promise.resolve({}));
-        const r = await fetch(`${API_BASE}/events/recent`, {
-          method: 'POST',
-          headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
-          body: JSON.stringify({ limit: 500, min_whale_usd: 0 }),
-          signal: ctl.signal,
-        });
-        clearTimeout(timeoutId);
-        if (!r.ok) {
-          document.getElementById('news-list').innerHTML = errBox(`Feed returned HTTP ${r.status}.`);
-          document.getElementById('activity-list').innerHTML = '';
-          attachRetry();
-          return;
-        }
-        const data = await r.json();
-        const allEvents = data.events || [];
-        // Compute the 24h whale-summary aggregates from the FULL event
-        // list before splitEventsByKind applies its visible-feed caps.
-        // Otherwise the headline numbers would silently drift down as
-        // the cap was tightened (e.g., a 50-row activity cap would miss
-        // older whale events still inside the 24h window).
-        renderWhaleSummary(aggregateWhaleStats(allEvents));
-        const { news, activity } = splitEventsByKind(allEvents);
-        _columns.news.events = news;
-        _columns.news.shown = Math.min(FEED_INITIAL, news.length);
-        _columns.activity.events = activity;
-        _columns.activity.shown = Math.min(FEED_INITIAL, activity.length);
-        renderColumn('news');
-        renderColumn('activity');
-      } catch (e) {
-        document.getElementById('news-list').innerHTML = errBox('Could not reach the feed. This usually clears on a retry; the API is at <code class="font-mono text-white">pulse.xrpl-utilities.io</code>.');
-        document.getElementById('activity-list').innerHTML = '';
-        attachRetry();
-      }
-    }
-
-    function attachRetry() {
-      const btn = document.getElementById('retry-link');
-      if (btn) btn.addEventListener('click', loadFeed);
-    }
-
     document.getElementById('refresh-btn').addEventListener('click', () => {
-      // Reset both columns to skeleton state on manual refresh.
-      const skeleton = `
-        <div class="bg-ink border border-border rounded-lg p-4">
-          <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
-          <div class="skeleton-bar h-3 w-1/2"></div>
-        </div>
-      `;
-      document.getElementById('news-list').innerHTML = skeleton;
-      document.getElementById('activity-list').innerHTML = skeleton;
-      document.getElementById('news-count').textContent = '';
-      document.getElementById('activity-count').textContent = '';
-      loadFeed();
+      // Refresh = reset both columns to page 1 + re-fetch the 24h whale
+      // summary. Fires three parallel calls; columns render independently.
+      goLatest('news');
+      goLatest('activity');
+      loadWhaleSummary();
     });
 
-    loadFeed();
+    loadColumn('news');
+    loadColumn('activity');
+    loadWhaleSummary();
   </script>
 </body>
 </html>
