@@ -6,7 +6,7 @@
   <title>Manifest | XRPL-Utilities</title>
   <meta name="description" content="Human-readable view of the XR-Sentinel, XR-Telemetry, and XR-Pulse agent manifests, showing what AI agents see when they discover these services." />
   <meta property="og:title" content="XRPL-Utilities | Agent Manifest" />
-  <meta property="og:description" content="What AI agents see when they discover XR-Sentinel, XR-Telemetry, and XR-Pulse via /.well-known/agents.json. Capabilities, payment, endpoints, legal." />
+  <meta property="og:description" content="What AI agents see when they discover XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault via /.well-known/agents.json. Capabilities, payment, endpoints, legal." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/manifest/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -87,7 +87,7 @@
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Agent manifests</h1>
       <p class="text-muted leading-relaxed">
-        This is what an AI agent or crawler sees when it discovers XR-Sentinel, XR-Telemetry, or XR-Pulse via each
+        This is what an AI agent or crawler sees when it discovers XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, or XR-Vault via each
         service's
         <code class="font-mono text-sm bg-panel px-2 py-1 rounded">/.well-known/agents.json</code>,
         rendered here for human readability.
@@ -230,6 +230,37 @@
               <li><span class="text-muted">schema</span> &nbsp; /schema</li>
               <li><span class="text-muted">manifest</span> &nbsp; /agents.json</li>
               <li><span class="text-muted">health</span> &nbsp; /healthz</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
+        <div id="content-vault" class="space-y-6">
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
+            <h3 class="text-xl font-bold mb-3">XR-Vault</h3>
+            <p class="text-white text-sm leading-relaxed mb-3">Real-world asset tracker for XRPL. Per-issuer mint and burn flow, daily circulating snapshots, and AMM-of-RWA pool exposure across tokenized treasuries, stablecoins, commercial paper, money-market funds, and energy commodities. Native unit-of-account only; no fabricated USD valuation. Behavioral context, not investment or compliance advice.</p>
+            <p class="text-xs text-muted">Schema 1.0.2 &middot; Provider: XRPL-Utilities&trade; &middot; Base: <span class="font-mono">https://vault.xrpl-utilities.io</span></p>
+          </section>
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2</div>
+            <h3 class="text-xl font-bold mb-3">Payment</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">price</dt><dd class="sm:col-span-2">$0.10 USD per call</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">currencies</dt><dd class="sm:col-span-2">XRP, RLUSD</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">recipient</dt><dd class="sm:col-span-2 font-mono break-all">rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted sm:text-right">facilitator</dt><dd class="sm:col-span-2 font-mono break-all">https://xrpl-facilitator-mainnet.t54.ai</dd>
+            </dl>
+          </section>
+          <section class="bg-panel border border-border rounded-2xl p-8">
+            <h3 class="text-xl font-bold mb-3">Endpoints</h3>
+            <ul class="space-y-2 text-sm font-mono">
+              <li><span class="text-muted">scan</span> &nbsp; /scan</li>
+              <li><span class="text-muted">schema</span> &nbsp; /schema</li>
+              <li><span class="text-muted">manifest</span> &nbsp; /agents.json</li>
+              <li><span class="text-muted">health</span> &nbsp; /healthz</li>
+              <li><span class="text-muted">stats</span> &nbsp; /stats</li>
             </ul>
           </section>
         </div>
