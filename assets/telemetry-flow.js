@@ -517,6 +517,24 @@
         grid.appendChild(c);
       });
       r.appendChild(grid);
+
+      // Cross-product link to XR-Vault when the quote asset is also a
+      // tracked RWA issuer. Backend (Telemetry 1.6.0+) surfaces this on
+      // the per-pair entry; rendered as a small link under the metrics
+      // grid so it doesn't compete with the headline figures.
+      const xref = p.cross_references;
+      if (xref && xref.xr_vault_url) {
+        const link = document.createElement('a');
+        link.href = xref.xr_vault_url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'inline-flex items-center gap-1 mt-2 text-[11px] text-accent hover:underline';
+        link.textContent = 'Also tracked in XR-Vault →';
+        const wrapXref = el('div', 'pt-2 border-t border-border/40 mt-2');
+        wrapXref.appendChild(link);
+        r.appendChild(wrapXref);
+      }
+
       pairsList.appendChild(r);
     });
     if (!(amm.pairs || []).length) {
