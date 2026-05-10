@@ -386,6 +386,58 @@
       card.appendChild(el('div', 'text-xs text-muted uppercase tracking-wider mb-2 mt-4', 'Issuer profile'));
       card.appendChild(el('p', 'text-white text-sm leading-relaxed', report.issuer_profile));
     }
+    // Provenance / account-genesis block (Sentinel schema 2.14.0+). Renders
+    // only when there's a chain hop to surface; null-shaped responses
+    // (genesis-ledger root accounts) skip silently.
+    const gen = report.genesis;
+    if (gen && Array.isArray(gen.chain) && gen.chain.length > 0) {
+      const head = gen.chain[0];
+      const activatorLabel = head.activator_label_name;
+      const activatorVerified = head.activator_label_verified;
+      const initialXrp = head.initial_amount_xrp;
+      const activationIso = head.activation_date_iso || '';
+      const activationDate = activationIso ? activationIso.slice(0, 10) : '?';
+      const ageDays = head.age_days != null ? head.age_days : null;
+      const ageText = ageDays != null
+        ? (ageDays < 1 ? 'today'
+           : ageDays === 1 ? '1 day ago'
+           : ageDays < 60 ? `${ageDays} days ago`
+           : ageDays < 730 ? `${Math.round(ageDays / 30)} months ago`
+           : `${Math.round(ageDays / 365)} years ago`)
+        : '';
+
+      card.appendChild(el('div', 'text-xs text-muted uppercase tracking-wider mb-2 mt-4', 'Provenance'));
+
+      const provLine = el('p', 'text-white text-sm leading-relaxed');
+      if (activatorLabel) {
+        const labelSpan = el('strong', 'text-accent', activatorLabel);
+        provLine.appendChild(document.createTextNode('Activated by '));
+        provLine.appendChild(labelSpan);
+        if (activatorVerified) {
+          provLine.appendChild(el('span', 'text-xs text-muted ml-1', '(verified)'));
+        }
+      } else {
+        provLine.appendChild(document.createTextNode('Activated by an unlabeled wallet '));
+      }
+      const dateText = ageText ? ` on ${activationDate} (${ageText})` : ` on ${activationDate}`;
+      provLine.appendChild(document.createTextNode(`${dateText} with ${initialXrp} XRP funded at the reserve.`));
+      card.appendChild(provLine);
+
+      const activatorAddrText = el('div', 'text-xs text-muted font-mono mt-1', head.activator);
+      card.appendChild(activatorAddrText);
+
+      // Chain summary line — only shown when the walk went past hop 0.
+      if (gen.chain.length > 1) {
+        const tail = gen.terminates_at_label_name
+          ? `chain terminates at ${gen.terminates_at_label_name}`
+          : (gen.max_depth_reached ? 'chain walk capped at max depth without resolving' : 'chain ends at an unlabeled wallet');
+        card.appendChild(el(
+          'div',
+          'text-xs text-muted mt-2',
+          `Activator chain walked back ${gen.chain.length} hops; ${tail}.`,
+        ));
+      }
+    }
     return card;
   }
 
