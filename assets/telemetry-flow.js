@@ -375,6 +375,14 @@
     }
     rows.push(['Escrow release ÷ relock ratio', fmtRatio(supply.escrow_release_vs_relock_ratio)]);
     card.appendChild(kvGrid(rows, 3));
+    // Plain-English legend for the less-obvious supply metrics.
+    card.appendChild(el(
+      'div',
+      'mt-4 text-[11px] text-muted leading-relaxed',
+      'AMM-locked: XRP committed to liquidity pools — swappable, but not sitting on a typical order book. ' +
+      'DEX orderbook depth: XRP resting in open offers on XRPL\'s native order book. ' +
+      'Escrow release ÷ relock ratio: how much escrowed XRP unlocked into circulation versus how much got re-escrowed over the same window. >1 means net dilution (more escrow opening than closing); <1 means net withdrawal of float back into time-locked storage.',
+    ));
     return card;
   }
 
@@ -495,7 +503,33 @@
     // pair name + APR (most useful at a glance); body is a 3-up grid of
     // TVL / 1% depth / fee_pct so nothing overflows on a 375px viewport.
     const pairsCol = el('div');
-    pairsCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Top pairs'));
+    // Top pairs header row: title + (when applicable) the XR-Vault cross-link.
+    // The cross-link lives here rather than buried inside the first pair card
+    // so a reader doesn't miss it.
+    const pairsHeader = el('div', 'flex items-center justify-between gap-2 mb-1 flex-wrap');
+    pairsHeader.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted', 'Top pairs'));
+    const headerVaultPair = (amm.pairs || []).find(
+      p => p && p.cross_references && p.cross_references.xr_vault_url,
+    );
+    if (headerVaultPair) {
+      const link = document.createElement('a');
+      link.href = headerVaultPair.cross_references.xr_vault_url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.className = 'inline-flex items-center gap-1 text-[11px] text-accent hover:underline';
+      link.textContent = headerVaultPair.cross_references.xr_vault_issuer
+        ? `${headerVaultPair.cross_references.xr_vault_issuer} → XR-Vault →`
+        : 'Also tracked in XR-Vault →';
+      pairsHeader.appendChild(link);
+    }
+    pairsCol.appendChild(pairsHeader);
+    // Compact column explainer so a lay reader doesn't have to decode
+    // TVL / 1% depth / fee / APR.
+    pairsCol.appendChild(el(
+      'p',
+      'text-[10px] text-muted leading-snug mb-2',
+      'TVL: total value locked in the pool, USD. 1% depth: how much XRP you can swap before moving the pool price 1%. Fee: pool trading fee. APR: estimated annualized return for liquidity providers (fee × volume ÷ TVL).',
+    ));
     const pairsList = el('div', 'space-y-2');
     (amm.pairs || []).forEach(p => {
       const r = el('div', 'bg-ink border border-border rounded-lg p-3');
@@ -517,23 +551,6 @@
         grid.appendChild(c);
       });
       r.appendChild(grid);
-
-      // Cross-product link to XR-Vault when the quote asset is also a
-      // tracked RWA issuer. Backend (Telemetry 1.6.0+) surfaces this on
-      // the per-pair entry; rendered as a small link under the metrics
-      // grid so it doesn't compete with the headline figures.
-      const xref = p.cross_references;
-      if (xref && xref.xr_vault_url) {
-        const link = document.createElement('a');
-        link.href = xref.xr_vault_url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.className = 'inline-flex items-center gap-1 mt-2 text-[11px] text-accent hover:underline';
-        link.textContent = 'Also tracked in XR-Vault →';
-        const wrapXref = el('div', 'pt-2 border-t border-border/40 mt-2');
-        wrapXref.appendChild(link);
-        r.appendChild(wrapXref);
-      }
 
       pairsList.appendChild(r);
     });

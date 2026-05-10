@@ -240,10 +240,13 @@
   <section id="top-movers">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
-        <div class="flex items-center justify-between gap-4 mb-6">
+        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Top movers</h2>
           <span class="text-[10px] text-muted font-mono">By absolute net 24h flow</span>
         </div>
+        <p class="text-xs text-muted leading-relaxed mb-5">
+          The issuers with the biggest net change in circulating supply over the last 24 hours, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow.
+        </p>
         <div id="top-movers-list" class="space-y-2">
           <div class="bg-ink border border-border rounded-lg p-4">
             <div class="skeleton-bar h-4 w-2/3 mb-2"></div>
@@ -258,10 +261,13 @@
   <section id="issuer-grid">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
-        <div class="flex items-center justify-between gap-4 mb-6 flex-wrap">
+        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Per-issuer state</h2>
           <span class="text-[10px] text-muted font-mono">Native units, no USD valuation</span>
         </div>
+        <p class="text-xs text-muted leading-relaxed mb-5">
+          One tile per tracked issuer. <span class="text-white">Circulating</span> is how much of the token exists on-chain right now in the issuer's native units (treasury holdings excluded where applicable, like OpenEden TBL). <span class="text-white">24h &Delta;</span> is how that number moved since yesterday's snapshot. <span class="text-white">Trustlines</span> is roughly the number of holders. The colored badge is the asset class. Ondo OUSG appears twice because Ondo operates two issuer wallets &mdash; one for institutional access (authorized-trustline gating + clawback), one for the broader retail variant. "Permissioned" here refers to those wallet-level controls, not XLS-80 PermissionedDomains (those live in <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>).
+        </p>
         <div id="issuer-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
             <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
@@ -286,10 +292,13 @@
   <section id="amm-pools">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
-        <div class="flex items-center justify-between gap-4 mb-6 flex-wrap">
+        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">AMM pools</h2>
-          <span class="text-[10px] text-muted font-mono">XLS-30 pools where one side is an RWA issuer's IOU</span>
+          <span class="text-[10px] text-muted font-mono">Liquidity where RWAs trade</span>
         </div>
+        <p class="text-xs text-muted leading-relaxed mb-5">
+          Every Automated Market Maker pool on XRPL where one of the two tokens is a tracked RWA. AMMs are constant-product liquidity pools (XRPL's XLS-30 standard) &mdash; anyone can swap between the two tokens at any time without an order book, with the price set by the pool's reserves. These tiles tell you how much liquidity is actually sitting in each pool, which is a proxy for how tradeable the RWA is on-chain right now. Pools with dust-level balances (under a few dollars) show up too; they're the "rails set up, no real liquidity yet" signal.
+        </p>
         <div id="amm-pool-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="bg-ink border border-border rounded-xl p-5">
             <div class="skeleton-bar h-5 w-2/3 mb-4"></div>
@@ -310,10 +319,13 @@
   <section id="flow-log">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
-        <div class="flex items-center justify-between gap-4 mb-6 flex-wrap">
+        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Recent flow</h2>
           <button id="flow-refresh" class="text-xs text-muted hover:text-white transition">Refresh</button>
         </div>
+        <p class="text-xs text-muted leading-relaxed mb-5">
+          Per-issuer mint and burn activity over the last 24 hours. Each row shows how many new tokens were minted (green +), how many were redeemed back to the issuer (red &minus;), and the <span class="text-white">net</span> change &mdash; whether more came in than went out, or vice versa. Positive net means the issuer's outstanding supply grew; negative means it shrank.
+        </p>
         <div id="flow-list" class="space-y-3">
           <div class="bg-ink border border-border rounded-lg p-4">
             <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
@@ -336,50 +348,31 @@
   <section class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">What this tracks</h2>
-      <h3 class="text-3xl font-bold mb-6">Verified issuers, native units, no USD interpretation</h3>
+      <h3 class="text-3xl font-bold mb-6">Verified issuers, native units, no fabricated USD</h3>
       <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-muted leading-relaxed">
         <div>
           <p class="mb-4">
-            The issuer map is operator-curated and reconciled against on-chain
-            state directly, not pulled from a third-party aggregator. Each
-            issuer is included only after wallet, currency, and authority flags
-            are independently confirmed.
+            <span class="text-white">Real issuers only.</span> Every issuer on this page was checked against the XRP Ledger before being added. Wallet address, currency code, and the issuer's on-chain controls are confirmed; nobody gets on the list because a third-party aggregator says they should be there.
           </p>
           <p class="mb-4">
-            For OpenEden TBL, the displayed "circulating" reflects supply
-            actually distributed to holders, with treasury-held inventory
-            excluded. Public aggregators report the unfiltered total and
-            overstate the figure substantially.
+            <span class="text-white">Native units, not invented dollars.</span> A money-market fund token is reported in shares. An energy token is reported in megawatt-hours. A stablecoin is reported in its peg unit. We don't multiply by an off-chain price feed and call it a USD figure &mdash; that's what creates the misleading numbers you see on aggregator dashboards. If you want a USD valuation, you bring your own price.
           </p>
           <p>
-            For Justoken JMWH, the figure is in megawatt-hours, not dollars.
-            The marketed USD valuation depends on an off-chain energy price
-            feed we don't carry; the on-chain unit count is what we report.
+            <span class="text-white">Treasury-aware accounting.</span> For OpenEden TBL, what's reported as "circulating" excludes the issuer's own treasury wallet &mdash; the supply actually in holders' hands. Public aggregators show the unfiltered number and overstate the figure by orders of magnitude. Same care will roll out to other issuers where the pattern applies.
           </p>
         </div>
         <div>
           <p class="mb-4">
-            Mints and burns are picked up in near real time as XRPL ledgers
-            close. The dashboard refreshes on a short cadence so newly minted
-            supply or holder redemptions land here within minutes of settling
-            on-chain.
+            <span class="text-white">Mints and burns, live.</span> Every time an issuer mints new tokens or a holder redeems back to the issuer, the event lands here within minutes of settling on-chain. No batching, no waiting for an end-of-day report.
           </p>
           <p class="mb-4">
-            Daily snapshots run once per UTC day per live issuer, capturing
-            outstanding supply, net circulating, trustline count, and the
-            day-over-day delta against the prior snapshot.
+            <span class="text-white">Daily snapshots, building history.</span> Once per UTC day, every live issuer's outstanding supply and trustline count are captured. Over time the dashboard accrues a trend you can read &mdash; is OUSG growing? Is EURCV picking up retail distribution? Is the Justoken energy token gaining trustlines or holding flat?
           </p>
           <p class="mb-4">
-            Issuers in <span class="text-white">rails-only</span> status (Archax/abrdn) have their
-            permissioned-trustline rails configured but zero tokens minted on
-            mainnet so far. They're polled to capture the first mint when it
-            lands.
+            <span class="text-white">Rails-set-up issuers stay on the list.</span> Archax has its institutional-money-market-fund issuance rails configured but hasn't minted any tokens on mainnet yet. We track it anyway so the first mint shows up here the moment it happens.
           </p>
           <p>
-            AMM pools where one side is an RWA issuer's IOU are surfaced
-            alongside the issuers. Pool balances refresh on the same daily
-            cadence as the issuer snapshots; pair tiles rank by RWA-side
-            magnitude so meaningful liquidity floats above dust pools.
+            <span class="text-white">AMM exposure on the same page.</span> For each issuer, you can see whether the token has working swap-pool liquidity or only issuer-held supply. That's the difference between "real on-chain market" and "press release with rails."
           </p>
         </div>
       </div>
@@ -400,7 +393,7 @@
         page is exposed at <code class="font-mono text-white">GET /stats/rwa-summary</code>, free.
       </p>
       <div class="flex flex-wrap gap-3 text-sm">
-        <a href="https://pulse.xrpl-utilities.io/stats/rwa-summary" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">/stats/rwa-summary</a>
+        <a href="https://pulse.xrpl-utilities.io/stats/rwa-summary" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">/stats/rwa-summary (raw JSON)</a>
         <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse Swagger</a>
         <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse agents.json</a>
       </div>
@@ -552,9 +545,22 @@
       return num.toLocaleString(undefined, { maximumFractionDigits: 4 });
     }
 
+    // Human-readable label for an asset_class slug. Returns short upper-
+    // case text that fits the pill width. Longer aliases (e.g.
+    // "BRL stablecoin") are spelled out so a lay reader doesn't have to
+    // decode "fiat_stable_brl" or guess what MMF stands for.
     function fmtAssetClass(c) {
-      if (!c) return '';
-      return c.replace('fiat_stable_', '').replace('commodity_energy', 'energy').replace('commercial_paper', 'commercial paper').replace('money_market', 'MMF').replace('treasuries', 'treasuries').toUpperCase();
+      const map = {
+        treasuries:        'TREASURIES',
+        fiat_stable_usd:   'USD STABLE',
+        fiat_stable_eur:   'EUR STABLE',
+        fiat_stable_brl:   'BRL STABLE',
+        fiat_stable_aud:   'AUD STABLE',
+        commercial_paper:  'COMMERCIAL PAPER',
+        money_market:      'MONEY MARKET',
+        commodity_energy:  'ENERGY',
+      };
+      return map[c] || (c || '').toUpperCase();
     }
 
     function fmtAddrShort(addr) {
