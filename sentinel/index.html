@@ -326,7 +326,7 @@ report = session.post(
           <div>
             <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Signal glossary</h2>
             <h3 class="text-2xl md:text-3xl font-bold">What do these signal flags mean?</h3>
-            <p class="text-sm text-muted mt-2">Click to expand. 24 flags in plain English.</p>
+            <p class="text-sm text-muted mt-2">Click to expand. 28 flags in plain English.</p>
           </div>
           <span class="text-3xl text-accent shrink-0 group-open:rotate-180 transition-transform mt-1">▾</span>
         </summary>
@@ -480,6 +480,38 @@ report = session.post(
             <dd class="text-sm text-muted leading-relaxed">
               The wallet is configured as a permissioned IOU issuer: every holder must be operator-authorized before they can hold the token, and the issuer can claw back outstanding balances. Structural pattern of a tokenized treasury, regulated stablecoin, or institutional pilot. Behavioral context, not a risk verdict.
               <span class="block text-xs mt-2 opacity-70">Fires when: the scanned address has both <code class="font-mono">lsfRequireAuth</code> and <code class="font-mono">lsfAllowTrustLineClawback</code> set on its AccountRoot flags. Read from the on-chain <code class="font-mono">account_info</code> flags surfaced in the response's <code class="font-mono">features.account_flags</code>.</span>
+            </dd>
+          </div>
+        </dl>
+
+        <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Provenance &amp; lineage</h4>
+        <dl class="space-y-3">
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">FRESH_WALLET</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet was created in the last 30 days. Fresh wallets paired with high-value flow or rapidly-developing patterns deserve closer attention than the same patterns on aged wallets.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the genesis block's hop-0 <code class="font-mono">age_days</code> is less than 30.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">WHALE_GENESIS</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet was funded at activation with 50,000+ XRP — institutional-scale setup, not retail dispense. Combined with the activator label (when present) gives clean provenance: known venues seeding institutional users vs. unlabeled large-scale provisioning.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the genesis block's hop-0 initial funding is at least 50,000 XRP.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_PROVENANCE</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet's lineage traces back to a known exchange or institution within 3 hops. Stronger than just the immediate activator — intermediate operational wallets get walked past so the chain resolves to the original venue.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the genesis chain terminates at a labeled (XRPScan well-known) wallet within 3 hops.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">LAYERED_PROVENANCE</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet's activator chain runs through 2 or more unlabeled wallets in a row, and every wallet in the chain was itself fresh when it dispensed downstream. Pattern of layered routing through fresh intermediates rather than direct dispense from a known venue. Behavioral context only — legitimate setup pipelines can also produce this shape.
+              <span class="block text-xs mt-2 opacity-70">Fires when: 2+ consecutive unlabeled hops in the chain, every hop's <code class="font-mono">age_days</code> is below 90, and the chain does not terminate at a labeled venue.</span>
             </dd>
           </div>
         </dl>
