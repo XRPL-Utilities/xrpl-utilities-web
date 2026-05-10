@@ -1010,14 +1010,14 @@ feed = session.post(
     // before_iso values used to walk backward; popping it returns to a
     // newer page. Both columns paginate independently against their own
     // /events/recent kind=news|activity request.
-    // Per-column page sizes. News cards carry title + brief + correlation
-    // + sometimes linked-whale block, so they're roughly 2x the height of
-    // a whale activity row. Showing ~22 activity rows next to ~12 news
-    // rows keeps the column heights visually balanced; the flex-col
-    // wrapper + mt-auto on the nav strip then pins both nav strips to
-    // the same vertical position regardless of any remaining slack.
-    const PAGE_SIZE_NEWS = 12;
-    const PAGE_SIZE_ACTIVITY = 22;
+    // Per-column page sizes. Use equal row counts in both columns and
+    // let the flex-col + grid items-stretch layout absorb the small
+    // remaining height difference. An earlier attempt at 12/22 (assuming
+    // activity rows were half the height of news rows) overcorrected -
+    // activity cards are only modestly shorter, so the larger activity
+    // count made that side noticeably taller than news.
+    const PAGE_SIZE_NEWS = 15;
+    const PAGE_SIZE_ACTIVITY = 15;
     // Activity fetches a buffer larger than PAGE_SIZE_ACTIVITY because the
     // client drops sub-$1M anonymous whale events (NORMAL_ACTIVITY) for
     // the marketing-feed display; without the buffer a busy hour of small
