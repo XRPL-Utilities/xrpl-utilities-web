@@ -38,7 +38,6 @@
       },
     };
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous"></script>
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
@@ -91,7 +90,9 @@
         <div class="bg-panel border border-border rounded-2xl p-6 sm:p-8">
 
           <div class="grid sm:grid-cols-[auto_1fr] gap-6 items-start mb-6">
-            <div id="qr" class="bg-white p-3 rounded-lg w-[160px] h-[160px] flex items-center justify-center"></div>
+            <div class="bg-white p-3 rounded-lg w-[160px] h-[160px] flex items-center justify-center shrink-0">
+              <img id="qr" alt="XRPL payment QR" width="136" height="136" />
+            </div>
             <div class="min-w-0">
               <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Treasury address</div>
               <div class="flex items-center gap-2 mb-1">
@@ -215,7 +216,10 @@
     // xrpl: URI is the canonical standard most wallets understand for
     // pay-to-address. dt = destination tag. Amount is updated dynamically
     // by the amount selector below.
-    let qr;
+    //
+    // Rendered as an <img> via api.qrserver.com (already allowlisted in
+    // the CSP img-src). A JS library would have required cdnjs in CSP
+    // script-src, which the marketing site doesn't allowlist.
     function makeUri(amtXrp) {
       const params = ["dt=" + DT];
       if (amtXrp && amtXrp > 0) params.push("amount=" + amtXrp);
@@ -223,15 +227,9 @@
     }
     function renderQr(uri) {
       const el = document.getElementById("qr");
-      el.innerHTML = "";
-      qr = new QRCode(el, {
-        text: uri,
-        width: 140,
-        height: 140,
-        colorDark: "#0a0e1a",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M,
-      });
+      const src = "https://api.qrserver.com/v1/create-qr-code/?size=136x136&margin=0&data="
+        + encodeURIComponent(uri);
+      el.src = src;
     }
 
     // ----------- Amount selector -----------
