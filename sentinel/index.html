@@ -501,13 +501,41 @@ report = session.post(
           </div>
         </dl>
 
-        <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Issuer governance</h4>
+        <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Issuer governance &amp; configuration</h4>
         <dl class="space-y-3">
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">PERMISSIONED_ISSUER_GOVERNANCE</dt>
             <dd class="text-sm text-muted leading-relaxed">
               The wallet is configured as a permissioned IOU issuer: every holder must be operator-authorized before they can hold the token, and the issuer can claw back outstanding balances. Structural pattern of a tokenized treasury, regulated stablecoin, or institutional pilot. Behavioral context, not a risk verdict.
               <span class="block text-xs mt-2 opacity-70">Fires when: the scanned address has both <code class="font-mono">lsfRequireAuth</code> and <code class="font-mono">lsfAllowTrustLineClawback</code> set on its AccountRoot flags. Read from the on-chain <code class="font-mono">account_info</code> flags surfaced in the response's <code class="font-mono">features.account_flags</code>.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_BY_CONFIGURATION</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet's on-chain configuration matches institutional governance posture: large multi-sig signer set, hardware-keyed signers, or an explicit deposit allowlist. These setups carry real cost (signer coordination, reserve per object) so they don't appear on retail wallets by accident.
+              <span class="block text-xs mt-2 opacity-70">Fires when any of: 8 or more entries in the wallet's SignerList; at least one signer entry carries WalletLocator metadata (multi-sig key custody / HSM pattern); or <code class="font-mono">lsfDepositAuth</code> is set AND at least one DepositPreauth object exists. Read from a single <code class="font-mono">account_objects</code> call surfaced as <code class="font-mono">features.wallet_config</code>.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">DEEP_FROZEN_BY_ISSUER</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              At least one of the wallet's trustlines has been deep-frozen by its issuer. Deep-freeze is strictly stronger than the regular freeze flag — the holder can neither send nor receive the IOU. Issuers deep-freeze for many reasons (court order, KYC failure, suspected fraud, internal compliance review); descriptive flag, not a risk verdict.
+              <span class="block text-xs mt-2 opacity-70">Fires when at least one RippleState (trustline) entry owned by the scanned wallet carries <code class="font-mono">lsfHighDeepFreeze</code> or <code class="font-mono">lsfLowDeepFreeze</code>. Read from the same <code class="font-mono">account_objects</code> call as the configuration classifier above.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">PERMISSIONED_DEX_PARTICIPANT</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet currently has at least one active offer placed inside an XLS-81 permissioned trading venue — i.e. an Offer ledger object that carries a DomainID. The wallet is participating in credentialed institutional liquidity rather than the open DEX. Behavioral context: permissioned-DEX participation is a normal posture for credentialed institutional traders.
+              <span class="block text-xs mt-2 opacity-70">Fires when <code class="font-mono">wallet_config.permissioned_offer_count</code> is at least 1. The owning domain_id(s) are returned alongside so consumers can drill through to the XR-Trust directory.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">ESCROW_LIFE_HEAVY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet's recent activity is escrow-dominated rather than transactional — consistent with a vesting or grants vehicle, an institutional settlement counterparty, or a programmatic escrow pipeline. Says nothing about who the wallet's escrow counterparties are; just describes the activity mix.
+              <span class="block text-xs mt-2 opacity-70">Fires when the in-window count of EscrowCreate + EscrowFinish + EscrowCancel transactions is at least 30% of total in-window activity, with a floor of 3 total transactions (avoids over-firing on dormant wallets with one escrow).</span>
             </dd>
           </div>
         </dl>
