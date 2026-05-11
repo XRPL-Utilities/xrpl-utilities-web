@@ -204,6 +204,25 @@
     </div>
   </section>
 
+  <!-- ACTIVE OPERATORS (24h) -->
+  <section id="active-operators">
+    <div class="max-w-4xl mx-auto px-6 pb-10">
+      <div class="bg-panel border border-border rounded-xl p-4 sm:p-6">
+        <div class="flex items-baseline justify-between gap-3 mb-3">
+          <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Active operators (24h)</h3>
+          <span id="stat-operators" class="text-xs text-muted font-mono">&hellip;</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-4">
+          Per-operator rollup over the last 24 hours: domain count, permissioned offers placed inside their domain, unique traders, and on-chain execution volume per currency pair (native units, no USD conversion). Sourced from XR-Trust's subscribe loop, which parses <code class="font-mono text-white">meta.AffectedNodes</code> on every <code class="font-mono text-white">OfferCreate</code> inside a permissioned domain. Operators with no 24h activity are hidden.
+        </p>
+        <div id="operators-grid" class="space-y-3">
+          <span class="text-xs text-muted">Loading&hellip;</span>
+        </div>
+        <p id="operators-empty" class="text-[11px] text-muted mt-3 hidden">No 24h activity captured yet. xrp-liquid was the first named XLS-81 venue; as more operators publish offers inside their domains, they'll show up here.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- LIVE DIRECTORY -->
   <section id="directory">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
@@ -1144,6 +1163,95 @@ record = session.post(
       GB: 'United Kingdom', US: 'United States',
     };
 
+    function fmtAmountShort(value, currency, issuer) {
+      if (value === undefined || value === null) return '—';
+      const n = typeof value === 'string' ? parseFloat(value) : value;
+      if (!isFinite(n) || n === 0) return '0';
+      let disp;
+      if (n >= 1e9) disp = (n / 1e9).toFixed(2) + 'B';
+      else if (n >= 1e6) disp = (n / 1e6).toFixed(2) + 'M';
+      else if (n >= 1e3) disp = (n / 1e3).toFixed(2) + 'K';
+      else if (n >= 1) disp = n.toFixed(2);
+      else disp = n.toFixed(6).replace(/0+$/, '').replace(/\.$/, '');
+      const cur = currency || 'XRP';
+      return disp + ' ' + cur;
+    }
+
+    async function loadOperators() {
+      const grid = document.getElementById('operators-grid');
+      const stat = document.getElementById('stat-operators');
+      const empty = document.getElementById('operators-empty');
+      try {
+        const previewHeaders = await (window.PreviewToken
+          ? window.PreviewToken.authHeaders()
+          : Promise.resolve({}));
+        const r = await fetch(API_BASE + '/permissioned-domains/operators?status=active&limit=50', { headers: previewHeaders });
+        if (!r.ok) {
+          grid.innerHTML = '<span class="text-xs text-muted">Couldn’t load.</span>';
+          return;
+        }
+        const data = await r.json();
+        let ops = data.operators || [];
+        // Score by 24h activity sum; hide zero-activity rows.
+        ops = ops
+          .map(o => ({
+            ...o,
+            _activity: (o.permissioned_offers_24h || 0) + (o.unique_traders_24h || 0) + (o.amm_events_24h || 0),
+          }))
+          .filter(o => o._activity > 0)
+          .sort((a, b) => b._activity - a._activity)
+          .slice(0, 10);
+        stat.textContent = ops.length + (ops.length === 1 ? ' operator' : ' operators') + ' with 24h activity';
+        if (!ops.length) {
+          grid.innerHTML = '';
+          empty.classList.remove('hidden');
+          return;
+        }
+        empty.classList.add('hidden');
+        grid.innerHTML = ops.map(o => {
+          const addr = o.operator_address || '';
+          const labelName = (o.owner_label && o.owner_label.name) || o.identity_org_name || null;
+          const display = labelName || (addr.slice(0, 8) + '…' + addr.slice(-4));
+          const jur = o.jurisdiction || null;
+          const jurName = jur ? (JURISDICTION_NAMES[jur] || jur) : null;
+          const jurBadge = jur
+            ? ('<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border text-[10px] uppercase tracking-wider text-muted font-mono" title="' + jurName + '">' + jur + '</span>')
+            : '';
+          // Top volume pair, if any. volume_24h_by_pair is a list of
+          // {gets_currency, gets_issuer, gets_value, pays_currency,
+          //  pays_issuer, pays_value, consumed_offers_count, offers_count}
+          // sorted nothing-in-particular; pick the one with largest pays_value.
+          const pairs = (o.volume_24h_by_pair || []).slice();
+          pairs.sort((a, b) => parseFloat(b.pays_value || 0) - parseFloat(a.pays_value || 0));
+          const top = pairs[0];
+          const volRow = top
+            ? ('<div class="text-[11px] text-muted mt-2"><span class="text-white font-mono">' + fmtAmountShort(top.gets_value, top.gets_currency) + '</span> &rarr; <span class="text-white font-mono">' + fmtAmountShort(top.pays_value, top.pays_currency) + '</span><span class="text-muted"> &middot; ' + (top.consumed_offers_count || 0) + ' offers filled</span>' + (pairs.length > 1 ? '<span class="text-muted"> &middot; +' + (pairs.length - 1) + ' more pair' + (pairs.length === 2 ? '' : 's') + '</span>' : '') + '</div>')
+            : '';
+          const xrpscan = 'https://xrpscan.com/account/' + encodeURIComponent(addr);
+          return (
+            '<a href="' + xrpscan + '" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-border rounded-lg p-3 hover:border-accent transition">' +
+              '<div class="flex items-start justify-between gap-3">' +
+                '<div class="min-w-0">' +
+                  '<div class="font-semibold text-white text-sm break-words">' + display + '</div>' +
+                  '<div class="text-[11px] text-muted font-mono break-all mt-0.5">' + addr + '</div>' +
+                '</div>' +
+                '<div class="flex items-center gap-2 shrink-0">' + jurBadge + '</div>' +
+              '</div>' +
+              '<div class="grid grid-cols-4 gap-2 mt-3 text-[11px]">' +
+                '<div><div class="text-muted uppercase tracking-wider mb-0.5">Domains</div><div class="font-mono text-white">' + (o.domain_count || 0) + '</div></div>' +
+                '<div><div class="text-muted uppercase tracking-wider mb-0.5">Offers 24h</div><div class="font-mono text-white">' + (o.permissioned_offers_24h || 0) + '</div></div>' +
+                '<div><div class="text-muted uppercase tracking-wider mb-0.5">Traders 24h</div><div class="font-mono text-white">' + (o.unique_traders_24h || 0) + '</div></div>' +
+                '<div><div class="text-muted uppercase tracking-wider mb-0.5">AMM 24h</div><div class="font-mono text-white">' + (o.amm_events_24h || 0) + '</div></div>' +
+              '</div>' +
+              volRow +
+            '</a>'
+          );
+        }).join('');
+      } catch (e) {
+        grid.innerHTML = '<span class="text-xs text-muted">Couldn’t reach the operators endpoint.</span>';
+      }
+    }
+
     async function loadJurisdictions() {
       const grid = document.getElementById('jurisdictions-grid');
       const stat = document.getElementById('stat-jurisdictions');
@@ -1184,7 +1292,7 @@ record = session.post(
 
     document.getElementById('q-search').addEventListener('input', rerender);
     document.getElementById('q-dedupe').addEventListener('change', rerender);
-    document.getElementById('refresh').addEventListener('click', () => { loadDirectory(); loadJurisdictions(); });
+    document.getElementById('refresh').addEventListener('click', () => { loadDirectory(); loadJurisdictions(); loadOperators(); });
     document.getElementById('dl-json').addEventListener('click', () => {
       if (!_lastResponse) return;
       const blob = new Blob([JSON.stringify(_lastResponse, null, 2)], { type: 'application/json' });
@@ -1197,6 +1305,7 @@ record = session.post(
 
     loadDirectory();
     loadJurisdictions();
+    loadOperators();
   </script>
 
 </body>
