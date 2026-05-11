@@ -185,6 +185,25 @@
     </div>
   </section>
 
+  <!-- JURISDICTIONS ROLLUP -->
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pb-10">
+      <div class="bg-panel border border-border rounded-xl p-4 sm:p-6">
+        <div class="flex items-baseline justify-between gap-3 mb-3">
+          <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Regulatory jurisdictions on XRPL</h3>
+          <span id="stat-jurisdictions" class="text-xs text-muted font-mono">&hellip;</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-4">
+          Where the entities running XRPL's permissioned stack are headquartered, attributed per-address from operator-curated identity, on-chain TOML, and XRPScan domain ccTLDs. Country-as-vanity TLDs (.io, .ai) are not inferred from. Missing &gt; inaccurate.
+        </p>
+        <div id="jurisdictions-grid" class="flex flex-wrap gap-2">
+          <span class="text-xs text-muted">Loading&hellip;</span>
+        </div>
+        <p id="jurisdictions-unattributed" class="text-[11px] text-muted mt-3"></p>
+      </div>
+    </div>
+  </section>
+
   <!-- LIVE DIRECTORY -->
   <section id="directory">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
@@ -650,6 +669,17 @@ record = session.post(
         else tierTooltip.push('No on-chain DID record');
         tierBadge.title = tierTooltip.join(' · ');
         ownerCell.appendChild(tierBadge);
+        // Jurisdiction badge (ISO-3166-1 alpha-2 attribution; null when
+        // no reliable signal). Renders inline next to the tier badge so
+        // readers can see at a glance which countries an operator
+        // cohort spans without scrolling the "Regulatory jurisdictions
+        // on XRPL" rollup at the top.
+        if (d.jurisdiction) {
+          const j = el('span', 'inline-flex items-center gap-1 ml-2 mt-2 px-2 py-0.5 rounded border border-border text-[10px] uppercase tracking-wider text-muted');
+          j.textContent = d.jurisdiction;
+          j.title = (JURISDICTION_NAMES[d.jurisdiction] || d.jurisdiction) + ' — inferred from operator-curated map / TOML ccTLD / XRPScan domain';
+          ownerCell.appendChild(j);
+        }
         if (did && did.org_name) {
           const idBadge = el('div', 'inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded border border-accent/30 text-accent text-xs max-w-full break-words');
           idBadge.textContent = did.org_name;
@@ -1077,9 +1107,67 @@ record = session.post(
       }
     }
 
+    // ISO-3166-1 alpha-2 -> flag + name. Restricted to ccTLDs we
+    // actually attribute from in the backend. Keep this map in lock-step
+    // with jurisdiction.py:_CCTLD_TO_ISO so the UI never renders a code
+    // it can't pretty-format.
+    const JURISDICTION_NAMES = {
+      BR: 'Brazil', JP: 'Japan', KR: 'South Korea', FR: 'France',
+      DE: 'Germany', IT: 'Italy', ES: 'Spain', NL: 'Netherlands',
+      CH: 'Switzerland', SE: 'Sweden', NO: 'Norway', FI: 'Finland',
+      DK: 'Denmark', BE: 'Belgium', AT: 'Austria', PT: 'Portugal',
+      IE: 'Ireland', PL: 'Poland', RU: 'Russia', UA: 'Ukraine',
+      TR: 'Turkey', CN: 'China', HK: 'Hong Kong', TW: 'Taiwan',
+      SG: 'Singapore', MY: 'Malaysia', TH: 'Thailand', ID: 'Indonesia',
+      PH: 'Philippines', VN: 'Vietnam', IN: 'India', AE: 'UAE',
+      SA: 'Saudi Arabia', IL: 'Israel', ZA: 'South Africa',
+      EG: 'Egypt', NG: 'Nigeria', KE: 'Kenya', MA: 'Morocco',
+      AR: 'Argentina', CL: 'Chile', CO: 'Colombia', PE: 'Peru',
+      MX: 'Mexico', CA: 'Canada', AU: 'Australia', NZ: 'New Zealand',
+      GB: 'United Kingdom', US: 'United States',
+    };
+
+    async function loadJurisdictions() {
+      const grid = document.getElementById('jurisdictions-grid');
+      const stat = document.getElementById('stat-jurisdictions');
+      const unattrib = document.getElementById('jurisdictions-unattributed');
+      try {
+        const previewHeaders = await (window.PreviewToken
+          ? window.PreviewToken.authHeaders()
+          : Promise.resolve({}));
+        const r = await fetch(API_BASE + '/jurisdictions', { headers: previewHeaders });
+        if (!r.ok) {
+          grid.innerHTML = '<span class="text-xs text-muted">Couldn’t load.</span>';
+          return;
+        }
+        const data = await r.json();
+        const combined = data.combined_entity_count_by_jurisdiction || [];
+        const tracked = combined.filter(b => b.jurisdiction);
+        stat.textContent = tracked.length + (tracked.length === 1 ? ' country' : ' countries') + ' tracked';
+        if (!tracked.length) {
+          grid.innerHTML = '<span class="text-xs text-muted">No jurisdiction signals yet.</span>';
+        } else {
+          grid.innerHTML = tracked.map(b => {
+            const iso = b.jurisdiction;
+            const name = JURISDICTION_NAMES[iso] || iso;
+            return '<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-ink text-sm"><span class="font-mono text-[11px] text-muted">' + iso + '</span><span class="text-white">' + name + '</span><span class="text-xs text-muted">&middot; ' + b.count + ' entit' + (b.count === 1 ? 'y' : 'ies') + '</span></span>';
+          }).join('');
+        }
+        const unat = data.unattributed || {};
+        const totalUnat = (unat.operators || 0) + (unat.credential_issuers || 0);
+        if (totalUnat > 0) {
+          unattrib.textContent = totalUnat + ' entit' + (totalUnat === 1 ? 'y' : 'ies') + ' not yet attributed (no ccTLD signal, no entry in operator-curated map).';
+        } else {
+          unattrib.textContent = '';
+        }
+      } catch (e) {
+        grid.innerHTML = '<span class="text-xs text-muted">Couldn’t reach the rollup endpoint.</span>';
+      }
+    }
+
     document.getElementById('q-search').addEventListener('input', rerender);
     document.getElementById('q-dedupe').addEventListener('change', rerender);
-    document.getElementById('refresh').addEventListener('click', () => loadDirectory());
+    document.getElementById('refresh').addEventListener('click', () => { loadDirectory(); loadJurisdictions(); });
     document.getElementById('dl-json').addEventListener('click', () => {
       if (!_lastResponse) return;
       const blob = new Blob([JSON.stringify(_lastResponse, null, 2)], { type: 'application/json' });
@@ -1091,6 +1179,7 @@ record = session.post(
     });
 
     loadDirectory();
+    loadJurisdictions();
   </script>
 
 </body>
