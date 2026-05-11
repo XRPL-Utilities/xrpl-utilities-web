@@ -465,6 +465,13 @@ report = session.post(
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">ESCROW_COUNTERPARTY_INSTITUTIONAL</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Escrow-flow sibling of <code class="font-mono text-white">INSTITUTIONAL_SCALE_FLOW</code>. Captures institutional-scale escrow relationships rather than direct Payments — useful for catching the vesting / settlement / DvP pattern where value moves through Escrow ledger entries rather than Payment txs. Behavioral context, not a risk verdict. The two signals can co-occur, and that's meaningful: mixed Payment + escrow flow with one counterparty is a stronger institutional signature than either alone.
+              <span class="block text-xs mt-2 opacity-70">Fires when: aggregate XRP + RLUSD escrow value with at least one top counterparty clears $10M USD within the scan window. Sums <code class="font-mono">EscrowCreate</code> Amount (when the scanned wallet is creator) plus the underlying Escrow ledger object's Amount on <code class="font-mono">EscrowFinish</code> (recovered from <code class="font-mono">meta.AffectedNodes</code>). Other-IOU escrows excluded — no oracle.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">BRIDGE_INTERACTION</dt>
             <dd class="text-sm text-muted leading-relaxed">
               The wallet has sent to or received from a labeled cross-chain bridge wallet (Wanchain, Allbridge, Axelar, Coreum Bridge, Wrapped XRP, XPR Bridge). Indicates the wallet routes XRP value cross-chain. Behavioral context, not a risk verdict.
