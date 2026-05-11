@@ -574,8 +574,8 @@
         fiat_stable_eur:   'EUR STABLE',
         fiat_stable_brl:   'BRL STABLE',
         fiat_stable_aud:   'AUD STABLE',
-        commercial_paper:  'COMMERCIAL PAPER',
-        money_market:      'MONEY MARKET',
+        commercial_paper:  'C-PAPER',
+        money_market:      'MMF',
         commodity_energy:  'ENERGY',
       };
       return map[c] || (c || '').toUpperCase();
@@ -748,7 +748,7 @@
               </div>
               <div>
                 <div class="text-muted uppercase tracking-wider mb-0.5">Class</div>
-                <div><span class="class-${cls} text-[9px] px-1.5 py-0.5 rounded border uppercase tracking-wider">${escapeHtml(fmtAssetClass(cls))}</span></div>
+                <div><span class="class-${cls} text-[9px] px-1.5 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(fmtAssetClass(cls))}</span></div>
               </div>
             </div>
             ${renderIssuerActivityChips(i)}
