@@ -111,7 +111,7 @@
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
             <h3 class="text-xl font-bold mb-3">XR-Sentinel</h3>
             <p class="text-white text-sm leading-relaxed mb-3">AI-assisted behavioral pattern classifier for XRP Ledger wallets. Describes how automated and service-like a wallet's recent activity appears. Not a risk, compliance, or sanctions service.</p>
-            <p class="text-xs text-muted">Schema 2.16.0 · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://sentinel.xrpl-utilities.io</span></p>
+            <p class="text-xs text-muted"><span data-schema-host="sentinel.xrpl-utilities.io">Schema 2.16.0</span> · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://sentinel.xrpl-utilities.io</span></p>
           </section>
           <section class="bg-panel border border-border rounded-2xl p-8">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2</div>
@@ -144,7 +144,7 @@
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
             <h3 class="text-xl font-bold mb-3">XR-Telemetry</h3>
             <p class="text-white text-sm leading-relaxed mb-3">Agent-payable XRPL macro telemetry. Returns a network snapshot: supply, per-region liquidity flows, AMM pool depth and APR, and an algebraic implied price-floor derived from assumed institutional settlement volume and velocity.</p>
-            <p class="text-xs text-muted">Schema 1.5.0 · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://telemetry.xrpl-utilities.io</span></p>
+            <p class="text-xs text-muted"><span data-schema-host="telemetry.xrpl-utilities.io">Schema 1.5.0</span> · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://telemetry.xrpl-utilities.io</span></p>
           </section>
           <section class="bg-panel border border-border rounded-2xl p-8">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2 + invoice flow</div>
@@ -177,7 +177,7 @@
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
             <h3 class="text-xl font-bold mb-3">XR-Pulse</h3>
             <p class="text-white text-sm leading-relaxed mb-3">Normalized event feed for XRPL agents. One time-ordered stream combining public-source news (regulatory press, central banks, crypto-press coverage of Ripple/XRP/RLUSD/XRPL) and on-chain whale activity (every successful XRPL Payment above the storage threshold). Mechanical cross-verification + 4h price-window correlation; institutional-watchlist labels on every whale.</p>
-            <p class="text-xs text-muted">Schema 1.25.2 · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://pulse.xrpl-utilities.io</span></p>
+            <p class="text-xs text-muted"><span data-schema-host="pulse.xrpl-utilities.io">Schema 1.25.2</span> · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://pulse.xrpl-utilities.io</span></p>
           </section>
           <section class="bg-panel border border-border rounded-2xl p-8">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2</div>
@@ -208,7 +208,7 @@
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
             <h3 class="text-xl font-bold mb-3">XR-Trust</h3>
             <p class="text-white text-sm leading-relaxed mb-3">Public directory + explorer for XRPL Permissioned Domains (XLS-80). Lists active domains, their accepted credentials, and credential issuers. Descriptive only; not a compliance verdict, certification, or endorsement of any domain or its members.</p>
-            <p class="text-xs text-muted">Schema 2026-24 · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://trust.xrpl-utilities.io</span></p>
+            <p class="text-xs text-muted"><span data-schema-host="trust.xrpl-utilities.io">Schema 2026-24</span> · Provider: XRPL-Utilities&trade; · Base: <span class="font-mono">https://trust.xrpl-utilities.io</span></p>
           </section>
           <section class="bg-panel border border-border rounded-2xl p-8">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2</div>
@@ -245,7 +245,7 @@
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Service</div>
             <h3 class="text-xl font-bold mb-3">XR-Vault</h3>
             <p class="text-white text-sm leading-relaxed mb-3">Real-world asset tracker for XRPL. Per-issuer mint and burn flow, daily circulating snapshots, and AMM-of-RWA pool exposure across tokenized treasuries, stablecoins, commercial paper, money-market funds, and energy commodities. Native unit-of-account only; no fabricated USD valuation. Behavioral context, not investment or compliance advice.</p>
-            <p class="text-xs text-muted">Schema 1.1.0 &middot; Provider: XRPL-Utilities&trade; &middot; Base: <span class="font-mono">https://vault.xrpl-utilities.io</span></p>
+            <p class="text-xs text-muted"><span data-schema-host="vault.xrpl-utilities.io">Schema 1.1.0</span> &middot; Provider: XRPL-Utilities&trade; &middot; Base: <span class="font-mono">https://vault.xrpl-utilities.io</span></p>
           </section>
           <section class="bg-panel border border-border rounded-2xl p-8">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">x402 v2</div>
@@ -535,6 +535,21 @@
     loadOne("https://telemetry.xrpl-utilities.io/agents.json", "content-telemetry", "XR-Telemetry");
     loadOne("https://pulse.xrpl-utilities.io/agents.json", "content-pulse", "XR-Pulse");
     loadOne("https://trust.xrpl-utilities.io/agents.json", "content-trust", "XR-Trust");
+
+    // Auto-refresh the "Schema X.Y.Z" labels next to each service from
+    // the live /agents.json schema_version. Closes the drift gap where
+    // a backend schema bump leaves the manifest page showing the prior
+    // version until somebody hand-edits this HTML. Falls back silently
+    // to the hardcoded label on fetch failure — never worse than the
+    // baked value.
+    document.querySelectorAll("[data-schema-host]").forEach(el => {
+      const host = el.dataset.schemaHost;
+      if (!host) return;
+      fetch("https://" + host + "/agents.json")
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d && d.schema_version) el.textContent = "Schema " + d.schema_version; })
+        .catch(() => {});
+    });
   </script>
 
 </body>
