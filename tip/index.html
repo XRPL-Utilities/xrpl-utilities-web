@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <title>Tip the maker | XRPL-Utilities</title>
+  <meta name="description" content="Send a small XRP or RLUSD tip to the team behind XR-Sentinel, XR-Pulse, XR-Telemetry, XR-Trust, XR-Vault, and the MCP server. Direct XRPL payment to a single treasury address, destination tag 90210." />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:title" content="Tip the maker | XRPL-Utilities" />
+  <meta property="og:description" content="Free tools for XRPL agents and humans. If they have been useful, a small XRP or RLUSD tip is appreciated." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/og-default.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/tip/" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#0a0a0a",
+            panel: "#111111",
+            border: "#262626",
+            muted: "#a3a3a3",
+            accent: "#00b8ff",
+            "accent-dim": "#0091cc",
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+            mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous"></script>
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+    .copy-btn:active { transform: scale(0.98); }
+  </style>
+</head>
+
+<body class="bg-ink text-white font-sans antialiased min-h-screen flex flex-col">
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-x-8 lg:gap-x-10 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1">
+
+    <!-- HERO -->
+    <section class="border-b border-border">
+      <div class="max-w-3xl mx-auto px-6 py-14 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold mb-3">Send a tip on XRPL</h1>
+        <p class="text-muted leading-relaxed max-w-xl mx-auto">
+          If <a href="/sentinel/" class="text-accent hover:underline">XR-Sentinel</a>,
+          <a href="/pulse/" class="text-accent hover:underline">XR-Pulse</a>,
+          <a href="/telemetry/" class="text-accent hover:underline">XR-Telemetry</a>,
+          <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>,
+          <a href="/vault/" class="text-accent hover:underline">XR-Vault</a>,
+          or the <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP server</a> has been useful to you, a small tip in XRP or RLUSD is appreciated.
+        </p>
+      </div>
+    </section>
+
+    <!-- TIP CARD -->
+    <section class="border-b border-border">
+      <div class="max-w-3xl mx-auto px-6 py-14">
+        <div class="bg-panel border border-border rounded-2xl p-6 sm:p-8">
+
+          <div class="grid sm:grid-cols-[auto_1fr] gap-6 items-start mb-6">
+            <div id="qr" class="bg-white p-3 rounded-lg w-[160px] h-[160px] flex items-center justify-center"></div>
+            <div class="min-w-0">
+              <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Treasury address</div>
+              <div class="flex items-center gap-2 mb-1">
+                <code id="addr" class="font-mono text-sm sm:text-base text-white break-all bg-ink border border-border rounded px-3 py-2 flex-1">rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5</code>
+                <button id="copy-addr" class="copy-btn shrink-0 text-xs border border-border hover:border-accent text-white px-3 py-2 rounded transition" type="button">Copy</button>
+              </div>
+              <div class="text-[11px] text-muted">Destination tag <code class="font-mono text-white">90210</code> (recommended so tips are filterable from API revenue in operator accounting).</div>
+            </div>
+          </div>
+
+          <!-- Amount selector -->
+          <div class="border-t border-border pt-6 mb-6">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Amount</div>
+            <div class="flex flex-wrap gap-2 mb-3">
+              <button data-amt="1"  class="amt-btn border border-border hover:border-accent text-white px-4 py-2 rounded font-mono text-sm transition">1 XRP</button>
+              <button data-amt="5"  class="amt-btn border border-border hover:border-accent text-white px-4 py-2 rounded font-mono text-sm transition">5 XRP</button>
+              <button data-amt="10" class="amt-btn border border-accent text-accent px-4 py-2 rounded font-mono text-sm transition">10 XRP</button>
+              <input id="amt-custom" type="number" min="0.000001" step="0.000001" placeholder="Custom" class="bg-ink border border-border hover:border-accent text-white px-3 py-2 rounded font-mono text-sm w-32 focus:outline-none focus:border-accent transition" />
+              <span class="text-xs text-muted self-center">XRP</span>
+            </div>
+            <p class="text-[11px] text-muted">RLUSD is also accepted at the same address with the same destination tag. Open your wallet, pick RLUSD as the asset, send any amount.</p>
+          </div>
+
+          <!-- Wallet entry points -->
+          <div class="border-t border-border pt-6">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Open in your wallet</div>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <a id="xaman-btn" href="#" target="_blank" rel="noopener noreferrer" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-5 py-3 rounded-lg transition text-center text-sm">Pay with Xaman</a>
+              <button id="crossmark-btn" class="border border-border hover:border-accent text-white px-5 py-3 rounded-lg transition text-sm" type="button">Sign with Crossmark</button>
+              <button id="copy-uri" class="copy-btn border border-border hover:border-accent text-white px-5 py-3 rounded-lg transition text-sm" type="button">Copy XRPL URI</button>
+            </div>
+            <p class="text-[11px] text-muted mt-3">Mobile callers should tap <em>Pay with Xaman</em>. Desktop callers with the <a href="https://crossmark.io" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">Crossmark</a> browser extension can tap <em>Sign with Crossmark</em>. Anyone else: scan the QR, or copy the address + amount into their wallet by hand.</p>
+          </div>
+        </div>
+
+        <!-- Aggregate stats -->
+        <div class="mt-8 bg-panel border border-border rounded-2xl p-6 sm:p-8">
+          <div class="flex items-baseline justify-between gap-3 mb-3">
+            <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Last 30 days</h3>
+            <span id="tips-status" class="text-xs text-muted font-mono">&hellip;</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-xs uppercase tracking-wider text-muted mb-1">Tips received</div>
+              <div id="stat-count" class="text-2xl font-bold font-mono">&mdash;</div>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-xs uppercase tracking-wider text-muted mb-1">Total XRP</div>
+              <div id="stat-xrp" class="text-2xl font-bold font-mono">&mdash;</div>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-xs uppercase tracking-wider text-muted mb-1">Total RLUSD</div>
+              <div id="stat-rlusd" class="text-2xl font-bold font-mono">&mdash;</div>
+            </div>
+          </div>
+          <p class="text-[11px] text-muted mt-4">Aggregate only. Individual tipper addresses are not surfaced here. Filtered by destination tag <code class="font-mono text-white">90210</code> over the trailing 30 days, read live from XRPL via XRPSCAN. Source is the public ledger; transaction history is publicly browsable at <a href="https://xrpscan.com/account/rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">xrpscan.com</a>.</p>
+        </div>
+
+        <!-- Honesty block -->
+        <div class="mt-8 text-xs text-muted leading-relaxed space-y-2">
+          <p><span class="text-white">XRPL transactions are public.</span> If you tip, the sending wallet address, amount, and timestamp will be visible on xrpscan.com, bithomp.com, and any other XRPL explorer. There is no anonymous-tip path here. If you want privacy, do not send a tip from a wallet you have associated with your name.</p>
+          <p><span class="text-white">Tax posture.</span> XRPL-Utilities LLC treats received tips as income for US tax purposes. This is not tax advice for the sender.</p>
+          <p><span class="text-white">Not a subscription.</span> Tipping does not unlock anything. The free public-web tier of every service is genuinely free; the paid x402 tier prices itself.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER (mirrors landing) -->
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/manifest/" class="text-muted hover:text-white transition">Manifest</a></li>
+            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">MCP server</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+            <li><a href="/tip/"     class="text-accent hover:text-white transition">Tip the maker</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const ADDR = "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5";
+    const DT = 90210;
+    const XAMAN_BASE = "https://xaman.app/detect/request:";
+
+    // ----------- QR code -----------
+    // xrpl: URI is the canonical standard most wallets understand for
+    // pay-to-address. dt = destination tag. Amount is updated dynamically
+    // by the amount selector below.
+    let qr;
+    function makeUri(amtXrp) {
+      const params = ["dt=" + DT];
+      if (amtXrp && amtXrp > 0) params.push("amount=" + amtXrp);
+      return "xrpl:" + ADDR + "?" + params.join("&");
+    }
+    function renderQr(uri) {
+      const el = document.getElementById("qr");
+      el.innerHTML = "";
+      qr = new QRCode(el, {
+        text: uri,
+        width: 140,
+        height: 140,
+        colorDark: "#0a0e1a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M,
+      });
+    }
+
+    // ----------- Amount selector -----------
+    let currentAmt = 10;
+    function setAmt(v) {
+      currentAmt = v;
+      // Update Xaman link
+      document.getElementById("xaman-btn").href =
+        XAMAN_BASE + ADDR + "?amount=" + v + "&dt=" + DT;
+      // Update QR
+      renderQr(makeUri(v));
+      // Visual: highlight active button
+      document.querySelectorAll(".amt-btn").forEach(b => {
+        if (parseFloat(b.dataset.amt) === v) {
+          b.classList.add("border-accent", "text-accent");
+          b.classList.remove("text-white");
+        } else {
+          b.classList.remove("border-accent", "text-accent");
+          b.classList.add("text-white");
+        }
+      });
+    }
+    document.querySelectorAll(".amt-btn").forEach(b => {
+      b.addEventListener("click", () => setAmt(parseFloat(b.dataset.amt)));
+    });
+    document.getElementById("amt-custom").addEventListener("input", (e) => {
+      const v = parseFloat(e.target.value);
+      if (isFinite(v) && v > 0) setAmt(v);
+    });
+    setAmt(10);
+
+    // ----------- Copy helpers -----------
+    function copyTo(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = "Copied";
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      }).catch(() => {
+        btn.textContent = "Copy failed";
+      });
+    }
+    document.getElementById("copy-addr").addEventListener("click", (e) => {
+      copyTo(ADDR, e.currentTarget);
+    });
+    document.getElementById("copy-uri").addEventListener("click", (e) => {
+      copyTo(makeUri(currentAmt), e.currentTarget);
+    });
+
+    // ----------- Crossmark sign request -----------
+    // Crossmark exposes window.xrpl (after install) with a sign API.
+    // If not installed, send the user to the install page.
+    document.getElementById("crossmark-btn").addEventListener("click", async () => {
+      const btn = document.getElementById("crossmark-btn");
+      if (!window.xrpl || !window.xrpl.signAndSubmit) {
+        window.open("https://crossmark.io/", "_blank", "noopener");
+        return;
+      }
+      btn.textContent = "Awaiting Crossmark…";
+      try {
+        await window.xrpl.signAndSubmit({
+          TransactionType: "Payment",
+          Destination: ADDR,
+          DestinationTag: DT,
+          Amount: String(Math.round(currentAmt * 1_000_000)),
+        });
+        btn.textContent = "Sent — thank you";
+      } catch (e) {
+        btn.textContent = "Cancelled";
+        setTimeout(() => { btn.textContent = "Sign with Crossmark"; }, 2000);
+      }
+    });
+
+    // ----------- 30-day aggregate stats -----------
+    // Pulls the wallet's recent Payment tx from XRPScan's public API,
+    // filters by destination_tag = 90210, last 30 days. Sums by asset.
+    // Best-effort: on failure, surfaces "Couldn't load" rather than 0.
+    async function loadAggregate() {
+      const statusEl = document.getElementById("tips-status");
+      try {
+        const r = await fetch(
+          "https://api.xrpscan.com/api/v1/account/" + ADDR + "/transactions/payments?limit=200",
+        );
+        if (!r.ok) throw new Error("xrpscan http " + r.status);
+        const data = await r.json();
+        const txs = (data && data.transactions) || data || [];
+        const cutoff = Date.now() / 1000 - 30 * 86400;
+        let count = 0;
+        let xrp = 0;
+        let rlusd = 0;
+        const RLUSD_HEX = "524C555344000000000000000000000000000000";
+        const RLUSD_ISS = "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De";
+        for (const tx of txs) {
+          if (!tx) continue;
+          const dest = tx.Destination || (tx.tx && tx.tx.Destination);
+          const dt = tx.DestinationTag || (tx.tx && tx.tx.DestinationTag);
+          const ts = tx.date_unix || (tx.date && Date.parse(tx.date) / 1000) || 0;
+          if (dest !== ADDR) continue;
+          if (Number(dt) !== DT) continue;
+          if (ts < cutoff) continue;
+          count++;
+          const amt = tx.Amount || (tx.tx && tx.tx.Amount);
+          if (typeof amt === "string") {
+            xrp += parseFloat(amt) / 1_000_000;
+          } else if (amt && typeof amt === "object") {
+            if (amt.currency === RLUSD_HEX && amt.issuer === RLUSD_ISS) {
+              rlusd += parseFloat(amt.value || "0");
+            }
+          }
+        }
+        document.getElementById("stat-count").textContent = count;
+        document.getElementById("stat-xrp").textContent =
+          xrp > 0 ? xrp.toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0";
+        document.getElementById("stat-rlusd").textContent =
+          rlusd > 0 ? rlusd.toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0";
+        statusEl.textContent = count === 0 ? "no tips yet" : "live from XRPL";
+      } catch (e) {
+        statusEl.textContent = "couldn't load";
+      }
+    }
+    loadAggregate();
+  </script>
+
+</body>
+</html>
