@@ -614,7 +614,7 @@ record = session.post(
         { label: 'Domain Owner', cls: '' },
         { label: 'Domain ID', cls: 'hidden md:table-cell' },
         { label: 'Accepted Credentials', cls: '' },
-        { label: 'Sequence', cls: 'hidden md:table-cell' },
+        { label: 'First seen', cls: 'hidden md:table-cell' },
         { label: '', cls: '' },
       ];
       headers.forEach(h => {
@@ -737,7 +737,20 @@ record = session.post(
         }
         tr.appendChild(credCell);
 
-        tr.appendChild(el('td', 'px-3 sm:px-6 py-4 text-xs text-muted hidden md:table-cell', String(d.sequence || '—')));
+        // First-seen column: earliest PermissionedDomainSet event for the
+        // domain captured by Trust's subscribe loop. Renders as a human
+        // date when known; '—' when the domain predates Trust subscribe
+        // (inline-seeded via /admin/seed or pre-existing on startup).
+        const fsCell = el('td', 'px-3 sm:px-6 py-4 text-xs text-muted hidden md:table-cell');
+        if (d.first_seen_unix) {
+          const dt = new Date(d.first_seen_unix * 1000);
+          fsCell.textContent = dt.toISOString().slice(0, 10);
+          fsCell.title = dt.toUTCString() + (d.first_seen_ledger ? ' · ledger ' + d.first_seen_ledger : '');
+        } else {
+          fsCell.textContent = '—';
+          fsCell.title = 'Predates Trust subscribe loop; first-seen unknown.';
+        }
+        tr.appendChild(fsCell);
 
         const linkCell = el('td', 'px-3 sm:px-6 py-4 text-right align-top');
         const link = el('a', 'text-accent hover:underline text-sm whitespace-nowrap', 'Details →');
@@ -801,6 +814,10 @@ record = session.post(
       row('Owner', ownerLabel ? (ownerLabel + ' (' + d.owner_address + ')') : d.owner_address);
       if (d.owner_label && d.owner_label.domain) row('Owner domain', d.owner_label.domain);
       if (d.owner_label && d.owner_label.verified) row('Owner verified', '✓ verified by XRPScan');
+      if (d.first_seen_unix) {
+        const dt = new Date(d.first_seen_unix * 1000);
+        row('First seen', dt.toISOString().slice(0,10) + ' UTC' + (d.first_seen_ledger ? ' · ledger ' + d.first_seen_ledger : ''));
+      }
       row('Sequence', d.sequence);
       row('Owner node', d.owner_node);
       row('Last txn', d.previous_txn_id);
