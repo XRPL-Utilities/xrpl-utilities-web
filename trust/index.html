@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>XR-Trust | XRPL Permissioned Domain Watcher</title>
-  <meta name="description" content="Watcher for XRPL Permissioned Domains (XLS-80). The XLS-80 amendment activated on mainnet in February 2026 and adopters are still in private testing. The moment a domain publishes on mainnet it appears here with owner, accepted credentials, and credential issuers." />
+  <meta name="description" content="Public directory of XRPL Permissioned Domains (XLS-80) on mainnet. Per-domain owner identity (DID + TOML), accepted credentials, credential issuers, and four-tier identity classification distinguishing institutional operators from named-entity, DID-only, and anonymous accounts." />
   <meta property="og:title" content="XR-Trust" />
   <meta property="og:description" content="XRPL Permissioned Domain Watcher: catches the first PermissionedDomain (XLS-80) the moment it publishes on mainnet. Free on the web, $0.10 per query for agents over x402." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/xr-trust.png" />
@@ -199,7 +199,13 @@
         </div>
         <div class="flex items-center justify-between gap-3 text-xs text-muted mb-4">
           <div id="q-status">Loading directory&hellip;</div>
-          <button id="dl-json" class="border border-border hover:border-accent text-white px-3 py-2 rounded-lg transition" type="button">Download JSON</button>
+          <div class="flex items-center gap-3">
+            <label class="inline-flex items-center gap-2 text-xs text-muted cursor-pointer select-none">
+              <input id="q-dedupe" type="checkbox" class="accent-accent" />
+              Group by owner
+            </label>
+            <button id="dl-json" class="border border-border hover:border-accent text-white px-3 py-2 rounded-lg transition" type="button">Download JSON</button>
+          </div>
         </div>
 
         <div id="results" class="bg-ink border border-border rounded-lg overflow-hidden">
@@ -550,12 +556,12 @@ record = session.post(
         head.innerHTML = '<span class="pulse-dot"></span><span class="text-2xl font-bold">Indexing the ledger</span>';
         wrap.appendChild(head);
         const p = el('p', 'text-muted leading-relaxed max-w-xl mx-auto text-sm');
-        p.innerHTML = 'The background warmer is walking the validated XRPL ledger to build the first snapshot. The XLS-80 amendment activated on mainnet in February 2026 and institutional adopters are still in private testing, so the most likely outcome of this first walk is zero domains. Refresh in a few minutes for the verdict.';
+        p.innerHTML = 'The discovery loop is walking the validated XRPL ledger to build the first snapshot. The XLS-80 amendment activated on mainnet in February 2026 and the first wave of mainnet domains has landed; refresh in a few moments to see them.';
         wrap.appendChild(p);
       } else {
-        wrap.appendChild(el('div', 'text-2xl font-bold mb-3', 'No permissioned domains on mainnet yet.'));
+        wrap.appendChild(el('div', 'text-2xl font-bold mb-3', 'No permissioned domains tracked yet.'));
         const p = el('p', 'text-muted leading-relaxed max-w-xl mx-auto text-sm');
-        p.innerHTML = 'Permissioned Domains are new. The XLS-80 amendment activated on XRPL mainnet in February 2026 and the early enterprise adopters are still in private testing. XR-Trust will catch the first one the moment it lands on mainnet. The indexer re-walks every 6 hours and an operator alert fires on the first non-empty snapshot.';
+        p.innerHTML = 'The discovery loop has not yet captured a domain. The XLS-80 amendment activated on XRPL mainnet in February 2026 and discovery runs on every validated transaction; the first match should land within minutes.';
         wrap.appendChild(p);
       }
       target.appendChild(wrap);
@@ -611,19 +617,49 @@ record = session.post(
         if (ownerLabel) {
           ownerCell.appendChild(el('div', 'text-xs text-muted font-mono', shorten(d.owner_address)));
         }
-        // On-chain identity (XLS-40 DID + linked .well-known/xrp-ledger.toml).
-        // owner_did is null for owners with no DID record - the badge only
-        // surfaces when the owner has actually published identity on-chain.
+        // Multi-domain indicator when the dedupe-by-owner toggle is on
+        // and this owner runs more than one PermissionedDomain.
+        if (d._domain_count && d._domain_count > 1) {
+          ownerCell.appendChild(el(
+            'div',
+            'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border border-border text-[10px] uppercase tracking-wider text-muted',
+            'Runs ' + d._domain_count + ' domains',
+          ));
+        }
+        // Four-tier identity classification. identity_tier is one of
+        // institutional | named_entity | did_only | anonymous and ships
+        // on every row from Trust 2026-19. Renders a colored badge
+        // distinguishing institutional operators from self-attested
+        // named entities from cryptographic-only owners (e.g. IPFS DID
+        // Document published) from truly anonymous accounts.
         const did = d.owner_did;
+        const tier = d.identity_tier || 'anonymous';
+        const TIER_BADGES = {
+          institutional: { label: 'INSTITUTIONAL',   cls: 'border-emerald-500/60 text-emerald-300' },
+          named_entity:  { label: 'NAMED ENTITY',     cls: 'border-accent/40 text-accent' },
+          did_only:      { label: 'DID-ONLY',         cls: 'border-amber-500/40 text-amber-300' },
+          anonymous:     { label: 'ANONYMOUS',        cls: 'border-border text-muted' },
+        };
+        const tierMeta = TIER_BADGES[tier] || TIER_BADGES.anonymous;
+        const tierBadge = el('div', 'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border ' + tierMeta.cls + ' text-[10px] uppercase tracking-wider font-semibold');
+        tierBadge.textContent = tierMeta.label;
+        const tierTooltip = [];
+        if (tier === 'institutional') tierTooltip.push('TOML resolved · org_name + principals + org_url present');
+        else if (tier === 'named_entity') tierTooltip.push('TOML resolved · self-attested org_name only');
+        else if (tier === 'did_only') tierTooltip.push('On-chain DID record; no parseable TOML (e.g. IPFS DID Document)');
+        else tierTooltip.push('No on-chain DID record');
+        tierBadge.title = tierTooltip.join(' · ');
+        ownerCell.appendChild(tierBadge);
         if (did && did.org_name) {
-          const idBadge = el('div', 'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border border-accent/40 text-accent text-xs max-w-full break-words');
-          idBadge.textContent = 'ID · ' + did.org_name;
+          const idBadge = el('div', 'inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded border border-accent/30 text-accent text-xs max-w-full break-words');
+          idBadge.textContent = did.org_name;
           const tooltipParts = [];
           if (did.principal_names && did.principal_names.length) {
             tooltipParts.push(did.principal_names.join(', '));
           }
           if (did.description) tooltipParts.push(did.description);
-          if (did.source_toml_url) tooltipParts.push('Source: ' + did.source_toml_url);
+          if (did.source_toml_url) tooltipParts.push('TOML: ' + did.source_toml_url);
+          else if (did.ipfs_did_uri) tooltipParts.push('IPFS DID: ' + did.ipfs_did_uri);
           idBadge.title = tooltipParts.join(' · ');
           ownerCell.appendChild(idBadge);
           if (did.org_url) {
@@ -634,11 +670,14 @@ record = session.post(
             linkEl.rel = 'noopener noreferrer';
             ownerCell.appendChild(linkEl);
           }
-        } else if (did && did.has_did_document) {
-          // Thin DID: published on-chain but no parseable TOML. Still
-          // worth flagging - tells the reader the owner is at least in
-          // the XLS-40 stack, even if their identity payload is sparse.
-          ownerCell.appendChild(el('div', 'text-[11px] text-muted mt-1.5', 'On-chain DID (no TOML)'));
+        } else if (tier === 'did_only') {
+          // IPFS-hosted or thin DID — surface method + verification count
+          // when available so the reader sees cryptographic identity weight.
+          const parts = [];
+          if (did && did.did_method) parts.push('did:' + did.did_method);
+          if (did && did.verification_method_count) parts.push(did.verification_method_count + ' verification key' + (did.verification_method_count === 1 ? '' : 's'));
+          const text = parts.length ? parts.join(' · ') : 'On-chain DID present';
+          ownerCell.appendChild(el('div', 'text-[11px] text-muted mt-1', text));
         }
         tr.appendChild(ownerCell);
 
@@ -954,24 +993,42 @@ record = session.post(
 
     function applyFilters() {
       const q = (document.getElementById('q-search').value || '').trim().toLowerCase();
-      if (!q) return _allDomains;
-      return _allDomains.filter(d => {
-        const id = (d.domain_id || '').toLowerCase();
-        const owner = (d.owner_address || '').toLowerCase();
-        const ownerLabel = ((d.owner_label || {}).name || '').toLowerCase();
-        const ownerDomain = ((d.owner_label || {}).domain || '').toLowerCase();
-        if (id.includes(q) || owner.includes(q) || ownerLabel.includes(q) || ownerDomain.includes(q)) {
-          return true;
-        }
-        // Also match against any accepted credential issuer's address or
-        // XRPScan-resolved label, so the unified search covers the role
-        // the previous "All credential issuers" dropdown filled.
-        return (d.accepted_credentials || []).some(c => {
-          const addr = (c.issuer || '').toLowerCase();
-          const lbl  = (c.issuer_label || '').toLowerCase();
-          return addr.includes(q) || lbl.includes(q);
+      const dedupeToggle = document.getElementById('q-dedupe');
+      const dedupe = dedupeToggle ? dedupeToggle.checked : false;
+      let base = _allDomains;
+      if (q) {
+        base = base.filter(d => {
+          const id = (d.domain_id || '').toLowerCase();
+          const owner = (d.owner_address || '').toLowerCase();
+          const ownerLabel = ((d.owner_label || {}).name || '').toLowerCase();
+          const ownerDomain = ((d.owner_label || {}).domain || '').toLowerCase();
+          if (id.includes(q) || owner.includes(q) || ownerLabel.includes(q) || ownerDomain.includes(q)) {
+            return true;
+          }
+          return (d.accepted_credentials || []).some(c => {
+            const addr = (c.issuer || '').toLowerCase();
+            const lbl  = (c.issuer_display_name || c.issuer_label || '').toLowerCase();
+            return addr.includes(q) || lbl.includes(q);
+          });
         });
+      }
+      if (!dedupe) return base;
+      // Dedupe by owner_address: pick the first row per owner, attach a
+      // domain_count + collapsed_domain_ids list so the row can render
+      // "(N domains)" alongside the primary entry. Owners with one domain
+      // are unchanged. This makes rtaXvxk6 (two domains) render once.
+      const grouped = new Map();
+      base.forEach(d => {
+        const key = d.owner_address || d.domain_id;
+        if (!grouped.has(key)) {
+          grouped.set(key, { ...d, _domain_count: 1, _collapsed_domain_ids: [d.domain_id] });
+        } else {
+          const existing = grouped.get(key);
+          existing._domain_count += 1;
+          existing._collapsed_domain_ids.push(d.domain_id);
+        }
       });
+      return Array.from(grouped.values());
     }
 
     function rerender() {
@@ -1021,6 +1078,7 @@ record = session.post(
     }
 
     document.getElementById('q-search').addEventListener('input', rerender);
+    document.getElementById('q-dedupe').addEventListener('change', rerender);
     document.getElementById('refresh').addEventListener('click', () => loadDirectory());
     document.getElementById('dl-json').addEventListener('click', () => {
       if (!_lastResponse) return;
