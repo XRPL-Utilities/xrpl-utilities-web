@@ -375,7 +375,7 @@
     }
 
     function fmtUsd(n) {
-      if (n == null) return '—';
+      if (n == null) return '-';
       const abs = Math.abs(n);
       if (abs >= 1_000_000_000) return '$' + (n / 1_000_000_000).toFixed(2) + 'B';
       if (abs >= 1_000_000) return '$' + (n / 1_000_000).toFixed(1) + 'M';
