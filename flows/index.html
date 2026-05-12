@@ -202,6 +202,17 @@
           <p id="aum-coverage-caveat" class="text-[10px] text-muted mt-2"></p>
         </div>
 
+        <div class="mb-4">
+          <div class="flex items-baseline justify-between mb-2 gap-2">
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">Daily AUM change (per ticker, USD)</h3>
+            <span id="aum-delta-headline" class="text-[10px] text-muted font-mono"></span>
+          </div>
+          <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 240px;">
+            <canvas id="chart-etf-aum-delta"></canvas>
+          </div>
+          <p class="text-[10px] text-muted mt-2">Green = AUM rose that day, red = AUM fell. Computed from day-over-day delta of the per-ticker series; first day in the window has no prior reference and is omitted.</p>
+        </div>
+
         <div>
           <div class="flex items-baseline justify-between mb-2 gap-2">
             <h3 class="text-xs uppercase tracking-widest text-white font-semibold">XRPL exchange-flow delta (net XRP)</h3>
@@ -401,7 +412,102 @@
       }
 
       renderEtfAumChart(series, totals, tracked);
+      renderEtfAumDeltaChart(series, totals, tracked);
       renderChainFlowChart(chainFlow, correlation);
+    }
+
+    let aumDeltaChart = null;
+
+    function renderEtfAumDeltaChart(series, totals, tracked) {
+      if (typeof Chart === 'undefined') return;
+      const ctx = document.getElementById('chart-etf-aum-delta');
+      if (!ctx) return;
+
+      // Use the per-ticker series' aum_delta_usd field already computed
+      // server-side. Union of all dates seen; skip the first per-ticker
+      // entry where delta is null (no prior reference).
+      const dateSet = new Set();
+      Object.values(series).forEach(rows => rows.forEach(r => {
+        if (r.aum_delta_usd != null) dateSet.add(r.snapshot_date);
+      }));
+      const dates = Array.from(dateSet).sort();
+
+      // One bar segment per (date, ticker) where delta != null. Color by
+      // sign so positive moves are emerald, negative rose.
+      const orderedTickers = tracked.length ? tracked : Object.keys(series).sort();
+      const datasets = orderedTickers.map(ticker => {
+        const tickerRows = series[ticker] || [];
+        const byDate = Object.fromEntries(
+          tickerRows.filter(r => r.aum_delta_usd != null)
+                    .map(r => [r.snapshot_date, r.aum_delta_usd])
+        );
+        const data = dates.map(d => byDate[d] ?? null);
+        const colors = data.map(v =>
+          v == null ? 'rgba(0,0,0,0)'
+                    : v >= 0 ? 'rgba(74, 222, 128, 0.78)'
+                             : 'rgba(248, 113, 113, 0.78)'
+        );
+        return {
+          label: ticker,
+          data,
+          backgroundColor: colors,
+          borderWidth: 0,
+          stack: 'delta',
+        };
+      });
+
+      // Daily net total for the headline.
+      let totalAbsMoved = 0;
+      let netLatest = null;
+      dates.forEach(d => {
+        let sum = 0; let any = false;
+        orderedTickers.forEach(t => {
+          const row = (series[t] || []).find(r => r.snapshot_date === d);
+          if (row && row.aum_delta_usd != null) { sum += row.aum_delta_usd; any = true; }
+        });
+        if (any) {
+          totalAbsMoved += Math.abs(sum);
+          netLatest = sum;
+        }
+      });
+      const headlineEl = document.getElementById('aum-delta-headline');
+      if (headlineEl) {
+        if (netLatest != null) {
+          const sign = netLatest >= 0 ? '+' : '-';
+          headlineEl.textContent = `latest day net: ${sign}${fmtUsd(Math.abs(netLatest))} · ${dates.length} days`;
+        } else {
+          headlineEl.textContent = 'awaiting day-over-day deltas';
+        }
+      }
+
+      if (aumDeltaChart) aumDeltaChart.destroy();
+      aumDeltaChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: dates, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0a0d10', titleColor: '#ffffff', bodyColor: '#c8d0d8',
+              borderColor: '#2a3038', borderWidth: 1,
+              callbacks: {
+                label: (item) => {
+                  const v = item.parsed.y;
+                  if (v == null) return null;
+                  const sign = v >= 0 ? '+' : '-';
+                  return `${item.dataset.label}: ${sign}${fmtUsd(Math.abs(v))}`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: { stacked: true, ticks: { color: '#7a8088', font: { size: 9 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { stacked: true, ticks: { color: '#7a8088', font: { size: 10 }, callback: (v) => fmtUsd(v) }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          },
+        },
+      });
     }
 
     function renderEtfAumChart(series, totals, tracked) {

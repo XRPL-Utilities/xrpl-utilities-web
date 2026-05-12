@@ -295,7 +295,7 @@
         <a href="/flows/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
           <div class="text-[10px] uppercase tracking-wider text-muted mb-1">ETF AUM tracked</div>
           <div id="ls-etf-aum" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
-          <div class="text-[10px] text-muted mt-2">XRP-attributable across 12 US-listed ETFs</div>
+          <div class="text-[10px] mt-2"><span id="ls-etf-delta" class="text-muted">XRP-attributable across 12 ETFs</span></div>
         </a>
 
       </div>
@@ -587,6 +587,7 @@ report = session.post(
       const elScans      = document.getElementById('ls-scans');
       const elRwaIssuers = document.getElementById('ls-rwa-issuers');
       const elEtfAum     = document.getElementById('ls-etf-aum');
+      const elEtfDelta   = document.getElementById('ls-etf-delta');
       const elAsOf       = document.getElementById('live-state-asof');
 
       // Compact USD: $123M / $4.2B / $1.05T. Keeps the box width stable
@@ -652,16 +653,31 @@ report = session.post(
           setText(elRwaIssuers, fmtCount(rwaTracked));
         }
 
-        // Flows: sum the latest day of etf_total_aum_daily across both
-        // tiers (spot + indirect-basket slice). Falls back to the last
-        // non-null entry if today's row hasn't been written yet.
+        // Flows: latest day of etf_total_aum_daily across both tiers
+        // (spot + indirect-basket slice). Day-over-day delta also
+        // computed when we have two consecutive non-null rows; the
+        // tile subtitle flips to green/red `+$X.XM today` framing so
+        // direction is visible at a glance.
         if (flowsCorr && Array.isArray(flowsCorr.etf_total_aum_daily)) {
-          let latest = null;
-          for (let i = flowsCorr.etf_total_aum_daily.length - 1; i >= 0; i--) {
-            const r = flowsCorr.etf_total_aum_daily[i];
-            if (r && typeof r.aum_usd_total === 'number') { latest = r.aum_usd_total; break; }
+          const rows = flowsCorr.etf_total_aum_daily.filter(
+            r => r && typeof r.aum_usd_total === 'number'
+          );
+          if (rows.length) {
+            const latest = rows[rows.length - 1];
+            setText(elEtfAum, fmtUsd(latest.aum_usd_total));
+            if (rows.length >= 2 && elEtfDelta) {
+              const prior = rows[rows.length - 2];
+              const delta = latest.aum_usd_total - prior.aum_usd_total;
+              const sign = delta >= 0 ? '+' : '-';
+              const cls = delta >= 0 ? 'text-emerald-400' : 'text-rose-400';
+              const dollarStr = fmtUsd(Math.abs(delta));
+              elEtfDelta.className = cls;
+              elEtfDelta.textContent = sign + dollarStr + ' since prior day';
+            } else if (elEtfDelta) {
+              elEtfDelta.className = 'text-muted';
+              elEtfDelta.textContent = 'XRP-attributable across 12 ETFs';
+            }
           }
-          if (latest != null) setText(elEtfAum, fmtUsd(latest));
         }
 
         const now = new Date();
