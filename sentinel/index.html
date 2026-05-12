@@ -548,6 +548,13 @@ report = session.post(
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">WHALE_RECENT_ACTIVITY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The scanned wallet has been sender or receiver of at least one whale-tier XRPL Payment in the last 30 days. Detected via cross-product enrichment against XR-Pulse's deterministic on-chain whale watcher. Trajectory signal complementing <code class="font-mono">INSTITUTIONAL_SCALE_FLOW</code>: the latter fires from this wallet's own scan window, this one captures whale activity Pulse already saw network-wide.
+              <span class="block text-xs mt-2 opacity-70">Fires when the wallet has at least one event in Pulse's whale stream above the WHALE_MOVE floor ($1M USD) within the last 30 days. The full block (event count, tier counts, direction counts, total USD volume, last-event timestamp, per-event counterparty list) lands on the top-level <code class="font-mono">whale_context</code> field of the same /scan response.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">ESCROW_LIFE_HEAVY</dt>
             <dd class="text-sm text-muted leading-relaxed">
               The wallet's recent activity is escrow-dominated rather than transactional — consistent with a vesting or grants vehicle, an institutional settlement counterparty, or a programmatic escrow pipeline. Says nothing about who the wallet's escrow counterparties are; just describes the activity mix.
