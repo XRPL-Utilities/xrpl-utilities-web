@@ -282,6 +282,7 @@
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 260px;">
             <canvas id="chart-settlement-events"></canvas>
           </div>
+          <p id="offer-issuance-caveat" class="text-[10px] text-muted mt-2 hidden"></p>
         </div>
 
         <div>
@@ -1024,12 +1025,23 @@
       const ctx = document.getElementById('chart-settlement-events');
       if (!ctx) return;
       const labels = daily.map(d => d.snapshot_date);
+
+      // Offer-pattern issuers (e.g. Ripple RLUSD) bring supply into
+      // circulation via DEX offers, not direct Payments, so their
+      // mint/burn EVENT counts are structurally 0. Exclude them from
+      // the event-count chart so we don't render a misleading flatline,
+      // and surface them in the offer-issuance caveat below.
+      const offerLabels = new Set(
+        tracked.filter(t => t.mint_pattern === 'offer').map(t => t.logical_label)
+      );
+
       // Collect every label that ever shows a nonzero event count over
       // the window so the legend reflects the period, not just today.
+      // Skip offer-pattern issuers regardless of their data.
       const seen = new Set();
       daily.forEach(d => {
         Object.entries(d.by_logical_label || {}).forEach(([lbl, n]) => {
-          if (n > 0) seen.add(lbl);
+          if (n > 0 && !offerLabels.has(lbl)) seen.add(lbl);
         });
       });
       const orderedLabels = Array.from(seen).sort();
@@ -1040,11 +1052,31 @@
         borderWidth: 0,
       }));
 
-      const total = daily.reduce((acc, d) => acc + (d.total_events || 0), 0);
+      const total = daily.reduce((acc, d) => {
+        const labels = d.by_logical_label || {};
+        let s = 0;
+        for (const [lbl, n] of Object.entries(labels)) {
+          if (!offerLabels.has(lbl)) s += (n || 0);
+        }
+        return acc + s;
+      }, 0);
       const totalEl = document.getElementById('settlement-events-total');
       if (totalEl) {
         totalEl.textContent =
           `${total.toLocaleString()} events · ${daily.length} day${daily.length === 1 ? '' : 's'} · ${orderedLabels.length} issuer${orderedLabels.length === 1 ? '' : 's'}`;
+      }
+
+      // Caveat row for offer-pattern issuers.
+      const offerCaveatEl = document.getElementById('offer-issuance-caveat');
+      if (offerCaveatEl) {
+        if (offerLabels.size) {
+          const names = Array.from(offerLabels).sort().join(', ');
+          offerCaveatEl.textContent =
+            `Not shown in the event chart: ${names}. These issuers bring supply into circulation via offers on the XRPL DEX rather than direct Payments, so mint and burn event counts are structurally zero. Obligations are tracked separately.`;
+          offerCaveatEl.classList.remove('hidden');
+        } else {
+          offerCaveatEl.classList.add('hidden');
+        }
       }
 
       if (settlementChart) settlementChart.destroy();
