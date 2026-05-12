@@ -134,8 +134,9 @@
         <img src="/assets/xr-flows.png" alt="XR-Flows" class="h-32 w-32 md:h-40 md:w-40 rounded-2xl hero-glow shrink-0" />
         <div class="min-w-0">
           <div class="flex items-center gap-3 mb-3 flex-wrap">
-            <span class="text-xs uppercase tracking-widest text-accent font-semibold">Preview</span>
-            <span class="text-[10px] uppercase tracking-wider text-muted bg-panel border border-border rounded px-2 py-0.5">v1.0.0</span>
+            <span class="text-xs uppercase tracking-widest text-accent font-semibold">Live</span>
+            <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
+            <span class="text-[10px] uppercase tracking-wider text-muted bg-panel border border-border rounded px-2 py-0.5">v1.4.0</span>
           </div>
           <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-4">
             XR-Flows<sup class="text-[0.4em] font-normal opacity-70 ml-1">&trade;</sup>
@@ -152,9 +153,9 @@
   <section class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
       <div class="bg-panel border border-border rounded-2xl p-6 sm:p-8">
-        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Preview status</h2>
+        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Coverage</h2>
         <p class="text-muted leading-relaxed text-sm mb-4">
-          XR-Flows v1.0.0 is a preview build. The service skeleton, schema, registry, and free public endpoints are live; per-issuer AUM scrapers are still stubbed and will return null until v1.x. The chart on this page goes live as each scraper lands and writes its first row.
+          All six US-listed spot XRP ETFs are now tracked with real AUM, combined ~$1.2B across the lineup. Sources fan out across three paths so the service stays at full coverage without paid API spend: direct issuer dashboards for Bitwise, Canary, and REX-Osprey; Yahoo Finance for Grayscale and 21Shares (issuer dashboards are SPA-gated); and a daily-cadence third-party aggregator for Franklin (gated on both its own dashboard and Yahoo). The chain-flow side reads the XRPL exchange-flow delta from XR-Pulse. Both series are independent measurements plotted on one date axis. Correlation, never causation.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div class="bg-ink border border-border rounded-lg p-4">
