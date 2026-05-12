@@ -116,6 +116,7 @@
       transform: translateY(-1px);
     }
   </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 
 <body class="bg-ink text-white font-sans antialiased">
@@ -254,6 +255,49 @@
           </div>
         </div>
         <p id="top-movers-empty" class="text-xs text-muted mt-4 hidden">No measurable RWA flow in the last 24 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="settlement-over-time">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Settlement activity over time</h2>
+          <div class="flex items-center gap-2">
+            <button data-flow-range="7"  class="flow-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">7d</button>
+            <button data-flow-range="30" class="flow-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-accent text-white transition" aria-pressed="true">30d</button>
+            <button data-flow-range="90" class="flow-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">90d</button>
+          </div>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-6">
+          Daily settlement activity across every tracked real-world-asset issuer. The top chart counts every mint and redemption event per UTC day, stacked by issuer — currency-agnostic, so a Braza BBRL redemption sits alongside an Ondo OUSG mint as one settlement event. The bottom chart sums the dollar value of net flow per day, restricted to issuers whose native unit sits at or near 1 USD (fiat USD stables, treasury bills at NAV, commercial paper, money-market funds); EUR / BRL / AUD / MWh issuers are excluded from the dollar aggregate by design.
+        </p>
+
+        <div class="mb-6">
+          <div class="flex items-baseline justify-between mb-2 gap-2">
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">Settlement events per day</h3>
+            <span id="settlement-events-total" class="text-[10px] text-muted font-mono"></span>
+          </div>
+          <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 260px;">
+            <canvas id="chart-settlement-events"></canvas>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-baseline justify-between mb-2 gap-2">
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">USD-pegged net flow per day</h3>
+            <span id="usd-flow-coverage" class="text-[10px] text-muted font-mono"></span>
+          </div>
+          <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 220px;">
+            <canvas id="chart-usd-pegged-flow"></canvas>
+          </div>
+          <p id="usd-flow-caveat" class="text-[10px] text-muted mt-2"></p>
+        </div>
+
+        <div id="settlement-empty" class="hidden text-xs text-muted mt-4">
+          No accrued daily snapshots yet. The series starts from the first complete UTC day after each Vault deploy.
+        </div>
       </div>
     </div>
   </section>
@@ -923,6 +967,237 @@
     loadAll();
     // Poll every 60s so the dashboard stays current without page reload.
     setInterval(loadAll, 60000);
+
+    // ============================================================
+    // Settlement activity over time — /stats/daily-flow on Vault.
+    // ============================================================
+    const VAULT_API = 'https://vault.xrpl-utilities.io';
+
+    // Deterministic per-label color so each issuer keeps the same hue
+    // across re-renders. Hash on the logical_label so new issuers
+    // (added via Pulse registry promotion) get a stable color without
+    // any hardcoded map here.
+    function labelColor(label) {
+      let h = 0;
+      for (let i = 0; i < label.length; i++) {
+        h = (h * 31 + label.charCodeAt(i)) >>> 0;
+      }
+      const hue = h % 360;
+      return `hsl(${hue}, 65%, 58%)`;
+    }
+
+    let settlementChart = null;
+    let usdFlowChart = null;
+    let currentFlowRange = 30;
+
+    async function loadDailyFlow(days) {
+      const url = `${VAULT_API}/stats/daily-flow?days=${encodeURIComponent(days)}`;
+      let body;
+      try {
+        const r = await fetch(url);
+        if (!r.ok) {
+          document.getElementById('settlement-empty')?.classList.remove('hidden');
+          return;
+        }
+        body = await r.json();
+      } catch {
+        document.getElementById('settlement-empty')?.classList.remove('hidden');
+        return;
+      }
+      const events = body.settlement_events_daily || [];
+      const usd = body.usd_pegged_net_flow_daily || [];
+      const tracked = body.tracked_issuers || [];
+
+      const emptyEl = document.getElementById('settlement-empty');
+      if (!events.length) {
+        emptyEl?.classList.remove('hidden');
+        return;
+      }
+      emptyEl?.classList.add('hidden');
+
+      renderSettlementEventsChart(events, tracked);
+      renderUsdPeggedChart(usd, body.usd_pegged_asset_classes || [], tracked);
+    }
+
+    function renderSettlementEventsChart(daily, tracked) {
+      if (typeof Chart === 'undefined') return;
+      const ctx = document.getElementById('chart-settlement-events');
+      if (!ctx) return;
+      const labels = daily.map(d => d.snapshot_date);
+      // Collect every label that ever shows a nonzero event count over
+      // the window so the legend reflects the period, not just today.
+      const seen = new Set();
+      daily.forEach(d => {
+        Object.entries(d.by_logical_label || {}).forEach(([lbl, n]) => {
+          if (n > 0) seen.add(lbl);
+        });
+      });
+      const orderedLabels = Array.from(seen).sort();
+      const datasets = orderedLabels.map(lbl => ({
+        label: lbl,
+        data: daily.map(d => (d.by_logical_label || {})[lbl] || 0),
+        backgroundColor: labelColor(lbl),
+        borderWidth: 0,
+      }));
+
+      const total = daily.reduce((acc, d) => acc + (d.total_events || 0), 0);
+      const totalEl = document.getElementById('settlement-events-total');
+      if (totalEl) {
+        totalEl.textContent =
+          `${total.toLocaleString()} events · ${daily.length} day${daily.length === 1 ? '' : 's'} · ${orderedLabels.length} issuer${orderedLabels.length === 1 ? '' : 's'}`;
+      }
+
+      if (settlementChart) settlementChart.destroy();
+      settlementChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#a0a8b0', font: { size: 10 }, boxWidth: 10, boxHeight: 10 },
+            },
+            tooltip: {
+              backgroundColor: '#0a0d10',
+              titleColor: '#ffffff',
+              bodyColor: '#c8d0d8',
+              borderColor: '#2a3038',
+              borderWidth: 1,
+            },
+          },
+          scales: {
+            x: {
+              stacked: true,
+              ticks: { color: '#7a8088', font: { size: 9 }, maxRotation: 0, autoSkipPadding: 12 },
+              grid: { color: 'rgba(255,255,255,0.04)' },
+            },
+            y: {
+              stacked: true,
+              ticks: { color: '#7a8088', font: { size: 10 }, precision: 0 },
+              grid: { color: 'rgba(255,255,255,0.04)' },
+            },
+          },
+        },
+      });
+    }
+
+    function renderUsdPeggedChart(daily, usdClasses, tracked) {
+      if (typeof Chart === 'undefined') return;
+      const ctx = document.getElementById('chart-usd-pegged-flow');
+      if (!ctx) return;
+      const labels = daily.map(d => d.snapshot_date);
+      const netData = daily.map(d => d.net_usd || 0);
+
+      // Headline coverage: how many tracked issuers are USD-pegged vs total.
+      const usdCount = tracked.filter(t => t.is_usd_pegged).length;
+      const totalCount = tracked.length;
+      const coverageEl = document.getElementById('usd-flow-coverage');
+      if (coverageEl) {
+        coverageEl.textContent =
+          `${usdCount} of ${totalCount} issuer${totalCount === 1 ? '' : 's'} included`;
+      }
+
+      // Caveat lists the EUR/BRL/AUD/MWh issuers that don't roll up here.
+      const excluded = tracked.filter(t => !t.is_usd_pegged).map(t => t.logical_label).sort();
+      const caveatEl = document.getElementById('usd-flow-caveat');
+      if (caveatEl) {
+        if (excluded.length) {
+          caveatEl.textContent =
+            `Excluded from dollar aggregate (native unit only): ${excluded.join(', ')}.`;
+        } else {
+          caveatEl.textContent = '';
+        }
+      }
+
+      if (usdFlowChart) usdFlowChart.destroy();
+      usdFlowChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Net USD flow',
+            data: netData,
+            backgroundColor: netData.map(v => v >= 0 ? 'rgba(74, 222, 128, 0.65)' : 'rgba(248, 113, 113, 0.65)'),
+            borderColor: netData.map(v => v >= 0 ? 'rgb(74, 222, 128)' : 'rgb(248, 113, 113)'),
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0a0d10',
+              titleColor: '#ffffff',
+              bodyColor: '#c8d0d8',
+              borderColor: '#2a3038',
+              borderWidth: 1,
+              callbacks: {
+                label: (item) => {
+                  const v = item.parsed.y || 0;
+                  const sign = v >= 0 ? '+' : '−';
+                  return `${sign}$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: '#7a8088', font: { size: 9 }, maxRotation: 0, autoSkipPadding: 12 },
+              grid: { color: 'rgba(255,255,255,0.04)' },
+            },
+            y: {
+              ticks: {
+                color: '#7a8088',
+                font: { size: 10 },
+                callback: (v) => {
+                  const abs = Math.abs(v);
+                  const sign = v < 0 ? '-' : '';
+                  if (abs >= 1_000_000) return `${sign}$${(abs/1_000_000).toFixed(1)}M`;
+                  if (abs >= 1_000) return `${sign}$${(abs/1_000).toFixed(0)}K`;
+                  return `${sign}$${abs}`;
+                },
+              },
+              grid: { color: 'rgba(255,255,255,0.04)' },
+            },
+          },
+        },
+      });
+    }
+
+    document.querySelectorAll('.flow-range-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const d = parseInt(btn.getAttribute('data-flow-range'), 10) || 30;
+        if (d === currentFlowRange) return;
+        currentFlowRange = d;
+        document.querySelectorAll('.flow-range-btn').forEach(b => {
+          const active = b === btn;
+          b.classList.toggle('border-accent', active);
+          b.classList.toggle('text-white', active);
+          b.classList.toggle('border-border', !active);
+          b.classList.toggle('text-muted', !active);
+          if (active) b.setAttribute('aria-pressed', 'true');
+          else b.removeAttribute('aria-pressed');
+        });
+        loadDailyFlow(d);
+      });
+    });
+
+    // Defer to allow Chart.js to load.
+    function bootDailyFlow() {
+      if (typeof Chart === 'undefined') {
+        setTimeout(bootDailyFlow, 200);
+        return;
+      }
+      loadDailyFlow(currentFlowRange);
+      // Refresh once per hour — the underlying data updates on the
+      // UTC-day cadence so polling faster is wasted work.
+      setInterval(() => loadDailyFlow(currentFlowRange), 3600 * 1000);
+    }
+    bootDailyFlow();
   </script>
 
 </body>
