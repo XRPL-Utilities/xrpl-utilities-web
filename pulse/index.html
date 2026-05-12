@@ -723,6 +723,16 @@ feed = session.post(
       const isOnChainOnly = isWhale || isPermDomain;
       const whaleAU = isWhale && e.active_utility && e.active_utility.signal === 'whale_transfer'
         ? e.active_utility : null;
+      // Two other whale_xrpl sub-signals from the same source: XLS-85
+      // token escrow events (EscrowCreate/Finish/Cancel on non-XRP IOUs)
+      // and issuer-side TrustSet deep-freezes. Each has its own
+      // active_utility shape (subtype, tx_type, currency, addresses,
+      // condition, target_holder) and should render with its own
+      // identity badge + detail strip so the card doesn't look empty.
+      const tokenEscrowAU = isWhale && e.active_utility && e.active_utility.signal === 'token_escrow_event'
+        ? e.active_utility : null;
+      const deepFreezeAU  = isWhale && e.active_utility && e.active_utility.signal === 'issuer_deepfreeze'
+        ? e.active_utility : null;
       let tierBadge = '';
       let whaleBlock = '';
       let whaleTitle = null;  // when set, overrides e.title for cleaner rendering
@@ -847,6 +857,61 @@ feed = session.post(
             ${tcBits.join(' &middot; ')}
           </div>`;
         }
+      }
+
+      // XLS-85 token-escrow event render. Subtype is either
+      // 'token_escrow' (single-leg) or 'dvp_candidate' (paired with a
+      // reciprocal Condition within 1h — delivery-versus-payment
+      // pattern). Detail strip surfaces the tx flow + Escrow lifecycle
+      // fields; the brief explainer at the bottom is the plain-English
+      // gloss for readers unfamiliar with XLS-85.
+      if (tokenEscrowAU) {
+        const isDvp = tokenEscrowAU.subtype === 'dvp_candidate';
+        tierBadge = isDvp
+          ? `<span class="text-xs px-2 py-0.5 rounded tier-institutional border uppercase">DvP candidate</span>`
+          : `<span class="text-xs px-2 py-0.5 rounded tier-whale border uppercase">Token escrow</span>`;
+        const txType = tokenEscrowAU.tx_type || 'EscrowCreate';
+        const currency = tokenEscrowAU.currency || '';
+        const amount = tokenEscrowAU.amount_display || tokenEscrowAU.amount || '';
+        const account = (tokenEscrowAU.account || '').slice(0, 10) + (tokenEscrowAU.account ? '…' : '');
+        const destination = (tokenEscrowAU.destination || '').slice(0, 10) + (tokenEscrowAU.destination ? '…' : '');
+        const issuer = (tokenEscrowAU.issuer || '').slice(0, 10) + (tokenEscrowAU.issuer ? '…' : '');
+        whaleTitle = `${txType} · ${amount} ${currency}${isDvp ? ' · DvP' : ''}`;
+        whaleBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border break-words">
+          <span class="text-white mr-2">XLS-85 escrow</span>
+          ${escapeHtml(txType)} ·
+          <span class="font-mono break-all">${escapeHtml(account)}</span> &rarr;
+          <span class="font-mono break-all">${escapeHtml(destination)}</span> ·
+          issuer <span class="font-mono break-all">${escapeHtml(issuer)}</span> ·
+          ledger ${escapeHtml(String(tokenEscrowAU.ledger_index || '?'))}
+        </div>
+        <div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+          ${isDvp
+            ? 'Delivery-versus-payment candidate: a pair of token escrows on shared Condition hashes within an hour, the on-chain pattern for atomic two-party settlement of an asset for a payment.'
+            : 'XLS-85 enables time-locked or condition-locked escrow of non-XRP IOU tokens. Used for vesting, deferred settlement, and atomic two-leg trades. EscrowCreate opens the lock; Finish releases to the destination; Cancel returns to the account.'}
+        </div>`;
+      }
+
+      // Issuer deep-freeze render. Sanctions-grade trustline state
+      // change: a TrustSet with tfSetDeepFreeze means the issuer has
+      // disabled both sending AND receiving for the target holder on
+      // that currency. Stronger than the regular freeze flag.
+      if (deepFreezeAU) {
+        tierBadge = `<span class="text-xs px-2 py-0.5 rounded tier-institutional border uppercase">Deep-freeze</span>`;
+        const issuer = (deepFreezeAU.issuer || '').slice(0, 10) + (deepFreezeAU.issuer ? '…' : '');
+        const target = (deepFreezeAU.target_holder || '').slice(0, 10) + (deepFreezeAU.target_holder ? '…' : '');
+        const currency = deepFreezeAU.currency || '';
+        whaleTitle = `Issuer deep-froze ${currency} trustline`;
+        whaleBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border break-words">
+          <span class="text-white mr-2">Compliance action</span>
+          Issuer <span class="font-mono break-all">${escapeHtml(issuer)}</span> froze holder
+          <span class="font-mono break-all">${escapeHtml(target)}</span>
+          on <span class="text-white">${escapeHtml(currency)}</span> ·
+          ledger ${escapeHtml(String(deepFreezeAU.ledger_index || '?'))}
+        </div>
+        <div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+          TrustSet with tfSetDeepFreeze (0x00400000) on the issuer side. The holder can no longer send OR receive this IOU. Stronger than the regular freeze flag (which only blocks sends). Behavioral signal, not a verdict; issuers freeze for many reasons including court order, KYC failure, suspected fraud, and routine compliance.
+        </div>`;
       }
 
       // Per-event correlation line policy: render only when there is a
