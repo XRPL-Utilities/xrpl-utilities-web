@@ -260,7 +260,7 @@
         </div>
         <span id="live-state-asof" class="text-[10px] text-muted font-mono">loading&hellip;</span>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
 
         <a href="/telemetry/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
           <div class="text-[10px] uppercase tracking-wider text-muted mb-1">XRPL settlement run-rate</div>
@@ -290,6 +290,12 @@
           <div class="text-[10px] uppercase tracking-wider text-muted mb-1">RWA issuers tracked</div>
           <div id="ls-rwa-issuers" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
           <div class="text-[10px] text-muted mt-2">XRPL mainnet, live + rails-only</div>
+        </a>
+
+        <a href="/flows/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">ETF AUM tracked</div>
+          <div id="ls-etf-aum" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+          <div class="text-[10px] text-muted mt-2">XRP-attributable across 12 US-listed ETFs</div>
         </a>
 
       </div>
@@ -573,12 +579,14 @@ report = session.post(
       const PULSE     = 'https://pulse.xrpl-utilities.io';
       const TRUST     = 'https://trust.xrpl-utilities.io';
       const SENTINEL  = 'https://sentinel.xrpl-utilities.io';
+      const FLOWS     = 'https://flows.xrpl-utilities.io';
 
       const elRunrate    = document.getElementById('ls-runrate');
       const elEvents     = document.getElementById('ls-events');
       const elDomains    = document.getElementById('ls-domains');
       const elScans      = document.getElementById('ls-scans');
       const elRwaIssuers = document.getElementById('ls-rwa-issuers');
+      const elEtfAum     = document.getElementById('ls-etf-aum');
       const elAsOf       = document.getElementById('live-state-asof');
 
       // Compact USD: $123M / $4.2B / $1.05T. Keeps the box width stable
@@ -611,12 +619,13 @@ report = session.post(
       }
 
       async function refresh() {
-        const [tel, pulseHc, trustStats, sentinelStats, rwaSummary] = await Promise.all([
+        const [tel, pulseHc, trustStats, sentinelStats, rwaSummary, flowsCorr] = await Promise.all([
           fetchJson(TELEMETRY + '/settlement/totals'),
           fetchJson(PULSE     + '/healthz'),
           fetchJson(TRUST     + '/stats'),
           fetchJson(SENTINEL  + '/stats'),
           fetchJson(PULSE     + '/stats/rwa-summary'),
+          fetchJson(FLOWS     + '/stats/correlation?days=1'),
         ]);
 
         if (tel && typeof tel.annualized_run_rate_usd === 'number') {
@@ -641,6 +650,18 @@ report = session.post(
         const rwaTracked = rwaSummary && rwaSummary.totals && rwaSummary.totals.tracked_issuers;
         if (typeof rwaTracked === 'number') {
           setText(elRwaIssuers, fmtCount(rwaTracked));
+        }
+
+        // Flows: sum the latest day of etf_total_aum_daily across both
+        // tiers (spot + indirect-basket slice). Falls back to the last
+        // non-null entry if today's row hasn't been written yet.
+        if (flowsCorr && Array.isArray(flowsCorr.etf_total_aum_daily)) {
+          let latest = null;
+          for (let i = flowsCorr.etf_total_aum_daily.length - 1; i >= 0; i--) {
+            const r = flowsCorr.etf_total_aum_daily[i];
+            if (r && typeof r.aum_usd_total === 'number') { latest = r.aum_usd_total; break; }
+          }
+          if (latest != null) setText(elEtfAum, fmtUsd(latest));
         }
 
         const now = new Date();
