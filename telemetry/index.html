@@ -265,8 +265,16 @@
             <input id="bm-q" type="number" min="0" step="100000000" class="num-input" />
           </div>
           <label class="block">
-            <div class="text-xs text-muted uppercase tracking-wider mb-2">V &middot; Annual velocity</div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-xs text-muted uppercase tracking-wider">V &middot; Annual velocity</div>
+              <span class="text-[10px] text-muted">
+                realized today: <span id="bm-v-realized" class="font-mono text-white">&hellip;</span>
+              </span>
+            </div>
             <input id="bm-v" type="number" min="0.1" step="0.1" class="num-input" />
+            <p class="text-[10px] text-muted mt-1 leading-snug">
+              Realized V is computed from your current Q and live M against current spot (Q &divide; (M &times; spot)). It's the velocity the identity would require to make P equal today's market. Default V = 6 is the long-run ODL-style assumption; today's realized V is much higher because most XRP is held, not transacted.
+            </p>
           </label>
         </div>
 
@@ -965,6 +973,23 @@ payload = requests.get(
       } else {
         const premium = SNAPSHOT.current_price_usd / p;
         bmPremium.textContent = premium.toFixed(2) + '×';
+      }
+      // Realized V = Q / (M × spot). The implicit velocity the
+      // Equation of Exchange would require for P to equal today's
+      // market spot, given the current Q + live M. When the user's
+      // V input is well below this number, P diverges above market;
+      // when the user's V matches, P collapses to market.
+      const bmVRealized = document.getElementById('bm-v-realized');
+      if (bmVRealized) {
+        const qRealized = Number(bmQ.value);
+        const mRealized = SNAPSHOT.available_liquid_supply;
+        const spotRealized = SNAPSHOT.current_price_usd;
+        if (isFinite(qRealized) && qRealized > 0 && mRealized > 0 && spotRealized > 0) {
+          const vReal = qRealized / (mRealized * spotRealized);
+          bmVRealized.textContent = vReal.toFixed(1) + 'x';
+        } else {
+          bmVRealized.textContent = '—';
+        }
       }
       updateFloorChart();
     }
