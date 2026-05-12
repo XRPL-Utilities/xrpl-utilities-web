@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Terms | XRPL-Utilities</title>
-  <meta name="description" content="Terms of service, fee schedule, refund policy, and compliance posture for XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault." />
+  <meta name="description" content="Terms of service, fee schedule, refund policy, and compliance posture for XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, XR-Vault, and XR-Flows." />
   <meta property="og:title" content="XRPL-Utilities | Terms of Service" />
-  <meta property="og:description" content="Fee schedule, refund policy, payment protocol, data handling, and compliance posture across XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault." />
+  <meta property="og:description" content="Fee schedule, refund policy, payment protocol, data handling, and compliance posture across XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, XR-Vault, and XR-Flows." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/terms/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -47,6 +47,7 @@
         <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
         <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
         <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
       </nav>
       <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -77,6 +78,7 @@
       <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
       <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
       <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
     </nav>
     <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
@@ -106,8 +108,9 @@
             XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
             XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
             XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
-            XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and
-            XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>.
+            XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
+            XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and
+            XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>.
           </p>
         </div>
 
@@ -134,9 +137,13 @@
             <strong class="text-white">Real-world asset figures.</strong>
             XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> reports on-chain mint, burn, and circulating supply for tokenized real-world assets in their native unit-of-account only. We do not fabricate a USD valuation for non-fiat-pegged tokens. Issuer-stated metrics (marketed AUM, off-chain redemption status, NAV, yield) are not surfaced unless operator-attested and labeled as such. Inclusion of an issuer is not an endorsement of the underlying real-world asset or its custodian. Always do your own research and independently verify any RWA issuer before allocating capital.
           </p>
-          <p class="text-white leading-relaxed">
+          <p class="text-white leading-relaxed mb-2">
             <strong class="text-white">Unverified RWA candidates.</strong>
             The XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> dashboard surfaces a "Recently discovered" section listing wallets that fingerprint as regulated RWA issuers on XRPL (AllowTrustLineClawback flag set, non-zero issued obligations) but have not yet been operator-reviewed. Candidates are auto-detected from public on-chain signals and the operator-curated XRPScan well-known label list. Candidate rows show chain-derived fields only (wallet, label, domain, currency, obligations, trustline count, on-chain flags); the asset class, the marketing-friendly name, and any per-issuer caveats are deliberately not auto-populated. Inclusion as a candidate is not an endorsement, certification, verification, or compliance verdict on any wallet, issuer, asset, or counterparty. A candidate may be removed from the dashboard at any time, including if operator review determines the wallet is not a real-world asset issuer. The "Unverified" badge and the candidate-specific tile styling exist to make this distinction visible at a glance; consumers should treat the canonical tracked-issuer set and the candidate set as categorically different.
+          </p>
+          <p class="text-white leading-relaxed">
+            <strong class="text-white">ETF flow figures.</strong>
+            XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> tracks US-listed XRP-exposure ETFs across spot and indirect-basket tiers. Net Assets values are scraped from each issuer's public dashboard, Yahoo Finance, or third-party aggregators on a daily cadence; We do not cross-validate issuer-reported AUM against on-chain spot price, custodian attestations, or third-party fund administrators, and per-source freshness is exposed on each /scan response so consumers can audit lineage. ETFs hold XRP through pooled institutional custodians, so on-chain wallet activity cannot be cleanly attributed to a specific fund; correlation between ETF AUM movement and XRPL exchange-flow delta is a directional measurement, not a causal claim. Inclusion of an ETF in the tracked registry is not investment advice, an endorsement, or a recommendation. The auto-discovery surface at /stats/etf-candidates is the same kind of pre-review queue as XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>'s unverified candidates: visibility into pipeline, not endorsement.
           </p>
         </div>
 
@@ -201,8 +208,9 @@
             XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
             XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
             XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
-            XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and
-            XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are proprietary marks of XRPL-Utilities LLC.
+            XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
+            XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and
+            XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are proprietary marks of XRPL-Utilities LLC.
             Users are granted a limited, non-exclusive license to ingest Our data for internal research or
             agentic operation but may not scrape, mirror, or resell Our "Reputation Signals" without express written consent.
           </p>
