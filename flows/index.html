@@ -146,7 +146,7 @@
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        Twelve tracked ETFs &middot; correlation only &middot; never causation
+        <span id="hero-pill-count">Tracked ETFs</span> &middot; correlation only &middot; never causation
       </div>
     </div>
   </section>
@@ -892,6 +892,10 @@
       }
       const launches = body.launches || [];
       if (!launches.length) { empty?.classList.remove('hidden'); return; }
+      // Sync the hero-pill count to the live registry length so the
+      // page never claims a specific number that's stale.
+      const heroPill = document.getElementById('hero-pill-count');
+      if (heroPill) heroPill.textContent = `${launches.length} tracked ETFs`;
       // Group spot before indirect-basket so the headline tier stays
       // visually first; within tier keep registry order so featured
       // funds (highest-AUM, oldest) lead.

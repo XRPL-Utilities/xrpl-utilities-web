@@ -295,7 +295,7 @@
         <a href="/flows/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
           <div class="text-[10px] uppercase tracking-wider text-muted mb-1">ETF AUM tracked</div>
           <div id="ls-etf-aum" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
-          <div class="text-[10px] mt-2"><span id="ls-etf-delta" class="text-muted">XRP-attributable across 12 ETFs</span></div>
+          <div class="text-[10px] mt-2"><span id="ls-etf-delta" class="text-muted">XRP-attributable across tracked ETFs</span></div>
         </a>
 
       </div>
@@ -419,7 +419,7 @@
           <h4 class="text-2xl font-bold mb-3">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
           <p class="text-white leading-relaxed mb-3 font-medium">ETF flow meets the ledger.</p>
           <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
-            Daily AUM for all six US-listed spot XRP ETFs (Bitwise, Canary, Franklin, Grayscale, 21Shares, REX-Osprey) plotted side by side with XRPL exchange-flow delta. Rolling Pearson correlation as a directional alignment score. Correlation, never causation. The off-chain side of institutional capital and the on-chain side of XRP, on one date axis.
+            Daily AUM for every US-listed XRP-exposure ETF (spot + indirect-basket tiers) plotted side by side with XRPL exchange-flow delta. Rolling Pearson correlation as a directional alignment score. Correlation, never causation. The off-chain side of institutional capital and the on-chain side of XRP, on one date axis.
           </p>
           <div class="flex items-center justify-between text-sm">
             <span class="text-muted">Free on the web &middot; ~$1.2B AUM tracked daily</span>
@@ -675,7 +675,12 @@ report = session.post(
               elEtfDelta.textContent = sign + dollarStr + ' since prior day';
             } else if (elEtfDelta) {
               elEtfDelta.className = 'text-muted';
-              elEtfDelta.textContent = 'XRP-attributable across 12 ETFs';
+              // Pull live tracked count from the same response so the
+              // subtitle stays in sync when new ETFs surface upstream.
+              const n = Array.isArray(flowsCorr.tracked_etfs) ? flowsCorr.tracked_etfs.length : null;
+              elEtfDelta.textContent = n
+                ? `XRP-attributable across ${n} tracked ETFs`
+                : 'XRP-attributable across tracked ETFs';
             }
           }
         }
