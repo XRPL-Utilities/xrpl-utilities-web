@@ -524,15 +524,45 @@
     // ============================================================
     const FLOWS_API = 'https://flows.xrpl-utilities.io';
 
+    // Curated 12-color palette. Hash-derived HSL was producing
+    // near-duplicate hues for several tickers; a hand-picked palette
+    // keeps the stacked-AUM chart legible across the full registry.
+    // Order chosen so adjacent stack segments contrast strongly
+    // (cyan next to amber, magenta next to lime). Extra colors past
+    // index 11 fall back to the hash-derived value so the function
+    // stays stable for any future registry growth.
+    const TICKER_PALETTE = [
+      '#00b8ff', // cyan (brand)
+      '#f59e0b', // amber
+      '#a855f7', // violet
+      '#10b981', // emerald
+      '#ef4444', // red
+      '#facc15', // yellow
+      '#ec4899', // pink
+      '#22d3ee', // sky
+      '#84cc16', // lime
+      '#fb923c', // orange
+      '#6366f1', // indigo
+      '#14b8a6', // teal
+    ];
+    const _COLOR_BY_LABEL = {};
+    let _COLOR_INDEX = 0;
     function labelColor(label) {
-      // Deterministic hash so each ticker keeps the same hue across
-      // reloads. New tickers added to the registry get a stable color
-      // without a hardcoded map here.
+      if (_COLOR_BY_LABEL[label]) return _COLOR_BY_LABEL[label];
+      if (_COLOR_INDEX < TICKER_PALETTE.length) {
+        const c = TICKER_PALETTE[_COLOR_INDEX++];
+        _COLOR_BY_LABEL[label] = c;
+        return c;
+      }
+      // Fallback for any future ticker past index 11 — hash-derived,
+      // shifted hue band to avoid colliding with the palette above.
       let h = 0;
       for (let i = 0; i < label.length; i++) {
         h = (h * 31 + label.charCodeAt(i)) >>> 0;
       }
-      return `hsl(${h % 360}, 65%, 58%)`;
+      const c = `hsl(${(h % 180) + 180}, 70%, 55%)`;
+      _COLOR_BY_LABEL[label] = c;
+      return c;
     }
 
     function fmtUsd(n) {
