@@ -47,6 +47,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -169,6 +170,50 @@
             <div class="text-white font-mono">/scan &middot; ~$0.10</div>
             <div class="text-muted text-[10px] mt-1">Disabled in v1.0.0 (preview)</div>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Tracked ETF AUM over time</h2>
+          <div class="flex items-center gap-2">
+            <button data-flow-range="7"  class="flow-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">7d</button>
+            <button data-flow-range="30" class="flow-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-accent text-white transition" aria-pressed="true">30d</button>
+            <button data-flow-range="90" class="flow-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">90d</button>
+          </div>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-6">
+          Net Assets per tracked issuer per UTC day, stacked. AUM is scraped hourly from each issuer's public dashboard; same-day re-scrapes overwrite the prior reading. Issuers whose dashboards are SPA-gated (Franklin XRPZ, Grayscale GXRP, 21Shares TOXR) appear in the legend but return null until a different sourcing path lands in v1.2+.
+        </p>
+
+        <div class="mb-4">
+          <div class="flex items-baseline justify-between mb-2 gap-2">
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">ETF Net Assets stacked (USD)</h3>
+            <span id="aum-total-headline" class="text-[10px] text-muted font-mono"></span>
+          </div>
+          <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 280px;">
+            <canvas id="chart-etf-aum"></canvas>
+          </div>
+          <p id="aum-coverage-caveat" class="text-[10px] text-muted mt-2"></p>
+        </div>
+
+        <div>
+          <div class="flex items-baseline justify-between mb-2 gap-2">
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">XRPL exchange-flow delta (net XRP)</h3>
+            <span id="chain-flow-status" class="text-[10px] text-muted font-mono"></span>
+          </div>
+          <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 220px;">
+            <canvas id="chart-chain-flow"></canvas>
+          </div>
+          <p id="chain-flow-caveat" class="text-[10px] text-muted mt-2"></p>
+        </div>
+
+        <div id="flows-empty" class="hidden text-xs text-muted mt-4">
+          No accrued data yet. The series starts from the first hourly scrape after each deploy.
         </div>
       </div>
     </div>
@@ -301,6 +346,204 @@
   </footer>
 
   <script>
+    // ============================================================
+    // Tracked ETF AUM + chain-flow chart, /stats/correlation feed.
+    // ============================================================
+    const FLOWS_API = 'https://flows.xrpl-utilities.io';
+
+    function labelColor(label) {
+      // Deterministic hash so each ticker keeps the same hue across
+      // reloads. New tickers added to the registry get a stable color
+      // without a hardcoded map here.
+      let h = 0;
+      for (let i = 0; i < label.length; i++) {
+        h = (h * 31 + label.charCodeAt(i)) >>> 0;
+      }
+      return `hsl(${h % 360}, 65%, 58%)`;
+    }
+
+    function fmtUsd(n) {
+      if (n == null) return '—';
+      const abs = Math.abs(n);
+      if (abs >= 1_000_000_000) return '$' + (n / 1_000_000_000).toFixed(2) + 'B';
+      if (abs >= 1_000_000) return '$' + (n / 1_000_000).toFixed(1) + 'M';
+      if (abs >= 1_000) return '$' + (n / 1_000).toFixed(0) + 'K';
+      return '$' + n.toFixed(2);
+    }
+
+    let aumChart = null;
+    let chainChart = null;
+    let currentRange = 30;
+
+    async function loadCorrelation(days) {
+      const url = `${FLOWS_API}/stats/correlation?days=${encodeURIComponent(days)}`;
+      let body;
+      try {
+        const r = await fetch(url);
+        if (!r.ok) { document.getElementById('flows-empty')?.classList.remove('hidden'); return; }
+        body = await r.json();
+      } catch {
+        document.getElementById('flows-empty')?.classList.remove('hidden');
+        return;
+      }
+      const series = body.etf_aum_per_ticker_daily || {};
+      const totals = body.etf_total_aum_daily || [];
+      const chainFlow = body.chain_flow_daily || [];
+      const tracked = body.tracked_etfs || [];
+      const correlation = body.correlation || {};
+
+      const emptyEl = document.getElementById('flows-empty');
+      if (!totals.length) {
+        emptyEl?.classList.remove('hidden');
+      } else {
+        emptyEl?.classList.add('hidden');
+      }
+
+      renderEtfAumChart(series, totals, tracked);
+      renderChainFlowChart(chainFlow, correlation);
+    }
+
+    function renderEtfAumChart(series, totals, tracked) {
+      if (typeof Chart === 'undefined') return;
+      const ctx = document.getElementById('chart-etf-aum');
+      if (!ctx) return;
+
+      // Union of all dates across all tickers.
+      const dateSet = new Set();
+      Object.values(series).forEach(rows => rows.forEach(r => dateSet.add(r.snapshot_date)));
+      totals.forEach(r => dateSet.add(r.snapshot_date));
+      const dates = Array.from(dateSet).sort();
+
+      const orderedTickers = tracked.length ? tracked : Object.keys(series).sort();
+
+      const datasets = orderedTickers.map(ticker => {
+        const tickerSeries = series[ticker] || [];
+        const byDate = Object.fromEntries(tickerSeries.map(r => [r.snapshot_date, r.aum_usd]));
+        return {
+          label: ticker,
+          data: dates.map(d => byDate[d] ?? null),
+          backgroundColor: labelColor(ticker),
+          borderWidth: 0,
+        };
+      });
+
+      // Headline: latest total + ticker count contributing
+      const headlineEl = document.getElementById('aum-total-headline');
+      if (headlineEl) {
+        const latest = totals.length ? totals[totals.length - 1] : null;
+        if (latest && latest.aum_usd_total != null) {
+          headlineEl.textContent = `latest ${latest.snapshot_date}: ${fmtUsd(latest.aum_usd_total)} across ${orderedTickers.length} tickers`;
+        } else {
+          headlineEl.textContent = `no AUM rows persisted yet`;
+        }
+      }
+
+      // Coverage caveat
+      const livecount = orderedTickers.filter(t => (series[t] || []).some(r => r.aum_usd != null)).length;
+      const caveatEl = document.getElementById('aum-coverage-caveat');
+      if (caveatEl) {
+        if (livecount < orderedTickers.length) {
+          const missing = orderedTickers.filter(t => !(series[t] || []).some(r => r.aum_usd != null));
+          caveatEl.textContent = `Live coverage: ${livecount} of ${orderedTickers.length} tickers (${missing.join(', ')} return null pending a v1.2+ data source).`;
+        } else {
+          caveatEl.textContent = '';
+        }
+      }
+
+      if (aumChart) aumChart.destroy();
+      aumChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: dates, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#a0a8b0', font: { size: 10 }, boxWidth: 10, boxHeight: 10 } },
+            tooltip: {
+              backgroundColor: '#0a0d10', titleColor: '#ffffff', bodyColor: '#c8d0d8',
+              borderColor: '#2a3038', borderWidth: 1,
+              callbacks: { label: (item) => `${item.dataset.label}: ${fmtUsd(item.parsed.y)}` },
+            },
+          },
+          scales: {
+            x: { stacked: true, ticks: { color: '#7a8088', font: { size: 9 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { stacked: true, ticks: { color: '#7a8088', font: { size: 10 }, callback: (v) => fmtUsd(v) }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          },
+        },
+      });
+    }
+
+    function renderChainFlowChart(chainFlow, correlation) {
+      if (typeof Chart === 'undefined') return;
+      const ctx = document.getElementById('chart-chain-flow');
+      if (!ctx) return;
+
+      const statusEl = document.getElementById('chain-flow-status');
+      const caveatEl = document.getElementById('chain-flow-caveat');
+
+      if (!correlation.available || !chainFlow.length) {
+        if (statusEl) statusEl.textContent = 'upstream pending';
+        if (caveatEl) caveatEl.textContent = (correlation.note || 'XR-Pulse /stats/exchange-flow-delta is the on-chain upstream; until it ships, this chart is empty.');
+        if (chainChart) { chainChart.destroy(); chainChart = null; }
+        return;
+      }
+
+      if (statusEl) statusEl.textContent = `${chainFlow.length} day${chainFlow.length === 1 ? '' : 's'}`;
+      if (caveatEl) caveatEl.textContent = correlation.note || '';
+
+      const labels = chainFlow.map(r => r.snapshot_date);
+      const data = chainFlow.map(r => r.net_flow_xrp ?? r.net ?? null);
+
+      if (chainChart) chainChart.destroy();
+      chainChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Net XRP flow',
+            data,
+            backgroundColor: data.map(v => (v ?? 0) >= 0 ? 'rgba(74, 222, 128, 0.65)' : 'rgba(248, 113, 113, 0.65)'),
+            borderColor: data.map(v => (v ?? 0) >= 0 ? 'rgb(74, 222, 128)' : 'rgb(248, 113, 113)'),
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#7a8088', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: '#7a8088', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          },
+        },
+      });
+    }
+
+    document.querySelectorAll('.flow-range-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const d = parseInt(btn.getAttribute('data-flow-range'), 10) || 30;
+        if (d === currentRange) return;
+        currentRange = d;
+        document.querySelectorAll('.flow-range-btn').forEach(b => {
+          const active = b === btn;
+          b.classList.toggle('border-accent', active);
+          b.classList.toggle('text-white', active);
+          b.classList.toggle('border-border', !active);
+          b.classList.toggle('text-muted', !active);
+          if (active) b.setAttribute('aria-pressed', 'true'); else b.removeAttribute('aria-pressed');
+        });
+        loadCorrelation(d);
+      });
+    });
+
+    function bootFlows() {
+      if (typeof Chart === 'undefined') { setTimeout(bootFlows, 200); return; }
+      loadCorrelation(currentRange);
+      // Hourly refresh matches the scrape cadence on the backend.
+      setInterval(() => loadCorrelation(currentRange), 3600 * 1000);
+    }
+    bootFlows();
+
     (function setupMobileNav() {
       const openBtn  = document.getElementById('nav-open');
       const closeBtn = document.getElementById('nav-close');
