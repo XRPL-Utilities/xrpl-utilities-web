@@ -136,7 +136,7 @@
           <div class="flex items-center gap-3 mb-3 flex-wrap">
             <span class="text-xs uppercase tracking-widest text-accent font-semibold">Live</span>
             <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            <span class="text-[10px] uppercase tracking-wider text-muted bg-panel border border-border rounded px-2 py-0.5">v1.4.0</span>
+            <span class="text-[10px] uppercase tracking-wider text-muted bg-panel border border-border rounded px-2 py-0.5">v1.8.0</span>
           </div>
           <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-4">
             XR-Flows<sup class="text-[0.4em] font-normal opacity-70 ml-1">&trade;</sup>
@@ -169,7 +169,7 @@
           <div class="bg-ink border border-border rounded-lg p-4">
             <div class="text-muted uppercase tracking-wider mb-1">Paid (x402)</div>
             <div class="text-white font-mono">/scan &middot; ~$0.10</div>
-            <div class="text-muted text-[10px] mt-1">Disabled in v1.0.0 (preview)</div>
+            <div class="text-muted text-[10px] mt-1">Per-ETF deep dive + SEC filings</div>
           </div>
         </div>
       </div>
@@ -188,7 +188,7 @@
           </div>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
-          Net Assets per tracked issuer per UTC day, stacked. AUM is scraped hourly from each issuer's public dashboard; same-day re-scrapes overwrite the prior reading. Issuers whose dashboards are SPA-gated (Franklin XRPZ, Grayscale GXRP, 21Shares TOXR) appear in the legend but return null until a different sourcing path lands in v1.2+.
+          Net Assets per tracked issuer per UTC day, stacked. AUM is scraped hourly across three source paths: direct issuer dashboards, Yahoo Finance for SPA-gated issuers, and a daily-cadence third-party aggregator for Franklin XRPZ. Same-day re-scrapes overwrite the prior reading. Indirect-basket funds (BITW, GDLC, EZPZ, NCIQ, TTOP, TXBC) appear separately and persist only their XRP-attributable slice. Recent 21Shares launches TTOP + TXBC return null until aggregator coverage indexes them.
         </p>
 
         <div class="mb-4">
@@ -333,9 +333,9 @@
 
   <footer class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-      <div class="text-muted text-xs">
-        <p>XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &middot; XR-Flows is a measurement service, not investment advice.</p>
-        <p class="mt-1">Use is offered void where prohibited. Use is not authorized in California or Colorado.</p>
+      <div class="text-muted text-xs space-y-1">
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. ETF AUM is issuer-reported; XRPL data is on-chain measurement. Correlation only, never causation. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
       <div class="flex items-center gap-4 text-xs">
         <a href="/" class="text-muted hover:text-white transition">Home</a>
@@ -445,7 +445,7 @@
       if (caveatEl) {
         if (livecount < orderedTickers.length) {
           const missing = orderedTickers.filter(t => !(series[t] || []).some(r => r.aum_usd != null));
-          caveatEl.textContent = `Live coverage: ${livecount} of ${orderedTickers.length} tickers (${missing.join(', ')} return null pending a v1.2+ data source).`;
+          caveatEl.textContent = `Live coverage: ${livecount} of ${orderedTickers.length} tickers (${missing.join(', ')} pending aggregator coverage).`;
         } else {
           caveatEl.textContent = '';
         }
