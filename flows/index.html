@@ -77,6 +77,13 @@
     .nav-link-active { color: #00b8ff; }
     .hero-glow { box-shadow: 0 0 60px rgba(0, 184, 255, 0.22); }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .skeleton-bar {
+      background: linear-gradient(90deg, rgba(38,38,38,0.6) 0%, rgba(64,64,64,0.9) 50%, rgba(38,38,38,0.6) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+      border-radius: 0.375rem;
+    }
   </style>
 </head>
 
@@ -158,7 +165,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Who issues them on US exchanges</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Names you know: Bitwise (XRP), Franklin Templeton (XRPZ), Grayscale (GXRP), 21Shares (TOXR). Names you might not: Canary Capital (XRPC), REX-Osprey (XRPR), Hashdex (NCIQ). Plus indirect-basket exposure via Bitwise 10 (BITW), Grayscale CoinDesk 5 (GDLC), Franklin Crypto Index (EZPZ), and 21Shares FTSE Crypto 10 (TTOP / TXBC). Twelve products tracked here, roughly $1.26B in XRP-attributable AUM as of today.
+            Names you know: Bitwise, Franklin Templeton, Grayscale, 21Shares. Names you might not: Canary Capital, REX-Osprey, Hashdex. Plus indirect-basket exposure via funds that hold XRP alongside other large-cap crypto assets. The tracked set grows automatically as new US-listed products surface in SEC's ticker index.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -256,60 +263,28 @@
 
   <section>
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Tracked spot XRP ETFs</h2>
-      <p class="text-muted text-sm leading-relaxed mb-6 max-w-3xl">
-        Operator-curated registry. Excludes multi-asset baskets (BITW), futures-only XRP products (no spot XRP balance sheet), and international-listed funds (different regulatory and disclosure regime). New launches go through code edit and redeploy.
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Tracked ETFs</h2>
+      <p class="text-muted text-sm leading-relaxed mb-3 max-w-3xl">
+        Operator-curated registry. Two tiers: spot funds that hold XRP directly, and indirect baskets that hold XRP alongside other large-cap crypto assets. The list grows automatically as the discovery loop surfaces new US-listed products and they pass operator review. Excludes futures-only XRP products and international-listed funds.
       </p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <a href="https://bitxrpetf.com/" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="flex items-baseline justify-between mb-2">
-            <span class="text-2xl font-bold text-white font-mono">XRP</span>
-            <span class="text-[10px] uppercase tracking-wider text-muted">Bitwise</span>
-          </div>
-          <div class="text-xs text-muted mb-1">Launched 2025-11-24</div>
-          <div class="text-xs text-muted">Expense 0.34%</div>
-        </a>
-        <a href="https://etfs.canary.capital/xrpc/" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="flex items-baseline justify-between mb-2">
-            <span class="text-2xl font-bold text-white font-mono">XRPC</span>
-            <span class="text-[10px] uppercase tracking-wider text-muted">Canary Capital</span>
-          </div>
-          <div class="text-xs text-muted mb-1">Launched 2025-11-12</div>
-          <div class="text-xs text-muted">Expense 0.50%</div>
-        </a>
-        <a href="https://www.franklintempleton.com/investments/options/exchange-traded-funds/products/41170/SINGLCLASS/franklin-xrp-etf/XRPZ" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="flex items-baseline justify-between mb-2">
-            <span class="text-2xl font-bold text-white font-mono">XRPZ</span>
-            <span class="text-[10px] uppercase tracking-wider text-muted">Franklin Templeton</span>
-          </div>
-          <div class="text-xs text-muted mb-1">Launched 2025-11-24</div>
-          <div class="text-xs text-muted">Expense 0.19%</div>
-        </a>
-        <a href="https://etfs.grayscale.com/gxrp" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="flex items-baseline justify-between mb-2">
-            <span class="text-2xl font-bold text-white font-mono">GXRP</span>
-            <span class="text-[10px] uppercase tracking-wider text-muted">Grayscale</span>
-          </div>
-          <div class="text-xs text-muted mb-1">Launched 2025-11-24</div>
-          <div class="text-xs text-muted">Expense not disclosed</div>
-        </a>
-        <a href="https://www.21shares.com/en-us/products-us/toxr" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="flex items-baseline justify-between mb-2">
-            <span class="text-2xl font-bold text-white font-mono">TOXR</span>
-            <span class="text-[10px] uppercase tracking-wider text-muted">21Shares</span>
-          </div>
-          <div class="text-xs text-muted mb-1">Launched 2025-12-11</div>
-          <div class="text-xs text-muted">Expense 0.50%</div>
-        </a>
-        <a href="https://www.rexshares.com/xrpr/" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="flex items-baseline justify-between mb-2">
-            <span class="text-2xl font-bold text-white font-mono">XRPR</span>
-            <span class="text-[10px] uppercase tracking-wider text-muted">REX-Osprey</span>
-          </div>
-          <div class="text-xs text-muted mb-1">Launched 2025-09-18</div>
-          <div class="text-xs text-muted">Expense 0.75%</div>
-        </a>
+      <p class="text-[11px] text-muted mb-6 max-w-3xl">
+        <span class="text-white">Expense ratio</span> is the annual management fee the issuer charges as a percent of fund assets, paid by the fund itself (so it reduces NAV over time rather than billing investors directly). Lower is cheaper to hold long-term.
+      </p>
+      <div id="flows-etf-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div class="bg-panel border border-border rounded-xl p-5">
+          <div class="skeleton-bar h-5 w-1/3 mb-2"></div>
+          <div class="skeleton-bar h-3 w-1/2"></div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-5">
+          <div class="skeleton-bar h-5 w-1/3 mb-2"></div>
+          <div class="skeleton-bar h-3 w-1/2"></div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-5">
+          <div class="skeleton-bar h-5 w-1/3 mb-2"></div>
+          <div class="skeleton-bar h-3 w-1/2"></div>
+        </div>
       </div>
+      <p id="flows-etf-grid-empty" class="hidden text-xs text-muted mt-4">Registry unreachable. Retry shortly.</p>
     </div>
   </section>
 
@@ -347,7 +322,7 @@
 
   <!-- ENDPOINT QUICK-LINKS -->
   <section class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 md:grid-cols-2 gap-4">
       <a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
         <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Manifest</div>
         <div class="text-white font-mono text-sm">/agents.json</div>
@@ -357,11 +332,6 @@
         <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Liveness</div>
         <div class="text-white font-mono text-sm">/healthz</div>
         <p class="text-muted text-xs mt-2">Per-scraper freshness, DB state, upstream Pulse.</p>
-      </a>
-      <a href="https://flows.xrpl-utilities.io/stats/correlation" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
-        <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Free signal</div>
-        <div class="text-white font-mono text-sm">/stats/correlation</div>
-        <p class="text-muted text-xs mt-2">Per-day AUM and XRPL flow series, rolling Pearson.</p>
       </a>
     </div>
   </section>
@@ -374,10 +344,10 @@
       <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-muted leading-relaxed">
         <div>
           <p class="mb-4">
-            <span class="text-white">Spot tier, six funds.</span> Bitwise (XRP), Canary Capital (XRPC), Franklin Templeton (XRPZ), Grayscale (GXRP), 21Shares (TOXR), REX-Osprey (XRPR). Each fund holds XRP directly in institutional custody and issues shares against it. AUM is what the issuer reports on its public dashboard, scraped daily after market close.
+            <span class="text-white">Spot tier.</span> Funds that hold XRP directly in institutional custody and issue shares against it. AUM is what the issuer reports on its public dashboard, scraped daily after market close. The live tracked set is rendered on the page above and grows as new spot products list and surface in SEC's ticker index.
           </p>
           <p class="mb-4">
-            <span class="text-white">Indirect-basket tier, six funds.</span> Bitwise 10 (BITW), Grayscale CoinDesk Crypto 5 (GDLC), Franklin Crypto Index (EZPZ), Hashdex Nasdaq Crypto Index (NCIQ), 21Shares FTSE Crypto 10 (TTOP and TXBC ex-Bitcoin). Each basket holds XRP as one component alongside other crypto assets. We persist the XRP-attributable slice only (weight times basket AUM), not the full basket. Chart math separates the two tiers so the spot signal stays clean.
+            <span class="text-white">Indirect-basket tier.</span> Multi-asset crypto funds that hold XRP as one component alongside Bitcoin, Ether, and others. We persist the XRP-attributable slice only (XRP weight times total basket AUM), not the full basket. Chart math separates the two tiers so the spot signal stays clean.
           </p>
           <p>
             <span class="text-white">Three source paths, no paid APIs.</span> Direct issuer dashboards where the data is exposed in static HTML, Yahoo Finance via the yfinance library where issuer pages are SPA-gated, and one third-party aggregator for Franklin Templeton whose API is locked down. Each snapshot row carries a source label so consumers can audit lineage.
@@ -415,7 +385,6 @@
       <div class="flex flex-wrap gap-3 text-sm">
         <a href="https://flows.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Flows Swagger</a>
         <a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Flows agents.json</a>
-        <a href="https://flows.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Flows schema</a>
       </div>
     </div>
   </section>
@@ -902,6 +871,62 @@
       setInterval(() => loadCorrelation(currentRange), 3600 * 1000);
     }
     bootFlows();
+
+    // Tracked ETFs grid: render dynamically from /stats/launch-impact
+    // so the page picks up newly promoted issuers without a code edit.
+    // launch-impact carries ticker + issuer + listing_exchange +
+    // launch_date + expense_ratio + source_url + asset_class + caveat
+    // straight from the operator-curated registry.
+    async function loadTrackedEtfsGrid() {
+      const grid = document.getElementById('flows-etf-grid');
+      const empty = document.getElementById('flows-etf-grid-empty');
+      if (!grid) return;
+      let body;
+      try {
+        const r = await fetch(`${FLOWS_API}/stats/launch-impact`);
+        if (!r.ok) throw new Error('http ' + r.status);
+        body = await r.json();
+      } catch {
+        empty?.classList.remove('hidden');
+        return;
+      }
+      const launches = body.launches || [];
+      if (!launches.length) { empty?.classList.remove('hidden'); return; }
+      // Group spot before indirect-basket so the headline tier stays
+      // visually first; within tier keep registry order so featured
+      // funds (highest-AUM, oldest) lead.
+      const tierOrder = { spot_xrp_etf: 0, indirect_basket_exposure: 1 };
+      const ordered = [...launches].sort((a, b) => {
+        const ta = tierOrder[a.asset_class] ?? 2;
+        const tb = tierOrder[b.asset_class] ?? 2;
+        return ta - tb;
+      });
+      grid.innerHTML = ordered.map(etf => {
+        const tier = etf.asset_class === 'indirect_basket_exposure'
+          ? '<span class="text-[9px] uppercase tracking-wider text-amber-300/80">Indirect</span>'
+          : '<span class="text-[9px] uppercase tracking-wider text-emerald-300/80">Spot</span>';
+        const exp = etf.expense_ratio != null
+          ? (etf.expense_ratio * 100).toFixed(2).replace(/\.?0+$/, '') + '%'
+          : 'not disclosed';
+        const launched = etf.launch_date || '—';
+        const href = etf.source_url || '#';
+        const issuer = etf.issuer || '';
+        const ticker = etf.ticker || '';
+        return `
+          <a href="${href}" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+            <div class="flex items-baseline justify-between mb-2 gap-2">
+              <span class="text-2xl font-bold text-white font-mono">${ticker}</span>
+              <span class="text-[10px] uppercase tracking-wider text-muted text-right">${issuer}</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">${tier}</div>
+            <div class="text-xs text-muted mb-1">Launched ${launched}</div>
+            <div class="text-xs text-muted">Expense ${exp}</div>
+          </a>
+        `;
+      }).join('');
+    }
+    loadTrackedEtfsGrid();
+    setInterval(loadTrackedEtfsGrid, 3600 * 1000);
 
     (function setupMobileNav() {
       const openBtn  = document.getElementById('nav-open');
