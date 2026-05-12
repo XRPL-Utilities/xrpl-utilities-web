@@ -872,11 +872,17 @@ feed = session.post(
           : `<span class="text-xs px-2 py-0.5 rounded tier-whale border uppercase">Token escrow</span>`;
         const txType = tokenEscrowAU.tx_type || 'EscrowCreate';
         const currency = tokenEscrowAU.currency || '';
-        const amount = tokenEscrowAU.amount_display || tokenEscrowAU.amount || '';
+        // amount_display already includes the currency suffix (e.g.
+        // "30922500 PRSV") when the server has it; the raw `amount`
+        // field is the bare numeric. Prefer amount_display verbatim
+        // to avoid doubling the currency in the title.
+        const amountText = tokenEscrowAU.amount_display
+          ? tokenEscrowAU.amount_display
+          : (tokenEscrowAU.amount ? `${tokenEscrowAU.amount} ${currency}`.trim() : currency);
         const account = (tokenEscrowAU.account || '').slice(0, 10) + (tokenEscrowAU.account ? '…' : '');
         const destination = (tokenEscrowAU.destination || '').slice(0, 10) + (tokenEscrowAU.destination ? '…' : '');
         const issuer = (tokenEscrowAU.issuer || '').slice(0, 10) + (tokenEscrowAU.issuer ? '…' : '');
-        whaleTitle = `${txType} · ${amount} ${currency}${isDvp ? ' · DvP' : ''}`;
+        whaleTitle = `${txType} · ${amountText}${isDvp ? ' · DvP' : ''}`;
         whaleBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border break-words">
           <span class="text-white mr-2">XLS-85 escrow</span>
           ${escapeHtml(txType)} ·
