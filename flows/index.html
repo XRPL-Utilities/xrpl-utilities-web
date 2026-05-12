@@ -795,16 +795,29 @@
         }
       }
 
-      // Coverage caveat
-      const livecount = orderedTickers.filter(t => (series[t] || []).some(r => r.aum_usd != null)).length;
+      // Coverage caveat — distinguishes "no data ever" from "no historical
+      // backfill but accruing forward". A ticker with rows on only a few
+      // recent dates is in the accruing-forward bucket (forward scraper
+      // captures it daily; backfill couldn't fill it because Yahoo lacked
+      // shares_outstanding for it or it's an indirect-basket fund where the
+      // close*shares formula would yield the full basket, not the XRP slice).
+      const liveTickers = orderedTickers.filter(t => (series[t] || []).some(r => r.aum_usd != null));
+      const backfilledTickers = orderedTickers.filter(t => {
+        const rows = series[t] || [];
+        return rows.filter(r => r.aum_usd != null).length >= 7;
+      });
       const caveatEl = document.getElementById('aum-coverage-caveat');
       if (caveatEl) {
-        if (livecount < orderedTickers.length) {
-          const missing = orderedTickers.filter(t => !(series[t] || []).some(r => r.aum_usd != null));
-          caveatEl.textContent = `Live coverage: ${livecount} of ${orderedTickers.length} tickers (${missing.join(', ')} pending aggregator coverage).`;
-        } else {
-          caveatEl.textContent = '';
+        const parts = [];
+        if (liveTickers.length < orderedTickers.length) {
+          const missing = orderedTickers.filter(t => !liveTickers.includes(t));
+          parts.push(`Live coverage: ${liveTickers.length}/${orderedTickers.length} tickers (${missing.join(', ')} pending aggregator coverage).`);
         }
+        if (backfilledTickers.length < liveTickers.length) {
+          const fwdOnly = liveTickers.filter(t => !backfilledTickers.includes(t));
+          parts.push(`Historical backfill ran for ${backfilledTickers.length} spot tickers only (${fwdOnly.join(', ')} accruing forward; indirect-basket funds excluded from backfill to avoid full-basket vs XRP-slice formula drift).`);
+        }
+        caveatEl.textContent = parts.join(' ');
       }
 
       if (aumChart) aumChart.destroy();
@@ -846,7 +859,14 @@
       }
 
       if (statusEl) statusEl.textContent = `${chainFlow.length} day${chainFlow.length === 1 ? '' : 's'}`;
-      if (caveatEl) caveatEl.textContent = correlation.note || '';
+      if (caveatEl) {
+        const parts = [];
+        if (chainFlow.length < 7) {
+          parts.push(`Series accrues forward one row per UTC day from the XR-Pulse writer; only ${chainFlow.length} day${chainFlow.length === 1 ? '' : 's'} so far. Multi-week pattern visible after about a week of accrual.`);
+        }
+        if (correlation.note) parts.push(correlation.note);
+        caveatEl.textContent = parts.join(' ');
+      }
 
       const labels = chainFlow.map(r => r.snapshot_date);
       const data = chainFlow.map(r => r.net_flow_xrp ?? r.net ?? null);
