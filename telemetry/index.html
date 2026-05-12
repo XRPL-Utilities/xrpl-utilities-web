@@ -340,8 +340,12 @@
               <strong class="text-accent">M</strong> shrinks &middot; less XRP resting on open markets. Plausible drivers: institutions move into cold custody, AMM pools grow, market makers pull back resting depth.
             </li>
           </ul>
-          <p>
+          <p class="mb-4">
             The Floor Matrix below compounds either dynamic forward 24 months.
+          </p>
+          <p class="mb-2 text-accent font-semibold uppercase tracking-widest text-xs">Q sanity-check from ETF flow</p>
+          <p>
+            The /scan response also carries an <code class="font-mono text-white">implied_floor_usd_flows_biased</code> field next to the canonical P. It applies a bounded nudge (&pm;10% max) to Q based on how tightly ETF AUM moves with XRPL exchange flow over the trailing window: tighter alignment nudges Q up, decoupling nudges down. The canonical P stays operator-controlled so the headline doesn't move with weekly noise; the biased value is a side-by-side comparator only.
           </p>
         </div>
       </div>
@@ -595,7 +599,7 @@ payload = requests.get(
         <li><code class="font-mono text-white">liquidity</code>: per-region inflow / outflow / net flow over 24h, with a list of top venues</li>
         <li><code class="font-mono text-white">amm</code>: top pairs (TVL USD, 1% depth XRP, APR%) and vaults (TVL XRP-equivalent, utilization%, supply APY%)</li>
         <li><code class="font-mono text-white">derived_models.active_float</code>: <strong class="text-white">value_xrp</strong> (modeled supply available for 3-second settlement), <strong class="text-white">delta_24h_xrp</strong>, <strong class="text-white">proxy_ratio</strong>, and the full <strong class="text-white">mathematical_bridge</strong> with each additive component and its source</li>
-        <li><code class="font-mono text-white">utility_floor</code>: baseline (= P at the assumed Q, V, and Active Float as M), current spot, premium ratio</li>
+        <li><code class="font-mono text-white">utility_floor</code>: baseline (= P at the assumed Q, V, and Active Float as M), current spot, premium ratio, plus an ETF-flow-biased secondary P with provenance block</li>
         <li><code class="font-mono text-white">generated_at</code>: ISO timestamp the snapshot was computed</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
