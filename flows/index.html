@@ -76,6 +76,7 @@
     .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
     .nav-link-active { color: #00b8ff; }
     .hero-glow { box-shadow: 0 0 60px rgba(0, 184, 255, 0.22); }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
   </style>
 </head>
 
@@ -129,48 +130,70 @@
   </div>
 
   <section>
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
-      <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
-        <img src="/assets/xr-flows.png" alt="XR-Flows" class="h-32 w-32 md:h-40 md:w-40 rounded-2xl hero-glow shrink-0" />
-        <div class="min-w-0">
-          <div class="flex items-center gap-3 mb-3 flex-wrap">
-            <span class="text-xs uppercase tracking-widest text-accent font-semibold">Live</span>
-            <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            <span class="text-[10px] uppercase tracking-wider text-muted bg-panel border border-border rounded px-2 py-0.5">v1.8.0</span>
-          </div>
-          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-4">
-            XR-Flows<sup class="text-[0.4em] font-normal opacity-70 ml-1">&trade;</sup>
-          </h1>
-          <p class="text-xl sm:text-2xl text-white font-medium mb-4">ETF flow meets the ledger.</p>
-          <p class="text-muted leading-relaxed max-w-2xl">
-            Daily AUM for every US-listed spot XRP ETF, plotted side by side with the XRPL exchange-flow delta. The off-chain side of institutional capital and the on-chain side of XRP movement, on one date axis. Correlation, never causation. ETFs hold XRP via pooled custody, so on-chain wallets cannot be attributed to a specific fund.
+    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+      <img src="/assets/xr-flows.png" alt="XR-Flows" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+      <p class="text-xl text-muted">ETF flow meets the ledger</p>
+      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
+        Daily AUM for every US-listed XRP-exposure ETF, plotted side by side with the XRPL exchange-flow delta. The off-chain side of institutional capital and the on-chain side of XRP movement, on one date axis.
+      </p>
+      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
+        <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+        Twelve tracked ETFs &middot; correlation only &middot; never causation
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IS AN XRP ETF -->
+  <section id="what-is" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding XRP ETFs</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What an XRP ETF is</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            A spot XRP ETF holds XRP off-chain in institutional custody (Coinbase Custody, BitGo, Anchorage) and issues exchange-traded shares against it. Buying a share is buying a claim on a slice of that custodied XRP, without ever touching a wallet or a private key. The custody is pooled across all investors in the fund, so individual holders cannot be attributed to specific on-chain wallets.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Who issues them on US exchanges</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Names you know: Bitwise (XRP), Franklin Templeton (XRPZ), Grayscale (GXRP), 21Shares (TOXR). Names you might not: Canary Capital (XRPC), REX-Osprey (XRPR), Hashdex (NCIQ). Plus indirect-basket exposure via Bitwise 10 (BITW), Grayscale CoinDesk 5 (GDLC), Franklin Crypto Index (EZPZ), and 21Shares FTSE Crypto 10 (TTOP / TXBC). Twelve products tracked here, roughly $1.26B in XRP-attributable AUM as of today.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Why correlation, not causation</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            ETFs hold XRP through pooled custody. That custody serves every share holder in the fund collectively, not any single buyer. So when ETF AUM and XRPL exchange-flow move in the same direction on the same day, that's a useful institutional-capital signal, but it isn't proof that the ETF caused the flow. We measure both sides honestly and let the consumer draw their own inference.
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="border-t border-border bg-panel/30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-      <div class="bg-panel border border-border rounded-2xl p-6 sm:p-8">
-        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Coverage</h2>
-        <p class="text-muted leading-relaxed text-sm mb-4">
-          All six US-listed spot XRP ETFs are now tracked with real AUM, combined ~$1.2B across the lineup. Sources fan out across three paths so the service stays at full coverage without paid API spend: direct issuer dashboards for Bitwise, Canary, and REX-Osprey; Yahoo Finance for Grayscale and 21Shares (issuer dashboards are SPA-gated); and a daily-cadence third-party aggregator for Franklin (gated on both its own dashboard and Yahoo). The chain-flow side reads the XRPL exchange-flow delta from XR-Pulse. Both series are independent measurements plotted on one date axis. Correlation, never causation.
-        </p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="text-muted uppercase tracking-wider mb-1">Backend</div>
-            <div class="text-white font-mono">flows.xrpl-utilities.io</div>
-          </div>
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="text-muted uppercase tracking-wider mb-1">Free endpoints</div>
-            <div class="text-white font-mono">/stats/correlation<br/>/stats/launch-impact</div>
-          </div>
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="text-muted uppercase tracking-wider mb-1">Paid (x402)</div>
-            <div class="text-white font-mono">/scan &middot; ~$0.10</div>
-            <div class="text-muted text-[10px] mt-1">Per-ETF deep dive + SEC filings</div>
-          </div>
+  <!-- LIVE SUMMARY STATS -->
+  <section id="flows-summary">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Total tracked AUM</div>
+          <div id="stat-flows-aum" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="text-[10px] text-muted mt-1">USD, spot + indirect-basket</div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Day-over-day change</div>
+          <div id="stat-flows-delta" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-flows-delta-detail" class="text-[10px] text-muted mt-1">across the tracked set</div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">XRP attributable</div>
+          <div id="stat-flows-xrp" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="text-[10px] text-muted mt-1">XRP held under ETF wrappers</div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-muted mb-1">Tickers tracked</div>
+          <div id="stat-flows-tickers" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-flows-tickers-detail" class="text-[10px] text-muted mt-1">live + stubbed pending coverage</div>
         </div>
       </div>
     </div>
@@ -322,6 +345,7 @@
     </div>
   </section>
 
+  <!-- ENDPOINT QUICK-LINKS -->
   <section class="border-t border-border">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-4">
       <a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
@@ -342,17 +366,186 @@
     </div>
   </section>
 
-  <footer class="border-t border-border bg-panel/30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-      <div class="text-muted text-xs space-y-1">
+  <!-- WHAT THIS TRACKS -->
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">What this tracks</h2>
+      <h3 class="text-3xl font-bold mb-6">Off-chain AUM, on-chain flow, plotted honestly</h3>
+      <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-muted leading-relaxed">
+        <div>
+          <p class="mb-4">
+            <span class="text-white">Spot tier, six funds.</span> Bitwise (XRP), Canary Capital (XRPC), Franklin Templeton (XRPZ), Grayscale (GXRP), 21Shares (TOXR), REX-Osprey (XRPR). Each fund holds XRP directly in institutional custody and issues shares against it. AUM is what the issuer reports on its public dashboard, scraped daily after market close.
+          </p>
+          <p class="mb-4">
+            <span class="text-white">Indirect-basket tier, six funds.</span> Bitwise 10 (BITW), Grayscale CoinDesk Crypto 5 (GDLC), Franklin Crypto Index (EZPZ), Hashdex Nasdaq Crypto Index (NCIQ), 21Shares FTSE Crypto 10 (TTOP and TXBC ex-Bitcoin). Each basket holds XRP as one component alongside other crypto assets. We persist the XRP-attributable slice only (weight times basket AUM), not the full basket. Chart math separates the two tiers so the spot signal stays clean.
+          </p>
+          <p>
+            <span class="text-white">Three source paths, no paid APIs.</span> Direct issuer dashboards where the data is exposed in static HTML, Yahoo Finance via the yfinance library where issuer pages are SPA-gated, and one third-party aggregator for Franklin Templeton whose API is locked down. Each snapshot row carries a source label so consumers can audit lineage.
+          </p>
+        </div>
+        <div>
+          <p class="mb-4">
+            <span class="text-white">XRPL exchange-flow on the other axis.</span> The chain side reads XR-Pulse's daily exchange-flow delta, which measures net XRP moving in and out of labeled exchange wallets per UTC day. Positive means XRP left exchange custody (off-exchange accumulation pattern); negative means XRP arrived at exchanges (sell-side accumulation pattern).
+          </p>
+          <p class="mb-4">
+            <span class="text-white">Correlation, never causation.</span> ETFs hold XRP through pooled custody at Coinbase Custody, BitGo, Anchorage. A custodian wallet serves every shareholder collectively, not a single fund. We measure both sides independently and let consumers draw their own inference. A high Pearson coefficient says the two series moved together, nothing more.
+          </p>
+          <p>
+            <span class="text-white">Auto-discovery for the long tail.</span> A daily background job scans SEC's official ticker index for new XRP-related ETFs and surfaces candidates at /stats/etf-candidates. New launches get reviewed and either promoted to the operator-curated registry or dismissed. The next Hashdex or 21Shares product on US exchanges lands here automatically.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR DEVELOPERS & AI AGENTS -->
+  <section class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
+      <h3 class="text-3xl font-bold mb-6">Agents read the same data via x402</h3>
+      <p class="text-muted leading-relaxed mb-6 max-w-3xl">
+        XR-Flows renders this dashboard over the same endpoints agents call. Two free public reads:
+        <code class="font-mono text-white">GET /stats/correlation</code> for the headline cross-tier series, and
+        <code class="font-mono text-white">GET /stats/launch-impact</code> for the per-launch window analysis.
+        The paid per-ETF deep dive lives at <code class="font-mono text-white">POST /scan</code> on
+        <code class="font-mono text-white">flows.xrpl-utilities.io</code> for $0.10 USD per call via x402 v2 (XRP or RLUSD).
+        Each /scan response carries the latest scrape, full daily history, the chain-flow context from XR-Pulse,
+        and the SEC EDGAR filing list for that ticker.
+      </p>
+      <div class="flex flex-wrap gap-3 text-sm">
+        <a href="https://flows.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Flows Swagger</a>
+        <a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Flows agents.json</a>
+        <a href="https://flows.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Flows schema</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SISTER PRODUCTS -->
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Sister products</h2>
+      <h3 class="text-2xl font-bold mb-6">Also part of the XRPL-Utilities Portfolio</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/sentinel/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-sentinel.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Sentinel</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  XRPL wallet activity pattern classifier. Reads on-chain behavior and tells you how automated it looks. Free on the web, $0.10 per scan over the agent API.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+        <a href="/telemetry/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-telemetry.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  XRPL macro telemetry: supply, regional liquidity, AMM depth, Active Float, and a utility-floor projection. Now also surfaces ETF custody XRP from this service. Free on the web, $0.10 per snapshot over the agent API.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+        <a href="/pulse/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-pulse.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Pulse</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  XRPL signal feed: public-source news plus on-chain whale activity in one normalized stream. Powers the chain-flow side of XR-Flows via /stats/exchange-flow-delta. Free on the web, $0.10 per query over the agent API.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+        <a href="/trust/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-trust.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Trust</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  Permissioned-asset stack directory: XLS-70/80 domains and credentials, XLS-81 permissioned DEX, XLS-40 DID identity. The institutional-side index of XRPL. Free on the web, $0.10 per call over the agent API.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+        <a href="/vault/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-vault.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Vault</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  Real-world asset tracker for XRPL. Per-issuer mint and burn flow, daily circulating snapshots, AMM-of-RWA pool exposure. Free on the web, $0.10 per scan over the agent API.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/manifest/" class="text-muted hover:text-white transition">Manifest</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
+            <li><a href="https://vault.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Vault API</a></li>
+            <li><a href="https://flows.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Flows API</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+            <li><a href="/tip/"     class="text-accent hover:text-white transition">Tip the maker</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. ETF AUM is issuer-reported; XRPL data is on-chain measurement. Correlation only, never causation. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
-      </div>
-      <div class="flex items-center gap-4 text-xs">
-        <a href="/" class="text-muted hover:text-white transition">Home</a>
-        <a href="/terms/" class="text-muted hover:text-white transition">Terms</a>
-        <a href="/contact/" class="text-muted hover:text-white transition">Contact</a>
-        <a href="/tip/" class="text-muted hover:text-white transition">Tip jar</a>
       </div>
     </div>
   </footer>
@@ -414,6 +607,65 @@
       renderEtfAumChart(series, totals, tracked);
       renderEtfAumDeltaChart(series, totals, tracked);
       renderChainFlowChart(chainFlow, correlation);
+      renderSummaryTiles(series, totals, tracked);
+    }
+
+    async function renderSummaryTiles(series, totals, tracked) {
+      // Headline AUM + day-over-day delta read from the correlation
+      // payload we already fetched. XRP-attributable comes from a
+      // separate cheap call to /stats/etf-aggregate-xrp-held so the
+      // page doesn't need to derive it client-side.
+      const elAum    = document.getElementById('stat-flows-aum');
+      const elDelta  = document.getElementById('stat-flows-delta');
+      const elDeltaD = document.getElementById('stat-flows-delta-detail');
+      const elXrp    = document.getElementById('stat-flows-xrp');
+      const elTickers = document.getElementById('stat-flows-tickers');
+      const elTickersD = document.getElementById('stat-flows-tickers-detail');
+
+      const nonNull = (totals || []).filter(r => r && typeof r.aum_usd_total === 'number');
+      if (nonNull.length && elAum) {
+        const latest = nonNull[nonNull.length - 1];
+        elAum.textContent = fmtUsd(latest.aum_usd_total);
+        if (nonNull.length >= 2 && elDelta) {
+          const prior = nonNull[nonNull.length - 2];
+          const delta = latest.aum_usd_total - prior.aum_usd_total;
+          const sign = delta >= 0 ? '+' : '-';
+          const cls = delta >= 0 ? 'text-emerald-400' : 'text-rose-400';
+          elDelta.className = `text-2xl font-bold font-mono ${cls}`;
+          elDelta.textContent = sign + fmtUsd(Math.abs(delta));
+          if (elDeltaD) elDeltaD.textContent = `${latest.snapshot_date} vs ${prior.snapshot_date}`;
+        } else if (elDelta) {
+          elDelta.textContent = '-';
+          if (elDeltaD) elDeltaD.textContent = 'awaiting a second day';
+        }
+      }
+
+      try {
+        const r = await fetch(`${FLOWS_API}/stats/etf-aggregate-xrp-held`);
+        if (r.ok) {
+          const body = await r.json();
+          if (elXrp) {
+            const xrp = body.xrp_held_attributable_total;
+            elXrp.textContent = xrp != null
+              ? (xrp >= 1e9 ? (xrp / 1e9).toFixed(2) + 'B' : (xrp / 1e6).toFixed(0) + 'M')
+              : '-';
+          }
+        }
+      } catch {}
+
+      if (elTickers && tracked) {
+        elTickers.textContent = String(tracked.length);
+        if (elTickersD) {
+          const liveCount = Object.values(series || {}).filter(
+            s => Array.isArray(s) && s.some(r => r.aum_usd != null)
+          ).length;
+          if (liveCount && liveCount < tracked.length) {
+            elTickersD.textContent = `${liveCount} live · ${tracked.length - liveCount} pending coverage`;
+          } else {
+            elTickersD.textContent = `${liveCount || tracked.length} live across spot + indirect tiers`;
+          }
+        }
+      }
     }
 
     let aumDeltaChart = null;
