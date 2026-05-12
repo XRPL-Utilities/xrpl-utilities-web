@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XR-Flows | ETF flow meets the ledger</title>
+  <meta name="description" content="ETF AUM and XRPL on-chain flow, plotted side by side. Daily AUM for every US-listed spot XRP ETF (Bitwise, Canary, Franklin, Grayscale, 21Shares, REX-Osprey) overlaid with XRPL exchange-flow delta. Correlation only, never causation." />
+  <meta property="og:title" content="XR-Flows" />
+  <meta property="og:description" content="ETF flow meets the ledger. Spot XRP ETF AUM and XRPL on-chain flow plotted side by side, daily. Correlation, not causation." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/xr-flows.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/flows/" />
+  <link rel="canonical" href="https://xrpl-utilities.com/flows/" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/flows/#app",
+        "name": "XR-Flows",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP)",
+        "description": "ETF AUM and XRPL on-chain flow correlation for US-listed spot XRP ETFs. Daily AUM scraped from each issuer's public dashboard, overlaid with XRPL exchange-flow delta from XR-Pulse.",
+        "url": "https://xrpl-utilities.com/flows/",
+        "image": "https://xrpl-utilities.com/assets/xr-flows.png",
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://xrpl-utilities.com/#org",
+          "name": "XRPL-Utilities",
+          "url": "https://xrpl-utilities.com",
+          "logo": "https://xrpl-utilities.com/assets/logo.png"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "XRPL-Utilities", "item": "https://xrpl-utilities.com/" },
+          { "@type": "ListItem", "position": 2, "name": "XR-Flows", "item": "https://xrpl-utilities.com/flows/" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+    .hero-glow { box-shadow: 0 0 60px rgba(0, 184, 255, 0.22); }
+  </style>
+</head>
+
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-x-6 lg:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="nav-link-active">Flows</a>
+      </nav>
+      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 nav-link-active">Flows</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <section>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+      <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
+        <img src="/assets/xr-flows.png" alt="XR-Flows" class="h-32 w-32 md:h-40 md:w-40 rounded-2xl hero-glow shrink-0" />
+        <div class="min-w-0">
+          <div class="flex items-center gap-3 mb-3 flex-wrap">
+            <span class="text-xs uppercase tracking-widest text-accent font-semibold">Preview</span>
+            <span class="text-[10px] uppercase tracking-wider text-muted bg-panel border border-border rounded px-2 py-0.5">v1.0.0</span>
+          </div>
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-4">
+            XR-Flows<sup class="text-[0.4em] font-normal opacity-70 ml-1">&trade;</sup>
+          </h1>
+          <p class="text-xl sm:text-2xl text-white font-medium mb-4">ETF flow meets the ledger.</p>
+          <p class="text-muted leading-relaxed max-w-2xl">
+            Daily AUM for every US-listed spot XRP ETF, plotted side by side with the XRPL exchange-flow delta. The off-chain side of institutional capital and the on-chain side of XRP movement, on one date axis. Correlation, never causation. ETFs hold XRP via pooled custody, so on-chain wallets cannot be attributed to a specific fund.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <div class="bg-panel border border-border rounded-2xl p-6 sm:p-8">
+        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Preview status</h2>
+        <p class="text-muted leading-relaxed text-sm mb-4">
+          XR-Flows v1.0.0 is a preview build. The service skeleton, schema, registry, and free public endpoints are live; per-issuer AUM scrapers are still stubbed and will return null until v1.x. The chart on this page goes live as each scraper lands and writes its first row.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="text-muted uppercase tracking-wider mb-1">Backend</div>
+            <div class="text-white font-mono">flows.xrpl-utilities.io</div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="text-muted uppercase tracking-wider mb-1">Free endpoints</div>
+            <div class="text-white font-mono">/stats/correlation<br/>/stats/launch-impact</div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="text-muted uppercase tracking-wider mb-1">Paid (x402)</div>
+            <div class="text-white font-mono">/scan &middot; ~$0.10</div>
+            <div class="text-muted text-[10px] mt-1">Disabled in v1.0.0 (preview)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Tracked spot XRP ETFs</h2>
+      <p class="text-muted text-sm leading-relaxed mb-6 max-w-3xl">
+        Operator-curated registry. Excludes multi-asset baskets (BITW), futures-only XRP products (no spot XRP balance sheet), and international-listed funds (different regulatory and disclosure regime). New launches go through code edit and redeploy.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <a href="https://bitxrpetf.com/" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="flex items-baseline justify-between mb-2">
+            <span class="text-2xl font-bold text-white font-mono">XRP</span>
+            <span class="text-[10px] uppercase tracking-wider text-muted">Bitwise</span>
+          </div>
+          <div class="text-xs text-muted mb-1">Launched 2025-11-24</div>
+          <div class="text-xs text-muted">Expense 0.34%</div>
+        </a>
+        <a href="https://etfs.canary.capital/xrpc/" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="flex items-baseline justify-between mb-2">
+            <span class="text-2xl font-bold text-white font-mono">XRPC</span>
+            <span class="text-[10px] uppercase tracking-wider text-muted">Canary Capital</span>
+          </div>
+          <div class="text-xs text-muted mb-1">Launched 2025-11-12</div>
+          <div class="text-xs text-muted">Expense 0.50%</div>
+        </a>
+        <a href="https://www.franklintempleton.com/investments/options/exchange-traded-funds/products/41170/SINGLCLASS/franklin-xrp-etf/XRPZ" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="flex items-baseline justify-between mb-2">
+            <span class="text-2xl font-bold text-white font-mono">XRPZ</span>
+            <span class="text-[10px] uppercase tracking-wider text-muted">Franklin Templeton</span>
+          </div>
+          <div class="text-xs text-muted mb-1">Launched 2025-11-24</div>
+          <div class="text-xs text-muted">Expense 0.19%</div>
+        </a>
+        <a href="https://etfs.grayscale.com/gxrp" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="flex items-baseline justify-between mb-2">
+            <span class="text-2xl font-bold text-white font-mono">GXRP</span>
+            <span class="text-[10px] uppercase tracking-wider text-muted">Grayscale</span>
+          </div>
+          <div class="text-xs text-muted mb-1">Launched 2025-11-24</div>
+          <div class="text-xs text-muted">Expense not disclosed</div>
+        </a>
+        <a href="https://www.21shares.com/en-us/products-us/toxr" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="flex items-baseline justify-between mb-2">
+            <span class="text-2xl font-bold text-white font-mono">TOXR</span>
+            <span class="text-[10px] uppercase tracking-wider text-muted">21Shares</span>
+          </div>
+          <div class="text-xs text-muted mb-1">Launched 2025-12-11</div>
+          <div class="text-xs text-muted">Expense 0.50%</div>
+        </a>
+        <a href="https://www.rexshares.com/xrpr/" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
+          <div class="flex items-baseline justify-between mb-2">
+            <span class="text-2xl font-bold text-white font-mono">XRPR</span>
+            <span class="text-[10px] uppercase tracking-wider text-muted">REX-Osprey</span>
+          </div>
+          <div class="text-xs text-muted mb-1">Launched 2025-09-18</div>
+          <div class="text-xs text-muted">Expense 0.75%</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">How XR-Flows reads the data</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-panel border border-border rounded-xl p-6">
+          <h3 class="text-white font-semibold mb-2">Two independent measurements, one date axis</h3>
+          <p class="text-muted text-sm leading-relaxed">
+            ETF AUM is scraped daily from each issuer's public dashboard. XRPL exchange-flow delta comes from XR-Pulse, measuring net XRP moving in and out of known exchange wallets per UTC day. These are independent data sources; XR-Flows plots them side by side and computes a rolling 7-day Pearson coefficient as a directional alignment score.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-6">
+          <h3 class="text-white font-semibold mb-2">Correlation, never causation</h3>
+          <p class="text-muted text-sm leading-relaxed">
+            ETFs hold XRP via pooled institutional custody (Coinbase Custody, BitGo, Anchorage). A custodian wallet on XRPL serves many clients, not a single fund. XR-Flows does not attempt to attribute on-chain wallets to specific ETFs. A high correlation says the two series moved together, nothing more.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-6">
+          <h3 class="text-white font-semibold mb-2">Issuer-reported AUM</h3>
+          <p class="text-muted text-sm leading-relaxed">
+            AUM is what each issuer publishes. We do not cross-validate it against on-chain spot price times XRP held; different sources, different timestamps. The issuer's number is the official number for our purposes. Per-scraper freshness is exposed on /healthz so consumers can tell when a dashboard parser breaks.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-6">
+          <h3 class="text-white font-semibold mb-2">Launch-event window analysis</h3>
+          <p class="text-muted text-sm leading-relaxed">
+            For each ETF, the 30-day window before and after its launch date is summarised separately. The post-window vs pre-window ratio of XRPL volume and exchange-flow delta is the headline launch impact figure. Static analysis, recomputed on demand.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
+        <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Manifest</div>
+        <div class="text-white font-mono text-sm">/agents.json</div>
+        <p class="text-muted text-xs mt-2">Full registry, payment terms, methodology.</p>
+      </a>
+      <a href="https://flows.xrpl-utilities.io/healthz" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
+        <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Liveness</div>
+        <div class="text-white font-mono text-sm">/healthz</div>
+        <p class="text-muted text-xs mt-2">Per-scraper freshness, DB state, upstream Pulse.</p>
+      </a>
+      <a href="https://flows.xrpl-utilities.io/stats/correlation" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
+        <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Free signal</div>
+        <div class="text-white font-mono text-sm">/stats/correlation</div>
+        <p class="text-muted text-xs mt-2">Per-day AUM and XRPL flow series, rolling Pearson.</p>
+      </a>
+    </div>
+  </section>
+
+  <footer class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="text-muted text-xs">
+        <p>XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &middot; XR-Flows is a measurement service, not investment advice.</p>
+        <p class="mt-1">Use is offered void where prohibited. Use is not authorized in California or Colorado.</p>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <a href="/" class="text-muted hover:text-white transition">Home</a>
+        <a href="/terms/" class="text-muted hover:text-white transition">Terms</a>
+        <a href="/contact/" class="text-muted hover:text-white transition">Contact</a>
+        <a href="/tip/" class="text-muted hover:text-white transition">Tip jar</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function setupMobileNav() {
+      const openBtn  = document.getElementById('nav-open');
+      const closeBtn = document.getElementById('nav-close');
+      const overlay  = document.getElementById('mobile-nav');
+      if (!openBtn || !closeBtn || !overlay) return;
+      const open  = () => { overlay.style.display = 'flex'; openBtn.setAttribute('aria-expanded','true'); document.body.style.overflow = 'hidden'; };
+      const close = () => { overlay.style.display = 'none'; openBtn.setAttribute('aria-expanded','false'); document.body.style.overflow = ''; };
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+      overlay.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+      window.addEventListener('resize', () => { if (window.innerWidth >= 768) close(); });
+    })();
+  </script>
+
+</body>
+</html>

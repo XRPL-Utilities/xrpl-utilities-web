@@ -103,6 +103,17 @@
         "url": "https://xrpl-utilities.com/vault/",
         "image": "https://xrpl-utilities.com/assets/xr-vault.png",
         "publisher": { "@id": "https://xrpl-utilities.com/#org" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/flows/#app",
+        "name": "XR-Flows",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP)",
+        "description": "ETF AUM and XRPL on-chain flow correlation for US-listed spot XRP ETFs. Daily AUM scraped from each issuer's public dashboard, overlaid with XRPL exchange-flow delta from XR-Pulse. Correlation, never causation.",
+        "url": "https://xrpl-utilities.com/flows/",
+        "image": "https://xrpl-utilities.com/assets/xr-flows.png",
+        "publisher": { "@id": "https://xrpl-utilities.com/#org" }
       }
     ]
   }
@@ -156,12 +167,13 @@
         <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
         <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
       </a>
-      <nav class="hidden md:flex items-center gap-x-8 lg:gap-x-10 nav-link whitespace-nowrap">
+      <nav class="hidden md:flex items-center gap-x-6 lg:gap-x-8 nav-link whitespace-nowrap">
         <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
         <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
         <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
         <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
         <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
       </nav>
       <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -192,6 +204,7 @@
       <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
       <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
       <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
     </nav>
     <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
@@ -389,6 +402,25 @@
           </div>
         </a>
 
+        <a href="/flows/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Preview</span>
+              <span class="h-2 w-2 rounded-full bg-accent/60"></span>
+            </div>
+            <img src="/assets/xr-flows.png" alt="" class="h-14 w-14 rounded-lg" />
+          </div>
+          <h4 class="text-2xl font-bold mb-3">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
+          <p class="text-white leading-relaxed mb-3 font-medium">ETF flow meets the ledger.</p>
+          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
+            Daily AUM for every US-listed spot XRP ETF (Bitwise, Canary, Franklin, Grayscale, 21Shares, REX-Osprey) plotted side by side with XRPL exchange-flow delta. Rolling Pearson correlation as a directional alignment score. Correlation, never causation. The off-chain side of institutional capital and the on-chain side of XRP, on one date axis.
+          </p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-muted">Free on the web &middot; scrapers landing in v1.x</span>
+            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
+          </div>
+        </a>
+
       </div>
     </div>
   </section>
@@ -468,6 +500,7 @@ report = session.post(
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
             <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
             <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
           </ul>
         </div>
         <div>
