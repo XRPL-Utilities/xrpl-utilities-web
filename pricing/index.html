@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing | XRPL-Utilities</title>
+  <meta name="description" content="What every XRPL-Utilities paid endpoint returns and how to call it. Six agent-payable APIs at $0.10 USD per call via x402, plus the free endpoints that power the public dashboards." />
+  <meta property="og:title" content="XRPL-Utilities Pricing" />
+  <meta property="og:description" content="Six agent-payable APIs at $0.10 USD per call. Wallet classification, normalized signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation." />
+  <meta property="og:url" content="https://xrpl-utilities.com/pricing/" />
+  <link rel="canonical" href="https://xrpl-utilities.com/pricing/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+    .price-pill { background: rgba(0, 184, 255, 0.08); border: 1px solid rgba(0, 184, 255, 0.35); color: #00b8ff; }
+    .free-pill { background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.35); color: #4ade80; }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-x-6 lg:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
+      </nav>
+      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">Pricing</h1>
+      <p class="text-xl text-muted">Six agent-payable APIs at $0.10 per call</p>
+      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
+        Every paid endpoint speaks <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402 v2</a> on XRPL mainnet. XRP or RLUSD; either works. No API key, no account, no subscription. Pay per call. Treasury, facilitator, and settlement are all on-chain and verifiable. The free dashboards on this site are powered by the free endpoints listed below; the deep dives are paid.
+      </p>
+      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
+        <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+        x402 v2 &middot; XRPL mainnet &middot; XRP or RLUSD &middot; verify-then-work-then-settle
+      </div>
+    </div>
+  </section>
+
+  <!-- PAID ENDPOINTS MATRIX -->
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Paid endpoints</h2>
+      <h3 class="text-3xl font-bold mb-8">$0.10 USD per call</h3>
+
+      <div class="space-y-4">
+        <!-- Sentinel -->
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <a href="/sentinel/" class="font-bold text-lg text-white hover:text-accent transition">XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
+              <code class="font-mono text-sm text-muted">POST /scan</code>
+            </div>
+            <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Deterministic wallet classification for any XRPL address. Returns an activity-level tier, a deterministic behavior signal set, watchlist labels via on-chain attestation, DID-issued credentials when present, recent OperatesPermissionedDomain flags, and a 30-day behavior summary. No editorial scoring. No black-box risk ratings. Pure pattern detection over public ledger data.
+          </p>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
+            <span class="font-mono">sentinel.xrpl-utilities.io</span>
+            <span>&middot;</span>
+            <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
+            <span>&middot;</span>
+            <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="text-accent hover:underline">agents.json</a>
+          </div>
+        </div>
+
+        <!-- Pulse -->
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <a href="/pulse/" class="font-bold text-lg text-white hover:text-accent transition">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
+              <code class="font-mono text-sm text-muted">POST /events/recent</code>
+            </div>
+            <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Normalized event feed bridging six streams into one time-ordered JSON: public-source news with mechanical cross-verification, on-chain whale activity above the storage threshold, XLS-70/80/81 permissioned-domain lifecycle events, Sentinel state-change signals, RWA issuer flow events, and DID-credential lifecycle. Each event carries source provenance and a four-hour XRPL macro-correlation block.
+          </p>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
+            <span class="font-mono">pulse.xrpl-utilities.io</span>
+            <span>&middot;</span>
+            <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
+            <span>&middot;</span>
+            <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="text-accent hover:underline">agents.json</a>
+          </div>
+        </div>
+
+        <!-- Telemetry -->
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <a href="/telemetry/" class="font-bold text-lg text-white hover:text-accent transition">XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
+              <code class="font-mono text-sm text-muted">POST /scan</code>
+            </div>
+            <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            XRPL macro snapshot. Total supply, dormant supply, escrowed XRP, AMM-locked XRP, regional liquidity, settlement volume split into permissioned and open-market, ETF-custody XRP via Flows, and an algebraic implied price floor derived from operator-set institutional volume and velocity assumptions. Now also exposes an ETF-flow-bias secondary floor sourced from the Flows rolling Pearson coefficient.
+          </p>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
+            <span class="font-mono">telemetry.xrpl-utilities.io</span>
+            <span>&middot;</span>
+            <a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
+            <span>&middot;</span>
+            <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="text-accent hover:underline">agents.json</a>
+          </div>
+        </div>
+
+        <!-- Trust -->
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <a href="/trust/" class="font-bold text-lg text-white hover:text-accent transition">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
+              <code class="font-mono text-sm text-muted">GET /domain/{id}</code>
+              <code class="font-mono text-sm text-muted">/scan</code>
+              <code class="font-mono text-sm text-muted">/operators/{addr}</code>
+            </div>
+            <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            XLS-80 PermissionedDomain directory and explorer. Drill into a specific domain (accepted credentials, issuers, lifecycle, identity tier, jurisdiction inference, owner-side XLS-81 offers and AMM activity), scan by domain ID or owner address, or roll up operator-level state (domain count, credentials issued, unique subjects, 24h trading activity, DID identity, organization name). Pay for the drill-downs; the directory enumeration is free.
+          </p>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
+            <span class="font-mono">trust.xrpl-utilities.io</span>
+            <span>&middot;</span>
+            <a href="https://trust.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
+            <span>&middot;</span>
+            <a href="https://trust.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="text-accent hover:underline">agents.json</a>
+          </div>
+        </div>
+
+        <!-- Vault -->
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <a href="/vault/" class="font-bold text-lg text-white hover:text-accent transition">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
+              <code class="font-mono text-sm text-muted">POST /scan</code>
+            </div>
+            <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Real-world asset deep dive. Accepts wallet, logical label, or currency code. Returns per-issuer current obligations and net circulating supply (treasury-adjusted where applicable), trustline count, last-24h mint and burn flow, every XLS-30 AMM pool containing the issuer's IOU, an XLS-85 token-escrow and deep-freeze 24h block, an XLS-80 permissioned-domain fingerprint when the issuer also operates one, and a daily snapshot history series. Native unit-of-account only; no fabricated USD.
+          </p>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
+            <span class="font-mono">vault.xrpl-utilities.io</span>
+            <span>&middot;</span>
+            <a href="https://vault.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
+            <span>&middot;</span>
+            <a href="https://vault.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="text-accent hover:underline">agents.json</a>
+          </div>
+        </div>
+
+        <!-- Flows -->
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <a href="/flows/" class="font-bold text-lg text-white hover:text-accent transition">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
+              <code class="font-mono text-sm text-muted">POST /scan</code>
+            </div>
+            <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Per-ETF deep dive for any of the six US-listed spot XRP ETFs or six indirect-basket funds. Returns the latest issuer-reported AUM, full daily history accruing since deploy, the XRP-attributable slice calculation, SEC EDGAR filing list, and the XRPL exchange-flow context from XR-Pulse for the same window. Auto-discovery surfaces newly listed XRP ETFs as candidates so the registry stays current without redeploys.
+          </p>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
+            <span class="font-mono">flows.xrpl-utilities.io</span>
+            <span>&middot;</span>
+            <a href="https://flows.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
+            <span>&middot;</span>
+            <a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="text-accent hover:underline">agents.json</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW PAYMENT WORKS -->
+  <section class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How payment works</h2>
+      <h3 class="text-3xl font-bold mb-6">x402 v2, XRPL exact scheme, no account required</h3>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">1. Get a quote</div>
+          <p class="text-sm text-muted leading-relaxed">
+            Call the endpoint. The server returns HTTP 402 with two payment options: an XRP amount and an equivalent RLUSD amount. Each carries the exact drops/units, the destination address, an invoice ID, and the t54 facilitator URL. Quotes are good for 10 minutes.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">2. Sign + send</div>
+          <p class="text-sm text-muted leading-relaxed">
+            Pick XRP or RLUSD. Sign an XRPL Payment matching that requirement, base64-encode the JSON envelope, and re-send the original request with the envelope in the <code class="font-mono text-white text-xs">PAYMENT-SIGNATURE</code> header. The server verifies the signature before doing any work.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">3. Receive + settle</div>
+          <p class="text-sm text-muted leading-relaxed">
+            On verified payment the server builds the response, then settles via the t54 facilitator and attaches a <code class="font-mono text-white text-xs">PAYMENT-RESPONSE</code> header containing the on-chain transaction hash. No charge if the work fails; no work if the payment is invalid.
+          </p>
+        </div>
+      </div>
+      <div class="mt-8 grid md:grid-cols-2 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Python client</div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            The <code class="font-mono text-white text-xs">x402-xrpl</code> package on PyPI wraps the whole flow into a normal HTTP session.
+          </p>
+          <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">pip install x402-xrpl
+
+from x402_xrpl import X402RequestsSession
+from xrpl.wallet import Wallet
+
+session = X402RequestsSession(
+    wallet=Wallet.from_seed(seed),
+    rpc_url="https://YOUR_XRPL_RPC",
+    payment_requirements_selector="XRP",
+)
+
+r = session.post(
+    "https://sentinel.xrpl-utilities.io/scan",
+    json={"address": "rExample..."},
+).json()</pre>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">MCP for AI agents</div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Every paid endpoint is also exposed as an <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener" class="text-accent hover:underline">MCP</a> tool. Wire it into Claude Desktop or any MCP host and the agent pays per call through its own configured XRPL wallet.
+          </p>
+          <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">npm install -g @xrpl-utilities/mcp
+
+# or use the hosted endpoint:
+# mcp.xrpl-utilities.io/mcp
+
+# Tools published:
+#   xrpl_sentinel_scan
+#   xrpl_pulse_recent_events
+#   xrpl_telemetry_scan
+#   xrpl_trust_scan
+#   xrpl_vault_scan
+#   xrpl_flows_scan</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FREE ENDPOINTS -->
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Free endpoints</h2>
+      <h3 class="text-3xl font-bold mb-6">The dashboards on this site read from these</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-3xl">
+        Aggregate stats, manifests, and health probes are free and unauthenticated. The paid endpoints are the per-call deep dives; the free ones are the rolled-up views. Both are served from the same backends.
+      </p>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-bold text-white">XR-Pulse</span>
+            <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
+          </div>
+          <ul class="space-y-2 text-sm text-muted">
+            <li><code class="font-mono text-white">/stats/whale-flow-24h</code> &middot; institutional and whale tier hourly buckets, last 24h</li>
+            <li><code class="font-mono text-white">/stats/whale-flow-history</code> &middot; daily rollup of whale flow, trailing N days or explicit window</li>
+            <li><code class="font-mono text-white">/stats/rwa-summary</code> &middot; cross-issuer RWA snapshot</li>
+            <li><code class="font-mono text-white">/stats/exchange-flow-delta</code> &middot; daily net XRP exchange flow</li>
+          </ul>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-bold text-white">XR-Flows</span>
+            <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
+          </div>
+          <ul class="space-y-2 text-sm text-muted">
+            <li><code class="font-mono text-white">/stats/correlation</code> &middot; daily ETF AUM vs XRPL exchange-flow series + rolling Pearson</li>
+            <li><code class="font-mono text-white">/stats/launch-impact</code> &middot; pre/post-launch whale-flow envelope per ETF</li>
+            <li><code class="font-mono text-white">/stats/etf-aggregate-xrp-held</code> &middot; total XRP under ETF custody (direct + attributable)</li>
+            <li><code class="font-mono text-white">/stats/etf-candidates</code> &middot; auto-discovered XRP-ETF candidates from SEC index</li>
+          </ul>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-bold text-white">XR-Trust</span>
+            <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free until data available</span>
+          </div>
+          <ul class="space-y-2 text-sm text-muted">
+            <li><code class="font-mono text-white">/domains</code> &middot; live XLS-80 permissioned domain directory</li>
+            <li><code class="font-mono text-white">/credentials/issuers</code> &middot; aggregated credential-issuer registry</li>
+            <li><code class="font-mono text-white">/jurisdictions</code> &middot; per-country rollup of operators and issuers</li>
+            <li><code class="font-mono text-white">/events</code> &middot; XLS-70/80/81 lifecycle event stream</li>
+          </ul>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-bold text-white">XR-Vault</span>
+            <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
+          </div>
+          <ul class="space-y-2 text-sm text-muted">
+            <li><code class="font-mono text-white">/stats/daily-flow</code> &middot; cross-issuer settlement events and USD-pegged net flow per day</li>
+          </ul>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6 md:col-span-2">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-bold text-white">Universal</span>
+            <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free, every service</span>
+          </div>
+          <ul class="space-y-2 text-sm text-muted">
+            <li><code class="font-mono text-white">/agents.json</code> &middot; machine-readable manifest with capabilities, payment terms, and endpoint catalog</li>
+            <li><code class="font-mono text-white">/schema</code> &middot; full response shape per endpoint</li>
+            <li><code class="font-mono text-white">/healthz</code> &middot; liveness probe with subsystem status</li>
+            <li><code class="font-mono text-white">/docs</code> &middot; interactive Swagger UI</li>
+            <li><code class="font-mono text-white">/llms.txt</code> &middot; LLM-friendly summary of the service</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEGAL -->
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-12 text-center">
+      <p class="text-sm text-muted leading-relaxed">
+        On-chain data passthrough only. No editorial scoring, no compliance verdicts, no investment advice. Per-call price is pinned in XRP drops and refreshed when spot moves substantially; the 402 response always advertises the exact required amount for that call. See <a href="/terms/" class="underline hover:text-white">Terms</a> for the full disclaimer.
+      </p>
+    </div>
+  </section>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/pricing/"  class="text-accent hover:text-white transition">Pricing</a></li>
+            <li><a href="/manifest/" class="text-muted hover:text-white transition">Manifest</a></li>
+            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener" class="text-muted hover:text-white transition">MCP package</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+            <li><a href="/tip/"     class="text-accent hover:text-white transition">Tip the maker</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const navOpen = document.getElementById("nav-open");
+    const navClose = document.getElementById("nav-close");
+    const mobileNav = document.getElementById("mobile-nav");
+    if (navOpen && navClose && mobileNav) {
+      navOpen.addEventListener("click", () => {
+        mobileNav.style.display = "flex";
+        navOpen.setAttribute("aria-expanded", "true");
+      });
+      navClose.addEventListener("click", () => {
+        mobileNav.style.display = "none";
+        navOpen.setAttribute("aria-expanded", "false");
+      });
+    }
+  </script>
+</body>
+</html>
