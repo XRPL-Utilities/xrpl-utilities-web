@@ -554,7 +554,7 @@
         _COLOR_BY_LABEL[label] = c;
         return c;
       }
-      // Fallback for any future ticker past index 11 — hash-derived,
+      // Fallback for any future ticker past index 11; hash-derived,
       // shifted hue band to avoid colliding with the palette above.
       let h = 0;
       for (let i = 0; i < label.length; i++) {
@@ -795,7 +795,7 @@
         }
       }
 
-      // Coverage caveat — distinguishes "no data ever" from "no historical
+      // Coverage caveat; distinguishes "no data ever" from "no historical
       // backfill but accruing forward". A ticker with rows on only a few
       // recent dates is in the accruing-forward bucket (forward scraper
       // captures it daily; backfill couldn't fill it because Yahoo lacked
@@ -961,7 +961,7 @@
         const exp = etf.expense_ratio != null
           ? (etf.expense_ratio * 100).toFixed(2).replace(/\.?0+$/, '') + '%'
           : 'not disclosed';
-        const launched = etf.launch_date || '—';
+        const launched = etf.launch_date || '; ';
         const href = etf.source_url || '#';
         const issuer = etf.issuer || '';
         const ticker = etf.ticker || '';

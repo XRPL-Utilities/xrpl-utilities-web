@@ -241,19 +241,19 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">What it does</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Sentinel reads a wallet's last 90 days of on-chain activity and tells you what kind of actor it looks like. A 24/7 bot, a sleeping retail wallet, an exchange hot wallet, an AMM pool, an issuer, a market maker &mdash; each leaves a distinct signature in transaction cadence, counterparty mix, currency flow, and operational tempo. The output is an activity-level label (Low / Medium / High / Dormant / Unknown), a 0&ndash;100 score, an array of structured signal flags, and an AI-written narrative tying the signals to the conclusion.
+            Sentinel reads a wallet's last 90 days of on-chain activity and tells you what kind of actor it looks like. A 24/7 bot, a sleeping retail wallet, an exchange hot wallet, an AMM pool, an issuer, a market maker; each leaves a distinct signature in transaction cadence, counterparty mix, currency flow, and operational tempo. The output is an activity-level label (Low / Medium / High / Dormant / Unknown), a 0&ndash;100 score, an array of structured signal flags, and an AI-written narrative tying the signals to the conclusion.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Who reads the output</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Agents pricing OTC trades. Market makers vetting counterparties before quoting. Researchers writing about XRPL flows. Treasuries deciding whether a wallet is shaped like a service they'd integrate with. Anyone who's about to send funds to an address they don't fully recognize and wants 90 seconds of due diligence before clicking send. <span class="text-white">Not</span> compliance officers &mdash; see the panel to the right for what this isn't.
+            Agents pricing OTC trades. Market makers vetting counterparties before quoting. Researchers writing about XRPL flows. Treasuries deciding whether a wallet is shaped like a service they'd integrate with. Anyone who's about to send funds to an address they don't fully recognize and wants 90 seconds of due diligence before clicking send. <span class="text-white">Not</span> compliance officers; see the panel to the right for what this isn't.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">What it isn't</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Not a risk score. Not a sanctions screen. Not an AML or KYC determination. Not a credit rating. A "High" activity level usually means an exchange, market maker, AMM, or trading bot &mdash; neutral signals about a wallet's role on the network, not warnings. The signal catalog is published at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a> so consumers can read every flag's definition and decide their own thresholds.
+            Not a risk score. Not a sanctions screen. Not an AML or KYC determination. Not a credit rating. A "High" activity level usually means an exchange, market maker, AMM, or trading bot; neutral signals about a wallet's role on the network, not warnings. The signal catalog is published at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a> so consumers can read every flag's definition and decide their own thresholds.
           </p>
         </div>
       </div>
@@ -338,7 +338,7 @@ report = session.post(
         <li><code class="font-mono text-white">confidence</code>: low / medium / high tier based on transaction depth</li>
         <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog (34 entries today)</li>
         <li><code class="font-mono text-white">features</code>: tx types, IN/OUT split, currencies, dust counts, offer churn, time span, TrustSet / AMM / NFT op counts, failed-tx ratio, median seconds between txs, per-currency net flows, and (for issuers) live outstanding-IOU obligations under <code class="font-mono text-white">issuer_summary</code></li>
-        <li><code class="font-mono text-white">genesis</code>: account-genesis block — activator address + XRPScan label, initial XRP funded, activation timestamp + age, and the multi-hop activator chain (terminates at first labeled venue or 5 hops)</li>
+        <li><code class="font-mono text-white">genesis</code>: account-genesis block; activator address + XRPScan label, initial XRP funded, activation timestamp + age, and the multi-hop activator chain (terminates at first labeled venue or 5 hops)</li>
         <li><code class="font-mono text-white">top_counterparties</code>: top 20 with verified XRPScan labels and direction</li>
         <li><code class="font-mono text-white">reasoning</code>: AI-generated narrative tying the signals to the score</li>
         <li><code class="font-mono text-white">_delta</code>: present when XR-Sentinel has a recorded prior paid scan for the same address. Carries score change, level change, tx-count change, cadence change, and hours since prior scan, so agents can track wallet trajectory without scanning N times themselves.</li>
@@ -469,8 +469,8 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">ESCROW_COUNTERPARTY_INSTITUTIONAL</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              Escrow-flow sibling of <code class="font-mono text-white">INSTITUTIONAL_SCALE_FLOW</code>. Captures institutional-scale escrow relationships rather than direct Payments — useful for catching the vesting / settlement / DvP pattern where value moves through Escrow ledger entries rather than Payment txs. Behavioral context, not a risk verdict. The two signals can co-occur, and that's meaningful: mixed Payment + escrow flow with one counterparty is a stronger institutional signature than either alone.
-              <span class="block text-xs mt-2 opacity-70">Fires when: aggregate XRP + RLUSD escrow value with at least one top counterparty clears $10M USD within the scan window. Sums <code class="font-mono">EscrowCreate</code> Amount (when the scanned wallet is creator) plus the underlying Escrow ledger object's Amount on <code class="font-mono">EscrowFinish</code> (recovered from <code class="font-mono">meta.AffectedNodes</code>). Other-IOU escrows excluded — no oracle.</span>
+              Escrow-flow sibling of <code class="font-mono text-white">INSTITUTIONAL_SCALE_FLOW</code>. Captures institutional-scale escrow relationships rather than direct Payments; useful for catching the vesting / settlement / DvP pattern where value moves through Escrow ledger entries rather than Payment txs. Behavioral context, not a risk verdict. The two signals can co-occur, and that's meaningful: mixed Payment + escrow flow with one counterparty is a stronger institutional signature than either alone.
+              <span class="block text-xs mt-2 opacity-70">Fires when: aggregate XRP + RLUSD escrow value with at least one top counterparty clears $10M USD within the scan window. Sums <code class="font-mono">EscrowCreate</code> Amount (when the scanned wallet is creator) plus the underlying Escrow ledger object's Amount on <code class="font-mono">EscrowFinish</code> (recovered from <code class="font-mono">meta.AffectedNodes</code>). Other-IOU escrows excluded; no oracle.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
@@ -529,14 +529,14 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">DEEP_FROZEN_BY_ISSUER</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              At least one of the wallet's trustlines has been deep-frozen by its issuer. Deep-freeze is strictly stronger than the regular freeze flag — the holder can neither send nor receive the IOU. Issuers deep-freeze for many reasons (court order, KYC failure, suspected fraud, internal compliance review); descriptive flag, not a risk verdict.
+              At least one of the wallet's trustlines has been deep-frozen by its issuer. Deep-freeze is strictly stronger than the regular freeze flag; the holder can neither send nor receive the IOU. Issuers deep-freeze for many reasons (court order, KYC failure, suspected fraud, internal compliance review); descriptive flag, not a risk verdict.
               <span class="block text-xs mt-2 opacity-70">Fires when at least one RippleState (trustline) entry owned by the scanned wallet carries <code class="font-mono">lsfHighDeepFreeze</code> or <code class="font-mono">lsfLowDeepFreeze</code>. Read from the same <code class="font-mono">account_objects</code> call as the configuration classifier above.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">PERMISSIONED_DEX_PARTICIPANT</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              The wallet currently has at least one active offer placed inside an XLS-81 permissioned trading venue — i.e. an Offer ledger object that carries a DomainID. The wallet is participating in credentialed institutional liquidity rather than the open DEX. Behavioral context: permissioned-DEX participation is a normal posture for credentialed institutional traders.
+              The wallet currently has at least one active offer placed inside an XLS-81 permissioned trading venue; i.e. an Offer ledger object that carries a DomainID. The wallet is participating in credentialed institutional liquidity rather than the open DEX. Behavioral context: permissioned-DEX participation is a normal posture for credentialed institutional traders.
               <span class="block text-xs mt-2 opacity-70">Fires when <code class="font-mono">wallet_config.permissioned_offer_count</code> is at least 1. The owning domain_id(s) are returned alongside so consumers can drill through to the XR-Trust directory.</span>
             </dd>
           </div>
@@ -557,7 +557,7 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">ESCROW_LIFE_HEAVY</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              The wallet's recent activity is escrow-dominated rather than transactional — consistent with a vesting or grants vehicle, an institutional settlement counterparty, or a programmatic escrow pipeline. Says nothing about who the wallet's escrow counterparties are; just describes the activity mix.
+              The wallet's recent activity is escrow-dominated rather than transactional; consistent with a vesting or grants vehicle, an institutional settlement counterparty, or a programmatic escrow pipeline. Says nothing about who the wallet's escrow counterparties are; just describes the activity mix.
               <span class="block text-xs mt-2 opacity-70">Fires when the in-window count of EscrowCreate + EscrowFinish + EscrowCancel transactions is at least 30% of total in-window activity, with a floor of 3 total transactions (avoids over-firing on dormant wallets with one escrow).</span>
             </dd>
           </div>
@@ -575,21 +575,21 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">WHALE_GENESIS</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              The wallet was funded at activation with 50,000+ XRP — institutional-scale setup, not retail dispense. Combined with the activator label (when present) gives clean provenance: known venues seeding institutional users vs. unlabeled large-scale provisioning.
+              The wallet was funded at activation with 50,000+ XRP; institutional-scale setup, not retail dispense. Combined with the activator label (when present) gives clean provenance: known venues seeding institutional users vs. unlabeled large-scale provisioning.
               <span class="block text-xs mt-2 opacity-70">Fires when: the genesis block's hop-0 initial funding is at least 50,000 XRP.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_PROVENANCE</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              The wallet's lineage traces back to a known exchange or institution within 3 hops. Stronger than just the immediate activator — intermediate operational wallets get walked past so the chain resolves to the original venue.
+              The wallet's lineage traces back to a known exchange or institution within 3 hops. Stronger than just the immediate activator; intermediate operational wallets get walked past so the chain resolves to the original venue.
               <span class="block text-xs mt-2 opacity-70">Fires when: the genesis chain terminates at a labeled (XRPScan well-known) wallet within 3 hops.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">LAYERED_PROVENANCE</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              The wallet's activator chain runs through 2 or more unlabeled wallets in a row, and every wallet in the chain was itself fresh when it dispensed downstream. Pattern of layered routing through fresh intermediates rather than direct dispense from a known venue. Behavioral context only — legitimate setup pipelines can also produce this shape.
+              The wallet's activator chain runs through 2 or more unlabeled wallets in a row, and every wallet in the chain was itself fresh when it dispensed downstream. Pattern of layered routing through fresh intermediates rather than direct dispense from a known venue. Behavioral context only; legitimate setup pipelines can also produce this shape.
               <span class="block text-xs mt-2 opacity-70">Fires when: 2+ consecutive unlabeled hops in the chain, every hop's <code class="font-mono">age_days</code> is below 90, and the chain does not terminate at a labeled venue.</span>
             </dd>
           </div>
@@ -897,7 +897,7 @@ report = session.post(
         if (countEl) countEl.textContent = catalogCount + " flag" + (catalogCount === 1 ? "" : "s");
         const missing = catalogCount - docCount;
         if (driftEl && missing > 0) {
-          driftEl.textContent = "(" + missing + " new — see /schema for the full catalog)";
+          driftEl.textContent = "(" + missing + " new; see /schema for the full catalog)";
           driftEl.classList.remove("hidden");
         }
       } catch (_) { /* no-op; static count remains */ }

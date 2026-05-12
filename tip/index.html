@@ -138,15 +138,15 @@
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div class="bg-ink border border-border rounded-lg p-4">
               <div class="text-xs uppercase tracking-wider text-muted mb-1">Tips received</div>
-              <div id="stat-count" class="text-2xl font-bold font-mono">&mdash;</div>
+              <div id="stat-count" class="text-2xl font-bold font-mono">; </div>
             </div>
             <div class="bg-ink border border-border rounded-lg p-4">
               <div class="text-xs uppercase tracking-wider text-muted mb-1">Total XRP</div>
-              <div id="stat-xrp" class="text-2xl font-bold font-mono">&mdash;</div>
+              <div id="stat-xrp" class="text-2xl font-bold font-mono">; </div>
             </div>
             <div class="bg-ink border border-border rounded-lg p-4">
               <div class="text-xs uppercase tracking-wider text-muted mb-1">Total RLUSD</div>
-              <div id="stat-rlusd" class="text-2xl font-bold font-mono">&mdash;</div>
+              <div id="stat-rlusd" class="text-2xl font-bold font-mono">; </div>
             </div>
           </div>
           <p class="text-[11px] text-muted mt-4">Aggregate only. Individual tipper addresses are not surfaced here. Filtered by destination tag <code class="font-mono text-white">90210</code> over the trailing 30 days, read live from XRPL via XRPSCAN. Source is the public ledger; transaction history is publicly browsable at <a href="https://xrpscan.com/account/rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">xrpscan.com</a>.</p>
@@ -294,7 +294,7 @@
           DestinationTag: DT,
           Amount: String(Math.round(currentAmt * 1_000_000)),
         });
-        btn.textContent = "Sent — thank you";
+        btn.textContent = "Sent; thank you";
       } catch (e) {
         btn.textContent = "Cancelled";
         setTimeout(() => { btn.textContent = "Sign with Crossmark"; }, 2000);

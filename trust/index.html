@@ -713,7 +713,7 @@ record = session.post(
         if (d.jurisdiction) {
           const j = el('span', 'inline-flex items-center gap-1 ml-2 mt-2 px-2 py-0.5 rounded border border-border text-[10px] uppercase tracking-wider text-muted');
           j.textContent = d.jurisdiction;
-          j.title = (JURISDICTION_NAMES[d.jurisdiction] || d.jurisdiction) + ' — inferred from operator-curated map / TOML ccTLD / XRPScan domain';
+          j.title = (JURISDICTION_NAMES[d.jurisdiction] || d.jurisdiction) + '; inferred from operator-curated map / TOML ccTLD / XRPScan domain';
           ownerCell.appendChild(j);
         }
         if (did && did.org_name) {
@@ -737,7 +737,7 @@ record = session.post(
             ownerCell.appendChild(linkEl);
           }
         } else if (tier === 'did_only') {
-          // IPFS-hosted or thin DID — surface method + verification count
+          // IPFS-hosted or thin DID; surface method + verification count
           // when available so the reader sees cryptographic identity weight.
           const parts = [];
           if (did && did.did_method) parts.push('did:' + did.did_method);
@@ -775,7 +775,7 @@ record = session.post(
 
         // First-seen column: earliest PermissionedDomainSet event for the
         // domain captured by Trust's subscribe loop. Renders as a human
-        // date when known; '—' when the domain predates Trust subscribe
+        // date when known; '; ' when the domain predates Trust subscribe
         // (inline-seeded via /admin/seed or pre-existing on startup).
         const fsCell = el('td', 'px-3 sm:px-6 py-4 text-xs text-muted hidden md:table-cell');
         if (d.first_seen_unix) {
@@ -783,7 +783,7 @@ record = session.post(
           fsCell.textContent = dt.toISOString().slice(0, 10);
           fsCell.title = dt.toUTCString() + (d.first_seen_ledger ? ' · ledger ' + d.first_seen_ledger : '');
         } else {
-          fsCell.textContent = '—';
+          fsCell.textContent = '; ';
           fsCell.title = 'Predates Trust subscribe loop; first-seen unknown.';
         }
         tr.appendChild(fsCell);
@@ -844,7 +844,7 @@ record = session.post(
       function row(k, v) {
         grid.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted sm:text-right', k));
         const dd = el('div', 'sm:col-span-2 text-white text-sm break-all');
-        dd.textContent = v == null ? '—' : String(v);
+        dd.textContent = v == null ? '; ' : String(v);
         grid.appendChild(dd);
       }
       row('Owner', ownerLabel ? (ownerLabel + ' (' + d.owner_address + ')') : d.owner_address);
@@ -871,7 +871,7 @@ record = session.post(
         function lcRow(k, v, sub) {
           lcGrid.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted sm:text-right', k));
           const dd = el('div', 'sm:col-span-2 text-white text-sm');
-          dd.textContent = v == null ? '—' : String(v);
+          dd.textContent = v == null ? '; ' : String(v);
           if (sub) {
             const s = el('div', 'text-xs text-muted font-mono mt-1 break-all');
             s.textContent = sub;
@@ -881,7 +881,7 @@ record = session.post(
         }
         lcRow('Created', formatTimeAgo(lc.created_at_unix, lc.created_at_iso), lc.created_tx_id);
         lcRow('Last modified', formatTimeAgo(lc.last_modified_at_unix, lc.last_modified_at_iso), lc.last_modified_tx_id);
-        lcRow('Modifications', (lc.modification_count != null ? lc.modification_count : '—'),
+        lcRow('Modifications', (lc.modification_count != null ? lc.modification_count : '; '),
               'lifecycle_status: ' + lc.lifecycle_status);
         lcWrap.appendChild(lcGrid);
         wrap.appendChild(lcWrap);
@@ -1029,7 +1029,7 @@ record = session.post(
     }
 
     function formatTimeAgo(unix, iso) {
-      if (unix == null) return iso || '—';
+      if (unix == null) return iso || '; ';
       const now = Math.floor(Date.now() / 1000);
       const delta = now - unix;
       if (delta < 0) return iso;
@@ -1046,7 +1046,7 @@ record = session.post(
     // Format an XRPL Amount field for compact display. String -> drops -> XRP;
     // {currency, value, issuer} -> 'value CURRENCY' with hex-decoded currency.
     function _formatXrplAmount(amt) {
-      if (amt == null) return '—';
+      if (amt == null) return '; ';
       if (typeof amt === 'string') {
         const drops = parseInt(amt, 10);
         if (!isNaN(drops)) return (drops / 1_000_000) + ' XRP';
@@ -1130,8 +1130,8 @@ record = session.post(
         if (!r.ok) {
           renderError(target, 'The directory is temporarily unreachable. Try refreshing in a moment. (HTTP ' + r.status + ')');
           status.textContent = 'Error.';
-          setStat('stat-domains', '—');
-          setStat('stat-issuers', '—');
+          setStat('stat-domains', '; ');
+          setStat('stat-issuers', '; ');
           return;
         }
         _lastResponse = await r.json();
@@ -1155,8 +1155,8 @@ record = session.post(
       } catch (e) {
         renderError(target, 'Couldn’t reach trust.xrpl-utilities.io. The service may be undergoing initial deployment. Try refreshing.');
         status.textContent = 'Error.';
-        setStat('stat-domains', '—');
-        setStat('stat-issuers', '—');
+        setStat('stat-domains', '; ');
+        setStat('stat-issuers', '; ');
       }
     }
 
@@ -1181,7 +1181,7 @@ record = session.post(
     };
 
     function fmtAmountShort(value, currency, issuer) {
-      if (value === undefined || value === null) return '—';
+      if (value === undefined || value === null) return '; ';
       const n = typeof value === 'string' ? parseFloat(value) : value;
       if (!isFinite(n) || n === 0) return '0';
       let disp;

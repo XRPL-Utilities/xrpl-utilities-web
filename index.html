@@ -253,7 +253,7 @@
   <!-- LIVE NETWORK STATE STRIP. Four free public read endpoints, four
        boxes. Each box also links to the relevant product page. Skeleton
        placeholders show while fetches resolve; auto-refresh every 60s.
-       No preview-token needed — every endpoint here is allowed
+       No preview-token needed; every endpoint here is allowed
        unauthenticated. CSP connect-src already whitelists all 4 hosts. -->
   <section id="live-state" class="border-t border-border bg-ink">
     <div class="max-w-6xl mx-auto px-6 py-12">
@@ -461,7 +461,7 @@
           <p class="text-muted leading-relaxed mb-6">
             <span class="text-white">Or skip the integration entirely:</span> the portfolio is now consumable as a
             <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Model Context Protocol</a>
-            server. 12 tools across all five services, callable from Claude Desktop or any MCP client. Stateless passthrough — same x402 payment model, just wrapped as MCP tools.
+            server. 12 tools across all five services, callable from Claude Desktop or any MCP client. Stateless passthrough; same x402 payment model, just wrapped as MCP tools.
             Hosted at <code class="font-mono text-sm bg-panel px-2 py-1 rounded">mcp.xrpl-utilities.io/mcp</code> or
             <code class="font-mono text-sm bg-panel px-2 py-1 rounded">npm i @xrpl-utilities/mcp</code>.
           </p>
@@ -598,7 +598,7 @@ report = session.post(
       // across orders of magnitude. Below $1M we still show full digits
       // because the run-rate would be a soft signal at that scale.
       function fmtUsd(n) {
-        if (typeof n !== 'number' || !isFinite(n)) return '—';
+        if (typeof n !== 'number' || !isFinite(n)) return '; ';
         const sign = n < 0 ? '-' : '';
         const abs = Math.abs(n);
         if (abs >= 1e12) return sign + '$' + (abs / 1e12).toFixed(2) + 'T';
@@ -608,7 +608,7 @@ report = session.post(
         return sign + '$' + Math.round(abs).toString();
       }
       function fmtCount(n) {
-        if (typeof n !== 'number' || !isFinite(n)) return '—';
+        if (typeof n !== 'number' || !isFinite(n)) return '; ';
         return n.toLocaleString('en-US');
       }
       function setText(el, txt) { if (el) el.textContent = txt; }

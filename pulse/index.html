@@ -237,7 +237,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Who reads it</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Traders watching for a news catalyst that just moved on-chain flow. Researchers correlating a regulatory announcement to actual settlement activity. Agents that need both market context and raw on-chain signal in one paid call. Not editorial &mdash; sources are reported as a property of an event, not as a verdict on whether the source is credible.
+            Traders watching for a news catalyst that just moved on-chain flow. Researchers correlating a regulatory announcement to actual settlement activity. Agents that need both market context and raw on-chain signal in one paid call. Not editorial; sources are reported as a property of an event, not as a verdict on whether the source is credible.
           </p>
         </div>
       </div>
@@ -283,7 +283,7 @@
             </div>
             <div class="text-[10px] text-muted leading-snug mb-2">&ge; $10M, or any size involving a named institutional wallet</div>
             <div id="stat-inst-usd" class="text-3xl font-bold font-mono"><span class="inline-block h-8 w-24 bg-border rounded animate-pulse"></span></div>
-            <div id="stat-inst-count" class="text-[11px] text-muted mt-1">&mdash;</div>
+            <div id="stat-inst-count" class="text-[11px] text-muted mt-1">; </div>
           </div>
           <div class="bg-ink border border-border rounded-xl p-4">
             <div class="mb-1">
@@ -291,7 +291,7 @@
             </div>
             <div class="text-[10px] text-muted leading-snug mb-2">$1M &ndash; $10M, both sides unlabeled wallets</div>
             <div id="stat-whale-usd" class="text-3xl font-bold font-mono"><span class="inline-block h-8 w-24 bg-border rounded animate-pulse"></span></div>
-            <div id="stat-whale-count" class="text-[11px] text-muted mt-1">&mdash;</div>
+            <div id="stat-whale-count" class="text-[11px] text-muted mt-1">; </div>
           </div>
         </div>
         <div>
@@ -438,10 +438,10 @@ feed = session.post(
       <ul class="space-y-2 text-muted leading-relaxed">
         <li><code class="font-mono text-white">events[]</code>: normalized records, newest-first; mixes news, whale, and permissioned-domain lifecycle in one stream</li>
         <li><code class="font-mono text-white">title</code>, <code class="font-mono text-white">primary_url</code>, <code class="font-mono text-white">brief</code>, <code class="font-mono text-white">published_at</code> (UNIX seconds)</li>
-        <li><code class="font-mono text-white">source_appearances[]</code>: which feed produced the event — a news source (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>), <code class="font-mono text-white">whale_xrpl</code>, or <code class="font-mono text-white">permissioned_domain_lifecycle</code></li>
+        <li><code class="font-mono text-white">source_appearances[]</code>: which feed produced the event; a news source (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>), <code class="font-mono text-white">whale_xrpl</code>, or <code class="font-mono text-white">permissioned_domain_lifecycle</code></li>
         <li><code class="font-mono text-white">appearance_count</code> + <code class="font-mono text-white">cross_verified</code>: number of independent sources covering the same story; flag set when 2+ within 48h. Whale and permissioned events are single-source by design.</li>
         <li><code class="font-mono text-white">correlation</code> (news only): XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim.</li>
-        <li><code class="font-mono text-white">active_utility</code>: signal payload, shape varies by source — news carries <code class="font-mono text-white">{active, signals[]}</code>; whale rows carry transfer details + Sentinel cross-ref; permissioned rows carry tx + domain + credential or XLS-81 trade economics. See <code class="font-mono text-white">/schema</code> for the full per-source field list.</li>
+        <li><code class="font-mono text-white">active_utility</code>: signal payload, shape varies by source; news carries <code class="font-mono text-white">{active, signals[]}</code>; whale rows carry transfer details + Sentinel cross-ref; permissioned rows carry tx + domain + credential or XLS-81 trade economics. See <code class="font-mono text-white">/schema</code> for the full per-source field list.</li>
         <li><code class="font-mono text-white">target_addresses[]</code>, <code class="font-mono text-white">sentinel_context</code>: XRPL addresses attached to the event + best-effort XR-Sentinel cross-reference</li>
         <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $1M; pass 0 to see the full $50k+ stream).</li>
       </ul>
@@ -861,7 +861,7 @@ feed = session.post(
 
       // XLS-85 token-escrow event render. Subtype is either
       // 'token_escrow' (single-leg) or 'dvp_candidate' (paired with a
-      // reciprocal Condition within 1h — delivery-versus-payment
+      // reciprocal Condition within 1h; delivery-versus-payment
       // pattern). Detail strip surfaces the tx flow + Escrow lifecycle
       // fields; the brief explainer at the bottom is the plain-English
       // gloss for readers unfamiliar with XLS-85.
@@ -1386,7 +1386,7 @@ feed = session.post(
       const moreAvailable = !col.exhausted || col.events.length > col.shown;
       nav.className = 'mt-3';
       if (col.shown === 0 && !col.error) {
-        nav.innerHTML = '';  // skeleton/empty state — no button needed
+        nav.innerHTML = '';  // skeleton/empty state; no button needed
       } else if (!moreAvailable) {
         nav.innerHTML = `<div class="text-center text-xs text-muted/60 py-3 border-t border-border">End of feed</div>`;
       } else {

@@ -270,7 +270,7 @@
               <button id="bm-v-use-realized" type="button"
                       class="text-[10px] uppercase tracking-wider border border-border hover:border-accent text-muted hover:text-accent rounded px-2 py-0.5 transition disabled:opacity-30 disabled:cursor-not-allowed"
                       disabled
-                      title="Load today's realized V into the input. Computed as Q / (M × spot) — the velocity the identity requires for P to equal today's market price.">Use realized · <span id="bm-v-realized" class="font-mono">&hellip;</span></button>
+                      title="Load today's realized V into the input. Computed as Q / (M × spot); the velocity the identity requires for P to equal today's market price.">Use realized · <span id="bm-v-realized" class="font-mono">&hellip;</span></button>
             </div>
             <input id="bm-v" type="number" min="0.1" step="0.1" class="num-input" />
             <p class="text-[10px] text-muted mt-1 leading-snug">
@@ -389,7 +389,7 @@
       <!-- PERMISSIONED VS OPEN-MARKET SPLIT (schema 1.5.0+).
            Renders the share of XRPL settlement that flowed through XLS-81
            permissioned venues vs the open market. Today's number is
-           expected to be near 0% — XLS-81 mainnet is just lighting up,
+           expected to be near 0%; XLS-81 mainnet is just lighting up,
            and the walker only counts Payments where DomainID is on the
            tx body or affected Offer/AMM node. This metric exists from
            day one so its trajectory is observable as institutional
@@ -992,7 +992,7 @@ payload = requests.get(
           _lastRealizedV = vReal;
           if (bmVUseRealizedBtn) bmVUseRealizedBtn.disabled = false;
         } else {
-          bmVRealized.textContent = '—';
+          bmVRealized.textContent = '; ';
           _lastRealizedV = null;
           if (bmVUseRealizedBtn) bmVUseRealizedBtn.disabled = true;
         }
@@ -1094,7 +1094,7 @@ payload = requests.get(
         sv24h.textContent = fmtUsdShort(d.volume_24h_usd);
         svAnnual.textContent = fmtUsdShort(d.annualized_run_rate_usd);
         // Breakdown subtitles. Backend may not yet ship the split fields
-        // during a partial rollout — fall back to a single-line label.
+        // during a partial rollout; fall back to a single-line label.
         if (typeof d.volume_24h_xrp_usd === 'number' && typeof d.volume_24h_rlusd_usd === 'number') {
           sv24hSplit.textContent = fmtUsdShort(d.volume_24h_xrp_usd) + ' XRP · ' + fmtUsdShort(d.volume_24h_rlusd_usd) + ' RLUSD';
         } else {
@@ -1128,7 +1128,7 @@ payload = requests.get(
           elPermPct.textContent = permPct.toFixed(2) + '%';
           if (permPct < 0.01) elPermCaveat?.classList.remove('hidden');
         } else if (elPermPct) {
-          elPermPct.textContent = '—';
+          elPermPct.textContent = '; ';
         }
         if (typeof permUsd === 'number' && elPermUsd) {
           elPermUsd.textContent = fmtUsdShort(permUsd);
