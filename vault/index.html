@@ -1082,11 +1082,13 @@
       try {
         const r = await fetch(url);
         if (!r.ok) {
+          console.error('[vault daily-flow] http', r.status);
           document.getElementById('settlement-empty')?.classList.remove('hidden');
           return;
         }
         body = await r.json();
-      } catch {
+      } catch (e) {
+        console.error('[vault daily-flow] fetch failed:', e);
         document.getElementById('settlement-empty')?.classList.remove('hidden');
         return;
       }
@@ -1101,8 +1103,16 @@
       }
       emptyEl?.classList.add('hidden');
 
-      renderSettlementEventsChart(events, tracked);
-      renderUsdPeggedChart(usd, body.usd_pegged_asset_classes || [], tracked);
+      try {
+        renderSettlementEventsChart(events, tracked);
+      } catch (e) {
+        console.error('[vault settlement chart] render failed:', e);
+      }
+      try {
+        renderUsdPeggedChart(usd, body.usd_pegged_asset_classes || [], tracked);
+      } catch (e) {
+        console.error('[vault usd-pegged chart] render failed:', e);
+      }
     }
 
     function renderSettlementEventsChart(daily, tracked) {
@@ -1304,8 +1314,14 @@
     });
 
     // Defer to allow Chart.js to load.
+    let _chartWaitCount = 0;
     function bootDailyFlow() {
       if (typeof Chart === 'undefined') {
+        _chartWaitCount += 1;
+        if (_chartWaitCount > 50) {
+          console.error('[vault] Chart.js still undefined after 10s; bailing on daily-flow render. Check CSP / network for cdn.jsdelivr.net.');
+          return;
+        }
         setTimeout(bootDailyFlow, 200);
         return;
       }
