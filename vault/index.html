@@ -277,10 +277,13 @@
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
         <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Top movers</h2>
-          <span class="text-[10px] text-muted font-mono">By absolute net 24h flow</span>
+          <div class="flex items-center gap-2">
+            <button data-mover-window="24h" class="mover-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition" aria-pressed="false">24h</button>
+            <button data-mover-window="7d" class="mover-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-accent text-white transition" aria-pressed="true">7d</button>
+          </div>
         </div>
-        <p class="text-xs text-muted leading-relaxed mb-5">
-          The issuers with the biggest net change in circulating supply over the last 24 hours, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow.
+        <p id="top-movers-prose" class="text-xs text-muted leading-relaxed mb-5">
+          The issuers with the biggest net change in circulating supply over the last 7 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. RWA flows run minutes-to-days, so the 7-day window gives more signal stability than the 24-hour shuffle; use the toggle if you want the tighter rolling view.
         </p>
         <div id="top-movers-list" class="space-y-2">
           <div class="bg-ink border border-border rounded-lg p-4">
@@ -735,8 +738,9 @@
         if (!r.ok) return;
         const body = await r.json();
         if (!body || body.available === false) return;
+        _topMoversLastBody = body;
         renderSummary(body);
-        renderTopMovers(body.top_movers_24h || []);
+        applyTopMoversWindow();
         renderIssuerTiles(body.issuers || []);
         renderCandidates(body.candidates || []);
       } catch (err) {
@@ -768,18 +772,33 @@
       }
     }
 
-    function renderTopMovers(movers) {
+    // Track current window so the toggle can re-render against the
+    // last fetched summary body without a second roundtrip.
+    let _topMoversWindow = '7d';
+    let _topMoversLastBody = null;
+
+    function renderTopMovers(movers, windowKey) {
       const el = document.getElementById('top-movers-list');
       const empty = document.getElementById('top-movers-empty');
       if (!el) return;
+      const w = windowKey || _topMoversWindow || '24h';
+      const isWeek = w === '7d';
+      const netField = isWeek ? 'net_7d' : 'net_24h';
+      const labelText = isWeek ? 'net 7d flow' : 'net 24h flow';
       if (!movers.length) {
         el.innerHTML = '';
-        if (empty) empty.classList.remove('hidden');
+        if (empty) {
+          empty.textContent = isWeek
+            ? 'No measurable RWA flow in the last 7 days.'
+            : 'No measurable RWA flow in the last 24 hours.';
+          empty.classList.remove('hidden');
+        }
         return;
       }
       if (empty) empty.classList.add('hidden');
       el.innerHTML = movers.map(m => {
         const cls = m.asset_class || '';
+        const net = m[netField];
         return `
           <div class="flex items-center justify-between gap-4 bg-ink border border-border rounded-lg p-4">
             <div class="min-w-0">
@@ -787,16 +806,48 @@
                 <span class="font-semibold text-white truncate">${escapeHtml(m.logical_label || m.label || '')}</span>
                 <span class="class-${cls} text-[10px] px-2 py-0.5 rounded border uppercase tracking-wider">${escapeHtml(fmtAssetClass(cls))}</span>
               </div>
-              <div class="text-[11px] text-muted mt-0.5">net 24h flow</div>
+              <div class="text-[11px] text-muted mt-0.5">${labelText}</div>
             </div>
             <div class="text-right shrink-0">
-              <div class="text-2xl font-bold font-mono ${deltaClass(m.net_24h)}">${escapeHtml(deltaSign(m.net_24h) + fmtNumber(m.net_24h))}</div>
+              <div class="text-2xl font-bold font-mono ${deltaClass(net)}">${escapeHtml(deltaSign(net) + fmtNumber(net))}</div>
               <div class="text-[10px] text-muted font-mono uppercase">${escapeHtml(m.currency || '')}</div>
             </div>
           </div>
         `;
       }).join('');
     }
+
+    function applyTopMoversWindow() {
+      if (!_topMoversLastBody) return;
+      const arr = _topMoversWindow === '7d'
+        ? (_topMoversLastBody.top_movers_7d || [])
+        : (_topMoversLastBody.top_movers_24h || []);
+      renderTopMovers(arr, _topMoversWindow);
+    }
+
+    // Wire the 24h/7d toggle buttons.
+    document.querySelectorAll('.mover-window-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const w = btn.getAttribute('data-mover-window');
+        if (!w || w === _topMoversWindow) return;
+        _topMoversWindow = w;
+        document.querySelectorAll('.mover-window-btn').forEach(b => {
+          const active = b === btn;
+          b.classList.toggle('border-accent', active);
+          b.classList.toggle('text-white', active);
+          b.classList.toggle('border-border', !active);
+          b.classList.toggle('text-muted', !active);
+          b.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        const proseEl = document.getElementById('top-movers-prose');
+        if (proseEl) {
+          proseEl.textContent = (w === '7d')
+            ? "The issuers with the biggest net change in circulating supply over the last 7 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. RWA flows run minutes-to-days, so the 7-day window gives more signal stability than the 24-hour shuffle; use the toggle if you want the tighter rolling view."
+            : "The issuers with the biggest net change in circulating supply over the last 24 hours, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow.";
+        }
+        applyTopMoversWindow();
+      });
+    });
 
     function renderIssuerTiles(issuers) {
       const el = document.getElementById('issuer-tiles');
@@ -1003,8 +1054,9 @@
         if (!r.ok) return;
         const body = await r.json();
         if (!body || body.available === false) return;
+        _topMoversLastBody = body;
         renderSummary(body);
-        renderTopMovers(body.top_movers_24h || []);
+        applyTopMoversWindow();
         renderIssuerTiles(body.issuers || []);
         renderAmmPools(body.amm_pools || []);
         renderFlowLog(body.issuers || []);
@@ -1107,11 +1159,15 @@
         renderSettlementEventsChart(events, tracked);
       } catch (e) {
         console.error('[vault settlement chart] render failed:', e);
+        const totalEl = document.getElementById('settlement-events-total');
+        if (totalEl) totalEl.textContent = 'chart unavailable';
       }
       try {
         renderUsdPeggedChart(usd, body.usd_pegged_asset_classes || [], tracked);
       } catch (e) {
         console.error('[vault usd-pegged chart] render failed:', e);
+        const covEl = document.getElementById('usd-flow-coverage');
+        if (covEl) covEl.textContent = 'chart unavailable';
       }
     }
 
