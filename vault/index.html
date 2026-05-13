@@ -240,6 +240,38 @@
     </div>
   </section>
 
+  <section id="xls85-counter">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-5 sm:p-6">
+        <div class="flex items-baseline justify-between gap-4 mb-2 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">XLS-85 token escrow</h2>
+          <span id="xls85-since" class="text-[10px] text-muted font-mono">&hellip;</span>
+        </div>
+        <div class="flex items-baseline gap-6 flex-wrap mt-2">
+          <div>
+            <div id="xls85-all-time" class="text-3xl sm:text-4xl font-bold font-mono tracking-tight">&hellip;</div>
+            <div class="text-[10px] uppercase tracking-wider text-muted mt-1">events all-time</div>
+          </div>
+          <div>
+            <div id="xls85-7d" class="text-xl font-bold font-mono">&hellip;</div>
+            <div class="text-[10px] uppercase tracking-wider text-muted mt-1">last 7d</div>
+          </div>
+          <div>
+            <div id="xls85-24h" class="text-xl font-bold font-mono">&hellip;</div>
+            <div class="text-[10px] uppercase tracking-wider text-muted mt-1">last 24h</div>
+          </div>
+          <div>
+            <div id="xls85-dvp" class="text-xl font-bold font-mono">&hellip;</div>
+            <div class="text-[10px] uppercase tracking-wider text-muted mt-1">DvP candidates</div>
+          </div>
+        </div>
+        <p class="text-[11px] text-muted leading-relaxed mt-4">
+          XLS-85 enables time-locked or condition-locked escrow of non-XRP IOU tokens. Used for vesting, deferred settlement, and atomic two-leg trades. DvP candidates are paired escrows sharing a Condition hash within an hour (delivery-versus-payment pattern, candidate not confirmed). The counts here cover XLS-85 activity across all XRPL IOUs that Pulse's whale watcher observes; the per-issuer chips on the tiles below scope to operator-tracked RWA issuers only, which is a smaller subset.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <section id="top-movers">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
@@ -989,6 +1021,38 @@
     loadAll();
     // Poll every 60s so the dashboard stays current without page reload.
     setInterval(loadAll, 60000);
+
+    // XLS-85 all-time + windowed counter. Free passthrough call to
+    // Pulse's /stats/xls85-totals; refresh on the same 60s cadence as
+    // the rest of the dashboard so the headline stays current.
+    async function loadXls85Totals() {
+      try {
+        const r = await fetch('https://pulse.xrpl-utilities.io/stats/xls85-totals');
+        if (!r.ok) return;
+        const body = await r.json();
+        const fmt = (n) => (typeof n === 'number') ? n.toLocaleString() : '0';
+        const setText = (id, v) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = v;
+        };
+        setText('xls85-all-time', fmt(body.all_time));
+        setText('xls85-7d',       fmt(body.last_7d));
+        setText('xls85-24h',      fmt(body.last_24h));
+        setText('xls85-dvp',      fmt(body.dvp_all_time));
+        const sinceEl = document.getElementById('xls85-since');
+        if (sinceEl && body.earliest_event_at) {
+          const d = new Date(body.earliest_event_at * 1000);
+          if (!isNaN(d.getTime())) {
+            sinceEl.textContent = 'since ' + d.toISOString().slice(0, 10);
+          }
+        }
+      } catch {
+        // Best-effort. Tile shows '…' on failure rather than '0' so it's
+        // visually distinct from a real zero count.
+      }
+    }
+    loadXls85Totals();
+    setInterval(loadXls85Totals, 60000);
 
     // ============================================================
     // Settlement activity over time; /stats/daily-flow on Vault.
