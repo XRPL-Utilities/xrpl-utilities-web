@@ -481,7 +481,7 @@ feed = session.post(
         At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim.
       </p>
       <p class="text-sm text-muted leading-relaxed">
-        <span class="text-white">On-chain stream.</span> The watcher polls validated XRPL ledgers every 60 seconds. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger index, currency (XRP or RLUSD), and full sender + receiver addresses. Where XRPScan recognizes either address as a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
+        <span class="text-white">On-chain stream.</span> The watcher reads validated XRPL ledgers continuously. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger position, currency (XRP or RLUSD), and full sender + receiver addresses. Where either address resolves to a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
       </p>
     </div>
   </section>
@@ -619,7 +619,7 @@ feed = session.post(
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
