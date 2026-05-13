@@ -339,7 +339,7 @@ report = session.post(
         <li><code class="font-mono text-white">activity_score</code>: 0 to 100, scaled to how automated and service-like the wallet behaves</li>
         <li><code class="font-mono text-white">activity_level</code>: Low / Medium / High / Dormant / Unknown</li>
         <li><code class="font-mono text-white">confidence</code>: low / medium / high tier based on transaction depth</li>
-        <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog (34 entries today)</li>
+        <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog (35 entries today)</li>
         <li><code class="font-mono text-white">features</code>: tx types, IN/OUT split, currencies, dust counts, offer churn, time span, TrustSet / AMM / NFT op counts, failed-tx ratio, median seconds between txs, per-currency net flows, and (for issuers) live outstanding-IOU obligations under <code class="font-mono text-white">issuer_summary</code></li>
         <li><code class="font-mono text-white">genesis</code>: account-genesis block; activator address + XRPScan label, initial XRP funded, activation timestamp + age, and the multi-hop activator chain (terminates at first labeled venue or 5 hops)</li>
         <li><code class="font-mono text-white">top_counterparties</code>: top 20 with verified XRPScan labels and direction</li>
@@ -359,7 +359,7 @@ report = session.post(
           <div>
             <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Signal glossary</h2>
             <h3 class="text-2xl md:text-3xl font-bold">What do these signal flags mean?</h3>
-            <p class="text-sm text-muted mt-2">Click to expand. <span id="glossary-count">34 flags</span> in plain English. <span id="glossary-drift" class="text-amber-300 hidden"></span></p>
+            <p class="text-sm text-muted mt-2">Click to expand. <span id="glossary-count">35 flags</span> in plain English. <span id="glossary-drift" class="text-amber-300 hidden"></span></p>
           </div>
           <span class="text-3xl text-accent shrink-0 group-open:rotate-180 transition-transform mt-1">▾</span>
         </summary>
@@ -466,7 +466,7 @@ report = session.post(
             <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_SCALE_FLOW</dt>
             <dd class="text-sm text-muted leading-relaxed">
               Size-based companion to <code class="font-mono text-white">COUNTERPARTY_INSTITUTIONAL</code>. Catches institutional-scale relationships when the counterparty isn't on the curated watchlist but the volume signature is unmistakable. Behavioral context, not a risk verdict.
-              <span class="block text-xs mt-2 opacity-70">Fires when: aggregate XRP-denominated Payment volume with at least one top counterparty clears $10M USD within the scan window (current XRP spot). IOU Payments are excluded.</span>
+              <span class="block text-xs mt-2 opacity-70">Fires when: aggregate XRP + RLUSD Payment volume with at least one top counterparty clears $10M USD within the scan window. XRP is valued at current spot; RLUSD is added at $1.00 (issuer-pegged stablecoin). Other (non-RLUSD) IOU Payments are excluded.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
@@ -519,21 +519,21 @@ report = session.post(
             <dt class="font-mono text-sm text-white mb-1">PERMISSIONED_ISSUER_GOVERNANCE</dt>
             <dd class="text-sm text-muted leading-relaxed">
               The wallet is configured as a permissioned IOU issuer: every holder must be operator-authorized before they can hold the token, and the issuer can claw back outstanding balances. Structural pattern of a tokenized treasury, regulated stablecoin, or institutional pilot. Behavioral context, not a risk verdict.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the scanned address has both <code class="font-mono">lsfRequireAuth</code> and <code class="font-mono">lsfAllowTrustLineClawback</code> set on its AccountRoot flags. Read from the on-chain <code class="font-mono">account_info</code> flags surfaced in the response's <code class="font-mono">features.account_flags</code>.</span>
+              <span class="block text-xs mt-2 opacity-70">Fires when: the scanned address has both <code class="font-mono">lsfRequireAuth</code> and <code class="font-mono">lsfAllowTrustLineClawback</code> set on its AccountRoot flags. Surfaced in the response's <code class="font-mono">features.account_flags</code>.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_BY_CONFIGURATION</dt>
             <dd class="text-sm text-muted leading-relaxed">
               The wallet's on-chain configuration matches institutional governance posture: large multi-sig signer set, hardware-keyed signers, or an explicit deposit allowlist. These setups carry real cost (signer coordination, reserve per object) so they don't appear on retail wallets by accident.
-              <span class="block text-xs mt-2 opacity-70">Fires when any of: 8 or more entries in the wallet's SignerList; at least one signer entry carries WalletLocator metadata (multi-sig key custody / HSM pattern); or <code class="font-mono">lsfDepositAuth</code> is set AND at least one DepositPreauth object exists. Read from a single <code class="font-mono">account_objects</code> call surfaced as <code class="font-mono">features.wallet_config</code>.</span>
+              <span class="block text-xs mt-2 opacity-70">Fires when any of: 8 or more entries in the wallet's SignerList; at least one signer entry carries WalletLocator metadata (multi-sig key custody / HSM pattern); or <code class="font-mono">lsfDepositAuth</code> is set AND at least one DepositPreauth object exists. Surfaced in <code class="font-mono">features.wallet_config</code>.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">DEEP_FROZEN_BY_ISSUER</dt>
             <dd class="text-sm text-muted leading-relaxed">
               At least one of the wallet's trustlines has been deep-frozen by its issuer. Deep-freeze is strictly stronger than the regular freeze flag; the holder can neither send nor receive the IOU. Issuers deep-freeze for many reasons (court order, KYC failure, suspected fraud, internal compliance review); descriptive flag, not a risk verdict.
-              <span class="block text-xs mt-2 opacity-70">Fires when at least one RippleState (trustline) entry owned by the scanned wallet carries <code class="font-mono">lsfHighDeepFreeze</code> or <code class="font-mono">lsfLowDeepFreeze</code>. Read from the same <code class="font-mono">account_objects</code> call as the configuration classifier above.</span>
+              <span class="block text-xs mt-2 opacity-70">Fires when at least one RippleState (trustline) entry owned by the scanned wallet carries <code class="font-mono">lsfHighDeepFreeze</code> or <code class="font-mono">lsfLowDeepFreeze</code>. Detected from the same on-chain object scan as the configuration classifier above.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
@@ -708,7 +708,7 @@ report = session.post(
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Flows</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  ETF AUM ↔ XRPL flow correlation across the twelve US-listed XRP-exposure funds. Daily AUM plus on-chain exchange-flow, plotted on one date axis. Free on the web, $0.10 per per-ETF deep dive over the agent API.
+                  ETF AUM ↔ XRPL flow correlation across the twelve US-listed XRP-exposure funds. Daily AUM plus on-chain exchange-flow, plotted on one date axis. Free on the web, $0.10 per-ETF deep dive over the agent API.
                 </div>
               </div>
             </div>
@@ -749,12 +749,14 @@ report = session.post(
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
             <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
             <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
           </ul>
         </div>
         <div>
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
           <ul class="space-y-3 text-sm">
-            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
             <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
             <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
             <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>

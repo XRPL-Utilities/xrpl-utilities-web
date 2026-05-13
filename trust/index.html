@@ -196,7 +196,7 @@
           <span id="stat-jurisdictions" class="text-xs text-muted font-mono">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-4">
-          Where the entities running XRPL's permissioned stack are headquartered, attributed per-address from operator-curated identity, on-chain TOML, and XRPScan domain ccTLDs. Country-as-vanity TLDs (.io, .ai) are not inferred from. Missing &gt; inaccurate.
+          Where the entities running XRPL's permissioned stack are headquartered, attributed per-address from operator-curated identity, on-chain TOML, and external-label domain ccTLDs. Country-as-vanity TLDs (.io, .ai) are not inferred from. Missing &gt; inaccurate.
         </p>
         <div id="jurisdictions-grid" class="flex flex-wrap gap-2">
           <span class="text-xs text-muted">Loading&hellip;</span>
@@ -215,7 +215,7 @@
           <span id="stat-operators" class="text-xs text-muted font-mono">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-4">
-          Per-operator rollup over the last 24 hours: domain count, permissioned offers placed inside their domain, unique traders, and on-chain execution volume per currency pair (native units, no USD conversion). Sourced from XR-Trust's subscribe loop, which parses <code class="font-mono text-white">meta.AffectedNodes</code> on every <code class="font-mono text-white">OfferCreate</code> inside a permissioned domain. Operators with no 24h activity are hidden.
+          Per-operator rollup over the last 24 hours: domain count, permissioned offers placed inside their domain, unique traders, and on-chain execution volume per currency pair (native units, no USD conversion). Sourced from XR-Trust's live ledger feed, which captures every <code class="font-mono text-white">OfferCreate</code> inside a permissioned domain at validation time. Operators with no 24h activity are hidden.
         </p>
         <div id="operators-grid" class="space-y-3">
           <span class="text-xs text-muted">Loading&hellip;</span>
@@ -258,7 +258,7 @@
 
         <p class="text-xs text-muted mt-6 leading-relaxed">
           Free from this page. Agents pay $0.10 per query over the x402 API at
-          <code class="font-mono text-white">trust.xrpl-utilities.io</code>. The directory is materialized by a background indexer that re-walks the ledger every 6 hours; reads are instant.
+          <code class="font-mono text-white">trust.xrpl-utilities.io</code>. The directory is event-driven: it persists between requests and updates the moment a new domain or credential event validates on the ledger. Reads are instant.
         </p>
       </div>
     </div>
@@ -369,11 +369,10 @@ record = session.post(
       <ul class="space-y-2 text-muted leading-relaxed">
         <li><code class="font-mono text-white">domains[]</code>: one normalized record per PermissionedDomain ledger object</li>
         <li><code class="font-mono text-white">domain_id</code>, <code class="font-mono text-white">owner_address</code>, <code class="font-mono text-white">sequence</code>, <code class="font-mono text-white">flags</code>, <code class="font-mono text-white">previous_txn_id</code>, <code class="font-mono text-white">previous_txn_lgr_seq</code>: full XLS-80 ledger-object metadata</li>
-        <li><code class="font-mono text-white">owner_label</code>: XRPScan label when available (<code class="font-mono text-white">{name, desc, domain, verified, twitter}</code>), else <code class="font-mono text-white">null</code></li>
+        <li><code class="font-mono text-white">owner_label</code>: external label when available (<code class="font-mono text-white">{name, desc, domain, verified, twitter}</code>), else <code class="font-mono text-white">null</code></li>
         <li><code class="font-mono text-white">accepted_credentials[]</code>: each entry carries <code class="font-mono text-white">{issuer, credential_type, credential_type_decoded, issuer_label}</code>. Hex types are decoded to ASCII when printable (e.g. <code class="font-mono text-white">4B5943</code> → <code class="font-mono text-white">KYC</code>).</li>
-        <li><code class="font-mono text-white">institutional_issuer_count</code> + <code class="font-mono text-white">institutional_issuers[]</code>: count and display names of distinct XRPScan-labeled, non-self credential issuers accepted by the domain</li>
+        <li><code class="font-mono text-white">institutional_issuer_count</code> + <code class="font-mono text-white">institutional_issuers[]</code>: count and display names of distinct externally-labeled, non-self credential issuers accepted by the domain</li>
         <li><strong class="text-white">Drill-down only</strong> (single-domain lookup): <code class="font-mono text-white">lifecycle</code> (creation + last-modified meta walked from <code class="font-mono text-white">PreviousTxnID</code>), <code class="font-mono text-white">permissioned_market</code> (XLS-81 owner-side offers + AMMs), and <code class="font-mono text-white">identity</code> (XLS-40 DID + parsed <code class="font-mono text-white">.well-known/xrp-ledger.toml</code> when published)</li>
-        <li><code class="font-mono text-white">walk_status</code>: one of <code class="font-mono text-white">complete</code>, <code class="font-mono text-white">warming</code>, <code class="font-mono text-white">truncated_total</code>, or <code class="font-mono text-white">error_&lt;status&gt;</code></li>
         <li><code class="font-mono text-white">total</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">offset</code>, <code class="font-mono text-white">next_offset</code>, <code class="font-mono text-white">schema_version</code>, <code class="font-mono text-white">generated_at</code>: pagination + envelope</li>
         <li><code class="font-mono text-white">/credentials/issuers</code> returns <code class="font-mono text-white">issuers[]</code> with <code class="font-mono text-white">{issuer_address, issuer_label, domains_referencing, credential_types_issued}</code></li>
       </ul>
@@ -389,16 +388,16 @@ record = session.post(
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
       <h3 class="text-3xl font-bold mb-6">Reads the validated XRPL ledger directly</h3>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Source.</span> XR-Trust reads PermissionedDomain ledger objects directly from the validated XRPL ledger via a Clio data-layer node (<code class="font-mono text-white">ledger_data type=permissioned_domain</code>). No third-party indexer, no editorial filter, no curated list. If it's on-ledger and validated, it's in the directory.
+        <span class="text-white">Source.</span> XR-Trust reads PermissionedDomain ledger objects directly from the validated XRPL ledger. No third-party indexer, no editorial filter, no curated list. If it's on-ledger and validated, it's in the directory.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Materialization.</span> A background warmer task walks the full PermissionedDomain set every six hours and atomically swaps the in-memory snapshot. The previous snapshot keeps serving while the next walk runs, so reads stay instant. Every response carries a <code class="font-mono text-white">walk_status</code> field so you can tell whether the snapshot is complete, warming on first boot, or partial.
+        <span class="text-white">Materialization.</span> The directory is event-driven. A persisted snapshot is hydrated on startup, kept current by an incremental refresh of every known owner, and extended in real time by a long-lived ledger-subscribe stream that picks up new owners the moment a PermissionedDomainSet from them is validated. No periodic full-ledger walk; reads stay instant.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Drill-down vs enumeration.</span> Looking up a single domain by its <code class="font-mono text-white">domain_id</code> is O(1) regardless of warmer state. The service goes straight to <code class="font-mono text-white">ledger_entry</code>. Whole-network enumeration relies on the materialized snapshot.
+        <span class="text-white">Drill-down vs enumeration.</span> Looking up a single domain by its <code class="font-mono text-white">domain_id</code> is O(1) against the live ledger state. Whole-network enumeration is served from the persisted snapshot.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Owner labels.</span> Where XRPScan recognizes a domain owner (banks, asset managers, infrastructure providers), the label appears on the directory row and the drill-down panel. Unlabeled owners surface their raw classic address.
+        <span class="text-white">Owner labels.</span> Where an external label provider recognizes a domain owner (banks, asset managers, infrastructure providers), the label appears on the directory row and the drill-down panel. Unlabeled owners surface their raw classic address.
       </p>
       <p class="text-sm text-muted leading-relaxed">
         <span class="text-white">Cross-product link.</span> Every drill-down includes a one-click jump to <a href="/sentinel/" class="text-accent hover:underline">XR-Sentinel</a> to inspect the owner's on-chain behavioral pattern. Eventually the same panel will surface XR-Telemetry macro context, the XR-Pulse <code class="font-mono text-white">permissioned_domain_lifecycle</code> event feed, and an <a href="/vault/" class="text-accent hover:underline">XR-Vault</a> link when the owner is a tracked RWA issuer; all queued for v2.
@@ -526,12 +525,14 @@ record = session.post(
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
             <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
             <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
           </ul>
         </div>
         <div>
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
           <ul class="space-y-3 text-sm">
-            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
             <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
             <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
             <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
@@ -550,7 +551,7 @@ record = session.post(
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. On-chain data passthrough only. Not investment, legal, or compliance advice. XR-Trust does not certify, endorse, or assess the legitimacy of any permissioned domain, owner, credential issuer, or member. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
@@ -713,7 +714,7 @@ record = session.post(
         if (d.jurisdiction) {
           const j = el('span', 'inline-flex items-center gap-1 ml-2 mt-2 px-2 py-0.5 rounded border border-border text-[10px] uppercase tracking-wider text-muted');
           j.textContent = d.jurisdiction;
-          j.title = (JURISDICTION_NAMES[d.jurisdiction] || d.jurisdiction) + '; inferred from operator-curated map / TOML ccTLD / XRPScan domain';
+          j.title = (JURISDICTION_NAMES[d.jurisdiction] || d.jurisdiction) + '; inferred from operator-curated map / TOML ccTLD / external label domain';
           ownerCell.appendChild(j);
         }
         if (did && did.org_name) {
@@ -849,7 +850,7 @@ record = session.post(
       }
       row('Owner', ownerLabel ? (ownerLabel + ' (' + d.owner_address + ')') : d.owner_address);
       if (d.owner_label && d.owner_label.domain) row('Owner domain', d.owner_label.domain);
-      if (d.owner_label && d.owner_label.verified) row('Owner verified', '✓ verified by XRPScan');
+      if (d.owner_label && d.owner_label.verified) row('Owner verified', '✓ verified label');
       if (d.first_seen_unix) {
         const dt = new Date(d.first_seen_unix * 1000);
         row('First seen', dt.toISOString().slice(0,10) + ' UTC' + (d.first_seen_ledger ? ' · ledger ' + d.first_seen_ledger : ''));
@@ -894,7 +895,7 @@ record = session.post(
         const inst = el('div', 'mb-6 p-4 bg-ink border border-accent/40 rounded-lg');
         inst.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent mb-1', 'Institutional credential issuers'));
         inst.appendChild(el('div', 'text-sm text-white', (d.institutional_issuers || []).join(', ')));
-        inst.appendChild(el('div', 'text-xs text-muted mt-1', String(instCount) + ' distinct, XRPScan-labeled, non-self issuer' + (instCount === 1 ? '' : 's') + ' accepted by this domain'));
+        inst.appendChild(el('div', 'text-xs text-muted mt-1', String(instCount) + ' distinct, externally-labeled, non-self issuer' + (instCount === 1 ? '' : 's') + ' accepted by this domain'));
         wrap.appendChild(inst);
       }
 

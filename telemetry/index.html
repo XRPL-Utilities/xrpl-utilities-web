@@ -208,7 +208,7 @@
       <div class="mt-6 bg-panel border border-border rounded-2xl p-6">
         <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Why these numbers differ</div>
         <p class="text-sm text-muted leading-relaxed mb-3">
-          When an exchange wallet holds 6.5B XRP, most of that is user balances backing trades and withdrawals, not depth a market sweep can hit inside a few seconds. Counting full exchange holdings as "available" overstates how much can clear in a settlement burst.
+          When an exchange holds ~6.5B XRP across its labeled wallets, most of that is user balances backing trades and withdrawals, not depth a market sweep can hit inside a few seconds. Counting full exchange holdings as "available" overstates how much can clear in a settlement burst.
         </p>
         <p class="text-sm text-muted leading-relaxed">
           Active Float applies an <span id="af-ratio-prose">10%</span> multiplier on exchange holdings as an estimate of what's genuinely on the book at any moment, then adds XRP committed to AMM pools (always swappable inside a single ledger close) and XRP resting in the on-chain DEX. The paid <code class="font-mono text-white">/scan</code> response includes every input number and the multiplier so anyone receiving the data can recompute under their own assumptions.
@@ -415,7 +415,7 @@
           </div>
         </div>
         <p id="sv-perm-caveat" class="hidden text-xs text-muted leading-relaxed mt-4">
-          XLS-81 (Permissioned DEX) activated on mainnet 2026-02. Permissioned settlement classifies a Payment when the tx body or affected Offer/AMM node carries a DomainID. The metric is at or near 0% today as institutional venues come online; the trajectory becomes the signal as adoption ramps.
+          XLS-81 (Permissioned DEX) is live on mainnet. Permissioned settlement classifies a Payment when the tx body or affected Offer/AMM node carries a DomainID. The metric is at or near 0% today as institutional venues come online; the trajectory becomes the signal as adoption ramps.
         </p>
       </div>
 
@@ -606,7 +606,7 @@ payload = requests.get(
       <ul class="space-y-3 text-muted leading-relaxed">
         <li><code class="font-mono text-white">supply</code>: total / circulating / escrowed / dormant XRP, AMM-locked, exchange omnibus + venue/address counts, DEX orderbook depth, HODL wave %, 24h exchange outflow, escrow release÷relock ratio</li>
         <li><code class="font-mono text-white">liquidity</code>: per-region inflow / outflow / net flow over 24h, with a list of top venues</li>
-        <li><code class="font-mono text-white">amm</code>: top pairs (TVL USD, 1% depth XRP, APR%) and vaults (TVL XRP-equivalent, utilization%, supply APY%)</li>
+        <li><code class="font-mono text-white">amm</code>: top pairs (TVL USD, 1% depth XRP, APR%); vault metrics (TVL XRP-equivalent, utilization%, supply APY%) ship once the XLS-Vaults amendment activates on mainnet</li>
         <li><code class="font-mono text-white">derived_models.active_float</code>: <strong class="text-white">value_xrp</strong> (modeled supply available for 3-second settlement), <strong class="text-white">delta_24h_xrp</strong>, <strong class="text-white">proxy_ratio</strong>, and the full <strong class="text-white">mathematical_bridge</strong> with each additive component and its source</li>
         <li><code class="font-mono text-white">utility_floor</code>: baseline (= P at the assumed Q, V, and Active Float as M), current spot, premium ratio, plus an ETF-flow-biased secondary P with provenance block</li>
         <li><code class="font-mono text-white">generated_at</code>: ISO timestamp the snapshot was computed</li>
@@ -685,7 +685,7 @@ payload = requests.get(
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Flows</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  ETF AUM ↔ XRPL flow correlation across the twelve US-listed XRP-exposure funds. Daily AUM plus on-chain exchange-flow, plotted on one date axis. Free on the web, $0.10 per per-ETF deep dive over the agent API.
+                  ETF AUM ↔ XRPL flow correlation across the twelve US-listed XRP-exposure funds. Daily AUM plus on-chain exchange-flow, plotted on one date axis. Free on the web, $0.10 per-ETF deep dive over the agent API.
                 </div>
               </div>
             </div>
@@ -726,12 +726,14 @@ payload = requests.get(
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
             <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
             <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
           </ul>
         </div>
         <div>
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
           <ul class="space-y-3 text-sm">
-            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
             <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
             <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
             <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
@@ -750,7 +752,7 @@ payload = requests.get(
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>

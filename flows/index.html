@@ -218,7 +218,7 @@
           </div>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
-          Net Assets per tracked issuer per UTC day, stacked. AUM is scraped hourly across three source paths: direct issuer dashboards, Yahoo Finance for SPA-gated issuers, and a daily-cadence third-party aggregator for Franklin XRPZ. Same-day re-scrapes overwrite the prior reading. Indirect-basket funds (BITW, GDLC, EZPZ, NCIQ, TTOP, TXBC) appear separately and persist only their XRP-attributable slice. Recent 21Shares launches TTOP + TXBC return null until aggregator coverage indexes them.
+          Net Assets per tracked issuer per UTC day, stacked. AUM is refreshed from public-source issuer dashboards and secondary public-source fallbacks where issuer pages are gated. Same-day re-reads overwrite the prior reading. Indirect-basket funds (BITW, GDLC, EZPZ, NCIQ, TTOP, TXBC) appear separately and persist only their XRP-attributable slice. Recent 21Shares launches TTOP + TXBC return null until public coverage indexes them.
         </p>
 
         <div class="mb-4">
@@ -344,13 +344,13 @@
       <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-muted leading-relaxed">
         <div>
           <p class="mb-4">
-            <span class="text-white">Spot tier.</span> Funds that hold XRP directly in institutional custody and issue shares against it. AUM is what the issuer reports on its public dashboard, scraped daily after market close. The live tracked set is rendered on the page above and grows as new spot products list and surface in SEC's ticker index.
+            <span class="text-white">Spot tier.</span> Funds that hold XRP directly in institutional custody and issue shares against it. AUM is what the issuer reports on its public dashboard, refreshed from public sources after each US market close. The live tracked set is rendered on the page above and grows as new spot products list and surface in SEC's ticker index.
           </p>
           <p class="mb-4">
             <span class="text-white">Indirect-basket tier.</span> Multi-asset crypto funds that hold XRP as one component alongside Bitcoin, Ether, and others. We persist the XRP-attributable slice only (XRP weight times total basket AUM), not the full basket. Chart math separates the two tiers so the spot signal stays clean.
           </p>
           <p>
-            <span class="text-white">Three source paths, no paid APIs.</span> Direct issuer dashboards where the data is exposed in static HTML, Yahoo Finance via the yfinance library where issuer pages are SPA-gated, and one third-party aggregator for Franklin Templeton whose API is locked down. Each snapshot row carries a source label so consumers can audit lineage.
+            <span class="text-white">Public sources only, no paid feeds.</span> Direct issuer dashboards where the data is exposed in static HTML, plus secondary public-source fallbacks where issuer pages are gated. Each snapshot row carries a source label so consumers can audit lineage.
           </p>
         </div>
         <div>
@@ -361,7 +361,7 @@
             <span class="text-white">Correlation, never causation.</span> ETFs hold XRP through pooled custody at Coinbase Custody, BitGo, Anchorage. A custodian wallet serves every shareholder collectively, not a single fund. We measure both sides independently and let consumers draw their own inference. A high Pearson coefficient says the two series moved together, nothing more.
           </p>
           <p>
-            <span class="text-white">Auto-discovery for the long tail.</span> A daily background job scans SEC's official ticker index for new XRP-related ETFs and surfaces candidates at /stats/etf-candidates. New launches get reviewed and either promoted to the operator-curated registry or dismissed. The next Hashdex or 21Shares product on US exchanges lands here automatically.
+            <span class="text-white">Auto-discovery for the long tail.</span> Our discovery loop watches the SEC's public ticker index for new XRP-related ETFs and surfaces candidates at /stats/etf-candidates. New launches get reviewed and either promoted to the operator-curated registry or dismissed. The next Hashdex or 21Shares product on US exchanges lands here automatically.
           </p>
         </div>
       </div>
@@ -493,7 +493,8 @@
         <div>
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
           <ul class="space-y-3 text-sm">
-            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
             <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
             <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
             <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>

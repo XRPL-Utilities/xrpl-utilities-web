@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Status | XRPL-Utilities</title>
-  <meta name="description" content="Live operational status of XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault plus their upstream dependencies." />
+  <meta name="description" content="Live operational status of XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, XR-Vault, and XR-Flows plus their upstream dependencies." />
   <meta property="og:title" content="XRPL-Utilities | System Status" />
-  <meta property="og:description" content="Live operational status of all XRPL-Utilities products: XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault. Surfaces overall health and per-service upstream dependencies." />
+  <meta property="og:description" content="Live operational status of all XRPL-Utilities products: XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, XR-Vault, and XR-Flows. Surfaces overall health and per-service upstream dependencies." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/status/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -47,6 +47,7 @@
         <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
         <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
         <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
       </nav>
       <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -77,6 +78,7 @@
       <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
       <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
       <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
     </nav>
     <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
@@ -86,7 +88,7 @@
   <section>
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-12">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">System status</h1>
-      <p class="text-muted">Live operational status of XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, and XR-Vault. Updates every 30 seconds.</p>
+      <p class="text-muted">Live operational status of XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, XR-Vault, and XR-Flows. Updates every 30 seconds.</p>
     </div>
   </section>
 
@@ -214,6 +216,24 @@
         </div>
         <p id="last-checked-vault" class="text-xs text-muted text-center mt-4"></p>
       </div>
+      <div>
+        <h2 class="text-2xl font-bold mb-4">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
+        <div id="overall-flows" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
+          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
+          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
+        </div>
+        <div id="checks-flows" class="space-y-4">
+          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
+            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
+            <div class="flex-grow">
+              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
+              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
+            </div>
+            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
+          </div>
+        </div>
+        <p id="last-checked-flows" class="text-xs text-muted text-center mt-4"></p>
+      </div>
     </div>
   </section>
 
@@ -235,11 +255,13 @@
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
             <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
             <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
           </ul>
         </div>
         <div>
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
-          <ul class="space-y-3 text-sm">            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+          <ul class="space-y-3 text-sm">
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
             <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
             <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
             <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
@@ -258,7 +280,7 @@
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
@@ -392,6 +414,8 @@
                  "overall-trust", "checks-trust", "last-checked-trust", "XR-Trust");
       refreshOne("https://vault.xrpl-utilities.io/healthz",
                  "overall-vault", "checks-vault", "last-checked-vault", "XR-Vault");
+      refreshOne("https://flows.xrpl-utilities.io/healthz",
+                 "overall-flows", "checks-flows", "last-checked-flows", "XR-Flows");
     }
 
     refresh();

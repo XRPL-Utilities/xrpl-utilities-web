@@ -213,14 +213,14 @@
           <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
             <div class="flex items-center gap-3 min-w-0">
               <a href="/trust/" class="font-bold text-lg text-white hover:text-accent transition">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
-              <code class="font-mono text-sm text-muted">GET /domain/{id}</code>
-              <code class="font-mono text-sm text-muted">/scan</code>
-              <code class="font-mono text-sm text-muted">/operators/{addr}</code>
+              <code class="font-mono text-sm text-muted">GET /domain/{domain_id}</code>
+              <code class="font-mono text-sm text-muted">POST /scan</code>
+              <code class="font-mono text-sm text-muted">GET /permissioned-domains/operators/{addr}</code>
             </div>
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Permissioned-domain directory and explorer. Drill into a domain for credentials, issuers, lifecycle, identity, and on-chain trading activity. Scan by domain ID or owner address. Operator rollups across domains, subjects, and 24h activity. Browsing the directory is free; drill-downs are paid.
+            Permissioned-domain directory and explorer. Drill into a domain for credentials, issuers, lifecycle, identity, and on-chain trading activity. Scan by domain ID or owner address. Operator rollups across domains, subjects, and 24h activity. Browsing the directory is free; drill-downs are paid. <span class="text-white/80">Paid calls accept XRP only on this service.</span>
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">trust.xrpl-utilities.io</span>
@@ -333,13 +333,15 @@ r = session.post(
 # or use the hosted endpoint:
 # mcp.xrpl-utilities.io/mcp
 
-# Tools published:
-#   xrpl_sentinel_scan
-#   xrpl_pulse_recent_events
-#   xrpl_telemetry_scan
-#   xrpl_trust_scan
+# Tools published (16 across 6 services):
+#   xrpl_sentinel_scan, xrpl_sentinel_scan_history
+#   xrpl_pulse_recent_events, xrpl_pulse_events_by_address
+#   xrpl_telemetry_snapshot, xrpl_telemetry_get_quote,
+#     xrpl_telemetry_get_status, xrpl_telemetry_get_results
+#   xrpl_trust_list_domains, xrpl_trust_get_domain,
+#     xrpl_trust_credential_issuers, xrpl_trust_recent_events
 #   xrpl_vault_scan
-#   xrpl_flows_scan</pre>
+#   xrpl_flows_scan, xrpl_flows_correlation, xrpl_flows_launch_impact</pre>
         </div>
       </div>
     </div>
@@ -449,7 +451,8 @@ r = session.post(
         <div>
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
           <ul class="space-y-3 text-sm">
-            <li><a href="/pricing/"  class="text-accent hover:text-white transition">Pricing</a></li>            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener" class="text-muted hover:text-white transition">MCP package</a></li>
+            <li><a href="/pricing/"  class="text-accent hover:text-white transition">Pricing</a></li>
+            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener" class="text-muted hover:text-white transition">MCP package</a></li>
           </ul>
         </div>
         <div>
