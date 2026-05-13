@@ -155,7 +155,7 @@
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Deterministic wallet classification for any XRPL address. Returns an activity-level tier, a deterministic behavior signal set, watchlist labels via on-chain attestation, DID-issued credentials when present, recent OperatesPermissionedDomain flags, and a 30-day behavior summary. No editorial scoring. No black-box risk ratings. Pure pattern detection over public ledger data.
+            Behavioral classification for any XRPL address. Returns an activity-level tier, signal flags, watchlist labels, DID credentials when present, and a 30-day behavior summary. Pattern detection over public ledger data; no risk score, no AML verdict.
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">sentinel.xrpl-utilities.io</span>
@@ -176,7 +176,7 @@
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Normalized event feed bridging six streams into one time-ordered JSON: public-source news with mechanical cross-verification, on-chain whale activity above the storage threshold, XLS-70/80/81 permissioned-domain lifecycle events, Sentinel state-change signals, RWA issuer flow events, and DID-credential lifecycle. Each event carries source provenance and a four-hour XRPL macro-correlation block.
+            Six streams in one time-ordered feed: regulatory and central-bank news, on-chain whale activity, XLS-70/80/81 permissioned-domain events, Sentinel state-changes, real-world-asset mints and burns, and DID credentials. Every event carries source provenance.
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">pulse.xrpl-utilities.io</span>
@@ -197,7 +197,7 @@
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            XRPL macro snapshot. Total supply, dormant supply, escrowed XRP, AMM-locked XRP, regional liquidity, settlement volume split into permissioned and open-market, ETF-custody XRP via Flows, and an algebraic implied price floor derived from operator-set institutional volume and velocity assumptions. Now also exposes an ETF-flow-bias secondary floor sourced from the Flows rolling Pearson coefficient.
+            XRPL macro snapshot in one call. Total and dormant supply, escrowed and AMM-locked XRP, regional liquidity, settlement volume (permissioned vs open-market), ETF-custody XRP from Flows, and an implied price-floor calculator with an ETF-flow-biased side-by-side.
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">telemetry.xrpl-utilities.io</span>
@@ -220,7 +220,7 @@
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            XLS-80 PermissionedDomain directory and explorer. Drill into a specific domain (accepted credentials, issuers, lifecycle, identity tier, jurisdiction inference, owner-side XLS-81 offers and AMM activity), scan by domain ID or owner address, or roll up operator-level state (domain count, credentials issued, unique subjects, 24h trading activity, DID identity, organization name). Pay for the drill-downs; the directory enumeration is free.
+            Permissioned-domain directory and explorer. Drill into a domain for credentials, issuers, lifecycle, identity, and on-chain trading activity. Scan by domain ID or owner address. Operator rollups across domains, subjects, and 24h activity. Browsing the directory is free; drill-downs are paid.
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">trust.xrpl-utilities.io</span>
@@ -241,7 +241,7 @@
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Real-world asset deep dive. Accepts wallet, logical label, or currency code. Returns per-issuer current obligations and net circulating supply (treasury-adjusted where applicable), trustline count, last-24h mint and burn flow, every XLS-30 AMM pool containing the issuer's IOU, an XLS-85 token-escrow and deep-freeze 24h block, an XLS-80 permissioned-domain fingerprint when the issuer also operates one, and a daily snapshot history series. Native unit-of-account only; no fabricated USD.
+            Per-issuer deep dive for any real-world asset on XRPL. Lookup by wallet, label, or currency. Returns circulating supply, 24h mint and burn flow, AMM pool exposure, token-escrow activity, deep-freeze events, and an XLS-80 fingerprint if the issuer also operates a permissioned domain. Native units only; no fabricated USD.
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">vault.xrpl-utilities.io</span>
@@ -262,7 +262,7 @@
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Per-ETF deep dive for any of the six US-listed spot XRP ETFs or six indirect-basket funds. Returns the latest issuer-reported AUM, full daily history accruing since deploy, the XRP-attributable slice calculation, SEC EDGAR filing list, and the XRPL exchange-flow context from XR-Pulse for the same window. Auto-discovery surfaces newly listed XRP ETFs as candidates so the registry stays current without redeploys.
+            Per-ETF deep dive for every US-listed XRP-exposure fund (six spot, six indirect-basket). Latest AUM, daily history, XRP-attributable slice math, SEC EDGAR filings, and the on-chain exchange-flow context from Pulse for the same window. New launches auto-discovered from the SEC ticker index.
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">flows.xrpl-utilities.io</span>
