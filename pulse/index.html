@@ -695,6 +695,27 @@ feed = session.post(
       return sign + a.toFixed(0) + ' XRP';
     }
 
+    // Operator-curated RWA issuer wallet set. Populated on page load
+    // from XR-Pulse /stats/rwa-summary (free public endpoint). Used to
+    // filter token_escrow_event cards on the activity column so only
+    // tracked-issuer escrows (tokenized treasuries, stablecoins, etc.)
+    // surface, not memecoin and community-token noise.
+    const TRACKED_RWA_ISSUERS = new Set();
+    async function _hydrateTrackedIssuers() {
+      try {
+        const r = await fetch(`${API_BASE}/stats/rwa-summary`, { cache: 'no-store' });
+        if (!r.ok) return;
+        const body = await r.json();
+        for (const issuer of (body.issuers || [])) {
+          if (issuer && issuer.wallet) TRACKED_RWA_ISSUERS.add(issuer.wallet);
+        }
+      } catch (_) {
+        // Network blip; leave set empty. Filter falls open (all
+        // token-escrow events render) until next page load.
+      }
+    }
+    _hydrateTrackedIssuers();
+
     function renderEvent(e) {
       // Whale events get the tier badge as their identity marker; the
       // technical 'whale_xrpl' source name on a sub-whale ($50k-$500k)
@@ -748,6 +769,31 @@ feed = session.post(
       let whaleBlock = '';
       let whaleTitle = null;  // when set, overrides e.title for cleaner rendering
       let suppressRow = false;  // true => skip rendering this row entirely (NORMAL tier)
+
+      // Daily AMM-of-RWA pool snapshots aren't transactional activity;
+      // they're once-per-UTC-day state captures. Useful on /vault/ but
+      // they clutter the activity column when rendered as event cards.
+      // Suppress here; the data is still in /events/recent for agents.
+      if (e.active_utility && e.active_utility.signal === 'rwa_amm_pool_state') {
+        return '';
+      }
+
+      // Token-escrow noise filter. The watcher emits an event for every
+      // successful EscrowCreate/Finish/Cancel on any non-XRP IOU above
+      // the storage threshold. In practice the feed gets dominated by
+      // memecoin and community-token escrows (Tortie, ROBIN, PRSV,...)
+      // that aren't institutional signal. Filter to escrows on the
+      // operator-curated RWA issuer set so what surfaces here is the
+      // tokenized-treasury / stablecoin / commercial-paper traffic an
+      // institutional reader cares about. Memecoin escrows remain
+      // queryable via /events/recent for agents that want the full
+      // stream; this filter is UI-only.
+      if (tokenEscrowAU && tokenEscrowAU.issuer) {
+        const issuer = tokenEscrowAU.issuer;
+        if (!TRACKED_RWA_ISSUERS.has(issuer)) {
+          return '';
+        }
+      }
       if (whaleAU && typeof whaleAU.usd_value === 'number') {
         const usd = whaleAU.usd_value;
         // Read tier from server when present; fall back to value-based
