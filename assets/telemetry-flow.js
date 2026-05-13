@@ -21,6 +21,13 @@
     return e;
   }
 
+  // Reject any URL scheme other than http(s) / xrpl so a malicious backend
+  // response can't smuggle a javascript: URI into a link href.
+  function safeUrl(u) {
+    const s = String(u || '').trim();
+    return /^(?:https?|xrpl):/i.test(s) ? s : '#';
+  }
+
   function fmtXrp(drops) {
     const xrp = Number(drops) / DROPS_PER_XRP;
     return xrp.toLocaleString(undefined, { maximumFractionDigits: 6 }) + ' XRP';
@@ -132,7 +139,7 @@
 
     const linkRow = el('div', 'flex flex-col sm:flex-row gap-3 mb-6');
     const payBtn = el('a', 'flex-1 bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-4 rounded-lg transition text-center');
-    payBtn.href = quote.deep_link;
+    payBtn.href = safeUrl(quote.deep_link);
     payBtn.textContent = 'Open in XRPL wallet';
     linkRow.appendChild(payBtn);
 
@@ -156,7 +163,7 @@
     qrImg.style.display = 'block';
     qrImg.src = quote.qr_code ||
       ('https://api.qrserver.com/v1/create-qr-code/?size=192x192&margin=0&data=' +
-       encodeURIComponent(quote.deep_link));
+       encodeURIComponent(safeUrl(quote.deep_link)));
     qrImg.onerror = () => {
       qrBox.remove();
       qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
@@ -513,7 +520,7 @@
     );
     if (headerVaultPair) {
       const link = document.createElement('a');
-      link.href = headerVaultPair.cross_references.xr_vault_url;
+      link.href = safeUrl(headerVaultPair.cross_references.xr_vault_url);
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       link.className = 'inline-flex items-center gap-1 text-[11px] text-accent hover:underline';

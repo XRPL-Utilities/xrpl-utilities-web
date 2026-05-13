@@ -575,6 +575,20 @@
       return '$' + n.toFixed(2);
     }
 
+    // Escape backend strings before injecting via innerHTML. Mirrors
+    // the helper used on sibling pages.
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[c]);
+    }
+    // Reject non-http(s) schemes so a malicious source_url can't ride
+    // a javascript: URI into an anchor href.
+    function safeUrl(u) {
+      const s = String(u || '').trim();
+      return /^(?:https?|xrpl|mailto):/i.test(s) ? s : '#';
+    }
+
     let aumChart = null;
     let chainChart = null;
     let currentRange = 30;
@@ -962,10 +976,10 @@
         const exp = etf.expense_ratio != null
           ? (etf.expense_ratio * 100).toFixed(2).replace(/\.?0+$/, '') + '%'
           : 'not disclosed';
-        const launched = etf.launch_date || '; ';
-        const href = etf.source_url || '#';
-        const issuer = etf.issuer || '';
-        const ticker = etf.ticker || '';
+        const launched = escapeHtml(etf.launch_date || '; ');
+        const href = escapeHtml(safeUrl(etf.source_url));
+        const issuer = escapeHtml(etf.issuer || '');
+        const ticker = escapeHtml(etf.ticker || '');
         return `
           <a href="${href}" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
             <div class="flex items-baseline justify-between mb-2 gap-2">
@@ -974,7 +988,7 @@
             </div>
             <div class="flex items-center gap-2 mb-2">${tier}</div>
             <div class="text-xs text-muted mb-1">Launched ${launched}</div>
-            <div class="text-xs text-muted">Expense ${exp}</div>
+            <div class="text-xs text-muted">Expense ${escapeHtml(exp)}</div>
           </a>
         `;
       }).join('');

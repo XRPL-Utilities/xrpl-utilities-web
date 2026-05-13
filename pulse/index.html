@@ -670,6 +670,13 @@ feed = session.post(
       }[c]));
     }
 
+    // Reject any URL scheme other than http(s) / xrpl / mailto so backend
+    // strings can't smuggle a javascript: URI into an href.
+    function safeUrl(u) {
+      const s = String(u || '').trim();
+      return /^(?:https?|xrpl|mailto):/i.test(s) ? s : '#';
+    }
+
     function fmtPct(p) {
       if (p === null || p === undefined) return '-';
       const sign = p > 0 ? '+' : '';
@@ -1064,7 +1071,7 @@ feed = session.post(
         </div>`;
       }
 
-      const link = escapeHtml(e.primary_url || '#');
+      const link = escapeHtml(safeUrl(e.primary_url));
       const titleText = whaleTitle || e.title;
       // Brief is the article-summary line for RSS events. For whale events
       // it just restates the title + detail strip in different words and

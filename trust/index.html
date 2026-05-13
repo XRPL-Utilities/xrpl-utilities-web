@@ -589,6 +589,12 @@ record = session.post(
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       })[c]);
     }
+    // Reject non-http(s)/xrpl/mailto schemes so off-chain TOML / DID-published
+    // URLs can't smuggle a javascript: URI into an anchor href.
+    function safeUrl(u) {
+      const s = String(u || '').trim();
+      return /^(?:https?|xrpl|mailto):/i.test(s) ? s : '#';
+    }
     function shorten(addr) {
       if (!addr) return '';
       if (addr.length <= 14) return addr;
@@ -731,7 +737,7 @@ record = session.post(
           ownerCell.appendChild(idBadge);
           if (did.org_url) {
             const linkEl = el('a', 'text-xs text-muted underline hover:text-white block mt-1 break-all');
-            linkEl.href = did.org_url;
+            linkEl.href = safeUrl(did.org_url);
             linkEl.textContent = did.org_url.replace(/^https?:\/\//, '');
             linkEl.target = '_blank';
             linkEl.rel = 'noopener noreferrer';
@@ -912,7 +918,7 @@ record = session.post(
           head.appendChild(el('div', 'text-base font-semibold text-white', ident.toml_org_name));
           if (ident.toml_org_url) {
             const a = el('a', 'text-xs text-accent hover:underline', ident.toml_org_url.replace(/^https?:\/\//, ''));
-            a.href = ident.toml_org_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+            a.href = safeUrl(ident.toml_org_url); a.target = '_blank'; a.rel = 'noopener noreferrer';
             head.appendChild(a);
           }
           idBox.appendChild(head);

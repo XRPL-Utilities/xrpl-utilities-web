@@ -17,6 +17,13 @@
 
   function fmtXrp(s) { return s + ' XRP'; }
 
+  // Reject any URL scheme other than http(s) / xrpl so a malicious backend
+  // response can't smuggle a javascript: URI into the pay-button href.
+  function safeUrl(u) {
+    const s = String(u || '').trim();
+    return /^(?:https?|xrpl):/i.test(s) ? s : '#';
+  }
+
   function levelBadgeClass(level) {
     const m = { Low: 'badge-low', Medium: 'badge-medium', High: 'badge-high', Dormant: 'badge-dormant', Unknown: 'badge-unknown' };
     return m[level] || 'badge-unknown';
@@ -69,7 +76,7 @@
     // Primary action: deep link button
     const linkRow = el('div', 'flex flex-col sm:flex-row gap-3 mb-6');
     const payBtn = el('a', 'flex-1 bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-4 rounded-lg transition text-center');
-    payBtn.href = quote.deep_link;
+    payBtn.href = safeUrl(quote.deep_link);
     payBtn.textContent = 'Open in XRPL wallet';
     linkRow.appendChild(payBtn);
 
@@ -94,7 +101,7 @@
     qrImg.style.display = 'block';
     qrImg.src =
       'https://api.qrserver.com/v1/create-qr-code/?size=192x192&margin=0&data=' +
-      encodeURIComponent(quote.deep_link);
+      encodeURIComponent(safeUrl(quote.deep_link));
     qrImg.onerror = () => {
       qrBox.remove();
       qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
