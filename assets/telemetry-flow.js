@@ -386,7 +386,7 @@
     card.appendChild(el(
       'div',
       'mt-4 text-[11px] text-muted leading-relaxed',
-      'AMM-locked: XRP committed to liquidity pools — swappable, but not sitting on a typical order book. ' +
+      'AMM-locked: XRP committed to liquidity pools, swappable but not sitting on a typical order book. ' +
       'DEX orderbook depth: XRP resting in open offers on XRPL\'s native order book. ' +
       'Escrow release ÷ relock ratio: how much escrowed XRP unlocked into circulation versus how much got re-escrowed over the same window. >1 means net dilution (more escrow opening than closing); <1 means net withdrawal of float back into time-locked storage.',
     ));
