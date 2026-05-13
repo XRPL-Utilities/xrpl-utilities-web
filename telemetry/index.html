@@ -604,13 +604,19 @@ payload = requests.get(
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-3 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">supply</code>: total / circulating / escrowed / dormant XRP, AMM-locked, exchange omnibus + venue/address counts, DEX orderbook depth, HODL wave %, 24h exchange outflow, escrow release÷relock ratio</li>
+        <li><code class="font-mono text-white">supply</code>: total / circulating / escrowed / dormant XRP, AMM-locked, exchange omnibus + venue/address counts, DEX orderbook depth, HODL wave %, 24h exchange outflow, escrow release&divide;relock ratio</li>
         <li><code class="font-mono text-white">liquidity</code>: per-region inflow / outflow / net flow over 24h, with a list of top venues</li>
         <li><code class="font-mono text-white">amm</code>: top pairs (TVL USD, 1% depth XRP, APR%); vault metrics (TVL XRP-equivalent, utilization%, supply APY%) ship once the XLS-Vaults amendment activates on mainnet</li>
         <li><code class="font-mono text-white">derived_models.active_float</code>: <strong class="text-white">value_xrp</strong> (modeled supply available for 3-second settlement), <strong class="text-white">delta_24h_xrp</strong>, <strong class="text-white">proxy_ratio</strong>, and the full <strong class="text-white">mathematical_bridge</strong> with each additive component and its source</li>
         <li><code class="font-mono text-white">utility_floor</code>: baseline (= P at the assumed Q, V, and Active Float as M), current spot, premium ratio, plus an ETF-flow-biased secondary P with provenance block</li>
         <li><code class="font-mono text-white">generated_at</code>: ISO timestamp the snapshot was computed</li>
       </ul>
+      <div class="mt-6 bg-panel/50 border border-border rounded-xl p-5 text-sm text-muted leading-relaxed space-y-3">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">What the technical fields mean</div>
+        <p><strong class="text-white">AMM-locked.</strong> XRP committed to liquidity pools, swappable but not sitting on a typical order book.</p>
+        <p><strong class="text-white">DEX orderbook depth.</strong> XRP resting in open offers on XRPL's native order book.</p>
+        <p><strong class="text-white">Escrow release &divide; relock ratio.</strong> How much escrowed XRP unlocked into circulation versus how much got re-escrowed over the same window. &gt;1 means net dilution (more escrow opening than closing); &lt;1 means net withdrawal of float back into time-locked storage.</p>
+      </div>
       <p class="text-xs text-muted mt-6 leading-relaxed">
         Full field-level details at <a href="https://telemetry.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
       </p>
