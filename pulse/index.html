@@ -1239,11 +1239,16 @@ feed = session.post(
     const INITIAL_VISIBLE = 12;
     const REVEAL_BATCH = 10;
     const FETCH_BATCH = 30;
-    // Activity fetches a buffer larger than the visible count because the
-    // client drops sub-$1M anonymous whale events (NORMAL_ACTIVITY) before
-    // surfacing them; without the buffer, a busy hour of small whales
-    // could empty a freshly-fetched page.
-    const ACTIVITY_FETCH_MULTIPLIER = 3;
+    // Activity fetches a buffer larger than the visible count because
+    // the client drops several event classes before rendering:
+    //   - NORMAL_ACTIVITY whale_transfer (sub-$1M anonymous)
+    //   - token_escrow_event whose issuer isn't in the curated RWA set
+    //     (memecoin escrows; usually dominant on a fresh fetch)
+    //   - rwa_amm_pool_state (once-daily snapshots, not transactional)
+    // Without the buffer, a fresh fetch dominated by memecoin escrows
+    // could leave the activity column nearly empty. Bumped 3 -> 5 on
+    // 2026-05-13 when the latter two filters shipped.
+    const ACTIVITY_FETCH_MULTIPLIER = 5;
     const REVEAL_PREFETCH_MARGIN = 5;
 
     const _columns = {
