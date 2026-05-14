@@ -134,29 +134,6 @@
           </div>
         </div>
 
-        <!-- Aggregate stats -->
-        <div class="mt-8 bg-panel border border-border rounded-2xl p-6 sm:p-8">
-          <div class="flex items-baseline justify-between gap-3 mb-3">
-            <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Last 30 days</h3>
-            <span id="tips-status" class="text-xs text-muted font-mono">&hellip;</span>
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            <div class="bg-ink border border-border rounded-lg p-4">
-              <div class="text-xs uppercase tracking-wider text-muted mb-1">Tips received</div>
-              <div id="stat-count" class="text-2xl font-bold font-mono">; </div>
-            </div>
-            <div class="bg-ink border border-border rounded-lg p-4">
-              <div class="text-xs uppercase tracking-wider text-muted mb-1">Total XRP</div>
-              <div id="stat-xrp" class="text-2xl font-bold font-mono">; </div>
-            </div>
-            <div class="bg-ink border border-border rounded-lg p-4">
-              <div class="text-xs uppercase tracking-wider text-muted mb-1">Total RLUSD</div>
-              <div id="stat-rlusd" class="text-2xl font-bold font-mono">; </div>
-            </div>
-          </div>
-          <p class="text-[11px] text-muted mt-4">Aggregate only. Individual tipper addresses are not surfaced here. Filtered by destination tag <code class="font-mono text-white">90210</code> over the trailing 30 days, read live from the XRPL public ledger. Source is the public ledger; transaction history is publicly browsable in any XRPL block explorer.</p>
-        </div>
-
         <!-- Honesty block -->
         <div class="mt-8 text-xs text-muted leading-relaxed space-y-2">
           <p><span class="text-white">XRPL transactions are public.</span> If you tip, the sending wallet address, amount, and timestamp will be visible on xrpscan.com, bithomp.com, and any other XRPL explorer. There is no anonymous-tip path here. If you want privacy, do not send a tip from a wallet you have associated with your name.</p>
@@ -308,54 +285,6 @@
       }
     });
 
-    // ----------- 30-day aggregate stats -----------
-    // Pulls the wallet's recent Payment tx from XRPScan's public API,
-    // filters by destination_tag = 90210, last 30 days. Sums by asset.
-    // Best-effort: on failure, surfaces "Couldn't load" rather than 0.
-    async function loadAggregate() {
-      const statusEl = document.getElementById("tips-status");
-      try {
-        const r = await fetch(
-          "https://api.xrpscan.com/api/v1/account/" + ADDR + "/transactions/payments?limit=200",
-        );
-        if (!r.ok) throw new Error("xrpscan http " + r.status);
-        const data = await r.json();
-        const txs = (data && data.transactions) || data || [];
-        const cutoff = Date.now() / 1000 - 30 * 86400;
-        let count = 0;
-        let xrp = 0;
-        let rlusd = 0;
-        const RLUSD_HEX = "524C555344000000000000000000000000000000";
-        const RLUSD_ISS = "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De";
-        for (const tx of txs) {
-          if (!tx) continue;
-          const dest = tx.Destination || (tx.tx && tx.tx.Destination);
-          const dt = tx.DestinationTag || (tx.tx && tx.tx.DestinationTag);
-          const ts = tx.date_unix || (tx.date && Date.parse(tx.date) / 1000) || 0;
-          if (dest !== ADDR) continue;
-          if (Number(dt) !== DT) continue;
-          if (ts < cutoff) continue;
-          count++;
-          const amt = tx.Amount || (tx.tx && tx.tx.Amount);
-          if (typeof amt === "string") {
-            xrp += parseFloat(amt) / 1_000_000;
-          } else if (amt && typeof amt === "object") {
-            if (amt.currency === RLUSD_HEX && amt.issuer === RLUSD_ISS) {
-              rlusd += parseFloat(amt.value || "0");
-            }
-          }
-        }
-        document.getElementById("stat-count").textContent = count;
-        document.getElementById("stat-xrp").textContent =
-          xrp > 0 ? xrp.toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0";
-        document.getElementById("stat-rlusd").textContent =
-          rlusd > 0 ? rlusd.toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0";
-        statusEl.textContent = count === 0 ? "no tips yet" : "live from XRPL";
-      } catch (e) {
-        statusEl.textContent = "couldn't load";
-      }
-    }
-    loadAggregate();
   </script>
 
 </body>
