@@ -189,7 +189,8 @@
         <div class="bg-panel border border-border rounded-xl p-4">
           <div class="text-xs uppercase tracking-wider text-muted mb-1">Total tracked AUM</div>
           <div id="stat-flows-aum" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="text-[10px] text-muted mt-1">USD, spot + indirect-basket</div>
+          <div class="text-[10px] text-muted mt-1">USD, US spot + indirect + European ETP</div>
+          <div id="stat-flows-aum-european" class="text-[10px] text-muted/80 mt-0.5 font-mono"></div>
         </div>
         <div class="bg-panel border border-border rounded-xl p-4">
           <div class="text-xs uppercase tracking-wider text-muted mb-1">Day-over-day change</div>
@@ -267,6 +268,7 @@
             <canvas id="chart-moex-index"></canvas>
           </div>
           <p class="text-[10px] text-muted mt-2">USD-denominated XRP price benchmark published by the Moscow Exchange from four spot venues, weighted by trading volume. Launched 2026-05-13; the series grows one row per MOEX trading day. Trading is restricted to professional investors but the index itself is a public reference price.</p>
+          <div id="moex-futures-strip" class="mt-3 text-[10px] font-mono text-muted"></div>
         </div>
 
         <div id="flows-empty" class="hidden text-xs text-muted mt-4">
@@ -633,11 +635,13 @@
         emptyEl?.classList.add('hidden');
       }
 
+      const euTotals = body.etf_european_total_aum_daily || [];
+
       renderEtfAumChart(series, totals, tracked);
       renderEtfAumDeltaChart(series, totals, tracked);
       renderChainFlowChart(chainFlow, correlation);
       renderMoexIndexPanel(moex);
-      renderSummaryTiles(series, totals, tracked);
+      renderSummaryTiles(series, totals, tracked, euTotals);
     }
 
     let moexChart = null;
@@ -645,15 +649,28 @@
       const wrap = document.getElementById('moex-index-panel');
       const snapEl = document.getElementById('moex-index-snapshot');
       const ctx = document.getElementById('chart-moex-index');
+      const futEl = document.getElementById('moex-futures-strip');
       if (!wrap || !ctx) return;
       const snap = moex && moex.snapshot;
       const history = (moex && moex.history) || [];
+      const futures = (moex && moex.futures) || [];
       if (!moex || !moex.available || !snap) {
         wrap.classList.add('opacity-50');
         if (snapEl) snapEl.textContent = 'upstream pending';
+        if (futEl) futEl.textContent = '';
         return;
       }
       wrap.classList.remove('opacity-50');
+      if (futEl) {
+        if (futures.length) {
+          const chips = futures.map(f =>
+            `<span class="inline-block bg-ink/60 border border-border rounded px-1.5 py-0.5 mr-1.5 mb-1">${escapeHtml(f.sec_name)} @ $${(f.prev_settle_price ?? 0).toFixed(4)}</span>`
+          ).join('');
+          futEl.innerHTML = `<span class="text-white">MOEX XRP futures (RFUD):</span> ${chips}`;
+        } else {
+          futEl.textContent = '';
+        }
+      }
       const fmtUsd = (v) => (typeof v === 'number' ? '$' + v.toFixed(4) : '-');
       const fmtPct = (v) => (typeof v === 'number' ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%' : '-');
       const cls = (snap.change_pct ?? 0) >= 0 ? 'text-emerald-400' : 'text-rose-400';
@@ -698,12 +715,13 @@
       });
     }
 
-    async function renderSummaryTiles(series, totals, tracked) {
+    async function renderSummaryTiles(series, totals, tracked, euTotals) {
       // Headline AUM + day-over-day delta read from the correlation
       // payload we already fetched. XRP-attributable comes from a
       // separate cheap call to /stats/etf-aggregate-xrp-held so the
       // page doesn't need to derive it client-side.
       const elAum    = document.getElementById('stat-flows-aum');
+      const elAumEu  = document.getElementById('stat-flows-aum-european');
       const elDelta  = document.getElementById('stat-flows-delta');
       const elDeltaD = document.getElementById('stat-flows-delta-detail');
       const elXrp    = document.getElementById('stat-flows-xrp');
@@ -711,9 +729,15 @@
       const elTickersD = document.getElementById('stat-flows-tickers-detail');
 
       const nonNull = (totals || []).filter(r => r && typeof r.aum_usd_total === 'number');
+      const euNonNull = (euTotals || []).filter(r => r && typeof r.aum_usd_total === 'number');
       if (nonNull.length && elAum) {
         const latest = nonNull[nonNull.length - 1];
-        elAum.textContent = fmtUsd(latest.aum_usd_total);
+        const latestEu = euNonNull.length ? euNonNull[euNonNull.length - 1] : null;
+        const combinedAum = latest.aum_usd_total + (latestEu ? latestEu.aum_usd_total : 0);
+        elAum.textContent = fmtUsd(combinedAum);
+        if (elAumEu && latestEu) {
+          elAumEu.textContent = `+ ${fmtUsd(latestEu.aum_usd_total)} EU (AXRP / WXRP / GXRP.DE)`;
+        }
         if (nonNull.length >= 2 && elDelta) {
           const prior = nonNull[nonNull.length - 2];
           const delta = latest.aum_usd_total - prior.aum_usd_total;
