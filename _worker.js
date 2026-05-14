@@ -154,6 +154,17 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    // Canonical host: 301 www.xrpl-utilities.com -> xrpl-utilities.com
+    // so the entire site has one Origin and every .io backend's CORS
+    // allowlist stays single-entry. Previously lived in _redirects but
+    // Workers static-assets mode rejects absolute URLs in that file
+    // (error code 10021 from /accounts/.../scripts/.../versions). Handling
+    // it here preserves the redirect without poisoning the deploy.
+    if (url.hostname === "www.xrpl-utilities.com") {
+      const target = `https://xrpl-utilities.com${url.pathname}${url.search}`;
+      return Response.redirect(target, 301);
+    }
+
     // API routes - handled by this Worker before falling through to assets.
     if (url.pathname === "/api/preview-token") {
       if (request.method === "POST") {

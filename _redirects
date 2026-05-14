@@ -1,12 +1,7 @@
-# Cloudflare Pages redirects.
+# Cloudflare _redirects.
 #
-# Canonical host is the apex (xrpl-utilities.com). Forcing every www
-# request to redirect to the apex keeps a single Origin for the entire
-# site, so every .io backend's CORS allowlist only needs one entry and
-# new services can ship without remembering to dual-allow www. The 301
-# is permanent so browsers + search engines cache it and skip the hop
-# on repeat visits.
-#
-# :splat preserves the path + query string verbatim so deep links still
-# land on the right page after the host swap.
-https://www.xrpl-utilities.com/*  https://xrpl-utilities.com/:splat  301!
+# Empty in Workers static-assets mode. The www.xrpl-utilities.com -> apex
+# 301 used to live here but Workers rejects absolute URLs in _redirects
+# (validation error 10021) - the same rule that broke every deploy from
+# the 2026-04-26 Workers-mode switch through 2026-05-14. The redirect is
+# now handled in _worker.js at the top of the fetch handler.
