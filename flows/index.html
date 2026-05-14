@@ -658,6 +658,9 @@
         wrap.classList.add('opacity-50');
         if (snapEl) snapEl.textContent = 'upstream pending';
         if (futEl) futEl.textContent = '';
+        // Tear down any prior chart so a stale frame doesn't sit
+        // behind the dim overlay on transition from available -> not.
+        if (moexChart) { moexChart.destroy(); moexChart = null; }
         return;
       }
       wrap.classList.remove('opacity-50');
@@ -733,10 +736,15 @@
       if (nonNull.length && elAum) {
         const latest = nonNull[nonNull.length - 1];
         const latestEu = euNonNull.length ? euNonNull[euNonNull.length - 1] : null;
-        const combinedAum = latest.aum_usd_total + (latestEu ? latestEu.aum_usd_total : 0);
-        elAum.textContent = fmtUsd(combinedAum);
-        if (elAumEu && latestEu) {
-          elAumEu.textContent = `+ ${fmtUsd(latestEu.aum_usd_total)} EU (AXRP / WXRP / GXRP.DE)`;
+        // etf_total_aum_daily already includes the European tier (the
+        // backend sums all tickers into all_total regardless of asset
+        // class). Render the headline as-is and surface the EU
+        // contribution in the subline for context, no extra addition.
+        elAum.textContent = fmtUsd(latest.aum_usd_total);
+        if (elAumEu) {
+          elAumEu.textContent = latestEu
+            ? `includes ${fmtUsd(latestEu.aum_usd_total)} European tier (AXRP / WXRP / GXRP.DE)`
+            : '';
         }
         if (nonNull.length >= 2 && elDelta) {
           const prior = nonNull[nonNull.length - 2];
