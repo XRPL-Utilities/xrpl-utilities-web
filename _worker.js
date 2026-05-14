@@ -155,12 +155,19 @@ export default {
     const url = new URL(request.url);
 
     // Canonical host: 301 www.xrpl-utilities.com -> xrpl-utilities.com
-    // so the entire site has one Origin and every .io backend's CORS
-    // allowlist stays single-entry. Previously lived in _redirects but
-    // Workers static-assets mode rejects absolute URLs in that file
-    // (error code 10021 from /accounts/.../scripts/.../versions). Handling
-    // it here preserves the redirect without poisoning the deploy.
-    if (url.hostname === "www.xrpl-utilities.com") {
+    // for PAGE navigations only. /api/* paths must NOT redirect:
+    // 1. A 301 on a same-origin POST causes the browser to drop the
+    //    method body (POST -> GET) on follow, breaking the mint.
+    // 2. The redirect target (apex) sees a different Origin header
+    //    (www) and CORS-rejects the request since the mint endpoint
+    //    doesn't set Access-Control-Allow-Origin: www.
+    // The mint runs locally on whichever host the request lands on;
+    // both hosts share this Worker so behavior is identical, and the
+    // .io backends' CORS allowlists already accept both origins.
+    if (
+      url.hostname === "www.xrpl-utilities.com"
+      && !url.pathname.startsWith("/api/")
+    ) {
       const target = `https://xrpl-utilities.com${url.pathname}${url.search}`;
       return Response.redirect(target, 301);
     }
