@@ -746,6 +746,20 @@ feed = session.post(
       const utilityPill = e.active_utility && e.active_utility.active
         ? `<span class="text-xs px-2 py-0.5 rounded utility-pill border">● active utility</span>`
         : '';
+      // Institutional-event badge. Highlights news items that match a
+      // curated set of high-signal patterns: regulated exchange listings
+      // (MOEX/DBAG/LSE/etc), ETF approval/launch/closure, regulatory
+      // action (SEC/court rulings), central-bank or international-
+      // standard-body statements specifically about XRP, Ripple
+      // corporate events. Deterministic keyword match; no editorial
+      // scoring. The categories array (when present) tells the reader
+      // why it fired.
+      const institutionalSig = (e.active_utility && Array.isArray(e.active_utility.signals))
+        ? e.active_utility.signals.find(s => s.signal === 'institutional_event')
+        : null;
+      const institutionalPill = institutionalSig
+        ? `<span class="text-xs px-2 py-0.5 rounded border bg-amber-400/10 text-amber-300 border-amber-400/30" title="${escapeHtml((institutionalSig.categories || []).join(', '))}">★ institutional</span>`
+        : '';
 
       // Whale events use a different active_utility shape than RSS events:
       // top-level signal='whale_transfer' with usd_value, sender_label,
@@ -1101,7 +1115,7 @@ feed = session.post(
             <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
           </div>
           ${briefHtml}
-          <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${utilityPill}${isOnChainOnly ? '' : `<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span>`}</div>
+          <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${institutionalPill}${utilityPill}${isOnChainOnly ? '' : `<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span>`}</div>
           ${corrLine}
           ${utilityBlock}
           ${whaleBlock}
