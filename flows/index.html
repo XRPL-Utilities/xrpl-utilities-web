@@ -258,6 +258,17 @@
           <p id="chain-flow-caveat" class="text-[10px] text-muted mt-2"></p>
         </div>
 
+        <div id="moex-index-panel">
+          <div class="flex items-baseline justify-between mb-2 gap-2 flex-wrap">
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">Moscow Exchange XRP index (MOEXXRP, USD)</h3>
+            <div id="moex-index-snapshot" class="text-[10px] text-muted font-mono"></div>
+          </div>
+          <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 220px;">
+            <canvas id="chart-moex-index"></canvas>
+          </div>
+          <p class="text-[10px] text-muted mt-2">USD-denominated XRP price benchmark published by the Moscow Exchange from four spot venues, weighted by trading volume. Launched 2026-05-13; the series grows one row per MOEX trading day. Trading is restricted to professional investors but the index itself is a public reference price.</p>
+        </div>
+
         <div id="flows-empty" class="hidden text-xs text-muted mt-4">
           No accrued data yet. The series starts from the first hourly scrape after each deploy.
         </div>
@@ -613,6 +624,7 @@
       const chainFlow = body.chain_flow_daily || [];
       const tracked = body.tracked_etfs || [];
       const correlation = body.correlation || {};
+      const moex = body.moex_index || { available: false, history: [], snapshot: null };
 
       const emptyEl = document.getElementById('flows-empty');
       if (!totals.length) {
@@ -624,7 +636,66 @@
       renderEtfAumChart(series, totals, tracked);
       renderEtfAumDeltaChart(series, totals, tracked);
       renderChainFlowChart(chainFlow, correlation);
+      renderMoexIndexPanel(moex);
       renderSummaryTiles(series, totals, tracked);
+    }
+
+    let moexChart = null;
+    function renderMoexIndexPanel(moex) {
+      const wrap = document.getElementById('moex-index-panel');
+      const snapEl = document.getElementById('moex-index-snapshot');
+      const ctx = document.getElementById('chart-moex-index');
+      if (!wrap || !ctx) return;
+      const snap = moex && moex.snapshot;
+      const history = (moex && moex.history) || [];
+      if (!moex || !moex.available || !snap) {
+        wrap.classList.add('opacity-50');
+        if (snapEl) snapEl.textContent = 'upstream pending';
+        return;
+      }
+      wrap.classList.remove('opacity-50');
+      const fmtUsd = (v) => (typeof v === 'number' ? '$' + v.toFixed(4) : '-');
+      const fmtPct = (v) => (typeof v === 'number' ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%' : '-');
+      const cls = (snap.change_pct ?? 0) >= 0 ? 'text-emerald-400' : 'text-rose-400';
+      if (snapEl) {
+        snapEl.innerHTML = `<span class="text-white font-mono text-xl">${fmtUsd(snap.last_value)}</span>
+          <span class="${cls} font-mono text-xs ml-2">${fmtPct(snap.change_pct)}</span>
+          <span class="text-muted text-[10px] ml-2">as of ${snap.systime || snap.trade_date || ''} MSK</span>`;
+      }
+      if (typeof Chart === 'undefined') return;
+      if (!history.length) {
+        if (moexChart) { moexChart.destroy(); moexChart = null; }
+        return;
+      }
+      const labels = history.map(r => r.trade_date);
+      const closes = history.map(r => r.close);
+      if (moexChart) moexChart.destroy();
+      moexChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'MOEXXRP close (USD)',
+            data: closes,
+            borderColor: 'rgb(0, 184, 255)',
+            backgroundColor: 'rgba(0, 184, 255, 0.12)',
+            pointRadius: 2,
+            pointBackgroundColor: 'rgb(0, 184, 255)',
+            borderWidth: 1.5,
+            fill: true,
+            tension: 0.18,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#7a8088', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: '#7a8088', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          },
+        },
+      });
     }
 
     async function renderSummaryTiles(series, totals, tracked) {
