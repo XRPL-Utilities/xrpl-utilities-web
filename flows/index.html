@@ -873,9 +873,21 @@
         return;
       }
 
-      if (statusEl) statusEl.textContent = `${chainFlow.length} day${chainFlow.length === 1 ? '' : 's'}`;
+      const todayUtc = new Date().toISOString().slice(0, 10);
+      const labels = chainFlow.map(r => r.snapshot_date);
+      const data = chainFlow.map(r => r.net_flow_xrp ?? r.net ?? null);
+      const inProgress = labels.map(d => d === todayUtc);
+      const hasInProgress = inProgress.some(Boolean);
+
+      if (statusEl) {
+        const base = `${chainFlow.length} day${chainFlow.length === 1 ? '' : 's'}`;
+        statusEl.textContent = hasInProgress ? `${base} - today in-progress` : base;
+      }
       if (caveatEl) {
         const parts = [];
+        if (hasInProgress) {
+          parts.push(`Today's bar (${todayUtc} UTC) is in-progress: the XR-Pulse writer rolls a single row per UTC day and overwrites it as new polls land, so this value updates through the day and may briefly match yesterday until the next refresh.`);
+        }
         if (chainFlow.length < 7) {
           parts.push(`Series accrues forward one row per UTC day from the XR-Pulse writer; only ${chainFlow.length} day${chainFlow.length === 1 ? '' : 's'} so far. Multi-week pattern visible after about a week of accrual.`);
         }
@@ -883,8 +895,12 @@
         caveatEl.textContent = parts.join(' ');
       }
 
-      const labels = chainFlow.map(r => r.snapshot_date);
-      const data = chainFlow.map(r => r.net_flow_xrp ?? r.net ?? null);
+      const fillFor = (v, ip) => {
+        const pos = (v ?? 0) >= 0;
+        if (ip) return pos ? 'rgba(74, 222, 128, 0.22)' : 'rgba(248, 113, 113, 0.22)';
+        return pos ? 'rgba(74, 222, 128, 0.65)' : 'rgba(248, 113, 113, 0.65)';
+      };
+      const strokeFor = (v) => ((v ?? 0) >= 0 ? 'rgb(74, 222, 128)' : 'rgb(248, 113, 113)');
 
       if (chainChart) chainChart.destroy();
       chainChart = new Chart(ctx, {
@@ -894,17 +910,34 @@
           datasets: [{
             label: 'Net XRP flow',
             data,
-            backgroundColor: data.map(v => (v ?? 0) >= 0 ? 'rgba(74, 222, 128, 0.65)' : 'rgba(248, 113, 113, 0.65)'),
-            borderColor: data.map(v => (v ?? 0) >= 0 ? 'rgb(74, 222, 128)' : 'rgb(248, 113, 113)'),
-            borderWidth: 1,
+            backgroundColor: data.map((v, i) => fillFor(v, inProgress[i])),
+            borderColor: data.map(v => strokeFor(v)),
+            borderWidth: data.map((_, i) => (inProgress[i] ? 2 : 1)),
           }],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                afterLabel: (ctx) => (inProgress[ctx.dataIndex] ? 'in-progress (UTC day not closed)' : ''),
+              },
+            },
+          },
           scales: {
-            x: { ticks: { color: '#7a8088', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            x: {
+              ticks: {
+                color: '#7a8088',
+                font: { size: 9 },
+                callback: function(value, index) {
+                  const lbl = this.getLabelForValue(value);
+                  return inProgress[index] ? `${lbl} *` : lbl;
+                },
+              },
+              grid: { color: 'rgba(255,255,255,0.04)' },
+            },
             y: { ticks: { color: '#7a8088', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
           },
         },
