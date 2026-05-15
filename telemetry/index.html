@@ -451,6 +451,43 @@
     </div>
   </section>
 
+  <section id="dex-pair-volume" class="border-t border-border">
+    <div class="max-w-5xl mx-auto px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Measured DEX pair volume</h2>
+      <h3 class="text-3xl font-bold mb-2">What the XRPL order book traded</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
+        XRP&harr;RLUSD order-book fills on validated mainnet ledgers. A taker offer crossing one maker offer counts as one fill; multi-leg crosses contribute one fill per consumed maker leg. AMM swaps and pathfinder-routed legs are not in this number yet.
+      </p>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Last 24 hours</div>
+          <div id="dpv-24h" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div id="dpv-24h-split" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
+        </div>
+        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">Annualized run-rate</div>
+          <div id="dpv-annual" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div id="dpv-annual-split" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
+        </div>
+      </div>
+
+      <div id="dpv-bootstrap" class="hidden mt-4 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed">
+        Less than 7 days of recorded DEX fill data. Values are bootstrapping; annualized figure is statistically thin.
+      </div>
+
+      <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Different denominator than settlement</div>
+        <p class="mb-3">
+          The settlement-volume number above counts <strong class="text-white">gross Payment deliveries</strong>: a $100 RLUSD payment that routes through an XRP&harr;RLUSD offer contributes $100 to that headline. This DEX pair-volume number counts <strong class="text-white">order-book fills</strong>: the same Payment also consumed one maker-side offer, and that fill is what shows up here. Both figures can describe the same on-chain transaction in different lenses.
+        </p>
+        <p>
+          Each fill is recorded with both legs (XRP value at hourly close-time price + RLUSD at $1), so the headline matches the conventional "pair volume" figure that XRPL explorers publish. The XRP-side and RLUSD-side subtotals are shown in the small print for flow-direction views.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <section id="floor-matrix" class="border-t border-border">
     <div class="max-w-5xl mx-auto px-6 py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Predictive Floor Matrix</h2>
@@ -1174,6 +1211,48 @@ payload = requests.get(
         }
       });
     }
+
+    // ---- Measured DEX pair volume (schema 1.11.0+) ----
+    // Parallel to settlement totals but counts XRP/RLUSD order-book fills,
+    // not Payment deliveries. Same shape, different denominator. Renders
+    // gracefully when the backend hasn't shipped the endpoint yet.
+    const dpv24h = document.getElementById('dpv-24h');
+    const dpv24hSplit = document.getElementById('dpv-24h-split');
+    const dpvAnnual = document.getElementById('dpv-annual');
+    const dpvAnnualSplit = document.getElementById('dpv-annual-split');
+    const dpvBootstrap = document.getElementById('dpv-bootstrap');
+
+    dpv24h.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
+    dpvAnnual.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
+
+    fetch(TELEMETRY_API + '/stats/dex-pair-volume?pair=XRP/RLUSD')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) {
+          dpv24h.textContent = '-';
+          dpvAnnual.textContent = '-';
+          return;
+        }
+        dpv24h.textContent = fmtUsdShort(d.volume_24h_usd);
+        dpvAnnual.textContent = fmtUsdShort(d.annualized_run_rate_usd);
+        const fillCount = d.volume_24h_fill_count;
+        if (typeof d.volume_24h_xrp_usd === 'number' && typeof d.volume_24h_rlusd_usd === 'number') {
+          dpv24hSplit.textContent = fmtUsdShort(d.volume_24h_xrp_usd) + ' XRP-side · ' + fmtUsdShort(d.volume_24h_rlusd_usd) + ' RLUSD-side'
+            + (typeof fillCount === 'number' ? ' · ' + fillCount.toLocaleString('en-US') + ' fills' : '');
+        }
+        if (typeof d.annualized_run_rate_xrp_usd === 'number' && typeof d.annualized_run_rate_rlusd_usd === 'number') {
+          dpvAnnualSplit.textContent = fmtUsdShort(d.annualized_run_rate_xrp_usd) + ' XRP-side · ' + fmtUsdShort(d.annualized_run_rate_rlusd_usd) + ' RLUSD-side';
+        } else {
+          dpvAnnualSplit.textContent = '7d × 52 · pace, not a forecast';
+        }
+        if (d.coverage && d.coverage.bootstrap === true) {
+          dpvBootstrap.classList.remove('hidden');
+        }
+      })
+      .catch(() => {
+        dpv24h.textContent = '-';
+        dpvAnnual.textContent = '-';
+      });
 
     function svFetchSeries(bucket) {
       return fetch(TELEMETRY_API + '/settlement/series?bucket=' + bucket + '&count=' + SV_COUNTS[bucket])
