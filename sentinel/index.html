@@ -222,6 +222,22 @@
         </p>
       </div>
 
+      <details id="showcase-gallery" class="mt-4 bg-panel/40 border border-border rounded-2xl">
+        <summary class="cursor-pointer px-6 py-4 select-none flex items-center justify-between gap-4 hover:bg-panel/60 rounded-2xl transition">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold">Showcase gallery</div>
+            <div class="text-sm text-muted mt-1">A curated set of XRPL wallets that demonstrate distinct on-ledger behaviors. Click any address to scan it.</div>
+          </div>
+          <div class="text-accent shrink-0 text-xl group-open:rotate-90 transition">+</div>
+        </summary>
+        <div class="px-6 pb-6 pt-2">
+          <p class="text-xs text-muted mb-5 leading-relaxed">
+            Operator-curated. Addresses verified against XRPScan well-known and live <code class="font-mono text-white">gateway_balances</code> probes at the dates noted. RWA issuer wallets are point-in-time observations; trustline counts and on-chain obligations move continuously. The gallery is descriptive, not an endorsement.
+          </p>
+          <div id="gallery-categories" class="space-y-6"></div>
+        </div>
+      </details>
+
       <a href="/sentinel/bulk/" class="mt-4 block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
         <div class="flex items-center justify-between gap-4">
           <div>
@@ -824,6 +840,100 @@ report = session.post(
       bithomp:   "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe",
       escrow:    "rELeasERs3m4inA1UinRLTpXemqyStqzwh",
     };
+
+    // Showcase gallery. Operator-curated, organized by what each wallet
+    // demonstrates. Verified addresses only; no speculative entries.
+    // Verification date in each blurb reflects the last on-chain check.
+    const GALLERY = [
+      {
+        label: "Tokenized RWA issuers",
+        blurb: "Real-world-asset tokens issued natively on XRPL. Useful for testing Sentinel's issuer-profile narrative + governance-flag signals (clawback, RequireAuth, blackholed master key, DefaultRipple).",
+        wallets: [
+          { address: "rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p", name: "Ondo Finance — OUSG (permissioned)",          blurb: "Tokenized US Treasuries. RequireAuth + clawback. Operator-restricted distribution." },
+          { address: "roUSG6gvxKGBcgGVXhPKHEgy4YyDfiSi3",  name: "Ondo Finance — OUSG (retail/public)",          blurb: "Same token family, Ripple-deployed public-distribution wallet. ~4k trustlines vs the permissioned wallet's ~20." },
+          { address: "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De", name: "Ripple — RLUSD",                               blurb: "USD stablecoin. ~93k trustlines — the largest IOU issuer on XRPL by every measure." },
+          { address: "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK", name: "Schuman Financial — EURØP",                   blurb: "Euro-denominated RWA. XRPScan-verified, ~600 trustlines." },
+          { address: "rB3y9EPnq1ZrZP3aXgfyfdXQThzdXMrLMc", name: "Braza Group — USDB",                          blurb: "Brazilian-issued USD-denominated RWA. ~95M obligations." },
+          { address: "rH5CJsqvNqZGxrMyGaqLEoMWRYcVTAPZMt", name: "Braza Group — BBRL",                          blurb: "Brazilian-real-denominated RWA. Sibling issuer to USDB." },
+          { address: "rUNaS5sqRuxZz6V7rBGhoSaZiVYA3ut4UL", name: "SG-FORGE — EURCV",                            blurb: "Societe Generale subsidiary, euro stablecoin. Single launch tranche, ~20 trustlines (no retail distribution yet)." },
+          { address: "rnXNUqF8LuXyUdfLdezftTeEUw2UFSLw5i", name: "Guggenheim / Zeconomy — DCP",                 blurb: "Digital Commercial Paper. QIB-only. Currency codes roll forward by maturity (GDCP&lt;YYYYMMDD&gt;)." },
+          { address: "r976xbKc6om7WYTFwZHByvxnYFi1y5hJXH", name: "Justoken — JMWH",                             blurb: "Real-world MWh tokens. Track in native MWh; USD AUM is issuer-stated, not attested." },
+          { address: "rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn", name: "OpenEden — TBL",                              blurb: "T-Bill tokens. Note: gross obligations 9.9B but net circulating ~35M after treasury subtraction." },
+          { address: "rUN5Zxt3K1AnMRJgEWywDJT8QDMMeLH5ok", name: "AUDC — AUDD",                                 blurb: "Australian-dollar stablecoin (audd.digital)." },
+          { address: "rKCu4CucpepQ6N89c8T5GuX2jkxzCST18Q", name: "Archax × abrdn — pre-mint",                   blurb: "Rails-set-up but zero on-chain supply. RequireAuth + clawback + DefaultRipple posture; ~30 trustlines pre-authorized." },
+        ],
+      },
+      {
+        label: "XLS-80 permissioned-domain operators",
+        blurb: "Wallets operating PermissionedDomain ledger objects under the XLS-80 amendment. These are the on-chain hooks that gate XLS-81 permissioned-DEX execution to credentialed subjects.",
+        wallets: [
+          { address: "rGKMDUdmquUCvoXxhcJSttnVnr2NYc9fYi", name: "xrp-liquid.com",                              blurb: "First named institutional liquidity venue. Founder Evan Wyn Evans. Live XRPL DID + active XLS-81 offers selling XRP for USDC / RLUSD / EURQ." },
+          { address: "rtaXvxk6mqixCgMETaA5jxgm3ZKB5n3FP", name: "Anonymous operator",                          blurb: "Unlabeled second-mover. 2 domains, 8 credentials issued. No self-identification on chain." },
+        ],
+      },
+      {
+        label: "Service wallets and infrastructure",
+        blurb: "Operator infrastructure, validators, and IOU issuers whose cadence reflects automated services rather than discretionary trading.",
+        wallets: [
+          { address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz", name: "Sologenic — issuer",                          blurb: "Multi-currency IOU issuer. High cadence; expect High activity classification." },
+          { address: "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe", name: "Bithomp — validator account",                 blurb: "Validator and explorer operator. Service-cadence pattern." },
+          { address: "rELeasERs3m4inA1UinRLTpXemqyStqzwh", name: "EscrowReleasers",                             blurb: "Automated escrow-finish service. Bot-cadence with structured intervals." },
+          { address: "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM", name: "OpenEden — TBL treasury",                     blurb: "Counterpart to the TBL issuer wallet. Holds the un-circulated supply that nets out of obligations." },
+          { address: "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5", name: "XRPL-Utilities — receipt wallet",             blurb: "The wallet your $0.10 scans settle to. Self-referential test case for ledger-receipt patterns." },
+        ],
+      },
+    ];
+
+    // Render the gallery into #gallery-categories. Each wallet card binds
+    // a click to populating the address input and triggering the same
+    // scan code path as the sample-btn row above.
+    (function renderGallery() {
+      const root = document.getElementById("gallery-categories");
+      if (!root) return;
+      GALLERY.forEach(cat => {
+        const block = document.createElement("div");
+        const head = document.createElement("div");
+        head.className = "text-xs uppercase tracking-widest text-accent font-semibold mb-1";
+        head.textContent = cat.label;
+        block.appendChild(head);
+        const sub = document.createElement("p");
+        sub.className = "text-xs text-muted leading-relaxed mb-3";
+        sub.textContent = cat.blurb;
+        block.appendChild(sub);
+        const grid = document.createElement("div");
+        grid.className = "grid sm:grid-cols-2 gap-2";
+        cat.wallets.forEach(w => {
+          const btn = document.createElement("button");
+          btn.className = "gallery-card text-left bg-ink border border-border hover:border-accent rounded-lg px-4 py-3 transition";
+          btn.dataset.address = w.address;
+          const name = document.createElement("div");
+          name.className = "font-semibold text-sm text-white";
+          name.textContent = w.name;
+          btn.appendChild(name);
+          const blurb = document.createElement("div");
+          blurb.className = "text-xs text-muted leading-snug mt-1";
+          blurb.innerHTML = w.blurb;
+          btn.appendChild(blurb);
+          const addr = document.createElement("div");
+          addr.className = "font-mono text-[10px] text-muted/70 mt-2 truncate";
+          addr.textContent = w.address;
+          btn.appendChild(addr);
+          grid.appendChild(btn);
+        });
+        block.appendChild(grid);
+        root.appendChild(block);
+      });
+      root.querySelectorAll(".gallery-card").forEach(card => {
+        card.addEventListener("click", () => {
+          const addr = card.dataset.address;
+          if (!addr) return;
+          const input = document.getElementById("address");
+          input.value = addr;
+          input.scrollIntoView({ behavior: "smooth", block: "center" });
+          document.getElementById("scan-btn").click();
+        });
+      });
+    })();
 
     function el(tag, cls, text) {
       const e = document.createElement(tag);
