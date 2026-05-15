@@ -476,9 +476,9 @@
               <label class="text-xs text-muted uppercase tracking-wider" for="fm-constriction">Monthly supply constriction</label>
               <span id="fm-constriction-val" class="font-mono text-sm text-accent"></span>
             </div>
-            <input id="fm-constriction" type="range" min="0" max="5" step="0.1" class="w-full" />
-            <div class="flex justify-between text-[10px] text-muted mt-1"><span>0%</span><span>5%</span></div>
-            <p class="text-xs text-muted mt-2 leading-relaxed">% of liquid M that exits circulation each month (vault locks, escrow relock, dormancy growth, AMM TVL).</p>
+            <input id="fm-constriction" type="range" min="0" max="1.5" step="0.05" class="w-full" />
+            <div class="flex justify-between text-[10px] text-muted mt-1"><span>0%</span><span>1.5%</span></div>
+            <p class="text-xs text-muted mt-2 leading-relaxed">% of liquid M that exits circulation each month (vault locks, escrow relock, dormancy growth, AMM TVL). Range capped at 1.5%/month; sustained constriction above that is not historically observed on XRPL.</p>
           </div>
 
           <div>
@@ -486,9 +486,9 @@
               <label class="text-xs text-muted uppercase tracking-wider" for="fm-growth">Monthly volume growth</label>
               <span id="fm-growth-val" class="font-mono text-sm text-accent"></span>
             </div>
-            <input id="fm-growth" type="range" min="0" max="15" step="0.1" class="w-full" />
-            <div class="flex justify-between text-[10px] text-muted mt-1"><span>0%</span><span>15%</span></div>
-            <p class="text-xs text-muted mt-2 leading-relaxed">% monthly increase in annual settlement Q (new ODL corridors, B2B adoption, RLUSD scale).</p>
+            <input id="fm-growth" type="range" min="0" max="2.0" step="0.05" class="w-full" />
+            <div class="flex justify-between text-[10px] text-muted mt-1"><span>0%</span><span>2%</span></div>
+            <p class="text-xs text-muted mt-2 leading-relaxed">% monthly increase in annual settlement Q (new ODL corridors, B2B adoption, RLUSD scale). Range capped at 2%/month; sustained growth above that compounds into headline-grabbing numbers that the underlying math cannot honestly defend.</p>
           </div>
 
           <div class="bg-ink border border-border rounded-lg p-4 text-sm">
@@ -524,7 +524,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
           <p class="mb-3">
-            Small monthly rates compound aggressively. 1% per month of supply constriction works out to about 21% of supply gone in 24 months. 3% per month of volume growth roughly doubles annual Q over the same window. Both push P up.
+            Small monthly rates compound aggressively. 1% per month of supply constriction works out to about 21% of supply gone in 24 months. 2% per month of volume growth compounds to about 1.6&times; Q over the same window. Both push P up. The slider ranges (constriction max 1.5%, growth max 2%) are intentionally narrow: the math is sensitivity analysis, not a price target, and wider ranges produced screenshot-friendly numbers the model cannot honestly defend.
           </p>
           <p class="mb-3">
             Watch where the baseline crosses the grey dashed line representing today's market. That crossover is the math saying: under these specific assumptions, the implied floor catches up to where XRP trades today, somewhere in the next 24 months.
@@ -1275,8 +1275,8 @@ payload = requests.get(
     const fmP0 = document.getElementById('fm-p0');
     const fmP24 = document.getElementById('fm-p24');
 
-    fmConstriction.value = 1.0;
-    fmGrowth.value = 3.0;
+    fmConstriction.value = 0.5;
+    fmGrowth.value = 1.0;
 
     const HORIZON = 24;
     const BAND = 0.15;
