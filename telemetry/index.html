@@ -359,7 +359,7 @@
           </p>
           <p class="mb-2 text-accent font-semibold uppercase tracking-widest text-xs">Q sanity-check from ETF flow</p>
           <p>
-            The /scan response also carries an <code class="font-mono text-white">implied_floor_usd_flows_biased</code> field next to the canonical P. It applies a bounded nudge (&pm;10% max) to Q based on how tightly ETF AUM moves with XRPL exchange flow over the trailing window: tighter alignment nudges Q up, decoupling nudges down. The canonical P stays operator-controlled so the headline doesn't move with weekly noise; the biased value is a side-by-side comparator only.
+            The /scan response also carries an <code class="font-mono text-white">algebraic_p_at_assumed_qv_usd_flows_biased</code> field next to the canonical P. It applies a bounded nudge (&pm;10% max) to Q based on how tightly ETF AUM moves with XRPL exchange flow over the trailing window: tighter alignment nudges Q up, decoupling nudges down. The canonical P stays operator-controlled so the headline doesn't move with weekly noise; the biased value is a side-by-side comparator only.
           </p>
         </div>
       </div>
@@ -747,6 +747,48 @@ payload = requests.get(
       <p class="text-muted leading-relaxed text-sm mt-4">
         Users are responsible for ensuring their use complies with local digital asset and AI regulations, including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
       </p>
+    </div>
+  </section>
+
+  <section id="sla" class="border-t border-border">
+    <div class="max-w-5xl mx-auto px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Operational SLA</h2>
+      <h3 class="text-3xl font-bold mb-2">30-day uptime, measured</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
+        Live aggregate from <code class="font-mono text-white">/sla?days=30</code>. The recorder probes our upstream dependencies (XRPL RPC + x402 facilitator) every 5 minutes and counts each sample as healthy only if both succeed. Same liveness assertion <code class="font-mono text-white">/healthz</code> returns. No external monitoring; data is what we see from inside the service.
+      </p>
+
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">30-day uptime</div>
+          <div id="sla-30d-pct" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div id="sla-30d-meta" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">24-hour uptime</div>
+          <div id="sla-24h-pct" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div id="sla-24h-meta" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Target</div>
+          <div id="sla-target" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div class="text-xs text-muted mt-3 font-mono">5-min sample interval</div>
+        </div>
+      </div>
+
+      <div id="sla-bootstrap" class="hidden mt-4 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed">
+        Recording started recently. <span id="sla-days-observed"></span> days of samples so far; the 30-day figure is bootstrapping. Read <em>days observed</em> alongside the headline.
+      </div>
+
+      <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What this number covers</div>
+        <p class="mb-3">
+          <strong class="text-white">Covered:</strong> backend liveness of the XRPL RPC dependency and the x402 facilitator. If either probe fails at sample time, that sample counts as unhealthy and is attributed to its component.
+        </p>
+        <p>
+          <strong class="text-white">Not covered:</strong> external network latency between you and the service, individual endpoint correctness (only liveness), and data freshness inside the snapshot cache. For data freshness, see <code class="font-mono text-white">/healthz</code> <code class="font-mono text-white">checks.slow_tasks</code>.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -1224,6 +1266,53 @@ payload = requests.get(
 
     dpv24h.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
     dpvAnnual.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
+
+    // ---- Operational SLA (schema 1.13.0+) ----
+    // Pulls /sla?days=30 and renders the 30d + 24h uptime aggregates.
+    // Honest bootstrap state: if backend reports bootstrap=true, the
+    // yellow banner surfaces with days_observed; the headline figure
+    // is shown as-is (possibly null on day-zero).
+    const sla30Pct = document.getElementById('sla-30d-pct');
+    const sla30Meta = document.getElementById('sla-30d-meta');
+    const sla24Pct = document.getElementById('sla-24h-pct');
+    const sla24Meta = document.getElementById('sla-24h-meta');
+    const slaTarget = document.getElementById('sla-target');
+    const slaBootstrap = document.getElementById('sla-bootstrap');
+    const slaDaysObserved = document.getElementById('sla-days-observed');
+
+    const fmtPct = v => (v === null || v === undefined) ? '-' : v.toFixed(2) + '%';
+    const fmtSamples = w => {
+      const n = w.samples_total || 0;
+      if (n === 0) return 'no samples yet';
+      const obs = (w.days_observed || 0).toFixed(1);
+      return n.toLocaleString('en-US') + ' samples / ' + obs + 'd observed';
+    };
+
+    sla30Pct.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
+    sla24Pct.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
+
+    fetch(TELEMETRY_API + '/sla?days=30')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) {
+          sla30Pct.textContent = '-';
+          sla24Pct.textContent = '-';
+          return;
+        }
+        sla30Pct.textContent = fmtPct(d.uptime_window_30d.uptime_pct);
+        sla30Meta.textContent = fmtSamples(d.uptime_window_30d);
+        sla24Pct.textContent = fmtPct(d.uptime_window_24h.uptime_pct);
+        sla24Meta.textContent = fmtSamples(d.uptime_window_24h);
+        slaTarget.textContent = (d.target_uptime_pct || 99.0).toFixed(1) + '%';
+        if (d.uptime_window_30d && d.uptime_window_30d.bootstrap) {
+          slaBootstrap.classList.remove('hidden');
+          slaDaysObserved.textContent = (d.uptime_window_30d.days_observed || 0).toFixed(2);
+        }
+      })
+      .catch(() => {
+        sla30Pct.textContent = '-';
+        sla24Pct.textContent = '-';
+      });
 
     fetch(TELEMETRY_API + '/stats/dex-pair-volume?pair=XRP/RLUSD')
       .then(r => r.ok ? r.json() : null)

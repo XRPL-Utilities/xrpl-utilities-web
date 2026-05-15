@@ -351,6 +351,49 @@ report = session.post(
     </div>
   </section>
 
+  <section id="trust-paths" class="border-t border-border">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Trust paths</h2>
+      <h3 class="text-3xl font-bold mb-2">One response shape, three entry points</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
+        XR-Sentinel is reachable via three paths. They serve different audiences and bill differently, but the <code class="font-mono text-white">PatternReport</code> shape is identical across all three. A consumer can pin one response model and rely on it regardless of how the call was billed.
+      </p>
+
+      <div class="grid lg:grid-cols-3 gap-4">
+        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">Paid x402</div>
+          <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-muted">null</span></div>
+          <p class="text-sm text-muted leading-relaxed">
+            <code class="font-mono text-white">PAYMENT-SIGNATURE</code> header. $0.10 per scan, billed on success. <code class="font-mono text-white">PAYMENT-RESPONSE</code> attached on response. Standard agent path.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Sister product</div>
+          <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-white">sister_product</span></div>
+          <p class="text-sm text-muted leading-relaxed">
+            <code class="font-mono text-white">X-Sister-Product-Key</code> header from a sibling XR-* service. Server-to-server, no billing. Currently used by XR-Pulse for inline counterparty lookups.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Preview token</div>
+          <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-white">preview-token</span></div>
+          <p class="text-sm text-muted leading-relaxed">
+            Cloudflare Turnstile-issued JWT. Used for the in-browser preview on this page. Short TTL, signed by us, free from the operator's quota.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Parity guarantees</div>
+        <ul class="space-y-2">
+          <li><strong class="text-white">Shape:</strong> identical <code class="font-mono text-white">PatternReport</code> key set across all three paths. Only the <code class="font-mono text-white">served_via</code> field and the presence of <code class="font-mono text-white">PAYMENT-RESPONSE</code> differ.</li>
+          <li><strong class="text-white">Rate limit:</strong> shared per-client-fingerprint bucket applied before any auth check. No path can exceed the documented rate budget.</li>
+          <li><strong class="text-white">Tested:</strong> the two parity guarantees are asserted by tests in the live repo. The full <code class="font-mono text-white">trust_paths</code> contract lives in <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">agents.json</a> alongside the per-path descriptions.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <section id="output-shape" class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
