@@ -127,6 +127,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/assets/glossary-tooltip.js?v=v1" defer></script>
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script>
     tailwind.config = {
       theme: {
@@ -276,40 +277,40 @@
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
 
-        <a href="/telemetry/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">XRPL settlement run-rate</div>
-          <div id="ls-runrate" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
-          <div class="text-[10px] text-muted mt-2">annualized, all-token, USD</div>
+        <a href="/telemetry/" class="stat-tile stat-tile-glow p-4 hover:border-accent block">
+          <div class="stat-tile-label mb-1.5">XRPL settlement run-rate</div>
+          <div id="ls-runrate" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
+          <div class="stat-tile-sub text-[10px] mt-2">annualized, all-token, USD</div>
         </a>
 
-        <a href="/pulse/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Events ingested</div>
-          <div id="ls-events" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
-          <div class="text-[10px] text-muted mt-2">news + whale + permissioned, lifetime</div>
+        <a href="/pulse/" class="stat-tile p-4 hover:border-accent block">
+          <div class="stat-tile-label mb-1.5">Events ingested</div>
+          <div id="ls-events" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
+          <div class="stat-tile-sub text-[10px] mt-2">news + whale + permissioned, lifetime</div>
         </a>
 
-        <a href="/trust/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Permissioned domains</div>
-          <div id="ls-domains" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
-          <div class="text-[10px] text-muted mt-2">XLS-80 mainnet, active</div>
+        <a href="/trust/" class="stat-tile stat-tile-gold p-4 hover:border-accent block">
+          <div class="stat-tile-label mb-1.5">Permissioned domains</div>
+          <div id="ls-domains" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
+          <div class="stat-tile-sub text-[10px] mt-2">XLS-80 mainnet, active</div>
         </a>
 
-        <a href="/sentinel/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Sentinel scans</div>
-          <div id="ls-scans" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
-          <div class="text-[10px] text-muted mt-2">paid behavioral classifications, lifetime</div>
+        <a href="/sentinel/" class="stat-tile p-4 hover:border-accent block">
+          <div class="stat-tile-label mb-1.5">Sentinel scans</div>
+          <div id="ls-scans" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
+          <div class="stat-tile-sub text-[10px] mt-2">paid behavioral classifications, lifetime</div>
         </a>
 
-        <a href="/vault/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">RWA issuers tracked</div>
-          <div id="ls-rwa-issuers" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
-          <div class="text-[10px] text-muted mt-2">XRPL mainnet, live + rails-only</div>
+        <a href="/vault/" class="stat-tile stat-tile-muted p-4 hover:border-accent block">
+          <div class="stat-tile-label mb-1.5">RWA issuers tracked</div>
+          <div id="ls-rwa-issuers" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
+          <div class="stat-tile-sub text-[10px] mt-2">XRPL mainnet, live + rails-only</div>
         </a>
 
-        <a href="/flows/" class="group bg-panel border border-border hover:border-accent rounded-xl p-5 transition flex flex-col">
-          <div class="text-[10px] uppercase tracking-wider text-muted mb-1">ETF AUM tracked</div>
-          <div id="ls-etf-aum" class="text-2xl font-bold tracking-tight font-mono text-white">&hellip;</div>
-          <div class="text-[10px] mt-2"><span id="ls-etf-delta" class="text-muted">XRP-attributable across tracked ETFs</span></div>
+        <a href="/flows/" class="stat-tile stat-tile-gold p-4 hover:border-accent block">
+          <div class="stat-tile-label mb-1.5">ETF AUM tracked</div>
+          <div id="ls-etf-aum" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
+          <div class="stat-tile-sub text-[10px] mt-2"><span id="ls-etf-delta">XRP-attributable across tracked ETFs</span></div>
         </a>
 
       </div>
@@ -417,7 +418,7 @@
             Live tracker for tokenized real-world assets on XRPL. Per-issuer mint/burn flow, daily circulating snapshots, and the canonical wallet map across treasuries, stablecoins, commercial paper, money-market funds, and energy commodities. For agents and institutions watching where on-chain capital actually settles.
           </p>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; data via XR-Pulse over x402</span>
+            <span class="text-muted">Free on the web &middot; $0.10 per scan for agents</span>
             <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
           </div>
         </a>
@@ -449,7 +450,7 @@
     <div class="max-w-4xl mx-auto px-6 py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">Mission</h2>
       <p class="text-2xl md:text-3xl font-light leading-relaxed text-white">
-        XRPL-Utilities builds on-chain data services for the people, institutions, and AI agents that need to read the XRP Ledger without an account, an API key, or an onboarding call. Everything is free to use from this site. Agents and integrators pay per call over the <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent underline decoration-accent/40 hover:decoration-accent">x402</a> standard, settled in XRP or RLUSD on XRPL mainnet.
+        XRPL-Utilities builds on-chain data services for the people, institutions, and AI agents that need to read the XRP Ledger without an account, an API key, or an onboarding call. Everything is free to use from this site. Agents and integrators pay per call (or buy a live WebSocket stream on XR-Pulse) over the <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent underline decoration-accent/40 hover:decoration-accent">x402</a> standard, settled in XRP or RLUSD on XRPL mainnet.
       </p>
     </div>
   </section>

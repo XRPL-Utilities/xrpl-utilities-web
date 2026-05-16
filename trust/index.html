@@ -159,11 +159,11 @@
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <img src="/assets/xr-trust.png" alt="XR-Trust" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" onerror="this.style.display='none'" />
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted">The permissioned XRPL directory</p>
+      <p class="text-xl text-muted">The permissioned <span class="gloss" data-term="xrpl">XRPL</span> directory</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        A directory of every permissioned domain on XRPL, the credentials
+        A directory of every <span class="gloss" data-term="permissioned-domain">permissioned domain</span> on XRPL, the credentials
         each one accepts, the issuers backing those credentials, and any
-        identity the owner has published. Updates live. No scoring.
+        <span class="gloss" data-term="did">DID</span> identity the owner has published. Updates live. No scoring.
         No editorial filter. No endorsement.
       </p>
       <div class="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
@@ -329,7 +329,6 @@
           </ol>
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
             <a href="https://trust.xrpl-utilities.io/docs"        target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI</a>
-            <a href="https://trust.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">OpenAPI spec</a>
             <a href="https://trust.xrpl-utilities.io/agents.json"  target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json</a>
             <a href="https://trust.xrpl-utilities.io/schema"       target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">/schema</a>
           </div>
@@ -466,7 +465,7 @@ record = session.post(
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Pulse</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL signal feed: public-source news plus on-chain whale activity, with institutional-watchlist labels and RWA mint/burn events in one normalized stream. Free on the web, $0.10 per query over the agent API.
+                  XRPL signal feed: public-source news plus on-chain whale activity, with institutional-watchlist labels and RWA mint/burn events in one normalized stream. Free on the web. $0.10 per query or live WebSocket stream from $0.50/hr.
                 </div>
               </div>
             </div>

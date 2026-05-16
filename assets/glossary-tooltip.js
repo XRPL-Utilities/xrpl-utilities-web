@@ -120,15 +120,6 @@
         white-space: nowrap;
       }
       .gloss:focus { outline: none; border-bottom-color: rgba(0, 184, 255, 1); }
-      .gloss::after {
-        content: "?";
-        display: inline-block;
-        margin-left: 0.15em;
-        font-size: 0.65em;
-        vertical-align: super;
-        color: rgba(0, 184, 255, 0.7);
-        font-weight: 600;
-      }
       .gloss-pop {
         position: absolute;
         z-index: 100;
