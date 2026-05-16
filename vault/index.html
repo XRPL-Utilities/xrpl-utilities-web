@@ -455,36 +455,24 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">What this tracks</h2>
       <h3 class="text-3xl font-bold mb-6">Verified issuers, native units, no fabricated USD</h3>
-      <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-muted leading-relaxed">
-        <div>
-          <p class="mb-4">
-            <span class="text-white">Real issuers only.</span> Every issuer on this page was checked against the XRP Ledger before being added. Wallet address, currency code, and the issuer's on-chain controls are confirmed; nobody gets on the list because a third-party aggregator says they should be there.
-          </p>
-          <p class="mb-4">
-            <span class="text-white">Native units, not invented dollars.</span> A money-market fund token is reported in shares. An energy token is reported in megawatt-hours. A stablecoin is reported in its peg unit. We don't multiply by an off-chain price feed and call it a USD figure. That's what creates the misleading numbers you see on aggregator dashboards. If you want a USD valuation, you bring your own price.
-          </p>
-          <p>
-            <span class="text-white">Treasury-aware accounting.</span> For OpenEden TBL, what's reported as "circulating" excludes the issuer's own treasury wallet, leaving only the supply actually in holders' hands. Public aggregators show the unfiltered number and overstate the figure by orders of magnitude. Same care will roll out to other issuers where the pattern applies.
-          </p>
-        </div>
-        <div>
-          <p class="mb-4">
-            <span class="text-white">Mints and burns, live.</span> Every time an issuer mints new tokens or a holder redeems back to the issuer, the event lands here within minutes of settling on-chain. No batching, no waiting for an end-of-day report.
-          </p>
-          <p class="mb-4">
-            <span class="text-white">Daily snapshots, building history.</span> Once per UTC day, every live issuer's outstanding supply and trustline count are captured. Over time the dashboard accrues a trend you can read. Is OUSG growing? Is EURCV picking up retail distribution? Is the Justoken energy token gaining trustlines or holding flat?
-          </p>
-          <p class="mb-4">
-            <span class="text-white">Rails-set-up issuers stay on the list.</span> Archax has its institutional-money-market-fund issuance rails configured but hasn't minted any tokens on mainnet yet. We track it anyway so the first mint shows up here the moment it happens.
-          </p>
-          <p class="mb-4">
-            <span class="text-white">AMM exposure on the same page.</span> For each issuer, you can see whether the token has working swap-pool liquidity or only issuer-held supply. That's the difference between "real on-chain market" and "press release with rails."
-          </p>
-          <p>
-            <span class="text-white">Permissioned-domain fingerprint.</span> When a scanned issuer also operates an XLS-80 permissioned domain on-chain, the /scan response carries a fingerprint block: which domains, how many credentials issued, how many subjects, first-seen and last-active timestamps, recent permissioned-offer and AMM activity. Descriptive on-chain fact, not a compliance verdict; the block carries its own caveat to that effect.
-          </p>
-        </div>
-      </div>
+      <ul class="grid md:grid-cols-2 gap-x-8 gap-y-5 text-muted leading-relaxed list-none">
+        <li>
+          <span class="text-white font-semibold">Verified issuers, native units.</span>
+          Every issuer checked against the ledger; reported in shares, megawatt-hours, or peg unit. Never multiplied by an off-chain price oracle. Bring your own valuation if you need USD.
+        </li>
+        <li>
+          <span class="text-white font-semibold">Treasury-aware.</span>
+          Issuer's own holdings excluded where applicable (e.g. OpenEden TBL), so "circulating" matches what's in holders' hands. Public aggregators show the unfiltered number and overstate by orders of magnitude.
+        </li>
+        <li>
+          <span class="text-white font-semibold">Live and historical.</span>
+          Mints and burns land within minutes of settlement; daily snapshots accrue into trend data per issuer. Rails-configured-only issuers (e.g. Archax) stay on the list so the first mint surfaces immediately.
+        </li>
+        <li>
+          <span class="text-white font-semibold">AMM exposure + permissioned-domain fingerprint.</span>
+          For each issuer, see whether the token has real swap-pool liquidity or only issuer-held supply. When an issuer also operates an XLS-80 domain, the /scan response carries a fingerprint block (domains, credentials, subjects, recent permissioned-offer + AMM activity) as descriptive fact, not a verdict.
+        </li>
+      </ul>
     </div>
   </section>
 

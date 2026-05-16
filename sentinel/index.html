@@ -277,7 +277,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">What it isn't</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Not a risk score. Not a sanctions screen. Not an AML or KYC determination. Not a credit rating. A "High" activity level usually means an exchange, market maker, AMM, or trading bot; neutral signals about a wallet's role on the network, not warnings. The signal catalog is published at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a> so consumers can read every flag's definition and decide their own thresholds.
+            Not a risk score, sanctions screen, AML determination, or credit rating. A "High" activity level usually means an exchange, market maker, or bot, not a warning. The full signal catalog is at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a>; consumers set their own thresholds.
           </p>
         </div>
       </div>
@@ -893,18 +893,18 @@ report = session.post(
         label: "Tokenized RWA issuers",
         blurb: "Real-world-asset tokens issued natively on XRPL. Useful for testing Sentinel's issuer-profile narrative + governance-flag signals (clawback, RequireAuth, blackholed master key, DefaultRipple).",
         wallets: [
-          { address: "rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p", name: "Ondo Finance — OUSG (permissioned)",          blurb: "Tokenized US Treasuries. RequireAuth + clawback. Operator-restricted distribution." },
-          { address: "roUSG6gvxKGBcgGVXhPKHEgy4YyDfiSi3",  name: "Ondo Finance — OUSG (retail/public)",          blurb: "Same token family, Ripple-deployed public-distribution wallet. ~4k trustlines vs the permissioned wallet's ~20." },
-          { address: "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De", name: "Ripple — RLUSD",                               blurb: "USD stablecoin. ~93k trustlines — the largest IOU issuer on XRPL by every measure." },
-          { address: "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK", name: "Schuman Financial — EURØP",                   blurb: "Euro-denominated RWA. XRPScan-verified, ~600 trustlines." },
-          { address: "rB3y9EPnq1ZrZP3aXgfyfdXQThzdXMrLMc", name: "Braza Group — USDB",                          blurb: "Brazilian-issued USD-denominated RWA. ~95M obligations." },
-          { address: "rH5CJsqvNqZGxrMyGaqLEoMWRYcVTAPZMt", name: "Braza Group — BBRL",                          blurb: "Brazilian-real-denominated RWA. Sibling issuer to USDB." },
-          { address: "rUNaS5sqRuxZz6V7rBGhoSaZiVYA3ut4UL", name: "SG-FORGE — EURCV",                            blurb: "Societe Generale subsidiary, euro stablecoin. Single launch tranche, ~20 trustlines (no retail distribution yet)." },
-          { address: "rnXNUqF8LuXyUdfLdezftTeEUw2UFSLw5i", name: "Guggenheim / Zeconomy — DCP",                 blurb: "Digital Commercial Paper. QIB-only. Currency codes roll forward by maturity (GDCP&lt;YYYYMMDD&gt;)." },
-          { address: "r976xbKc6om7WYTFwZHByvxnYFi1y5hJXH", name: "Justoken — JMWH",                             blurb: "Real-world MWh tokens. Track in native MWh; USD AUM is issuer-stated, not attested." },
-          { address: "rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn", name: "OpenEden — TBL",                              blurb: "T-Bill tokens. Note: gross obligations 9.9B but net circulating ~35M after treasury subtraction." },
-          { address: "rUN5Zxt3K1AnMRJgEWywDJT8QDMMeLH5ok", name: "AUDC — AUDD",                                 blurb: "Australian-dollar stablecoin (audd.digital)." },
-          { address: "rKCu4CucpepQ6N89c8T5GuX2jkxzCST18Q", name: "Archax × abrdn — pre-mint",                   blurb: "Rails-set-up but zero on-chain supply. RequireAuth + clawback + DefaultRipple posture; ~30 trustlines pre-authorized." },
+          { address: "rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p", name: "Ondo Finance · OUSG (permissioned)",          blurb: "Tokenized US Treasuries. RequireAuth + clawback. Operator-restricted distribution." },
+          { address: "roUSG6gvxKGBcgGVXhPKHEgy4YyDfiSi3",  name: "Ondo Finance · OUSG (retail/public)",          blurb: "Same token family, Ripple-deployed public-distribution wallet. ~4k trustlines vs the permissioned wallet's ~20." },
+          { address: "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De", name: "Ripple · RLUSD",                               blurb: "USD stablecoin. ~93k trustlines · the largest IOU issuer on XRPL by every measure." },
+          { address: "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK", name: "Schuman Financial · EURØP",                   blurb: "Euro-denominated RWA. XRPScan-verified, ~600 trustlines." },
+          { address: "rB3y9EPnq1ZrZP3aXgfyfdXQThzdXMrLMc", name: "Braza Group · USDB",                          blurb: "Brazilian-issued USD-denominated RWA. ~95M obligations." },
+          { address: "rH5CJsqvNqZGxrMyGaqLEoMWRYcVTAPZMt", name: "Braza Group · BBRL",                          blurb: "Brazilian-real-denominated RWA. Sibling issuer to USDB." },
+          { address: "rUNaS5sqRuxZz6V7rBGhoSaZiVYA3ut4UL", name: "SG-FORGE · EURCV",                            blurb: "Societe Generale subsidiary, euro stablecoin. Single launch tranche, ~20 trustlines (no retail distribution yet)." },
+          { address: "rnXNUqF8LuXyUdfLdezftTeEUw2UFSLw5i", name: "Guggenheim / Zeconomy · DCP",                 blurb: "Digital Commercial Paper. QIB-only. Currency codes roll forward by maturity (GDCP&lt;YYYYMMDD&gt;)." },
+          { address: "r976xbKc6om7WYTFwZHByvxnYFi1y5hJXH", name: "Justoken · JMWH",                             blurb: "Real-world MWh tokens. Track in native MWh; USD AUM is issuer-stated, not attested." },
+          { address: "rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn", name: "OpenEden · TBL",                              blurb: "T-Bill tokens. Note: gross obligations 9.9B but net circulating ~35M after treasury subtraction." },
+          { address: "rUN5Zxt3K1AnMRJgEWywDJT8QDMMeLH5ok", name: "AUDC · AUDD",                                 blurb: "Australian-dollar stablecoin (audd.digital)." },
+          { address: "rKCu4CucpepQ6N89c8T5GuX2jkxzCST18Q", name: "Archax × abrdn · pre-mint",                   blurb: "Rails-set-up but zero on-chain supply. RequireAuth + clawback + DefaultRipple posture; ~30 trustlines pre-authorized." },
         ],
       },
       {
@@ -919,11 +919,11 @@ report = session.post(
         label: "Service wallets and infrastructure",
         blurb: "Operator infrastructure, validators, and IOU issuers whose cadence reflects automated services rather than discretionary trading.",
         wallets: [
-          { address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz", name: "Sologenic — issuer",                          blurb: "Multi-currency IOU issuer. High cadence; expect High activity classification." },
-          { address: "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe", name: "Bithomp — validator account",                 blurb: "Validator and explorer operator. Service-cadence pattern." },
+          { address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz", name: "Sologenic · issuer",                          blurb: "Multi-currency IOU issuer. High cadence; expect High activity classification." },
+          { address: "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe", name: "Bithomp · validator account",                 blurb: "Validator and explorer operator. Service-cadence pattern." },
           { address: "rELeasERs3m4inA1UinRLTpXemqyStqzwh", name: "EscrowReleasers",                             blurb: "Automated escrow-finish service. Bot-cadence with structured intervals." },
-          { address: "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM", name: "OpenEden — TBL treasury",                     blurb: "Counterpart to the TBL issuer wallet. Holds the un-circulated supply that nets out of obligations." },
-          { address: "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5", name: "XRPL-Utilities — receipt wallet",             blurb: "The wallet your $0.10 scans settle to. Self-referential test case for ledger-receipt patterns." },
+          { address: "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM", name: "OpenEden · TBL treasury",                     blurb: "Counterpart to the TBL issuer wallet. Holds the un-circulated supply that nets out of obligations." },
+          { address: "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5", name: "XRPL-Utilities · receipt wallet",             blurb: "The wallet your $0.10 scans settle to. Self-referential test case for ledger-receipt patterns." },
         ],
       },
     ];

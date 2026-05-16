@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XRPL-Utilities | XRPL AI Agent Applications</title>
-  <meta name="description" content="A growing suite of XRPL-native tools built for the agentic economy. Pay-per-use APIs that AI agents can discover and consume autonomously." />
+  <title>XRPL-Utilities | XRPL data services for institutions, developers, and AI agents</title>
+  <meta name="description" content="Six on-chain data services covering XRPL: wallet behavior, network state, signal feed, permissioned domains, real-world assets, ETF flow. Free on the web. Agent-payable via x402 in XRP or RLUSD. No accounts, no API keys." />
   <meta property="og:title" content="XRPL-Utilities" />
-  <meta property="og:description" content="XRPL AI Agent Applications. Auto-discoverable, agent-payable APIs built on XRP Ledger." />
+  <meta property="og:description" content="XRPL data services for institutions, developers, and AI agents. Six on-chain APIs. Free on the web, agent-payable via x402 in XRP or RLUSD." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <meta property="og:url" content="https://xrpl-utilities.com" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="XRPL-Utilities" />
-  <meta name="twitter:description" content="XRPL AI Agent Applications. Auto-discoverable, agent-payable APIs built on XRP Ledger." />
+  <meta name="twitter:description" content="XRPL data services for institutions, developers, and AI agents. Six on-chain APIs. Free on the web, agent-payable via x402 in XRP or RLUSD." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <link rel="canonical" href="https://xrpl-utilities.com/" />
   <link rel="icon" type="image/png" href="/assets/logo.png" />
@@ -216,41 +216,43 @@
   </div>
 
   <section class="grid-bg">
-    <div class="max-w-6xl mx-auto px-6 py-24 md:py-32 text-center">
-      <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
-      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">
-        XRPL <span class="accent-gradient">AI Agent</span> Applications
+    <div class="max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">
+      <img src="/assets/logo.png" alt="XRPL-Utilities" class="h-32 w-32 sm:h-40 sm:w-40 mx-auto mb-8 rounded-2xl glow" />
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 leading-tight">
+        XRPL <span class="accent-gradient">data infrastructure</span>
       </h1>
-      <p class="text-xl text-muted">On-chain XRPL data products, priced in XRP.</p>
-      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        Vet a wallet before sending. Read the network's macro state before quoting.
-        Track news and whale-scale on-chain moves before acting.
-        Discover institutional venues operating on the permissioned XRPL.
-        Watch real-world assets settle on-chain in their native units.
-        Plot ETF flow against the ledger.
-        No accounts, no API keys, no onboarding.
+      <p class="text-lg sm:text-xl text-muted max-w-2xl mx-auto leading-relaxed">
+        Six on-chain services for institutions, developers, and AI agents. Free from this site. Agent-payable via <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402</a> in XRP or RLUSD. No accounts, no API keys, no onboarding calls.
       </p>
-      <div class="mt-12 flex flex-wrap gap-4 justify-center">
-        <a href="/sentinel/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
-          Scan a wallet &rarr;
+      <div class="mt-10 flex flex-wrap gap-3 justify-center">
+        <a href="#tools" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
+          See the services &darr;
         </a>
-        <a href="/telemetry/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
-          Get a network snapshot &rarr;
+        <a href="/pricing/" class="border border-border hover:border-accent text-white font-semibold px-6 py-3 rounded-lg transition">
+          Pricing
         </a>
-        <a href="/pulse/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
-          Get the Pulse feed &rarr;
-        </a>
-        <a href="/trust/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
-          Browse permissioned domains &rarr;
-        </a>
-        <a href="/vault/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
-          Track real-world assets &rarr;
-        </a>
-        <a href="/flows/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
-          Plot ETF flow &rarr;
+        <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener" class="border border-border hover:border-accent text-white font-semibold px-6 py-3 rounded-lg transition">
+          MCP server &rarr;
         </a>
       </div>
-      <p class="mt-6 text-lg text-white/80">Free on the web &middot; $0.10 per call for agents over the API &middot; pay in XRP</p>
+      <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 justify-center text-xs text-muted">
+        <span class="inline-flex items-center gap-2">
+          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+          Pay-per-call from $0.10
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+          Live WebSocket streaming
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+          Auto-discoverable manifests
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+          On-chain settlement
+        </span>
+      </div>
     </div>
   </section>
 
@@ -373,7 +375,7 @@
             Public-source news plus on-chain whale activity in one normalized stream. Cross-verification when news sources overlap; sender + receiver labels on every XRPL Payment above the storage threshold. For agents that need market context AND raw on-chain signal in one paid call.
           </p>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; $0.10 per query for agents</span>
+            <span class="text-muted">Free on the web &middot; $0.10/query or stream from $0.50/hr</span>
             <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
           </div>
         </a>
@@ -443,9 +445,7 @@
     <div class="max-w-4xl mx-auto px-6 py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">Mission</h2>
       <p class="text-2xl md:text-3xl font-light leading-relaxed text-white">
-        AI agents are the next class of API consumer. They discover services without humans,
-        pay without accounts, and integrate without onboarding flows. We build XRPL-native
-        services for that world, designed from day one to be machine-discoverable and machine-payable.
+        XRPL-Utilities builds on-chain data services for the people, institutions, and AI agents that need to read the XRP Ledger without an account, an API key, or an onboarding call. Everything is free to use from this site. Agents and integrators pay per call over the <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent underline decoration-accent/40 hover:decoration-accent">x402</a> standard, settled in XRP or RLUSD on XRPL mainnet.
       </p>
     </div>
   </section>
