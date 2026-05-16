@@ -1925,10 +1925,23 @@ feed = session.post(
             const series = data.series || [];
             const yest = series.find(row => row.snapshot_date === yestStr);
             if (yest) {
-              const usd = (yest.institutional_usd || 0) + (yest.whale_usd || 0);
-              const cnt = (yest.institutional_count || 0) + (yest.whale_count || 0);
+              // Prefer the strict >=$1M aggregate when available (Pulse
+              // 1.39.0+). Falls back to the tier sum when null, which
+              // happens for rows whose source day predates the events-
+              // retention window (the rollup loop can't backfill strict
+              // fields without the raw event rows).
+              const hasStrict = (yest.strict_1m_usd !== null && yest.strict_1m_usd !== undefined);
+              const usd = hasStrict
+                ? yest.strict_1m_usd
+                : ((yest.institutional_usd || 0) + (yest.whale_usd || 0));
+              const cnt = hasStrict
+                ? yest.strict_1m_count
+                : ((yest.institutional_count || 0) + (yest.whale_count || 0));
               if (yestUsdEl) yestUsdEl.textContent = formatUsdShort(usd);
-              if (yestCntEl) yestCntEl.textContent = cnt + ' tx' + (cnt === 1 ? '' : 's');
+              if (yestCntEl) {
+                yestCntEl.textContent = cnt + ' tx' + (cnt === 1 ? '' : 's')
+                  + (hasStrict ? '' : ' (tier-approx)');
+              }
             } else if (yestUsdEl) {
               yestUsdEl.textContent = '$0';
               if (yestCntEl) yestCntEl.textContent = '0 txs';
