@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pricing | XRPL-Utilities</title>
-  <meta name="description" content="What every XRPL-Utilities paid endpoint returns and how to call it. Six agent-payable APIs at $0.10 USD per call via x402, plus the free endpoints that power the public dashboards." />
+  <meta name="description" content="What every XRPL-Utilities paid endpoint returns and how to call it. Six agent-payable APIs at $0.10 USD per call via x402. Live WebSocket subscriptions on Pulse from $0.50/hour. Free endpoints power the public dashboards." />
   <meta property="og:title" content="XRPL-Utilities Pricing" />
-  <meta property="og:description" content="Six agent-payable APIs at $0.10 USD per call. Wallet classification, normalized signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation." />
+  <meta property="og:description" content="Six agent-payable XRPL APIs at $0.10 per call via x402. Live WebSocket subscriptions on Pulse from $0.50/hr. Wallet classification, normalized signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation." />
   <meta property="og:url" content="https://xrpl-utilities.com/pricing/" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
@@ -19,7 +19,7 @@
         "@type": "WebPage",
         "@id": "https://xrpl-utilities.com/pricing/#page",
         "name": "XRPL-Utilities Pricing",
-        "description": "Six agent-payable XRPL APIs at $0.10 USD per call via x402 v2: XR-Sentinel (wallet classification), XR-Pulse (normalized signal feed), XR-Telemetry (network snapshot), XR-Trust (XLS-80 directory), XR-Vault (real-world asset tracker), XR-Flows (ETF flow correlation). XRP or RLUSD on XRPL mainnet, no account, no subscription.",
+        "description": "Six agent-payable XRPL APIs at $0.10 USD per call via x402 v2: XR-Sentinel (wallet classification), XR-Pulse (normalized signal feed), XR-Telemetry (network snapshot), XR-Trust (XLS-80 directory), XR-Vault (real-world asset tracker), XR-Flows (ETF flow correlation). XRP or RLUSD on XRPL mainnet, no account, no subscription. Live WebSocket streaming on Pulse from $0.50/hour.",
         "url": "https://xrpl-utilities.com/pricing/",
         "isPartOf": { "@id": "https://xrpl-utilities.com/#org" }
       },
@@ -42,7 +42,7 @@
   </script>
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="XRPL-Utilities Pricing" />
-  <meta name="twitter:description" content="Six agent-payable APIs at $0.10 USD per call. Wallet classification, normalized signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation." />
+  <meta name="twitter:description" content="Six agent-payable XRPL APIs at $0.10 per call via x402. Live WebSocket subscriptions on Pulse from $0.50/hr. Wallet classification, signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/logo.png" />
   <link rel="icon" type="image/png" href="/assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -132,9 +132,9 @@
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">Pricing</h1>
-      <p class="text-xl text-muted">Six agent-payable APIs at $0.10 per call</p>
+      <p class="text-xl text-muted">Six agent-payable APIs. $0.10 per call, or stream live from $0.50/hour.</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        Every paid endpoint speaks <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402 v2</a> on XRPL mainnet. XRP or RLUSD; either works. No API key, no account, no subscription. Pay per call. Treasury, facilitator, and settlement are all on-chain and verifiable. The free dashboards on this site are powered by the free endpoints listed below; the deep dives are paid.
+        Every paid endpoint speaks <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402 v2</a> on XRPL mainnet. XRP or RLUSD; either works. No API key, no account, no subscription. Pay per call for snapshot queries, or buy a time-boxed WebSocket window on Pulse to receive events as they fire. Treasury, facilitator, and settlement are all on-chain and verifiable. The free dashboards on this site are powered by the free endpoints listed below; the deep dives are paid.
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
@@ -147,7 +147,7 @@
   <section class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Paid endpoints</h2>
-      <h3 class="text-3xl font-bold mb-8">$0.10 USD per call</h3>
+      <h3 class="text-3xl font-bold mb-8">$0.10 USD per call &middot; streaming from $0.50/hour</h3>
 
       <div class="space-y-4">
         <!-- Sentinel -->
@@ -180,10 +180,23 @@
             </div>
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
-          <p class="text-sm text-muted leading-relaxed mb-3">
+          <p class="text-sm text-muted leading-relaxed mb-4">
             Six streams in one time-ordered feed: regulatory and central-bank news, on-chain whale activity, XLS-70/80/81 permissioned-domain events, Sentinel state-changes, real-world-asset mints and burns, and DID credentials. Every event carries source provenance.
           </p>
-          <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
+          <div class="border-t border-border/60 pt-4 mt-3">
+            <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold">Also &middot; live stream</span>
+                <code class="font-mono text-sm text-muted">POST /stream/purchase</code>
+                <code class="font-mono text-sm text-muted">WS /stream</code>
+              </div>
+              <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.50 / 1h &middot; $2.50 / 6h &middot; $7.50 / 24h</span>
+            </div>
+            <p class="text-sm text-muted leading-relaxed">
+              One x402 payment mints a JWT that opens a long-lived WebSocket. Events arrive as they fire (whales, news, RWA, permissioned-domain lifecycle), filtered server-side by source, signal, or min USD value. Reconnect with the same token until the window expires. v2 (planned) will swap the time-boxed billing for native XRPL Payment Channels with per-message claims.
+            </p>
+          </div>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap mt-4">
             <span class="font-mono">pulse.xrpl-utilities.io</span>
             <span>&middot;</span>
             <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>

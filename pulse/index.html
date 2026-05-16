@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>XR-Pulse | Live XRPL signal feed</title>
-  <meta name="description" content="Normalized XRPL signal feed: public-source news (regulatory press, central banks, crypto media) plus on-chain whale activity for every XRPL Payment above the storage threshold, all with institutional-watchlist labels. Free on the web, agent-payable via x402." />
+  <meta name="description" content="Normalized XRPL signal feed: public-source news (regulatory press, central banks, crypto media) plus on-chain whale activity, all with institutional-watchlist labels. Free on the web. Agent-payable via x402: $0.10 per query, or a live WebSocket stream from $0.50/hour." />
   <meta property="og:title" content="XR-Pulse" />
-  <meta property="og:description" content="XRPL signal feed: public-source news + on-chain whale activity in one normalized stream. Free on the web, $0.10 per query for agents over x402." />
+  <meta property="og:description" content="XRPL signal feed: news + on-chain whale activity in one normalized stream. Free on the web. Agents pay $0.10 per query or stream live via WebSocket from $0.50/hr." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/xr-pulse.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/pulse/" />
   <meta property="og:type" content="website" />
@@ -31,12 +31,20 @@
           "url": "https://xrpl-utilities.com",
           "logo": "https://xrpl-utilities.com/assets/logo.png"
         },
-        "offers": {
-          "@type": "Offer",
-          "price": "0.10",
-          "priceCurrency": "USD",
-          "description": "Per-query fee, payable in XRP or RLUSD via x402 protocol"
-        }
+        "offers": [
+          {
+            "@type": "Offer",
+            "price": "0.10",
+            "priceCurrency": "USD",
+            "description": "Per-query fee for /events/recent and /events/by-address, payable in XRP or RLUSD via x402 protocol"
+          },
+          {
+            "@type": "Offer",
+            "price": "0.50",
+            "priceCurrency": "USD",
+            "description": "Live WebSocket streaming subscription, 1-hour window. Per-message events pushed as they fire. 6h and 24h tiers also available ($2.50 and $7.50)."
+          }
+        ]
       },
       {
         "@type": "BreadcrumbList",
@@ -50,7 +58,7 @@
   </script>
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="XR-Pulse" />
-  <meta name="twitter:description" content="XRPL signal feed: public-source news + on-chain whale activity in one normalized stream. Free on the web, $0.10 per query for agents over x402." />
+  <meta name="twitter:description" content="XRPL signal feed: news + on-chain whale activity in one normalized stream. Free on the web. Agents pay $0.10 per query or stream live via WebSocket from $0.50/hr." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/xr-pulse.png" />
   <link rel="icon" type="image/png" href="/assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -482,17 +490,33 @@
       <div class="grid md:grid-cols-2 gap-8 md:gap-12">
         <div class="min-w-0">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
-          <h3 class="text-3xl font-bold mb-6">Pay $0.10 per query, no API key</h3>
+          <h3 class="text-3xl font-bold mb-6">Pay per query or stream live, no API key</h3>
           <p class="text-muted leading-relaxed mb-6">
             XR-Pulse implements <strong class="text-white">x402 v2</strong> with the
             <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
             Verification and settlement are delegated to the
             <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator.
+            Two ways to consume the feed: pay per snapshot, or buy a time-boxed WebSocket window
+            and receive events as they fire.
           </p>
-          <ol class="space-y-4 text-sm text-muted">
+          <div class="grid sm:grid-cols-2 gap-3 mb-6">
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Per query &middot; $0.10</div>
+              <div class="text-sm text-muted leading-relaxed">
+                <code class="font-mono text-white">POST /events/recent</code> returns a snapshot of the most recent matched events. One payment, one response. Right for polling agents and one-off lookups.
+              </div>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Live stream &middot; from $0.50/hr</div>
+              <div class="text-sm text-muted leading-relaxed">
+                <code class="font-mono text-white">POST /stream/purchase</code> mints a JWT that opens a long-lived WebSocket at <code class="font-mono text-white">wss://pulse&hellip;/stream</code>. Events arrive as they fire. 1h $0.50, 6h $2.50, 24h $7.50.
+              </div>
+            </div>
+          </div>
+          <ol class="space-y-3 text-sm text-muted">
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">1.</span>
-              <span><code class="font-mono text-white">POST /events/recent</code> returns <code class="font-mono text-white">402 Payment Required</code> with two options: XRP or RLUSD.</span>
+              <span>Hit either paid endpoint &mdash; it returns <code class="font-mono text-white">402 Payment Required</code> with two options: XRP or RLUSD.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">2.</span>
@@ -500,7 +524,7 @@
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">3.</span>
-              <span>Server verifies, retrieves the feed, then settles. Returns <code class="font-mono text-white">200</code> with the JSON and a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
+              <span>Server verifies, runs the work (or mints a stream token), then settles. Returns <code class="font-mono text-white">200</code> with a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
             </li>
           </ol>
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
