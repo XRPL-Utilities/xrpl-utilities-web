@@ -57,6 +57,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/assets/preview-token.js?v=v1"></script>
   <script>
@@ -178,14 +179,14 @@
   <section>
     <div class="max-w-4xl mx-auto px-6 pb-10">
       <div class="grid grid-cols-2 gap-3">
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Domains tracked</div>
-          <div id="stat-domains" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
+        <div class="stat-tile stat-tile-glow p-4">
+          <div class="stat-tile-label mb-2">Domains tracked</div>
+          <div id="stat-domains" class="stat-tile-value"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
         </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Credential issuers</div>
-          <div id="stat-issuers" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="text-[10px] text-muted mt-1">addresses issuing in-use credentials</div>
+        <div class="stat-tile stat-tile-gold p-4">
+          <div class="stat-tile-label mb-2">Credential issuers</div>
+          <div id="stat-issuers" class="stat-tile-value"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="stat-tile-sub mt-2">addresses issuing in-use credentials</div>
         </div>
       </div>
     </div>
@@ -194,10 +195,10 @@
   <!-- JURISDICTIONS ROLLUP -->
   <section>
     <div class="max-w-4xl mx-auto px-6 pb-10">
-      <div class="bg-panel border border-border rounded-xl p-4 sm:p-6">
+      <div class="stat-tile p-5 sm:p-6">
         <div class="flex items-baseline justify-between gap-3 mb-3">
           <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Regulatory jurisdictions on XRPL</h3>
-          <span id="stat-jurisdictions" class="text-xs text-muted font-mono">&hellip;</span>
+          <span id="stat-jurisdictions" class="stat-tile-sub text-[11px]">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-4">
           Where the entities running XRPL's permissioned stack are headquartered, attributed per-address from operator-curated identity, on-chain TOML, and external-label domain ccTLDs. Country-as-vanity TLDs (.io, .ai) are not inferred from. Missing &gt; inaccurate.
@@ -213,10 +214,10 @@
   <!-- ACTIVE OPERATORS (24h) -->
   <section id="active-operators">
     <div class="max-w-4xl mx-auto px-6 pb-10">
-      <div class="bg-panel border border-border rounded-xl p-4 sm:p-6">
+      <div class="stat-tile stat-tile-glow p-5 sm:p-6">
         <div class="flex items-baseline justify-between gap-3 mb-3">
           <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Active operators (24h)</h3>
-          <span id="stat-operators" class="text-xs text-muted font-mono">&hellip;</span>
+          <span id="stat-operators" class="stat-tile-sub text-[11px]">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-4">
           Per-operator rollup over the last 24 hours: domain count, permissioned offers placed inside their domain, unique traders, and on-chain execution volume per currency pair (native units, no USD conversion). Sourced from XR-Trust's live ledger feed, which captures every <code class="font-mono text-white">OfferCreate</code> inside a permissioned domain at validation time. Operators with no 24h activity are hidden.

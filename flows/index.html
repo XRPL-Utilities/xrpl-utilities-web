@@ -51,6 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script>
     tailwind.config = {
@@ -186,26 +187,26 @@
   <section id="flows-summary">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-4">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Total tracked AUM</div>
-          <div id="stat-flows-aum" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="text-[10px] text-muted mt-1">USD, US spot + indirect + European ETP</div>
-          <div id="stat-flows-aum-european" class="text-[10px] text-muted/80 mt-0.5 font-mono"></div>
+        <div class="stat-tile stat-tile-glow p-4">
+          <div class="stat-tile-label mb-2">Total tracked AUM</div>
+          <div id="stat-flows-aum" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="stat-tile-sub mt-2">USD, US spot + indirect + European ETP</div>
+          <div id="stat-flows-aum-european" class="stat-tile-sub text-[10px] mt-0.5"></div>
         </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Day-over-day change</div>
-          <div id="stat-flows-delta" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div id="stat-flows-delta-detail" class="text-[10px] text-muted mt-1">across the tracked set</div>
+        <div class="stat-tile stat-tile-gold p-4">
+          <div class="stat-tile-label mb-2">Day-over-day change</div>
+          <div id="stat-flows-delta" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-flows-delta-detail" class="stat-tile-sub mt-2">across the tracked set</div>
         </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">XRP attributable</div>
-          <div id="stat-flows-xrp" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="text-[10px] text-muted mt-1">XRP held under ETF wrappers</div>
+        <div class="stat-tile p-4">
+          <div class="stat-tile-label mb-2">XRP attributable</div>
+          <div id="stat-flows-xrp" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="stat-tile-sub mt-2">XRP held under ETF wrappers</div>
         </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Tickers tracked</div>
-          <div id="stat-flows-tickers" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div id="stat-flows-tickers-detail" class="text-[10px] text-muted mt-1">live + stubbed pending coverage</div>
+        <div class="stat-tile stat-tile-muted p-4">
+          <div class="stat-tile-label mb-2">Tickers tracked</div>
+          <div id="stat-flows-tickers" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-flows-tickers-detail" class="stat-tile-sub mt-2">live + stubbed pending coverage</div>
         </div>
       </div>
     </div>
