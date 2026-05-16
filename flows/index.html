@@ -51,6 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/glossary-tooltip.js?v=v1" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script>
@@ -306,34 +307,58 @@
     </div>
   </section>
 
-  <section class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">How XR-Flows reads the data</h2>
+  <!-- METHODOLOGY (merged from prior "How XR-Flows reads the data"
+       + "What this tracks" sections; consolidates ETF tier handling,
+       data sources, correlation framing, and launch-window analysis
+       into one source of truth). -->
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Methodology</h2>
+      <h3 class="text-3xl font-bold mb-8">Two independent measurements, one date axis</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
         <div class="bg-panel border border-border rounded-xl p-6">
-          <h3 class="text-white font-semibold mb-2">Two independent measurements, one date axis</h3>
+          <h4 class="text-white font-semibold mb-2">Off-chain AUM</h4>
           <p class="text-muted text-sm leading-relaxed">
-            ETF AUM is scraped daily from each issuer's public dashboard. XRPL exchange-flow delta comes from XR-Pulse, measuring net XRP moving in and out of known exchange wallets per UTC day. These are independent data sources; XR-Flows plots them side by side and computes a rolling 7-day Pearson coefficient as a directional alignment score.
+            ETF AUM is scraped daily from each issuer's public dashboard after the US market close. <span class="text-white">Spot tier</span> funds hold XRP directly via institutional custody (Coinbase Custody, BitGo, Anchorage). <span class="text-white">Indirect-basket tier</span> funds hold XRP alongside other large-cap crypto; we persist only the XRP-attributable slice (weight &times; total basket AUM). Each snapshot row carries a source label for lineage audit.
           </p>
         </div>
+
         <div class="bg-panel border border-border rounded-xl p-6">
-          <h3 class="text-white font-semibold mb-2">Correlation, never causation</h3>
+          <h4 class="text-white font-semibold mb-2">On-chain flow</h4>
           <p class="text-muted text-sm leading-relaxed">
-            ETFs hold XRP via pooled institutional custody (Coinbase Custody, BitGo, Anchorage). A custodian wallet on XRPL serves many clients, not a single fund. XR-Flows does not attempt to attribute on-chain wallets to specific ETFs. A high correlation says the two series moved together, nothing more.
+            XRPL exchange-flow delta comes from XR-Pulse, measuring net XRP moving in and out of labeled exchange wallets per UTC day. Positive = XRP left exchange custody (off-exchange accumulation); negative = XRP arrived at exchanges (sell-side accumulation). Independent of the AUM scrape; plotted on the same axis.
           </p>
         </div>
+
         <div class="bg-panel border border-border rounded-xl p-6">
-          <h3 class="text-white font-semibold mb-2">Issuer-reported AUM</h3>
+          <h4 class="text-white font-semibold mb-2">Correlation, never causation</h4>
+          <p class="text-muted text-sm leading-relaxed">
+            A custodian wallet on XRPL serves many clients, not a single fund. XR-Flows does not attempt to attribute on-chain wallets to specific ETFs. The rolling 7-day Pearson coefficient is a directional alignment score &mdash; if the two series moved together, nothing more.
+          </p>
+        </div>
+
+        <div class="bg-panel border border-border rounded-xl p-6">
+          <h4 class="text-white font-semibold mb-2">AUM is issuer-reported</h4>
           <p class="text-muted text-sm leading-relaxed">
             AUM is what each issuer publishes. We do not cross-validate it against on-chain spot price times XRP held; different sources, different timestamps. The issuer's number is the official number for our purposes. Per-scraper freshness is exposed on /healthz so consumers can tell when a dashboard parser breaks.
           </p>
         </div>
+
         <div class="bg-panel border border-border rounded-xl p-6">
-          <h3 class="text-white font-semibold mb-2">Launch-event window analysis</h3>
+          <h4 class="text-white font-semibold mb-2">Launch-event window analysis</h4>
           <p class="text-muted text-sm leading-relaxed">
-            For each ETF, the 7 days before and the 7 days from launch are summarised separately (window is tunable up to 30 each side). The post-window vs pre-window ratio of institutional and whale-grade XRP transfer flow is the headline launch-impact figure. Launches that predate our daily-rollup horizon return an honest no-data marker rather than synthetic zeros.
+            For each ETF, the 7 days before and the 7 days from launch are summarised separately (window tunable up to 30 each side). The post-window vs pre-window ratio of institutional and whale-grade XRP transfer flow is the headline launch-impact figure. Pre-rollup launches return an honest no-data marker rather than synthetic zeros.
           </p>
         </div>
+
+        <div class="bg-panel border border-border rounded-xl p-6">
+          <h4 class="text-white font-semibold mb-2">Auto-discovery + public sources only</h4>
+          <p class="text-muted text-sm leading-relaxed">
+            No paid feeds. Direct issuer dashboards where data is exposed in static HTML, plus secondary public-source fallbacks where issuer pages are gated. A discovery loop watches SEC's public ticker index for new XRP ETFs and surfaces candidates at <code class="font-mono text-white">/stats/etf-candidates</code> for operator review.
+          </p>
+        </div>
+
       </div>
     </div>
   </section>
@@ -351,38 +376,6 @@
         <div class="text-white font-mono text-sm">/healthz</div>
         <p class="text-muted text-xs mt-2">Per-scraper freshness, DB state, upstream Pulse.</p>
       </a>
-    </div>
-  </section>
-
-  <!-- WHAT THIS TRACKS -->
-  <section class="border-t border-border bg-panel/30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">What this tracks</h2>
-      <h3 class="text-3xl font-bold mb-6">Off-chain AUM, on-chain flow, plotted honestly</h3>
-      <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-muted leading-relaxed">
-        <div>
-          <p class="mb-4">
-            <span class="text-white">Spot tier.</span> Funds that hold XRP directly in institutional custody and issue shares against it. AUM is what the issuer reports on its public dashboard, refreshed from public sources after each US market close. The live tracked set is rendered on the page above and grows as new spot products list and surface in SEC's ticker index.
-          </p>
-          <p class="mb-4">
-            <span class="text-white">Indirect-basket tier.</span> Multi-asset crypto funds that hold XRP as one component alongside Bitcoin, Ether, and others. We persist the XRP-attributable slice only (XRP weight times total basket AUM), not the full basket. Chart math separates the two tiers so the spot signal stays clean.
-          </p>
-          <p>
-            <span class="text-white">Public sources only, no paid feeds.</span> Direct issuer dashboards where the data is exposed in static HTML, plus secondary public-source fallbacks where issuer pages are gated. Each snapshot row carries a source label so consumers can audit lineage.
-          </p>
-        </div>
-        <div>
-          <p class="mb-4">
-            <span class="text-white">XRPL exchange-flow on the other axis.</span> The chain side reads XR-Pulse's daily exchange-flow delta, which measures net XRP moving in and out of labeled exchange wallets per UTC day. Positive means XRP left exchange custody (off-exchange accumulation pattern); negative means XRP arrived at exchanges (sell-side accumulation pattern).
-          </p>
-          <p class="mb-4">
-            <span class="text-white">Correlation, never causation.</span> ETFs hold XRP through pooled custody at Coinbase Custody, BitGo, Anchorage. A custodian wallet serves every shareholder collectively, not a single fund. We measure both sides independently and let consumers draw their own inference. A high Pearson coefficient says the two series moved together, nothing more.
-          </p>
-          <p>
-            <span class="text-white">Auto-discovery for the long tail.</span> Our discovery loop watches the SEC's public ticker index for new XRP-related ETFs and surfaces candidates at /stats/etf-candidates. New launches get reviewed and either promoted to the operator-curated registry or dismissed. The next Hashdex or 21Shares product on US exchanges lands here automatically.
-          </p>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -532,7 +525,7 @@
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. ETF AUM is issuer-reported; XRPL data is on-chain measurement. Correlation only, never causation. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. ETF AUM is issuer-reported; XRPL data is on-chain measurement. Correlation only, never causation. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>

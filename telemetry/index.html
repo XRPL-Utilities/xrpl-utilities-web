@@ -60,6 +60,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
+  <script src="/assets/glossary-tooltip.js?v=v1" defer></script>
   <script src="/assets/preview-token.js?v=v1"></script>
   <script src="/assets/telemetry-flow.js?v=vault-xref-2"></script>
   <script>
@@ -210,15 +211,20 @@
         </div>
       </div>
 
-      <div class="mt-6 bg-panel border border-border rounded-2xl p-6">
-        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Why these numbers differ</div>
-        <p class="text-sm text-muted leading-relaxed mb-3">
-          When an exchange holds ~6.5B XRP across its labeled wallets, most of that is user balances backing trades and withdrawals, not depth a market sweep can hit inside a few seconds. Counting full exchange holdings as "available" overstates how much can clear in a settlement burst.
-        </p>
-        <p class="text-sm text-muted leading-relaxed">
-          Active Float applies an <span id="af-ratio-prose">10%</span> multiplier on exchange holdings as an estimate of what's genuinely on the book at any moment, then adds XRP committed to liquidity pools (swappable inside a single ledger close) and XRP resting in open offers on XRPL's native order book. The paid <code class="font-mono text-white">/scan</code> response includes every input number and the multiplier so anyone receiving the data can recompute under their own assumptions.
-        </p>
-      </div>
+      <details class="mt-6 bg-panel border border-border rounded-2xl group">
+        <summary class="cursor-pointer list-none px-6 py-4 flex items-center justify-between gap-4 hover:bg-panel/60 rounded-2xl transition">
+          <span class="text-xs uppercase tracking-widest text-accent font-semibold">How to read this</span>
+          <span class="text-xl text-accent group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-6 -mt-1">
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            When an exchange holds ~6.5B XRP across its labeled wallets, most of that is user balances backing trades and withdrawals, not depth a market sweep can hit inside a few seconds. Counting full exchange holdings as "available" overstates how much can clear in a settlement burst.
+          </p>
+          <p class="text-sm text-muted leading-relaxed">
+            Active Float applies an <span id="af-ratio-prose">10%</span> multiplier on exchange holdings as an estimate of what's genuinely on the book at any moment, then adds XRP committed to liquidity pools (swappable inside a single ledger close) and XRP resting in open offers on XRPL's native order book. The paid <code class="font-mono text-white">/scan</code> response includes every input number and the multiplier so anyone receiving the data can recompute under their own assumptions.
+          </p>
+        </div>
+      </details>
 
     </div>
   </section>
@@ -340,11 +346,8 @@
 
         <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
-          <p class="mb-3">
-            <strong class="text-accent">P</strong> typically comes out far below the market price. That's the point. Today's liquid supply, at the assumed velocity, can clear the assumed settlement using only a fraction of XRP's market value as utility. Pure settlement-floor math doesn't justify today's spot.
-          </p>
           <p class="mb-4">
-            The gap between P and the market is everything else XRP is priced for: bets on future adoption, the fixed 100B supply cap, and store-of-value behavior. None of that is in this math, by design. Burst Math is settlement-only. A floor, not a forecast.
+            <strong class="text-accent">P</strong> usually comes out far below market price. That's the point: pure settlement math is a floor, not a forecast. The gap is everything else XRP is priced for (adoption bets, scarcity, store-of-value), and none of that is in this calculation by design.
           </p>
           <p class="mb-2 text-accent font-semibold uppercase tracking-widest text-xs">What would push P up</p>
           <ul class="space-y-2 mb-4">
@@ -358,10 +361,15 @@
           <p class="mb-4">
             The Floor Matrix below compounds either dynamic forward 24 months.
           </p>
-          <p class="mb-2 text-accent font-semibold uppercase tracking-widest text-xs">Q sanity-check from ETF flow</p>
-          <p>
-            The /scan response also carries an <code class="font-mono text-white">algebraic_p_at_assumed_qv_usd_flows_biased</code> field next to the canonical P. It applies a bounded nudge (&pm;10% max) to Q based on how tightly ETF AUM moves with XRPL exchange flow over the trailing window: tighter alignment nudges Q up, decoupling nudges down. The canonical P stays operator-controlled so the headline doesn't move with weekly noise; the biased value is a side-by-side comparator only.
-          </p>
+          <details class="group border-t border-border/40 pt-3 -mx-1">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-3 py-1 px-1 hover:bg-panel/40 rounded transition">
+              <span class="text-accent font-semibold uppercase tracking-widest text-xs">Q sanity-check from ETF flow</span>
+              <span class="text-base text-accent group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 px-1">
+              The /scan response also carries an <code class="font-mono text-white">algebraic_p_at_assumed_qv_usd_flows_biased</code> field next to the canonical P. It applies a bounded nudge (&pm;10% max) to Q based on how tightly ETF AUM moves with XRPL exchange flow over the trailing window: tighter alignment nudges Q up, decoupling nudges down. The canonical P stays operator-controlled so the headline doesn't move with weekly noise; the biased value is a side-by-side comparator only.
+            </p>
+          </details>
         </div>
       </div>
     </div>
@@ -542,36 +550,30 @@
         </div>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-6 mt-6">
-        <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
-          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Reading the controls</div>
-          <p class="mb-3">
+      <p class="text-sm text-muted leading-relaxed mt-6 max-w-3xl">
+        Small monthly rates compound aggressively. 1% per month of supply constriction works out to ~21% of supply gone in 24 months; 2% monthly volume growth compounds to ~1.6&times; Q. Watch where the baseline crosses the dashed market line. <strong class="text-white">Sensitivity, not forecast.</strong>
+      </p>
+
+      <details class="mt-4 bg-panel border border-border rounded-2xl group">
+        <summary class="cursor-pointer list-none px-6 py-4 flex items-center justify-between gap-4 hover:bg-panel/60 rounded-2xl transition">
+          <span class="text-xs uppercase tracking-widest text-accent font-semibold">How to read the controls</span>
+          <span class="text-xl text-accent group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-6 -mt-1 text-sm text-muted leading-relaxed grid md:grid-cols-2 gap-x-8 gap-y-3">
+          <p>
             <strong class="text-accent">Starting price</strong> &middot; today's implied floor. Copied live from Burst Math. Re-anchor by tweaking Q or V there.
           </p>
-          <p class="mb-3">
+          <p>
             <strong class="text-accent">Monthly supply constriction</strong> &middot; how fast liquid M shrinks each month. 1% per month means 1% of M exits each month into AMM pools, cold custody, escrow, or dormancy.
           </p>
-          <p class="mb-3">
+          <p>
             <strong class="text-accent">Monthly volume growth</strong> &middot; how fast annual settlement Q grows each month. Compounds geometrically.
           </p>
           <p>
-            <strong class="text-accent">&plusmn;15% band</strong> &middot; visual reminder that the baseline is a point estimate. Not a statistical confidence interval.
+            <strong class="text-accent">&plusmn;15% band</strong> &middot; visual reminder that the baseline is a point estimate. Not a statistical confidence interval. The slider ranges (constriction max 1.5%, growth max 2%) are intentionally narrow: wider ranges produce numbers the model cannot honestly defend.
           </p>
         </div>
-
-        <div class="bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
-          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What it means</div>
-          <p class="mb-3">
-            Small monthly rates compound aggressively. 1% per month of supply constriction works out to about 21% of supply gone in 24 months. 2% per month of volume growth compounds to about 1.6&times; Q over the same window. Both push P up. The slider ranges (constriction max 1.5%, growth max 2%) are intentionally narrow: the math is sensitivity analysis, not a price target, and wider ranges produced screenshot-friendly numbers the model cannot honestly defend.
-          </p>
-          <p class="mb-3">
-            Watch where the baseline crosses the grey dashed line representing today's market. That crossover is the math saying: under these specific assumptions, the implied floor catches up to where XRP trades today, somewhere in the next 24 months.
-          </p>
-          <p>
-            Sensitivity, not forecast. Regulatory regime, macro liquidity, AMM depth, and exchange behavior all matter, and none of them compound smoothly. Treat the chart as "what would the math say if these specific rates held" rather than a price target.
-          </p>
-        </div>
-      </div>
+      </details>
     </div>
   </section>
 
@@ -838,7 +840,7 @@ payload = requests.get(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>

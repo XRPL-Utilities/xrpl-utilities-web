@@ -67,6 +67,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/assets/preview-token.js?v=v1"></script>
+  <script src="/assets/glossary-tooltip.js?v=v1" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script>
     tailwind.config = {
@@ -217,9 +218,10 @@
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <img src="/assets/xr-pulse.png" alt="XR-Pulse" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted">Live XRPL signal feed</p>
+      <p class="text-xl text-muted">Live <span class="gloss" data-term="xrpl">XRPL</span> signal feed</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        News, on-chain whale activity, and permissioned-domain events on
+        News, on-chain <span class="gloss" data-term="whale-tier">whale</span> activity, and
+        <span class="gloss" data-term="permissioned-domain">permissioned-domain</span> events on
         XRPL, combined into one time-ordered feed with the context behind
         each entry. No editorial scoring. No source ranking. No social scraping.
       </p>
@@ -742,7 +744,7 @@ feed = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>

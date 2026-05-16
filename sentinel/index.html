@@ -57,6 +57,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/glossary-tooltip.js?v=v1" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/assets/preview-token.js?v=v1"></script>
@@ -352,46 +353,59 @@ report = session.post(
     </div>
   </section>
 
+  <!-- Trust paths: institutional-engineering disclosure. Demoted to a
+       collapsed details so casual scrollers aren't forced through it
+       before they understand the output. Institutional readers who care
+       about auth + parity guarantees still find it one click away. -->
   <section id="trust-paths" class="border-t border-border">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Trust paths</h2>
-      <h3 class="text-3xl font-bold mb-2">One response shape, three entry points</h3>
-      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        XR-Sentinel is reachable via three paths. They serve different audiences and bill differently, but the <code class="font-mono text-white">PatternReport</code> shape is identical across all three. A consumer can pin one response model and rely on it regardless of how the call was billed.
-      </p>
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+      <details class="bg-panel/40 border border-border rounded-2xl group">
+        <summary class="cursor-pointer list-none px-6 py-5 flex items-center justify-between gap-4 hover:bg-panel/60 rounded-2xl transition">
+          <div class="flex items-baseline gap-3 flex-wrap">
+            <span class="text-xs uppercase tracking-widest text-accent font-semibold">Trust paths</span>
+            <span class="text-sm text-white font-semibold">One response shape, three entry points</span>
+          </div>
+          <span class="text-xl text-accent shrink-0 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-6 -mt-1">
+          <p class="text-sm text-muted leading-relaxed mb-6 max-w-2xl">
+            XR-Sentinel is reachable via three paths. They serve different audiences and bill differently, but the <code class="font-mono text-white">PatternReport</code> shape is identical across all three. A consumer can pin one response model and rely on it regardless of how the call was billed.
+          </p>
 
-      <div class="grid lg:grid-cols-3 gap-4">
-        <div class="stat-tile stat-tile-glow p-6">
-          <div class="stat-tile-label mb-3" style="color: rgba(0,184,255,0.95);">Paid x402</div>
-          <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-muted">null</span></div>
-          <p class="text-sm text-muted leading-relaxed">
-            <code class="font-mono text-white">PAYMENT-SIGNATURE</code> header. $0.10 per scan, billed on success. <code class="font-mono text-white">PAYMENT-RESPONSE</code> attached on response. Standard agent path.
-          </p>
-        </div>
-        <div class="stat-tile stat-tile-gold p-6">
-          <div class="stat-tile-label mb-3">Sister product</div>
-          <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-white">sister_product</span></div>
-          <p class="text-sm text-muted leading-relaxed">
-            <code class="font-mono text-white">X-Sister-Product-Key</code> header from a sibling XR-* service. Server-to-server, no billing. Currently used by XR-Pulse for inline counterparty lookups.
-          </p>
-        </div>
-        <div class="stat-tile stat-tile-muted p-6">
-          <div class="stat-tile-label mb-3">Preview token</div>
-          <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-white">preview-token</span></div>
-          <p class="text-sm text-muted leading-relaxed">
-            Cloudflare Turnstile-issued JWT. Used for the in-browser preview on this page. Short TTL, signed by us, free from the operator's quota.
-          </p>
-        </div>
-      </div>
+          <div class="grid lg:grid-cols-3 gap-4">
+            <div class="stat-tile stat-tile-glow p-5">
+              <div class="stat-tile-label mb-2" style="color: rgba(0,184,255,0.95);">Paid x402</div>
+              <div class="text-sm font-bold mb-2 font-mono">served_via: <span class="text-muted">null</span></div>
+              <p class="text-xs text-muted leading-relaxed">
+                <code class="font-mono text-white">PAYMENT-SIGNATURE</code> header. $0.10 per scan, billed on success. <code class="font-mono text-white">PAYMENT-RESPONSE</code> attached on response. Standard agent path.
+              </p>
+            </div>
+            <div class="stat-tile stat-tile-gold p-5">
+              <div class="stat-tile-label mb-2">Sister product</div>
+              <div class="text-sm font-bold mb-2 font-mono">served_via: <span class="text-white">sister_product</span></div>
+              <p class="text-xs text-muted leading-relaxed">
+                <code class="font-mono text-white">X-Sister-Product-Key</code> header from a sibling XR-* service. Server-to-server, no billing. Currently used by XR-Pulse for inline counterparty lookups.
+              </p>
+            </div>
+            <div class="stat-tile stat-tile-muted p-5">
+              <div class="stat-tile-label mb-2">Preview token</div>
+              <div class="text-sm font-bold mb-2 font-mono">served_via: <span class="text-white">preview-token</span></div>
+              <p class="text-xs text-muted leading-relaxed">
+                Cloudflare Turnstile-issued JWT. Used for the in-browser preview on this page. Short TTL, signed by us, free from the operator's quota.
+              </p>
+            </div>
+          </div>
 
-      <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
-        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Parity guarantees</div>
-        <ul class="space-y-2">
-          <li><strong class="text-white">Shape:</strong> identical <code class="font-mono text-white">PatternReport</code> key set across all three paths. Only the <code class="font-mono text-white">served_via</code> field and the presence of <code class="font-mono text-white">PAYMENT-RESPONSE</code> differ.</li>
-          <li><strong class="text-white">Rate limit:</strong> shared per-client-fingerprint bucket applied before any auth check. No path can exceed the documented rate budget.</li>
-          <li><strong class="text-white">Tested:</strong> the two parity guarantees are asserted by tests in the live repo. The full <code class="font-mono text-white">trust_paths</code> contract lives in <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">agents.json</a> alongside the per-path descriptions.</li>
-        </ul>
-      </div>
+          <div class="mt-5 bg-panel border border-border rounded-xl p-5 text-xs text-muted leading-relaxed">
+            <div class="text-[10px] uppercase tracking-widest text-accent font-semibold mb-2">Parity guarantees</div>
+            <ul class="space-y-1.5">
+              <li><strong class="text-white">Shape:</strong> identical <code class="font-mono text-white">PatternReport</code> key set across all three paths. Only the <code class="font-mono text-white">served_via</code> field and the presence of <code class="font-mono text-white">PAYMENT-RESPONSE</code> differ.</li>
+              <li><strong class="text-white">Rate limit:</strong> shared per-client-fingerprint bucket applied before any auth check. No path can exceed the documented rate budget.</li>
+              <li><strong class="text-white">Tested:</strong> parity guarantees asserted by tests in the live repo. Full <code class="font-mono text-white">trust_paths</code> contract in <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">agents.json</a>.</li>
+            </ul>
+          </div>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -840,7 +854,7 @@ report = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. Void in CA/CO. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>
@@ -1064,6 +1078,98 @@ report = session.post(
           driftEl.classList.remove("hidden");
         }
       } catch (_) { /* no-op; static count remains */ }
+    })();
+
+    // ------------------------------------------------------------------
+    // Signal-glossary UX: collapse each category by default + add a
+    // top-of-glossary search box that filters flag names + descriptions
+    // in-place. Runs after DOMContentLoaded so the static markup is the
+    // source of truth - no HTML edits required to add or remove flags.
+    // ------------------------------------------------------------------
+    (function glossarySearchCollapse() {
+      const root = document.getElementById('signal-glossary');
+      if (!root) return;
+
+      // Build collapsed-by-default category sections from each existing
+      // <h4> + adjacent <dl> pair. Move the dl inside a new <details>
+      // and replace the standalone h4 with a custom <summary> that
+      // carries the same label + a flag-count chip.
+      const headers = Array.from(root.querySelectorAll('h4'));
+      headers.forEach(h4 => {
+        const dl = h4.nextElementSibling;
+        if (!dl || dl.tagName !== 'DL') return;
+        const catName = h4.textContent.trim();
+        const flagCount = dl.querySelectorAll(':scope > div').length;
+
+        const details = document.createElement('details');
+        details.className = 'signal-cat border-t border-border/40 mt-6 pt-4';
+        details.dataset.category = catName;
+
+        const summary = document.createElement('summary');
+        summary.className = 'cursor-pointer list-none flex items-center justify-between gap-4 py-2';
+        summary.innerHTML =
+          '<div class="flex items-baseline gap-3">' +
+          '<span class="text-xs uppercase tracking-widest text-accent font-semibold">' + catName + '</span>' +
+          '<span class="text-[10px] text-muted/70 font-mono">' + flagCount + ' flag' + (flagCount === 1 ? '' : 's') + '</span>' +
+          '</div>' +
+          '<span class="text-xl text-accent shrink-0">▾</span>';
+
+        details.appendChild(summary);
+        // Insert the new <details> where the h4 used to sit, then move
+        // the <dl> into it. h4 itself is no longer needed.
+        h4.parentNode.insertBefore(details, h4);
+        details.appendChild(dl);
+        h4.remove();
+      });
+
+      // Inject the search input right after the existing intro <p>.
+      const intro = root.querySelector('p');
+      if (!intro) return;
+      const searchWrap = document.createElement('div');
+      searchWrap.className = 'mt-2 mb-2 relative';
+      searchWrap.innerHTML =
+        '<input id="glossary-search" type="search" placeholder="Search flags or descriptions…" ' +
+        'class="w-full bg-ink border border-border rounded-lg px-4 py-2.5 text-sm text-white ' +
+        'placeholder:text-muted focus:border-accent focus:outline-none transition" />' +
+        '<p id="glossary-search-status" class="text-[10px] text-muted/60 mt-1.5 font-mono hidden"></p>';
+      intro.insertAdjacentElement('afterend', searchWrap);
+
+      const input    = document.getElementById('glossary-search');
+      const status   = document.getElementById('glossary-search-status');
+      const allFlags = root.querySelectorAll('dl > div');
+      const allCats  = root.querySelectorAll('details.signal-cat');
+
+      function applyFilter(q) {
+        q = (q || '').trim().toLowerCase();
+        if (!q) {
+          allFlags.forEach(el => { el.style.display = ''; });
+          allCats.forEach(d => { d.open = false; });
+          status.classList.add('hidden');
+          return;
+        }
+        let matchCount = 0;
+        const matchedDls = new Set();
+        allFlags.forEach(el => {
+          const hit = el.textContent.toLowerCase().includes(q);
+          el.style.display = hit ? '' : 'none';
+          if (hit) {
+            matchCount += 1;
+            matchedDls.add(el.parentElement);
+          }
+        });
+        allCats.forEach(d => {
+          const dl = d.querySelector('dl');
+          d.open = matchedDls.has(dl);
+        });
+        status.textContent = matchCount + ' flag' + (matchCount === 1 ? '' : 's') + ' match "' + q + '"';
+        status.classList.remove('hidden');
+      }
+
+      input.addEventListener('input', () => applyFilter(input.value));
+      // Auto-open the glossary <details> when the user starts typing,
+      // otherwise the search box is invisible. (User has to click the
+      // glossary title first today.)
+      input.addEventListener('focus', () => { root.open = true; });
     })();
   </script>
 
