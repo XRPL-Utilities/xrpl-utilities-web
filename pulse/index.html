@@ -256,6 +256,7 @@
               <span id="whale-day-today-usd" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">--</span>
               <span id="whale-day-today-count" class="text-xs text-muted/70 font-mono">--</span>
             </div>
+            <p class="text-[10px] text-muted/60 mt-2"><span id="whale-day-today-coverage" class="font-mono">--</span> of XRPL settlement</p>
           </div>
           <div class="bg-panel/40 border border-border rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
@@ -266,8 +267,15 @@
               <span id="whale-day-yest-usd" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">--</span>
               <span id="whale-day-yest-count" class="text-xs text-muted/70 font-mono">--</span>
             </div>
+            <p class="text-[10px] text-muted/60 mt-2"><span id="whale-day-yest-coverage" class="font-mono">--</span> of XRPL settlement</p>
           </div>
         </div>
+        <p class="mt-3 text-[10px] text-muted/50 leading-relaxed">
+          Coverage ratio: the $1M+ whale total divided by total XRPL settlement volume
+          for that UTC day, where the denominator is XR-Telemetry's independent count of
+          every successful XRP + RLUSD Payment (any size). Honest framing of how much of
+          XRPL economic activity moves through transactions Pulse considers whales.
+        </p>
       </div>
     </div>
   </section>
@@ -1726,14 +1734,26 @@ feed = session.post(
     // via the preview-token JWT (Turnstile-issued by Cloudflare Pages).
     // ----------------------------------------------------------------------
     (function whales24h() {
-      const listEl       = document.getElementById('whale-24h-list');
-      const metaEl       = document.getElementById('whale-24h-meta');
-      const todayUsdEl   = document.getElementById('whale-day-today-usd');
-      const todayCntEl   = document.getElementById('whale-day-today-count');
-      const yestUsdEl    = document.getElementById('whale-day-yest-usd');
-      const yestCntEl    = document.getElementById('whale-day-yest-count');
-      const yestLabelEl  = document.getElementById('whale-day-yest-label');
+      const listEl         = document.getElementById('whale-24h-list');
+      const metaEl         = document.getElementById('whale-24h-meta');
+      const todayUsdEl     = document.getElementById('whale-day-today-usd');
+      const todayCntEl     = document.getElementById('whale-day-today-count');
+      const todayCovEl     = document.getElementById('whale-day-today-coverage');
+      const yestUsdEl      = document.getElementById('whale-day-yest-usd');
+      const yestCntEl      = document.getElementById('whale-day-yest-count');
+      const yestCovEl      = document.getElementById('whale-day-yest-coverage');
+      const yestLabelEl    = document.getElementById('whale-day-yest-label');
       if (!listEl) return;
+
+      const TELEMETRY_BASE = 'https://telemetry.xrpl-utilities.io';
+      // Cache the last-seen UTC-day settlement totals across refresh
+      // ticks so a transient Telemetry hiccup doesn't blank the
+      // coverage line (we just keep the previous value visible).
+      const settlementByDay = {};  // 'YYYY-MM-DD' -> total_usd
+      // Cache the last-seen Pulse whale $ totals so coverage updates
+      // can run as soon as either side's fetch lands, without waiting
+      // for the other.
+      const whaleByDay      = {};  // 'YYYY-MM-DD' -> { usd, count }
 
       const REFRESH_MS = 60000;
       const LIMIT      = 500;     // candidate budget; we filter to whales >=$1M
@@ -1870,6 +1890,37 @@ feed = session.post(
         return y + '-' + m + '-' + day;
       }
 
+      function paintCoverage(key) {
+        // Recompute the coverage line whenever either side updates.
+        const target = key === 'today' ? todayCovEl : yestCovEl;
+        if (!target) return;
+        const dayKey = key === 'today' ? whaleByDay.__today_key__ : whaleByDay.__yest_key__;
+        if (!dayKey) return;
+        const whale = whaleByDay[dayKey];
+        const total = settlementByDay[dayKey];
+        if (whale === undefined || total === undefined || !total) {
+          // Leave the previous text in place (or '--' on first load).
+          return;
+        }
+        const pct = (whale.usd / total) * 100;
+        target.textContent = pct.toFixed(1) + '%';
+      }
+
+      async function loadSettlement() {
+        try {
+          const r = await fetch(TELEMETRY_BASE + '/settlement/series?days=3');
+          if (!r.ok) return;
+          const data = await r.json();
+          for (const row of (data.series || [])) {
+            const d = new Date((row.bucket_start_ts || 0) * 1000);
+            const k = utcDateStr(d);
+            settlementByDay[k] = row.total_usd || 0;
+          }
+          paintCoverage('today');
+          paintCoverage('yesterday');
+        } catch (_) { /* leave last good values */ }
+      }
+
       async function loadDailyTotals() {
         const now    = new Date();
         const todayStart = new Date(Date.UTC(
@@ -1879,6 +1930,8 @@ feed = session.post(
         const yestDate = new Date(todayStart.getTime() - 24 * 3600 * 1000);
         const yestStr  = utcDateStr(yestDate);
         if (yestLabelEl) yestLabelEl.textContent = yestStr;
+        whaleByDay.__today_key__ = todayStr;
+        whaleByDay.__yest_key__  = yestStr;
 
         const headers = await (window.PreviewToken
           ? window.PreviewToken.authHeaders()
@@ -1910,6 +1963,8 @@ feed = session.post(
             if (todayCntEl) {
               todayCntEl.textContent = (cnt >= LIMIT ? '≥ ' : '') + cnt + ' tx' + (cnt === 1 ? '' : 's');
             }
+            whaleByDay[todayStr] = { usd, count: cnt };
+            paintCoverage('today');
           }
         } catch (_) { /* leave last good values in place */ }
 
@@ -1942,6 +1997,8 @@ feed = session.post(
                 yestCntEl.textContent = cnt + ' tx' + (cnt === 1 ? '' : 's')
                   + (hasStrict ? '' : ' (tier-approx)');
               }
+              whaleByDay[yestStr] = { usd, count: cnt };
+              paintCoverage('yesterday');
             } else if (yestUsdEl) {
               yestUsdEl.textContent = '$0';
               if (yestCntEl) yestCntEl.textContent = '0 txs';
@@ -1953,6 +2010,7 @@ feed = session.post(
       function refreshAll() {
         load();
         loadDailyTotals();
+        loadSettlement();
       }
 
       let timer = null;
