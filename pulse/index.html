@@ -244,6 +244,50 @@
     </div>
   </section>
 
+  <!-- LIVE BILLBOARD - hero-level live stream demo. Real WebSocket to
+       wss://pulse.xrpl-utilities.io/stream backed by a Turnstile-issued
+       short-TTL preview token. Single most-recent event front-and-centre,
+       swaps in place as new events arrive. Streams the same payload the
+       paid /stream/purchase tier delivers; CTA invites visitors to buy
+       their own window. Falls back gracefully if WS fails — the billboard
+       just stays on the last good event with a muted indicator. -->
+  <section id="live-billboard" class="border-t border-border bg-gradient-to-b from-panel/40 to-transparent">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      <div class="bg-ink/80 backdrop-blur border border-accent/30 rounded-2xl p-6 sm:p-10 relative overflow-hidden">
+        <!-- subtle glow accent in the top-right corner -->
+        <div class="absolute top-0 right-0 w-64 h-64 -mr-32 -mt-32 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- header row: brand + live status + rate counter -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 relative">
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] uppercase tracking-[0.25em] text-accent font-semibold">XR-Pulse</span>
+            <span class="text-[10px] uppercase tracking-[0.25em] text-muted/60">/</span>
+            <span id="live-label" class="text-[10px] uppercase tracking-[0.25em] text-muted/70 font-mono">connecting</span>
+          </div>
+          <div class="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-mono">
+            <span id="live-dot" class="live-dot stale"></span>
+            <span id="live-rate" class="text-muted/60">--/hr</span>
+          </div>
+        </div>
+
+        <!-- main event display: title, sub-line, brief, tier -->
+        <div id="billboard-content" class="min-h-[10rem] sm:min-h-[12rem] flex flex-col justify-center">
+          <p class="text-xs uppercase tracking-[0.2em] text-muted/50">Waiting for the next event from the live ledger...</p>
+        </div>
+
+        <!-- CTAs -->
+        <div class="mt-8 pt-6 border-t border-border flex flex-wrap items-center gap-4 text-xs">
+          <a href="#for-agents" class="inline-flex items-center gap-2 px-4 py-2 bg-accent/15 hover:bg-accent/25 border border-accent/40 rounded-lg text-accent transition font-mono">
+            Buy a stream window &middot; 1h $0.50 &nbsp; 24h $7.50
+          </a>
+          <a href="#feed" class="inline-flex items-center gap-2 px-4 py-2 border border-border hover:border-muted/70 rounded-lg text-muted hover:text-white transition font-mono">
+            Or query free below
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- WHY THIS MATTERS -->
   <section id="why" class="border-t border-border">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
@@ -358,14 +402,7 @@
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
         <div class="flex items-center justify-between gap-4 mb-6">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Live feed</h2>
-          <div class="flex items-center gap-3">
-            <span id="live-indicator" class="text-[10px] uppercase tracking-[0.2em] text-muted/70 font-mono hidden items-center gap-2">
-              <span id="live-dot" class="live-dot stale"></span>
-              <span id="live-label">connecting</span>
-              <span id="live-rate" class="text-muted/50"></span>
-            </span>
-            <button id="refresh-btn" class="text-xs text-muted hover:text-white transition">Refresh</button>
-          </div>
+          <button id="refresh-btn" class="text-xs text-muted hover:text-white transition">Refresh</button>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6 items-stretch">
@@ -1697,32 +1734,27 @@ feed = session.post(
     });
 
     // ----------------------------------------------------------------------
-    // Live WebSocket stream (Pulse 1.38.0). Marketing-site preview tier:
+    // Live WebSocket billboard (Pulse 1.38.0). Marketing-site preview tier:
     // GET /stream/preview-token (gated by the same Turnstile-issued JWT
     // that authorizes free /events/recent calls) trades up to a 5-minute
-    // stream JWT. The token is re-fetched ~30s before expiry to keep the
-    // demo running. Falls back silently if anything fails - the existing
-    // polled feed remains the source of truth.
+    // stream JWT. Drives the hero-level billboard above the existing feed.
+    // Re-fetches the token ~30s before expiry. Falls back silently if
+    // anything fails - the polled feed below remains the source of truth.
     // ----------------------------------------------------------------------
-    (function liveStream() {
-      const indicator = document.getElementById('live-indicator');
-      const dot       = document.getElementById('live-dot');
-      const label     = document.getElementById('live-label');
-      const rate      = document.getElementById('live-rate');
-      if (!indicator) return;
+    (function liveBillboard() {
+      const dot          = document.getElementById('live-dot');
+      const label        = document.getElementById('live-label');
+      const rate         = document.getElementById('live-rate');
+      const content      = document.getElementById('billboard-content');
+      if (!dot || !content) return;
 
-      const _ACTIVITY_SOURCES = new Set([
-        'whale_xrpl', 'permissioned_domain_lifecycle', 'sentinel_signal',
-        'rwa_issuer_flow', 'rwa_issuer_daily', 'rwa_amm_pool_state',
-      ]);
-      const rateWindow = [];  // unix-ms timestamps in the last 60s
+      const rateWindow = [];  // unix-ms timestamps for the rolling 60-min rate
       let ws = null;
       let renewTimer = null;
       let reconnectAttempt = 0;
+      let lastEventId = null;
 
       function setState(state, text) {
-        indicator.classList.remove('hidden');
-        indicator.classList.add('inline-flex');
         if (state === 'live') {
           dot.classList.remove('stale');
         } else {
@@ -1734,57 +1766,70 @@ feed = session.post(
       function bumpRate() {
         const now = Date.now();
         rateWindow.push(now);
-        const cutoff = now - 60000;
+        const cutoff = now - 3600 * 1000;
         while (rateWindow.length && rateWindow[0] < cutoff) rateWindow.shift();
-        rate.textContent = rateWindow.length ? rateWindow.length + '/min' : '';
+        rate.textContent = rateWindow.length + '/hr';
       }
 
-      function classifyKind(ev) {
-        const srcs = ev.source_appearances || [];
-        return srcs.some(s => _ACTIVITY_SOURCES.has(s)) ? 'activity' : 'news';
+      function formatRelative(unixSec) {
+        const delta = Math.max(0, Math.floor(Date.now() / 1000 - unixSec));
+        if (delta < 60)     return delta + 's ago';
+        if (delta < 3600)   return Math.floor(delta / 60) + 'm ago';
+        if (delta < 86400)  return Math.floor(delta / 3600) + 'h ago';
+        return Math.floor(delta / 86400) + 'd ago';
       }
 
-      function alreadyShown(key, eventId) {
-        const col = _columns[key];
-        return col.events.slice(0, col.shown).some(e => e.event_id === eventId);
+      function pickTierBadge(ev) {
+        const au = ev.active_utility || {};
+        const tier = au.tier;
+        const sig = au.signal;
+        const map = {
+          INSTITUTIONAL_FLOW:  ['institutional flow', 'tier-institutional'],
+          WHALE_MOVE:          ['whale move',         'tier-whale'],
+          EXCHANGE_LOGISTICS:  ['exchange logistics', 'tier-exchange'],
+          NORMAL_ACTIVITY:     ['network noise',      'tier-normal'],
+        };
+        if (tier && map[tier]) {
+          return '<span class="text-[10px] px-2 py-0.5 rounded ' + map[tier][1] + ' border">' + map[tier][0] + '</span>';
+        }
+        if (sig) {
+          return '<span class="text-[10px] px-2 py-0.5 rounded signal-pill border">' + sig + '</span>';
+        }
+        return '';
       }
 
-      function prependEvent(ev) {
-        // Whale-tier filter parity with the existing polled feed: hide
-        // sub-$1M anonymous whales (NORMAL_ACTIVITY) so the live ticker
-        // surfaces the same signal threshold the polled feed does.
+      function renderBillboard(ev) {
+        const tierBadge = pickTierBadge(ev);
+        const sources = (ev.source_appearances || []).map(s => {
+          if (s === 'whale_xrpl') return '';
+          return '<span class="text-[10px] px-2 py-0.5 rounded source-' + escapeHtml(s) + ' border">' + escapeHtml(s) + '</span>';
+        }).filter(Boolean).join(' ');
+        const title = escapeHtml(ev.title || '');
+        const brief = escapeHtml(ev.brief || '');
+        const when  = formatRelative(ev.published_at || (Date.now() / 1000));
+
+        return [
+          '<div class="flex flex-wrap items-center gap-2 mb-3">',
+          tierBadge, ' ', sources,
+          '<span class="text-[10px] text-muted/70 font-mono ml-auto">', when, '</span>',
+          '</div>',
+          '<h3 class="text-lg sm:text-2xl font-bold leading-snug text-white mb-3">', title, '</h3>',
+          brief ? '<p class="text-sm text-muted leading-relaxed line-clamp-3">' + brief + '</p>' : '',
+        ].join('');
+      }
+
+      function showEvent(ev) {
+        // Hide sub-$1M anonymous whales (NORMAL_ACTIVITY) - same signal
+        // threshold the polled feed below uses, so the billboard doesn't
+        // surface noise the feed is deliberately hiding.
         if ((ev.source_appearances || []).includes('whale_xrpl')
             && inferWhaleTier(ev) === 'NORMAL_ACTIVITY') return;
+        if (ev.event_id === lastEventId) return;
+        lastEventId = ev.event_id;
 
-        const key = classifyKind(ev);
-        if (alreadyShown(key, ev.event_id)) return;
-
-        // Insert into the column's cache at the top + bump shown so the
-        // next render() pass treats it as a normal row, and the Show-more
-        // pagination keeps working.
-        const col = _columns[key];
-        col.events.unshift(ev);
-        col.shown = Math.min(col.shown + 1, col.events.length);
-
-        const listEl = document.getElementById(col.listId);
-        if (!listEl) return;
-
-        const tmp = document.createElement('div');
-        tmp.innerHTML = renderEvent(ev);
-        const card = tmp.firstElementChild;
-        if (!card) return;
-        card.classList.add('live-fresh');
-        listEl.prepend(card);
-
-        // Update the column count to match the new visible total.
-        const countEl = document.getElementById(col.countId);
-        if (countEl) {
-          countEl.textContent = col.shown + ' event' + (col.shown === 1 ? '' : 's');
-        }
-
-        // Fade off the highlight after 2s so the card settles into the
-        // normal feed visually. CSS handles the actual transition.
-        setTimeout(() => card.classList.remove('live-fresh'), 2000);
+        content.innerHTML = renderBillboard(ev);
+        content.classList.add('live-fresh');
+        setTimeout(() => content.classList.remove('live-fresh'), 1800);
         bumpRate();
       }
 
@@ -1818,7 +1863,7 @@ feed = session.post(
           ws.onmessage = (msg) => {
             let frame;
             try { frame = JSON.parse(msg.data); } catch (_) { return; }
-            if (frame.type === 'event' && frame.event) prependEvent(frame.event);
+            if (frame.type === 'event' && frame.event) showEvent(frame.event);
             // hello / heartbeat / expired frames don't render; the
             // periodic re-fetch handles renewal so we ignore them.
           };
