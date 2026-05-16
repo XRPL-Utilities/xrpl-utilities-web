@@ -939,6 +939,56 @@ feed = session.post(
             ${tcBits.join(' &middot; ')}
           </div>`;
         }
+
+        // Cluster context: last-1h Pulse-internal events touching each
+        // side (count + signal_kinds) plus raw XRPL adjacent activity
+        // counts (TrustSet / AMM / Escrow / Offer / Payment) for each
+        // wallet, with the anchor whale tx excluded. Skip the whole
+        // block when both sides are quiet so we don't clutter rows for
+        // isolated whales (the common case).
+        const cc = whaleAU.cluster_context;
+        if (cc) {
+          function renderClusterSide(role, side) {
+            if (!side) return null;
+            const aa = side.adjacent_xrpl_activity || null;
+            const pulseCount = side.count || 0;
+            const adjAvailable = aa && aa.available;
+            const adjTotal = adjAvailable ? (aa.total_count || 0) : 0;
+            if (!pulseCount && (!adjAvailable || !adjTotal)) return null;
+            const bits = [];
+            if (pulseCount > 0) {
+              const kinds = (side.signal_kinds || []).map(escapeHtml).join(', ');
+              const kindsHtml = kinds ? ` <span class="text-muted">[${kinds}]</span>` : '';
+              bits.push(`${pulseCount} Pulse event${pulseCount === 1 ? '' : 's'}${kindsHtml}`);
+            }
+            if (adjAvailable && adjTotal > 0) {
+              const cats = [];
+              if (aa.trustset_count)  cats.push(`${aa.trustset_count} TrustSet`);
+              if (aa.amm_op_count)    cats.push(`${aa.amm_op_count} AMM`);
+              if (aa.escrow_op_count) cats.push(`${aa.escrow_op_count} Escrow`);
+              if (aa.offer_op_count)  cats.push(`${aa.offer_op_count} Offer`);
+              if (aa.payment_count)   cats.push(`${aa.payment_count} Pay`);
+              if (aa.other_count)     cats.push(`${aa.other_count} other`);
+              const totalLabel = aa.truncated ? `${adjTotal}+ XRPL tx` : `${adjTotal} XRPL tx`;
+              const detail = cats.length ? ` <span class="text-muted">(${cats.join(', ')})</span>` : '';
+              bits.push(`${totalLabel}${detail}`);
+            }
+            return `<span class="text-white">${role}:</span> ${bits.join(' &middot; ')}`;
+          }
+          const ccBits = [
+            renderClusterSide('Sender',   cc.sender),
+            renderClusterSide('Receiver', cc.receiver),
+          ].filter(Boolean);
+          if (ccBits.length) {
+            const reciprocal = cc.reciprocal_pair_seen
+              ? ' &middot; <span class="text-accent font-semibold">reciprocal pair seen</span>'
+              : '';
+            whaleBlock += `<div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+              <span class="text-white mr-2">Cluster (1h)</span>
+              ${ccBits.join(' &middot; ')}${reciprocal}
+            </div>`;
+          }
+        }
       }
 
       // XLS-85 token-escrow event render. Subtype is either
