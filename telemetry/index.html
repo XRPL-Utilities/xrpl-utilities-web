@@ -59,6 +59,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script src="/assets/preview-token.js?v=v1"></script>
   <script src="/assets/telemetry-flow.js?v=vault-xref-2"></script>
   <script>
@@ -193,17 +194,17 @@
       </p>
 
       <div class="grid sm:grid-cols-2 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-muted mb-2">Total Circulating Supply</div>
-          <div id="af-circulating" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
-          <div class="text-xs text-muted mt-3">Total XRPL supply minus Ripple escrow.</div>
+        <div class="stat-tile stat-tile-muted p-6">
+          <div class="stat-tile-label mb-3">Total Circulating Supply</div>
+          <div id="af-circulating" class="stat-tile-value text-4xl sm:text-5xl">-</div>
+          <div class="stat-tile-sub mt-3">Total XRPL supply minus Ripple escrow.</div>
         </div>
 
-        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">Modeled Active Float (M)</div>
-          <div id="af-value" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+        <div class="stat-tile stat-tile-glow p-6">
+          <div class="stat-tile-label mb-3" style="color: rgba(0,184,255,0.95);">Modeled Active Float (M)</div>
+          <div id="af-value" class="stat-tile-value text-4xl sm:text-5xl">-</div>
           <div id="af-delta" class="text-sm mt-3 flex items-center gap-2"></div>
-          <div class="text-xs text-muted mt-3">
+          <div class="stat-tile-sub mt-3 leading-relaxed">
             <span id="af-ratio-label">10%</span> of exchange-held XRP, plus XRP committed to liquidity pools, plus XRP resting in open offers on XRPL's native order book.
           </div>
         </div>
@@ -375,15 +376,15 @@
       </p>
 
       <div class="grid sm:grid-cols-2 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-muted mb-2">Last 24 hours</div>
-          <div id="sv-24h" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
-          <div id="sv-24h-split" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
+        <div class="stat-tile stat-tile-muted p-6">
+          <div class="stat-tile-label mb-3">Last 24 hours</div>
+          <div id="sv-24h" class="stat-tile-value text-4xl sm:text-5xl">-</div>
+          <div id="sv-24h-split" class="stat-tile-sub mt-3">&nbsp;</div>
         </div>
-        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">Annualized run-rate</div>
-          <div id="sv-annual" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
-          <div id="sv-annual-split" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
+        <div class="stat-tile stat-tile-glow p-6">
+          <div class="stat-tile-label mb-3" style="color: rgba(0,184,255,0.95);">Annualized run-rate</div>
+          <div id="sv-annual" class="stat-tile-value text-4xl sm:text-5xl">-</div>
+          <div id="sv-annual-split" class="stat-tile-sub mt-3">&nbsp;</div>
         </div>
       </div>
 

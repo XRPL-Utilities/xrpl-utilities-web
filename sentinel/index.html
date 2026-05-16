@@ -57,6 +57,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/assets/preview-token.js?v=v1"></script>
   <script src="/assets/scan-flow.js?v=provenance"></script>
@@ -360,22 +361,22 @@ report = session.post(
       </p>
 
       <div class="grid lg:grid-cols-3 gap-4">
-        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">Paid x402</div>
+        <div class="stat-tile stat-tile-glow p-6">
+          <div class="stat-tile-label mb-3" style="color: rgba(0,184,255,0.95);">Paid x402</div>
           <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-muted">null</span></div>
           <p class="text-sm text-muted leading-relaxed">
             <code class="font-mono text-white">PAYMENT-SIGNATURE</code> header. $0.10 per scan, billed on success. <code class="font-mono text-white">PAYMENT-RESPONSE</code> attached on response. Standard agent path.
           </p>
         </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-muted mb-2">Sister product</div>
+        <div class="stat-tile stat-tile-gold p-6">
+          <div class="stat-tile-label mb-3">Sister product</div>
           <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-white">sister_product</span></div>
           <p class="text-sm text-muted leading-relaxed">
             <code class="font-mono text-white">X-Sister-Product-Key</code> header from a sibling XR-* service. Server-to-server, no billing. Currently used by XR-Pulse for inline counterparty lookups.
           </p>
         </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-muted mb-2">Preview token</div>
+        <div class="stat-tile stat-tile-muted p-6">
+          <div class="stat-tile-label mb-3">Preview token</div>
           <div class="text-lg font-bold mb-3 font-mono">served_via: <span class="text-white">preview-token</span></div>
           <p class="text-sm text-muted leading-relaxed">
             Cloudflare Turnstile-issued JWT. Used for the in-browser preview on this page. Short TTL, signed by us, free from the operator's quota.

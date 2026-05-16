@@ -51,6 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script>
     tailwind.config = {
       theme: {
@@ -220,25 +221,25 @@
   <section id="vault-summary">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Tracked issuers</div>
-          <div id="stat-tracked" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div id="stat-tracked-detail" class="text-[10px] text-muted mt-1">&hellip;</div>
+        <div class="stat-tile p-4">
+          <div class="stat-tile-label mb-2">Tracked issuers</div>
+          <div id="stat-tracked" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-tracked-detail" class="stat-tile-sub mt-2">&hellip;</div>
         </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Mints (24h)</div>
-          <div id="stat-mints" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="text-[10px] text-muted mt-1">across live issuers</div>
+        <div class="stat-tile stat-tile-gold p-4">
+          <div class="stat-tile-label mb-2">Mints (24h)</div>
+          <div id="stat-mints" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="stat-tile-sub mt-2">across live issuers</div>
         </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">Burns (24h)</div>
-          <div id="stat-burns" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="text-[10px] text-muted mt-1">redemptions to issuer</div>
+        <div class="stat-tile stat-tile-muted p-4">
+          <div class="stat-tile-label mb-2">Burns (24h)</div>
+          <div id="stat-burns" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="stat-tile-sub mt-2">redemptions to issuer</div>
         </div>
-        <div class="bg-panel border border-border rounded-xl p-4">
-          <div class="text-xs uppercase tracking-wider text-muted mb-1">AMM pools</div>
-          <div id="stat-amm-pools" class="text-2xl font-bold font-mono"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div id="stat-amm-pools-detail" class="text-[10px] text-muted mt-1">RWA-touching XLS-30</div>
+        <div class="stat-tile p-4">
+          <div class="stat-tile-label mb-2">AMM pools</div>
+          <div id="stat-amm-pools" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-amm-pools-detail" class="stat-tile-sub mt-2">RWA-touching XLS-30</div>
         </div>
       </div>
     </div>
@@ -246,30 +247,30 @@
 
   <section id="xls85-counter">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
-      <div class="bg-panel border border-border rounded-2xl p-5 sm:p-6">
-        <div class="flex items-baseline justify-between gap-4 mb-2 flex-wrap">
+      <div class="stat-tile stat-tile-glow p-5 sm:p-7">
+        <div class="flex items-baseline justify-between gap-4 mb-4 flex-wrap">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">XLS-85 token escrow</h2>
-          <span id="xls85-since" class="text-[10px] text-muted font-mono">&hellip;</span>
+          <span id="xls85-since" class="stat-tile-sub text-[10px]">&hellip;</span>
         </div>
-        <div class="flex items-baseline gap-6 flex-wrap mt-2">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
           <div>
-            <div id="xls85-all-time" class="text-3xl sm:text-4xl font-bold font-mono tracking-tight">&hellip;</div>
-            <div class="text-[10px] uppercase tracking-wider text-muted mt-1">events all-time</div>
+            <div id="xls85-all-time" class="stat-tile-value">&hellip;</div>
+            <div class="stat-tile-label mt-2">events all-time</div>
           </div>
           <div>
-            <div id="xls85-7d" class="text-xl font-bold font-mono">&hellip;</div>
-            <div class="text-[10px] uppercase tracking-wider text-muted mt-1">last 7d</div>
+            <div id="xls85-7d" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
+            <div class="stat-tile-label mt-2">last 7d</div>
           </div>
           <div>
-            <div id="xls85-24h" class="text-xl font-bold font-mono">&hellip;</div>
-            <div class="text-[10px] uppercase tracking-wider text-muted mt-1">last 24h</div>
+            <div id="xls85-24h" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
+            <div class="stat-tile-label mt-2">last 24h</div>
           </div>
           <div>
-            <div id="xls85-dvp" class="text-xl font-bold font-mono">&hellip;</div>
-            <div class="text-[10px] uppercase tracking-wider text-muted mt-1">DvP candidates</div>
+            <div id="xls85-dvp" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
+            <div class="stat-tile-label mt-2">DvP candidates</div>
           </div>
         </div>
-        <p class="text-[11px] text-muted leading-relaxed mt-4">
+        <p class="text-[11px] text-muted leading-relaxed mt-5">
           XLS-85 enables time-locked or condition-locked escrow of non-XRP IOU tokens. Used for vesting, deferred settlement, and atomic two-leg trades. DvP candidates are paired escrows sharing a Condition hash within an hour (delivery-versus-payment pattern, candidate not confirmed). The counts here cover XLS-85 activity across all XRPL IOUs that Pulse's whale watcher observes; the per-issuer chips on the tiles below scope to operator-tracked RWA issuers only, which is a smaller subset.
         </p>
       </div>
