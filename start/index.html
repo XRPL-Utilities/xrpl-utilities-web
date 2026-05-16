@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Start here | XRPL-Utilities</title>
+  <meta name="description" content="New to XRPL? Plain-English walkthrough of the XRP Ledger, tokens, permissioned domains, and agent-payable APIs. Then a router to the right XRPL-Utilities service for what you actually want to do." />
+  <meta property="og:title" content="Start here | XRPL-Utilities" />
+  <meta property="og:description" content="A plain-English on-ramp to the XRP Ledger and the six XRPL-Utilities services. For readers who've never touched XRPL." />
+  <meta property="og:url" content="https://xrpl-utilities.com/start/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/logo.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/start/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Start here | XRPL-Utilities" />
+  <meta name="twitter:description" content="A plain-English on-ramp to the XRP Ledger and the six XRPL-Utilities services. For readers who've never touched XRPL." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/logo.png" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/glossary-tooltip.js?v=v1" defer></script>
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+    .concept-card {
+      background: linear-gradient(180deg, rgba(20, 20, 20, 0.6) 0%, rgba(10, 10, 10, 0.35) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: border-color 200ms ease;
+    }
+    .concept-card:hover { border-color: rgba(255, 255, 255, 0.12); }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 9999px;
+      background: rgba(0, 184, 255, 0.15);
+      border: 1px solid rgba(0, 184, 255, 0.4);
+      color: #00b8ff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: ui-monospace, monospace;
+    }
+  </style>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-x-6 lg:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
+      </nav>
+      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pt-16 pb-8 text-center">
+      <span class="inline-block text-[10px] uppercase tracking-[0.25em] text-accent font-semibold mb-4">Start here</span>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">New to XRPL? Read this first.</h1>
+      <p class="text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+        A 5-minute on-ramp for readers who've never touched the XRP Ledger. Plain English, no jargon hand-waving. By the end you'll know what XRPL is, what tokens on it look like, what makes it different for institutions, and which of our six services answers what you came here for.
+      </p>
+    </div>
+  </section>
+
+  <!-- WHAT IS XRPL -->
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <div class="flex items-baseline gap-3 mb-4">
+        <span class="step-num">1</span>
+        <h2 class="text-2xl font-bold">What is XRPL?</h2>
+      </div>
+      <div class="space-y-4 text-muted leading-relaxed">
+        <p>
+          The <span class="gloss" data-term="xrpl">XRP Ledger</span> (XRPL) is an open-source public blockchain that's been running continuously since 2012. It settles transactions every 3 to 5 seconds, has a built-in DEX (decentralized exchange), and natively supports issuing your own tokens. No mining, no proof-of-work; it uses a consensus protocol run by independent validators.
+        </p>
+        <p>
+          The native token is <span class="gloss" data-term="xrp">XRP</span>, a fixed 100-billion-supply asset used to pay tiny transaction fees (a fraction of a cent each). Anyone can read every transaction that's ever happened on XRPL by querying a public node. No accounts, no API keys, no gatekeepers.
+        </p>
+        <p>
+          <strong class="text-white">Why it matters for finance.</strong> XRPL was designed from day one for moving value, not running smart contracts. Settlement is fast and final (no probabilistic confirmations), fees are predictable, and the protocol has native support for issued assets, trust limits, escrow, and on-ledger trading. Banks, custodians, and stablecoin issuers have been quietly building on it for years.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IS A WALLET -->
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <div class="flex items-baseline gap-3 mb-4">
+        <span class="step-num">2</span>
+        <h2 class="text-2xl font-bold">Wallets, addresses, and what you'd actually look at</h2>
+      </div>
+      <div class="space-y-4 text-muted leading-relaxed">
+        <p>
+          An XRPL <strong class="text-white">wallet</strong> is just a key pair. The public side is your <strong class="text-white">address</strong>: a 25-34 character string that starts with the letter <code class="font-mono text-white">r</code>. Example: <code class="font-mono text-white">rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5</code>. Anything sent to that address shows up on the ledger immediately and stays there permanently.
+        </p>
+        <p>
+          You'll see addresses everywhere on this site. Some belong to exchanges (Bitstamp, Kraken, Coinbase). Some belong to issuers (Ripple, Ondo, OpenEden, Société Générale). Some belong to bots, market makers, and anonymous holders. The behavior visible on the ledger is what tells you which is which.
+        </p>
+        <p>
+          To receive any token other than XRP, an address has to first set up a <span class="gloss" data-term="trustline">trustline</span> to the issuer of that token. This is XRPL's way of saying "I'm willing to hold this asset from this specific issuer." Most retail wallets only hold XRP and have no trustlines; institutional wallets often have dozens.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOKENS AND RWAS -->
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <div class="flex items-baseline gap-3 mb-4">
+        <span class="step-num">3</span>
+        <h2 class="text-2xl font-bold">Tokens, stablecoins, and real-world assets on XRPL</h2>
+      </div>
+      <div class="space-y-4 text-muted leading-relaxed">
+        <p>
+          XRPL supports issued assets natively. Any address can issue a token; trustlines determine who's willing to hold it. The most-watched issued asset is <span class="gloss" data-term="rlusd">RLUSD</span>, Ripple's regulated USD stablecoin (~93,000 trustlines, the largest IOU on XRPL by every measure).
+        </p>
+        <p>
+          A growing class of tokens are <span class="gloss" data-term="rwa">real-world assets</span> (RWAs): on-chain representations of off-chain financial instruments. Examples currently live on XRPL include Ondo's tokenized US Treasuries (OUSG), OpenEden's T-Bill tokens (TBL), Société Générale's euro stablecoin (EURCV), Guggenheim's Digital Commercial Paper (DCP), and Justoken's megawatt-hour tokens (JMWH). When you see a headline like "BlackRock tokenizes a money-market fund," XRPL is one of the chains where that kind of thing actually settles.
+        </p>
+        <p>
+          <strong class="text-white">Why this matters.</strong> If finance is moving on-chain, it's moving as tokenized assets that look like the ones above. Watching that activity in real time is what <a href="/vault/" class="text-accent hover:underline">XR-Vault</a> does for RWAs and what <a href="/pulse/" class="text-accent hover:underline">XR-Pulse</a> does for every $50k+ payment on the ledger.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERMISSIONED DOMAINS -->
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <div class="flex items-baseline gap-3 mb-4">
+        <span class="step-num">4</span>
+        <h2 class="text-2xl font-bold">Permissioned domains: regulated venues on a public ledger</h2>
+      </div>
+      <div class="space-y-4 text-muted leading-relaxed">
+        <p>
+          A <span class="gloss" data-term="permissioned-domain">permissioned domain</span> is XRPL's mechanism for letting institutions run regulated trading venues on the same public ledger as the open DEX. An owner address declares which on-chain credentials are required to join (e.g., "must hold an accredited-investor credential issued by Wallet X"), and other addresses join by holding any accepted credential. Trades inside the domain are visible on the public ledger, but only credentialed counterparties can fill them.
+        </p>
+        <p>
+          This is the standard the industry has been waiting for. Compliance is on-chain, settlement is on-chain, but access is gated by real institutional identity. The standard is called <strong class="text-white">XLS-80</strong> (PermissionedDomains); the trading layer that runs inside one is <strong class="text-white">XLS-81</strong> (Permissioned DEX).
+        </p>
+        <p>
+          <a href="/trust/" class="text-accent hover:underline">XR-Trust</a> is the public directory of every permissioned domain on XRPL, surfaces the credentials each requires, and ties owner addresses to operator-signed institutional identity where available.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- X402 AND AGENTS -->
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <div class="flex items-baseline gap-3 mb-4">
+        <span class="step-num">5</span>
+        <h2 class="text-2xl font-bold">x402 and agent-payable APIs</h2>
+      </div>
+      <div class="space-y-4 text-muted leading-relaxed">
+        <p>
+          <span class="gloss" data-term="x402">x402</span> is an open standard for machine-payable APIs. When an agent calls an x402 endpoint, the server returns HTTP 402 with payment options. The agent signs an on-chain payment matching one of those options, re-sends the request with a payment-signature header, and the server verifies + runs + settles. No accounts, no API keys, no monthly invoices. An AI agent with an XRPL wallet can discover an API, pay it, and consume the response inside a single request cycle.
+        </p>
+        <p>
+          Every paid endpoint on this site speaks x402 v2 on XRPL mainnet. Pay in XRP or RLUSD, either works. Verification and settlement go through the t54 XRPL facilitator. Pricing is per-call or per-time-window (XR-Pulse also sells live WebSocket subscriptions from $0.50/hour).
+        </p>
+        <p>
+          <strong class="text-white">Why this matters.</strong> AI agents are starting to do real economic work (price queries, data lookups, transaction routing) and they need a payment standard that doesn't require an account setup with every vendor. x402 + XRPL settlement is one of the cleanest answers to that, and it's the moat under every paid endpoint here.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IS XRPL-UTILITIES -->
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <div class="flex items-baseline gap-3 mb-4">
+        <span class="step-num">6</span>
+        <h2 class="text-2xl font-bold">So what is XRPL-Utilities?</h2>
+      </div>
+      <div class="space-y-4 text-muted leading-relaxed">
+        <p>
+          Six on-chain data services that read the XRP Ledger so you don't have to run your own node. Each one answers a different question about what's happening on XRPL. The same backend that serves the public dashboards on this site is exposed as a paid x402 API for AI agents and integrators.
+        </p>
+        <p>
+          <strong class="text-white">Two surfaces, one backend.</strong> The dashboards here are free; agents pay per call or stream live. Everything is on-chain settled. No accounts, no API keys, no onboarding calls. The full pricing table is at <a href="/pricing/" class="text-accent hover:underline">/pricing/</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE ROUTER -->
+  <section class="border-t border-border">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3 text-center">Find the right service</h2>
+      <h3 class="text-3xl font-bold mb-10 text-center">I want to&hellip;</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        <a href="/sentinel/" class="concept-card group flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/xr-sentinel.png" alt="" class="h-10 w-10 rounded shrink-0" />
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Sentinel</span>
+          </div>
+          <h4 class="text-lg font-bold mb-2">Check whether a wallet is safe to send to</h4>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Type any XRPL address, get back what kind of actor it looks like: bot, exchange, market maker, retail, issuer. Plus a behavioral signal catalog and a one-paragraph plain-English summary. Not a risk score.</p>
+          <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Sentinel &rarr;</span>
+        </a>
+
+        <a href="/telemetry/" class="concept-card group flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/xr-telemetry.png" alt="" class="h-10 w-10 rounded shrink-0" />
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Telemetry</span>
+          </div>
+          <h4 class="text-lg font-bold mb-2">Read the XRPL network's macro state</h4>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Total settlement volume, supply available for trade, regional liquidity flows, AMM depth, and an algebraic price-floor calculator. Useful for traders quoting and analysts modeling.</p>
+          <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Telemetry &rarr;</span>
+        </a>
+
+        <a href="/pulse/" class="concept-card group flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/xr-pulse.png" alt="" class="h-10 w-10 rounded shrink-0" />
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Pulse</span>
+          </div>
+          <h4 class="text-lg font-bold mb-2">See what's moving right now</h4>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Live feed of public-source news plus every XRPL payment over $50,000, with sender + receiver labels. Whale moves, regulatory headlines, and RWA mints in one time-ordered stream.</p>
+          <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Pulse &rarr;</span>
+        </a>
+
+        <a href="/trust/" class="concept-card group flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/xr-trust.png" alt="" class="h-10 w-10 rounded shrink-0" />
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Trust</span>
+          </div>
+          <h4 class="text-lg font-bold mb-2">Find institutional venues on XRPL</h4>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Public directory of every permissioned domain (XLS-80) and permissioned-DEX trading venue (XLS-81) on XRPL. Drills into accepted credentials, owner identity, and on-chain trading activity.</p>
+          <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Trust &rarr;</span>
+        </a>
+
+        <a href="/vault/" class="concept-card group flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/xr-vault.png" alt="" class="h-10 w-10 rounded shrink-0" />
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Vault</span>
+          </div>
+          <h4 class="text-lg font-bold mb-2">Track real-world assets on XRPL</h4>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Live per-issuer dashboard for tokenized treasuries, stablecoins, money-market funds, commercial paper, and energy commodities. Native units, no fabricated USD numbers.</p>
+          <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Vault &rarr;</span>
+        </a>
+
+        <a href="/flows/" class="concept-card group flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/xr-flows.png" alt="" class="h-10 w-10 rounded shrink-0" />
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Flows</span>
+          </div>
+          <h4 class="text-lg font-bold mb-2">Watch XRP ETF flow vs the ledger</h4>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Daily AUM for every US-listed XRP-exposure ETF (spot and indirect-basket) plotted against XRPL exchange-flow delta. Two independent measurements on one date axis. Correlation, never causation.</p>
+          <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Flows &rarr;</span>
+        </a>
+
+      </div>
+
+      <div class="mt-10 text-center">
+        <p class="text-sm text-muted">
+          Or skip the per-service split and read all of them as one machine-payable API at
+          <a href="/pricing/" class="text-accent hover:underline">pricing</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT THIS ISN'T -->
+  <section class="border-t border-border bg-panel/30">
+    <div class="max-w-4xl mx-auto px-6 py-14">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3 text-center">A few honest notes</h2>
+      <h3 class="text-2xl font-bold mb-8 text-center">What this site isn't</h3>
+      <ul class="space-y-3 text-sm text-muted leading-relaxed">
+        <li class="flex gap-3">
+          <span class="text-accent shrink-0">&rarr;</span>
+          <span><strong class="text-white">Not investment advice.</strong> The data here is on-chain measurement and public-source aggregation. We surface what happened. We do not tell you whether to buy or sell anything.</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-accent shrink-0">&rarr;</span>
+          <span><strong class="text-white">Not a risk score or compliance product.</strong> XR-Sentinel classifies wallet behavior; it doesn't tell you a wallet is safe or unsafe. XR-Trust lists permissioned domains; it doesn't endorse the entities running them.</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-accent shrink-0">&rarr;</span>
+          <span><strong class="text-white">Not a wallet, exchange, or custodian.</strong> We read the public XRP Ledger. We never custody your funds or ask for your private keys.</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-accent shrink-0">&rarr;</span>
+          <span><strong class="text-white">Not affiliated with Ripple Labs.</strong> XRPL is a public open-source protocol. We are an independent project building on top of it.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FURTHER READING -->
+  <section class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-6 py-14">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3 text-center">Further reading</h2>
+      <div class="grid sm:grid-cols-2 gap-3 mt-6">
+        <a href="https://xrpl.org" target="_blank" rel="noopener noreferrer" class="bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <div class="text-sm font-semibold text-white mb-1">xrpl.org</div>
+          <div class="text-xs text-muted">The XRPL Foundation's official documentation. Protocol specs, developer tutorials, validator list.</div>
+        </a>
+        <a href="https://xrpscan.com" target="_blank" rel="noopener noreferrer" class="bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <div class="text-sm font-semibold text-white mb-1">xrpscan.com</div>
+          <div class="text-xs text-muted">XRPL block explorer. Look up any transaction or address; see balances, history, trustlines.</div>
+        </a>
+        <a href="https://x402.org" target="_blank" rel="noopener noreferrer" class="bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <div class="text-sm font-semibold text-white mb-1">x402.org</div>
+          <div class="text-xs text-muted">The agent-payable API standard. Specification, supported facilitators, client libraries.</div>
+        </a>
+        <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <div class="text-sm font-semibold text-white mb-1">modelcontextprotocol.io</div>
+          <div class="text-xs text-muted">Anthropic's MCP standard for connecting AI assistants to external tools. The XRPL-Utilities MCP server speaks this.</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER (shared shape with other pages) -->
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">MCP server</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav open/close (shared shape with other pages).
+    const navOpen = document.getElementById('nav-open');
+    const navClose = document.getElementById('nav-close');
+    const mobileNav = document.getElementById('mobile-nav');
+    function openNav() {
+      mobileNav.style.display = 'flex';
+      mobileNav.classList.add('flex');
+      navOpen.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeNav() {
+      mobileNav.style.display = 'none';
+      mobileNav.classList.remove('flex');
+      navOpen.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+    if (navOpen) navOpen.addEventListener('click', openNav);
+    if (navClose) navClose.addEventListener('click', closeNav);
+    mobileNav.addEventListener('click', (e) => { if (e.target === mobileNav) closeNav(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileNav.style.display === 'flex') closeNav();
+    });
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768 && mobileNav.style.display === 'flex') closeNav();
+    });
+  </script>
+</body>
+</html>
