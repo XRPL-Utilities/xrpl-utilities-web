@@ -120,6 +120,29 @@
       0%   { background-position: -200% 0; }
       100% { background-position:  200% 0; }
     }
+    /* Live-stream affordances. .live-dot is the small pulsing indicator
+       next to the LIVE label in the feed header; .live-fresh is the
+       transient amber wash on cards that just arrived via WebSocket
+       (fades back to the normal border over 2s). */
+    @keyframes livePulse {
+      0%, 100% { opacity: 1;   transform: scale(1);   }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+    .live-dot {
+      display: inline-block;
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+      background: #4ade80;
+      box-shadow: 0 0 6px rgba(74, 222, 128, 0.7);
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+    .live-dot.stale  { background: #94a3b8; box-shadow: none; animation: none; }
+    .live-fresh {
+      border-color: rgba(250, 204, 21, 0.6) !important;
+      background: rgba(250, 204, 21, 0.07) !important;
+      transition: border-color 2s ease, background 2s ease;
+    }
     .skeleton-bar {
       background: linear-gradient(
         90deg,
@@ -335,7 +358,14 @@
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
         <div class="flex items-center justify-between gap-4 mb-6">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Live feed</h2>
-          <button id="refresh-btn" class="text-xs text-muted hover:text-white transition">Refresh</button>
+          <div class="flex items-center gap-3">
+            <span id="live-indicator" class="text-[10px] uppercase tracking-[0.2em] text-muted/70 font-mono hidden items-center gap-2">
+              <span id="live-dot" class="live-dot stale"></span>
+              <span id="live-label">connecting</span>
+              <span id="live-rate" class="text-muted/50"></span>
+            </span>
+            <button id="refresh-btn" class="text-xs text-muted hover:text-white transition">Refresh</button>
+          </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6 items-stretch">
@@ -376,7 +406,8 @@
         </div>
 
         <p class="text-xs text-muted mt-6 leading-relaxed">
-          Free from this page. Agents pay $0.10 per query over the x402 API at
+          Free from this page. Agents pay $0.10 per query, or buy a live stream
+          window (1h $0.50 / 6h $2.50 / 24h $7.50) at
           <code class="font-mono text-white">pulse.xrpl-utilities.io</code>.
         </p>
       </div>
@@ -1664,6 +1695,172 @@ feed = session.post(
       loadColumnInitial('activity');
       loadWhaleSummary();
     });
+
+    // ----------------------------------------------------------------------
+    // Live WebSocket stream (Pulse 1.38.0). Marketing-site preview tier:
+    // GET /stream/preview-token (gated by the same Turnstile-issued JWT
+    // that authorizes free /events/recent calls) trades up to a 5-minute
+    // stream JWT. The token is re-fetched ~30s before expiry to keep the
+    // demo running. Falls back silently if anything fails - the existing
+    // polled feed remains the source of truth.
+    // ----------------------------------------------------------------------
+    (function liveStream() {
+      const indicator = document.getElementById('live-indicator');
+      const dot       = document.getElementById('live-dot');
+      const label     = document.getElementById('live-label');
+      const rate      = document.getElementById('live-rate');
+      if (!indicator) return;
+
+      const _ACTIVITY_SOURCES = new Set([
+        'whale_xrpl', 'permissioned_domain_lifecycle', 'sentinel_signal',
+        'rwa_issuer_flow', 'rwa_issuer_daily', 'rwa_amm_pool_state',
+      ]);
+      const rateWindow = [];  // unix-ms timestamps in the last 60s
+      let ws = null;
+      let renewTimer = null;
+      let reconnectAttempt = 0;
+
+      function setState(state, text) {
+        indicator.classList.remove('hidden');
+        indicator.classList.add('inline-flex');
+        if (state === 'live') {
+          dot.classList.remove('stale');
+        } else {
+          dot.classList.add('stale');
+        }
+        label.textContent = text;
+      }
+
+      function bumpRate() {
+        const now = Date.now();
+        rateWindow.push(now);
+        const cutoff = now - 60000;
+        while (rateWindow.length && rateWindow[0] < cutoff) rateWindow.shift();
+        rate.textContent = rateWindow.length ? rateWindow.length + '/min' : '';
+      }
+
+      function classifyKind(ev) {
+        const srcs = ev.source_appearances || [];
+        return srcs.some(s => _ACTIVITY_SOURCES.has(s)) ? 'activity' : 'news';
+      }
+
+      function alreadyShown(key, eventId) {
+        const col = _columns[key];
+        return col.events.slice(0, col.shown).some(e => e.event_id === eventId);
+      }
+
+      function prependEvent(ev) {
+        // Whale-tier filter parity with the existing polled feed: hide
+        // sub-$1M anonymous whales (NORMAL_ACTIVITY) so the live ticker
+        // surfaces the same signal threshold the polled feed does.
+        if ((ev.source_appearances || []).includes('whale_xrpl')
+            && inferWhaleTier(ev) === 'NORMAL_ACTIVITY') return;
+
+        const key = classifyKind(ev);
+        if (alreadyShown(key, ev.event_id)) return;
+
+        // Insert into the column's cache at the top + bump shown so the
+        // next render() pass treats it as a normal row, and the Show-more
+        // pagination keeps working.
+        const col = _columns[key];
+        col.events.unshift(ev);
+        col.shown = Math.min(col.shown + 1, col.events.length);
+
+        const listEl = document.getElementById(col.listId);
+        if (!listEl) return;
+
+        const tmp = document.createElement('div');
+        tmp.innerHTML = renderEvent(ev);
+        const card = tmp.firstElementChild;
+        if (!card) return;
+        card.classList.add('live-fresh');
+        listEl.prepend(card);
+
+        // Update the column count to match the new visible total.
+        const countEl = document.getElementById(col.countId);
+        if (countEl) {
+          countEl.textContent = col.shown + ' event' + (col.shown === 1 ? '' : 's');
+        }
+
+        // Fade off the highlight after 2s so the card settles into the
+        // normal feed visually. CSS handles the actual transition.
+        setTimeout(() => card.classList.remove('live-fresh'), 2000);
+        bumpRate();
+      }
+
+      async function fetchPreviewToken() {
+        const headers = await (window.PreviewToken
+          ? window.PreviewToken.authHeaders()
+          : Promise.resolve({}));
+        if (!headers.Authorization) throw new Error('preview-token unavailable');
+        const r = await fetch(API_BASE + '/stream/preview-token', { headers });
+        if (!r.ok) throw new Error('preview-token http ' + r.status);
+        return r.json();
+      }
+
+      function scheduleRenew(expiresAtUnix) {
+        if (renewTimer) clearTimeout(renewTimer);
+        const renewInMs = Math.max(15000, (expiresAtUnix * 1000) - Date.now() - 30000);
+        renewTimer = setTimeout(connect, renewInMs);
+      }
+
+      async function connect() {
+        try {
+          setState('connecting', 'connecting');
+          const tok = await fetchPreviewToken();
+          if (ws) { try { ws.close(); } catch (_) {} }
+          ws = new WebSocket(tok.ws_url + '?token=' + encodeURIComponent(tok.stream_token));
+          ws.onopen = () => {
+            reconnectAttempt = 0;
+            setState('live', 'live');
+            scheduleRenew(tok.expires_at_unix);
+          };
+          ws.onmessage = (msg) => {
+            let frame;
+            try { frame = JSON.parse(msg.data); } catch (_) { return; }
+            if (frame.type === 'event' && frame.event) prependEvent(frame.event);
+            // hello / heartbeat / expired frames don't render; the
+            // periodic re-fetch handles renewal so we ignore them.
+          };
+          ws.onclose = () => {
+            setState('connecting', 'reconnecting');
+            // Exponential backoff capped at 30s, plus a small jitter so
+            // many tabs reconnecting at once don't synchronize.
+            reconnectAttempt += 1;
+            const backoff = Math.min(30000, 1000 * Math.pow(2, reconnectAttempt))
+                          + Math.floor(Math.random() * 500);
+            if (renewTimer) clearTimeout(renewTimer);
+            renewTimer = setTimeout(connect, backoff);
+          };
+          ws.onerror = () => { /* onclose handles recovery */ };
+        } catch (e) {
+          setState('connecting', 'offline');
+          reconnectAttempt += 1;
+          const backoff = Math.min(30000, 1000 * Math.pow(2, reconnectAttempt));
+          if (renewTimer) clearTimeout(renewTimer);
+          renewTimer = setTimeout(connect, backoff);
+        }
+      }
+
+      // Tear the stream down on tab-hide to save the preview-token quota,
+      // resume on tab-show. Avoids burning a 5-min slot for a backgrounded
+      // tab the visitor isn't actually watching.
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (renewTimer) { clearTimeout(renewTimer); renewTimer = null; }
+          if (ws) { try { ws.close(); } catch (_) {} ws = null; }
+          setState('paused', 'paused');
+        } else if (!ws || ws.readyState >= 2) {
+          reconnectAttempt = 0;
+          connect();
+        }
+      });
+
+      // Wait one tick so window.PreviewToken's async init has a chance
+      // to finish before the first connect attempt. preview-token.js
+      // primes itself on DOMContentLoaded.
+      setTimeout(connect, 500);
+    })();
 
     loadColumnInitial('news');
     loadColumnInitial('activity');
