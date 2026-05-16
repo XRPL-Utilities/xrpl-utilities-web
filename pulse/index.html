@@ -242,6 +242,32 @@
           <div class="py-3"><div class="skeleton-bar h-4 w-1/2"></div></div>
           <div class="py-3"><div class="skeleton-bar h-4 w-3/4"></div></div>
         </div>
+
+        <!-- Daily totals row — today (running) + yesterday (final). Each
+             box sums whale_xrpl rows >= $1M from the named UTC day. Same
+             /events/recent backend as the list above. -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="bg-panel/40 border border-border rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold">Today (UTC, running) &middot; $1M+</h3>
+              <span id="whale-day-today-dot" class="h-1.5 w-1.5 rounded-full bg-accent" title="updates every 60s"></span>
+            </div>
+            <div class="flex items-baseline gap-3">
+              <span id="whale-day-today-usd" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">--</span>
+              <span id="whale-day-today-count" class="text-xs text-muted/70 font-mono">--</span>
+            </div>
+          </div>
+          <div class="bg-panel/40 border border-border rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-[10px] uppercase tracking-[0.2em] text-muted font-semibold">Yesterday (UTC) &middot; $1M+</h3>
+              <span id="whale-day-yest-label" class="text-[10px] text-muted/50 font-mono"></span>
+            </div>
+            <div class="flex items-baseline gap-3">
+              <span id="whale-day-yest-usd" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">--</span>
+              <span id="whale-day-yest-count" class="text-xs text-muted/70 font-mono">--</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1700,8 +1726,13 @@ feed = session.post(
     // via the preview-token JWT (Turnstile-issued by Cloudflare Pages).
     // ----------------------------------------------------------------------
     (function whales24h() {
-      const listEl = document.getElementById('whale-24h-list');
-      const metaEl = document.getElementById('whale-24h-meta');
+      const listEl       = document.getElementById('whale-24h-list');
+      const metaEl       = document.getElementById('whale-24h-meta');
+      const todayUsdEl   = document.getElementById('whale-day-today-usd');
+      const todayCntEl   = document.getElementById('whale-day-today-count');
+      const yestUsdEl    = document.getElementById('whale-day-yest-usd');
+      const yestCntEl    = document.getElementById('whale-day-yest-count');
+      const yestLabelEl  = document.getElementById('whale-day-yest-label');
       if (!listEl) return;
 
       const REFRESH_MS = 60000;
@@ -1825,15 +1856,110 @@ feed = session.post(
         }
       }
 
-      load();
-      const timer = setInterval(load, REFRESH_MS);
+      // ----- daily totals (today running + yesterday final) -----
+      // Yesterday is sourced from /stats/whale-flow-history (authoritative
+      // UTC-day rollup of WHALE_MOVE + INSTITUTIONAL_FLOW tiers, source=
+      // events_rollup). Today is computed live from /events/recent since
+      // 00:00 UTC, filtered strictly to whale_xrpl >= $1M so it matches
+      // the framing of the list above. Both refresh on the same 60s tick.
+
+      function utcDateStr(d) {
+        const y = d.getUTCFullYear();
+        const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+      }
+
+      async function loadDailyTotals() {
+        const now    = new Date();
+        const todayStart = new Date(Date.UTC(
+          now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0,
+        ));
+        const todayStr = utcDateStr(now);
+        const yestDate = new Date(todayStart.getTime() - 24 * 3600 * 1000);
+        const yestStr  = utcDateStr(yestDate);
+        if (yestLabelEl) yestLabelEl.textContent = yestStr;
+
+        const headers = await (window.PreviewToken
+          ? window.PreviewToken.authHeaders()
+          : Promise.resolve({}));
+        const baseHeaders = Object.assign({ 'Content-Type': 'application/json' }, headers);
+
+        // Today (running): live aggregate from events table, strict >=$1M.
+        try {
+          const r = await fetch(API_BASE + '/events/recent', {
+            method: 'POST',
+            headers: baseHeaders,
+            body: JSON.stringify({
+              kind: 'activity',
+              limit: LIMIT,
+              since_iso: todayStart.toISOString(),
+              min_whale_usd: MIN_USD,
+            }),
+          });
+          if (r.ok) {
+            const data = await r.json();
+            let usd = 0; let cnt = 0;
+            for (const e of (data.events || [])) {
+              if (!(e.source_appearances || []).includes('whale_xrpl')) continue;
+              const v = (e.active_utility || {}).usd_value;
+              if (typeof v !== 'number' || v < MIN_USD) continue;
+              usd += v; cnt += 1;
+            }
+            if (todayUsdEl) todayUsdEl.textContent = cnt ? formatUsdShort(usd) : '$0';
+            if (todayCntEl) {
+              todayCntEl.textContent = (cnt >= LIMIT ? '≥ ' : '') + cnt + ' tx' + (cnt === 1 ? '' : 's');
+            }
+          }
+        } catch (_) { /* leave last good values in place */ }
+
+        // Yesterday (final): authoritative tier rollup. The endpoint also
+        // sometimes includes a partial today row if the hourly rollup
+        // pass has run since midnight - we pick yesterday's date
+        // explicitly rather than 'last entry' so a partial today doesn't
+        // get mistaken for yesterday.
+        try {
+          const r = await fetch(API_BASE + '/stats/whale-flow-history?days=3', { headers });
+          if (r.ok) {
+            const data = await r.json();
+            const series = data.series || [];
+            const yest = series.find(row => row.snapshot_date === yestStr);
+            if (yest) {
+              const usd = (yest.institutional_usd || 0) + (yest.whale_usd || 0);
+              const cnt = (yest.institutional_count || 0) + (yest.whale_count || 0);
+              if (yestUsdEl) yestUsdEl.textContent = formatUsdShort(usd);
+              if (yestCntEl) yestCntEl.textContent = cnt + ' tx' + (cnt === 1 ? '' : 's');
+            } else if (yestUsdEl) {
+              yestUsdEl.textContent = '$0';
+              if (yestCntEl) yestCntEl.textContent = '0 txs';
+            }
+          }
+        } catch (_) { /* leave last good values in place */ }
+      }
+
+      function refreshAll() {
+        load();
+        loadDailyTotals();
+      }
+
+      let timer = null;
+      function startTimer() {
+        if (timer === null) timer = setInterval(refreshAll, REFRESH_MS);
+      }
+      function stopTimer() {
+        if (timer !== null) { clearInterval(timer); timer = null; }
+      }
+
+      refreshAll();
+      startTimer();
       // Pause polling when the tab is hidden to save the preview-token
-      // quota; refresh once on tab-show.
+      // quota; refresh once and restart the timer on tab-show.
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-          clearInterval(timer);
+          stopTimer();
         } else {
-          load();
+          refreshAll();
+          startTimer();
         }
       });
     })();
