@@ -1,0 +1,118 @@
+/* Stat-tile — shared visual treatment for headline numbers across
+   the .com service pages. Composes with Tailwind for layout
+   (padding, grid placement). Three variants by accent color:
+   default = cyan, .stat-tile-gold = amber/gold (institutional /
+   highlight), .stat-tile-muted = grey (secondary / inactive).
+
+   Each tile gets a subtle gradient body, a faint inner border, and
+   a top accent rule. Optional .stat-tile-glow adds a soft outer
+   glow in the accent color (use sparingly — for the headline tile
+   of a section, not every tile).
+
+   Designed to match the existing dark-ink palette and the
+   tier-badge color set (.tier-institutional gold, accent cyan).
+   Does not introduce new colors. */
+
+.stat-tile {
+  position: relative;
+  background: linear-gradient(180deg,
+    rgba(20, 20, 20, 0.6) 0%,
+    rgba(10, 10, 10, 0.35) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.875rem;
+  overflow: hidden;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.stat-tile:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.stat-tile::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 184, 255, 0.5) 50%,
+    transparent 100%);
+  pointer-events: none;
+}
+.stat-tile-gold::before {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(250, 204, 21, 0.55) 50%,
+    transparent 100%);
+}
+.stat-tile-muted::before {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(148, 163, 184, 0.35) 50%,
+    transparent 100%);
+}
+
+.stat-tile-glow         { box-shadow: 0 0 28px rgba(0, 184, 255, 0.08); }
+.stat-tile-gold.stat-tile-glow  { box-shadow: 0 0 28px rgba(250, 204, 21, 0.08); }
+.stat-tile-muted.stat-tile-glow { box-shadow: 0 0 24px rgba(148, 163, 184, 0.06); }
+
+/* Tiny uppercase header above the value. Use for the metric name
+   so the value can carry the visual weight. */
+.stat-tile-label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(148, 163, 184, 0.85);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Big tabular value. Use for the headline number. Scales up on
+   desktop. Hard cap on line-height so two-line values (large +
+   currency suffix) don't blow the tile. */
+.stat-tile-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+@media (min-width: 640px) {
+  .stat-tile-value { font-size: 2.25rem; }
+}
+@media (min-width: 1024px) {
+  .stat-tile-value { font-size: 2.5rem; }
+}
+
+/* Optional secondary line under the value (count, delta, etc.). */
+.stat-tile-sub {
+  font-size: 0.75rem;
+  color: rgba(148, 163, 184, 0.75);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Delta colors for trend indicators. Use sparingly — only when the
+   direction itself is the signal (e.g., 7d % change on a holding). */
+.stat-tile-up      { color: #4ade80; }
+.stat-tile-down    { color: #f87171; }
+.stat-tile-flat    { color: rgba(148, 163, 184, 0.7); }
+
+/* Small live-pulse dot for tiles that auto-update. */
+@keyframes stStatPulse {
+  0%, 100% { opacity: 1;   transform: scale(1);   }
+  50%      { opacity: 0.45; transform: scale(0.7); }
+}
+.stat-tile-pulse {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.7);
+  animation: stStatPulse 1.6s ease-in-out infinite;
+}
+.stat-tile-pulse.stale {
+  background: rgba(148, 163, 184, 0.5);
+  box-shadow: none;
+  animation: none;
+}
