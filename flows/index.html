@@ -285,7 +285,7 @@
   <section id="cross-border" class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
       <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
-        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Cross-border institutional settlement</h2>
+        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold"><span class="gloss" data-term="cross-border">Cross-border</span> institutional settlement</h2>
         <div class="flex items-center gap-2">
           <button data-xb-range="7"  class="xb-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">7d</button>
           <button data-xb-range="30" class="xb-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-accent text-white transition" aria-pressed="true">30d</button>
@@ -293,7 +293,7 @@
         </div>
       </div>
       <p class="text-xs text-muted leading-relaxed mb-6 max-w-4xl">
-        Country-pair settlement edges derived from whale Payments where both sender and receiver XRPScan labels resolve to operator-curated jurisdictions and the assigned countries differ. Each edge counts one Payment moving USD value between two countries; the map shades each country by total inbound plus outbound USD over the window. Labeled-wallet layer only.
+        Country-pair settlement edges derived from whale Payments where both sender and receiver XRPScan labels resolve to operator-curated <span class="gloss" data-term="jurisdiction-map">jurisdictions</span> and the assigned countries differ. Each edge counts one Payment moving USD value between two countries; the map shades each country by total inbound plus outbound USD over the window. <span class="gloss" data-term="labeled-wallet">Labeled-wallet</span> layer only.
       </p>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -306,7 +306,7 @@
             <svg id="xb-map" class="w-full h-full" preserveAspectRatio="xMidYMid meet"></svg>
             <div id="xb-tooltip" class="hidden absolute bg-panel border border-border rounded px-2 py-1 text-[10px] font-mono text-white pointer-events-none shadow-lg" style="z-index:10;"></div>
           </div>
-          <div class="flex items-center gap-3 mt-2 text-[10px] text-muted font-mono">
+          <div class="flex flex-wrap items-center gap-3 mt-2 text-[10px] text-muted font-mono">
             <span>scale:</span>
             <span class="inline-block w-3 h-3 rounded-sm" style="background:#1f2937;"></span><span>none</span>
             <span class="inline-block w-3 h-3 rounded-sm" style="background:#7c2d12;"></span><span>low</span>
@@ -316,7 +316,7 @@
         </div>
 
         <div class="bg-ink border border-border rounded-lg p-3">
-          <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-2">Top corridors (origin → destination)</h3>
+          <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-2">Top <span class="gloss" data-term="corridor">corridors</span> (origin → destination)</h3>
           <div id="xb-corridors" class="text-[11px] font-mono space-y-1">
             <div class="text-muted">loading&hellip;</div>
           </div>

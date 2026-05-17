@@ -104,6 +104,30 @@
     "trustline": {
       title: "Trustline",
       body: "An XRPL ledger object expressing one address's willingness to hold a specific token issued by another address, up to a stated limit. Required before you can receive any non-XRP token."
+    },
+    "cross-border": {
+      title: "Cross-border settlement",
+      body: "A whale Payment where the sender's and receiver's XRPScan labels both resolve to known jurisdictions in different countries. Captures institutional flow between exchanges, custodians, and issuers; retail wallets are unlabeled and excluded by construction."
+    },
+    "corridor": {
+      title: "Corridor",
+      body: "A directed pair of countries (origin to destination) carrying cross-border settlement edges. Ranked by USD value; one corridor aggregates many individual Payments between wallets in those two jurisdictions."
+    },
+    "labeled-wallet": {
+      title: "Labeled-wallet layer",
+      body: "Wallets whose XRPScan well-known label resolves to a known entity (exchange, custodian, issuer). Cross-border classification only counts Payments where BOTH ends are in this layer; unlabeled wallets are invisible to the signal."
+    },
+    "jurisdiction-map": {
+      title: "wallet_jurisdiction map",
+      body: "Operator-curated table mapping XRPScan labels to ISO-3166 countries with a one-line HQ citation each (regulatory filing, official disclosure). 47 labels across 18 countries today. Auditable: every entry has a source, git history shows every change."
+    },
+    "funded-wallets": {
+      title: "Funded XRPL wallets",
+      body: "Total count of XRPL accounts holding at least the 1 XRP reserve, network-wide. Sampled once per UTC day from a public aggregator. This is every-funded-account, not just whales or institutions."
+    },
+    "sister-product-key": {
+      title: "X-Sister-Product-Key",
+      body: "Header that lets one XR-Utilities service call another's paid endpoint backend-to-backend without an x402 payment, when both share a SISTER_PRODUCT_KEY. Distinct from individual x402 payments; used only inside the XR-* portfolio."
     }
   };
 
