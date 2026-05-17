@@ -433,9 +433,10 @@
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
       <h3 class="text-3xl font-bold mb-6">Agents read the same data via x402</h3>
       <p class="text-muted leading-relaxed mb-6 max-w-3xl">
-        XR-Flows renders this dashboard over the same endpoints agents call. Two free public reads:
-        <code class="font-mono text-white">GET /stats/correlation</code> for the headline cross-tier series, and
-        <code class="font-mono text-white">GET /stats/launch-impact</code> for the per-launch window analysis.
+        XR-Flows renders this dashboard over the same endpoints agents call. Three free public reads:
+        <code class="font-mono text-white">GET /stats/correlation</code> for the headline cross-tier series,
+        <code class="font-mono text-white">GET /stats/launch-impact</code> for the per-launch window analysis, and
+        <code class="font-mono text-white">GET /stats/cross-border-flow</code> for the country-pair institutional settlement edges.
         The paid per-ETF deep dive lives at <code class="font-mono text-white">POST /scan</code> on
         <code class="font-mono text-white">flows.xrpl-utilities.io</code> for $0.10 USD per call via x402 v2 (XRP or RLUSD).
         Each /scan response carries the latest scrape, full daily history, the chain-flow context from XR-Pulse,
