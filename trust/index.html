@@ -183,6 +183,7 @@
         <div class="stat-tile stat-tile-glow p-4">
           <div class="stat-tile-label mb-2">Domains tracked</div>
           <div id="stat-domains" class="stat-tile-value"><span class="inline-block h-7 w-16 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-domains-detail" class="stat-tile-sub mt-2">&hellip;</div>
         </div>
         <div class="stat-tile stat-tile-gold p-4">
           <div class="stat-tile-label mb-2">Credential issuers</div>
@@ -1157,11 +1158,44 @@ record = session.post(
           status.textContent = total + (total === 1 ? ' domain' : ' domains') + ' on validated ledger';
         }
         renderTable(target, _allDomains, ws);
+        loadOperatorBreakdown();
       } catch (e) {
         renderError(target, 'Couldn’t reach trust.xrpl-utilities.io. The service may be undergoing initial deployment. Try refreshing.');
         status.textContent = 'Error.';
         setStat('stat-domains', '; ');
         setStat('stat-issuers', '; ');
+      }
+    }
+
+    // Operator breakdown from the free /permissioned-domains/operators/index
+    // endpoint. Surfaces total operators vs domain owners vs credential-only
+    // operators so the visible 8-domain headline doesn't undercount the
+    // actual XLS-70/80 footprint (one operator can own multiple domains;
+    // credential-only operators issue creds for someone else's domain).
+    async function loadOperatorBreakdown() {
+      const detail = document.getElementById('stat-domains-detail');
+      if (!detail) return;
+      try {
+        const r = await fetch(API_BASE + '/permissioned-domains/operators/index?limit=500');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const body = await r.json();
+        const total = body.total || 0;
+        const ops = body.operators || [];
+        const withDomains = ops.filter(o => (o.domain_count || 0) > 0).length;
+        const credOnly = total - withDomains;
+        if (total > 0) {
+          const parts = [`${total} operator${total === 1 ? '' : 's'}`];
+          if (withDomains > 0 && credOnly > 0) {
+            parts.push(`${withDomains} own domains · ${credOnly} credential-only`);
+          } else if (withDomains > 0) {
+            parts.push(`all own domains`);
+          }
+          detail.textContent = parts.join(' · ');
+        } else {
+          detail.textContent = '0 operators';
+        }
+      } catch (e) {
+        detail.textContent = '';
       }
     }
 

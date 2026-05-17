@@ -220,6 +220,30 @@
     </div>
   </section>
 
+  <!-- Discovery callout. Surfaces auto-discovered RWA candidates ABOVE
+       the issuer grid so they're impossible to miss. Hidden by default;
+       JS unhides when Pulse /stats/rwa-summary returns at least one
+       provisional candidate. Deep-links to the Recently Discovered
+       section further down. -->
+  <section id="discovery-callout" class="hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
+      <a href="#recently-discovered" class="block bg-amber-500/10 border border-amber-500/40 hover:border-amber-500 rounded-xl p-4 sm:p-5 transition group">
+        <div class="flex items-start sm:items-center justify-between gap-3 flex-col sm:flex-row">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-[10px] uppercase tracking-widest text-amber-400 font-semibold border border-amber-500/40 rounded px-2 py-0.5 shrink-0">New</span>
+            <div class="min-w-0">
+              <div class="text-sm sm:text-base font-semibold text-white">
+                <span id="discovery-callout-text">…</span>
+              </div>
+              <p class="text-[11px] text-muted mt-0.5">Auto-discovered XRPL issuers that fingerprint as RWAs, headless-classified and not yet operator-promoted.</p>
+            </div>
+          </div>
+          <span class="text-xs text-amber-400 group-hover:text-amber-300 whitespace-nowrap font-semibold">Jump to discoveries →</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
   <section id="vault-summary">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1000,9 +1024,12 @@
       const noiseCount = document.getElementById('candidate-noise-count');
       const empty = document.getElementById('candidate-empty');
       const counter = document.getElementById('candidates-count');
+      const callout = document.getElementById('discovery-callout');
+      const calloutText = document.getElementById('discovery-callout-text');
       if (!section || !provEl || !noiseEl) return;
       if (!candidates.length) {
         section.classList.add('hidden');
+        if (callout) callout.classList.add('hidden');
         return;
       }
       section.classList.remove('hidden');
@@ -1018,6 +1045,20 @@
       }
 
       if (counter) counter.textContent = `${provisional.length} provisional · ${noise.length} noise`;
+
+      // Show the top-of-page callout when there's at least one provisional
+      // candidate (operator-review-worthy). Noise-only doesn't surface a
+      // banner — those are filtered meme tokens, not interesting signal.
+      if (callout && calloutText) {
+        if (provisional.length > 0) {
+          callout.classList.remove('hidden');
+          const labels = provisional.slice(0, 3).map(c => c.label || c.wallet?.slice(0, 8) || '?').join(', ');
+          const more = provisional.length > 3 ? ` + ${provisional.length - 3} more` : '';
+          calloutText.textContent = `${provisional.length} RWA candidate${provisional.length === 1 ? '' : 's'} auto-discovered: ${labels}${more}`;
+        } else {
+          callout.classList.add('hidden');
+        }
+      }
 
       if (provisional.length) {
         provHeader.classList.remove('hidden');
