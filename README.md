@@ -9,21 +9,30 @@ dependencies.
 | Path | Purpose |
 |---|---|
 | `index.html` | Landing page for `xrpl-utilities.com`: brand intro and tools portfolio |
+| `start/index.html` | New-to-XRPL plain-English onboarding (5-minute walkthrough + service router) |
+| `pricing/index.html` | Pricing page for the six paid x402 endpoints + Pulse streaming subscriptions |
 | `sentinel/index.html` | XR-Sentinel showcase: try-it-yourself form, sample classifications, "for agents" snippet |
 | `sentinel/bulk/index.html` | Paid bulk-scan flow (up to 50 XRPL addresses, single payment, CSV download) |
 | `telemetry/index.html` | XR-Telemetry showcase: cached samples, Burst Math calculator, Predictive Floor Matrix chart, live paid snapshot |
-| `terms/index.html` | Terms of service |
+| `pulse/index.html` | XR-Pulse showcase: 24h whale strip, daily totals + coverage donut, live news+activity feed, glossary |
+| `trust/index.html` | XR-Trust showcase: permissioned-domain directory + drill-down, jurisdictions, active operators |
+| `vault/index.html` | XR-Vault showcase: RWA issuer dashboard, top movers, XLS-85 escrow tile, settlement chart |
+| `flows/index.html` | XR-Flows showcase: ETF AUM + XRPL exchange-flow correlation, launch-window analysis |
+| `terms/index.html` | Terms of service (canonical legal text including void-where-prohibited disclosure) |
 | `status/index.html` | Status page |
-| `manifest/index.html` | Human-friendly index of `/manifest`, `/schema`, `/openapi.json`, `/agents.json` developer endpoints |
 | `contact/index.html` | Contact form (web3forms-backed, Cloudflare Turnstile spam protection) |
-| `assets/logo.png` | Brand asset, served from `/assets/logo.png` |
+| `tip/index.html` | Tip jar page (XRPL Payment to the operator wallet) |
+| `assets/logo.png`, `assets/xr-*.png` | Brand assets |
+| `assets/preview-token.js` | Cloudflare Turnstile-issued preview-JWT minter for free in-browser API calls |
 | `assets/scan-flow.js` | Single + bulk scan UI, payment polling, QR rendering, CSV export |
 | `assets/telemetry-flow.js` | Telemetry payment polling + result rendering for the `/telemetry/` page |
+| `assets/glossary-tooltip.js` | Shared hover-tooltip component for XRPL jargon (XLS-80, AMM, DvP, x402, etc.) |
+| `assets/stat-tile.css` | Shared visual treatment for headline-number cards across the portfolio |
 | `_headers` | Cloudflare Pages security + cache headers (CSP, HSTS, X-Frame-Options, Cache-Control) |
-| `_redirects` | (none currently) |
+| `_redirects` | Apex/www redirect rules |
 | `robots.txt` | Allow all, points crawlers at `sitemap.xml` |
 | `sitemap.xml` | All public pages with lastmod and priority |
-| `wrangler.jsonc` | Cloudflare Workers config (currently unused; Pages is the live deployment) |
+| `wrangler.jsonc`, `_worker.js` | Cloudflare Workers config + entrypoint |
 | `.assetsignore` | Files excluded from a Workers asset bundle if/when Workers takes over |
 
 ## Local preview
@@ -80,8 +89,19 @@ asset bundle.
 
 ## Sibling repos
 
-- `XR-Sentinel`: the FastAPI service that powers the `/sentinel` showcase
-  and the agent-facing API at `sentinel.xrpl-utilities.io`.
-- `XRPL-Utilities-XR-Telemetry`: the FastAPI service that powers the
-  `/telemetry` showcase and the agent-facing API at
-  `telemetry.xrpl-utilities.io`.
+Each `.com` service page reads from a sibling FastAPI service that also
+serves the agent-facing API:
+
+- `XR-Sentinel` — wallet activity-pattern classifier (`sentinel.xrpl-utilities.io`)
+- `XR-Telemetry` (repo: `XRPL-Utilities-XR-Telemetry`) — macro telemetry +
+  Active Float + Burst Math (`telemetry.xrpl-utilities.io`)
+- `XR-Pulse` — normalized signal feed + WebSocket streaming
+  (`pulse.xrpl-utilities.io`)
+- `XR-Trust` — permissioned-domain directory + XLS-80/81/40 explorer
+  (`trust.xrpl-utilities.io`)
+- `XR-Vault` — real-world asset tracker (`vault.xrpl-utilities.io`)
+- `XR-Flows` — ETF AUM vs XRPL exchange-flow correlation
+  (`flows.xrpl-utilities.io`)
+- `xrpl-utilities-mcp` — Model Context Protocol server exposing all six
+  services as MCP tools (`mcp.xrpl-utilities.io`, also published to npm
+  as `@xrpl-utilities/mcp`)
