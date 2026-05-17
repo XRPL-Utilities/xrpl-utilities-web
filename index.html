@@ -278,12 +278,18 @@
         </div>
         <span id="live-state-asof" class="text-[10px] text-muted font-mono">loading&hellip;</span>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
 
         <a href="/telemetry/" class="stat-tile stat-tile-glow p-4 hover:border-accent block">
           <div class="stat-tile-label mb-1.5">XRPL settlement run-rate</div>
           <div id="ls-runrate" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
           <div class="stat-tile-sub text-[10px] mt-2">annualized, all-token, USD</div>
+        </a>
+
+        <a href="/pulse/" class="stat-tile p-4 hover:border-accent block">
+          <div class="stat-tile-label mb-1.5">Funded XRPL wallets</div>
+          <div id="ls-wallets" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
+          <div class="stat-tile-sub text-[10px] mt-2"><span id="ls-wallets-delta">network-wide, all funded accounts</span></div>
         </a>
 
         <a href="/pulse/" class="stat-tile p-4 hover:border-accent block">
@@ -599,6 +605,8 @@ report = session.post(
       const FLOWS     = 'https://flows.xrpl-utilities.io';
 
       const elRunrate    = document.getElementById('ls-runrate');
+      const elWallets    = document.getElementById('ls-wallets');
+      const elWalletsDelta = document.getElementById('ls-wallets-delta');
       const elEvents     = document.getElementById('ls-events');
       const elDomains    = document.getElementById('ls-domains');
       const elScans      = document.getElementById('ls-scans');
@@ -637,17 +645,29 @@ report = session.post(
       }
 
       async function refresh() {
-        const [tel, pulseHc, trustStats, sentinelStats, rwaSummary, flowsCorr] = await Promise.all([
+        const [tel, pulseHc, trustStats, sentinelStats, rwaSummary, flowsCorr, pulseNet] = await Promise.all([
           fetchJson(TELEMETRY + '/settlement/totals'),
           fetchJson(PULSE     + '/healthz'),
           fetchJson(TRUST     + '/stats'),
           fetchJson(SENTINEL  + '/stats'),
           fetchJson(PULSE     + '/stats/rwa-summary'),
           fetchJson(FLOWS     + '/stats/correlation?days=1'),
+          fetchJson(PULSE     + '/stats/network?window_days=2'),
         ]);
 
         if (tel && typeof tel.annualized_run_rate_usd === 'number') {
           setText(elRunrate, fmtUsd(tel.annualized_run_rate_usd));
+        }
+
+        if (pulseNet && pulseNet.latest && typeof pulseNet.latest.total_addresses === 'number') {
+          setText(elWallets, fmtCount(pulseNet.latest.total_addresses));
+          const prev = pulseNet.deltas && pulseNet.deltas.since_previous;
+          if (prev && typeof prev.addresses === 'number' && elWalletsDelta) {
+            const sign = prev.addresses >= 0 ? '+' : '−';
+            const cls = prev.addresses >= 0 ? 'text-emerald-400' : 'text-rose-400';
+            elWalletsDelta.className = cls;
+            elWalletsDelta.textContent = sign + fmtCount(Math.abs(prev.addresses)) + ' since prior day';
+          }
         }
 
         const evCount = pulseHc && pulseHc.checks && pulseHc.checks.db && pulseHc.checks.db.event_count;

@@ -54,6 +54,8 @@
   <script src="/assets/glossary-tooltip.js?v=v1" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -277,6 +279,52 @@
           No accrued data yet. The series starts from the first hourly scrape after each deploy.
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="cross-border" class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
+        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Cross-border institutional settlement</h2>
+        <div class="flex items-center gap-2">
+          <button data-xb-range="7"  class="xb-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">7d</button>
+          <button data-xb-range="30" class="xb-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-accent text-white transition" aria-pressed="true">30d</button>
+          <button data-xb-range="90" class="xb-range-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">90d</button>
+        </div>
+      </div>
+      <p class="text-xs text-muted leading-relaxed mb-6 max-w-4xl">
+        Country-pair settlement edges derived from whale Payments where both sender and receiver XRPScan labels resolve to operator-curated jurisdictions and the assigned countries differ. Each edge counts one Payment moving USD value between two countries; the map shades each country by total inbound plus outbound USD over the window. Labeled-wallet layer only.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="lg:col-span-2 bg-ink border border-border rounded-lg p-3">
+          <div class="flex items-baseline justify-between mb-2 gap-2 flex-wrap">
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">World map — country total USD (in + out)</h3>
+            <span id="xb-headline" class="text-[10px] text-muted font-mono"></span>
+          </div>
+          <div class="relative" style="aspect-ratio: 2 / 1;">
+            <svg id="xb-map" class="w-full h-full" preserveAspectRatio="xMidYMid meet"></svg>
+            <div id="xb-tooltip" class="hidden absolute bg-panel border border-border rounded px-2 py-1 text-[10px] font-mono text-white pointer-events-none shadow-lg" style="z-index:10;"></div>
+          </div>
+          <div class="flex items-center gap-3 mt-2 text-[10px] text-muted font-mono">
+            <span>scale:</span>
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#1f2937;"></span><span>none</span>
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#7c2d12;"></span><span>low</span>
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#ea580c;"></span><span>mid</span>
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#fde047;"></span><span>high</span>
+          </div>
+        </div>
+
+        <div class="bg-ink border border-border rounded-lg p-3">
+          <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-2">Top corridors (origin → destination)</h3>
+          <div id="xb-corridors" class="text-[11px] font-mono space-y-1">
+            <div class="text-muted">loading&hellip;</div>
+          </div>
+          <p class="text-[10px] text-muted mt-3" id="xb-coverage"></p>
+        </div>
+      </div>
+
+      <p class="text-[10px] text-muted mt-3 max-w-4xl" id="xb-caveat"></p>
     </div>
   </section>
 
@@ -1129,6 +1177,214 @@
     }
     loadTrackedEtfsGrid();
     setInterval(loadTrackedEtfsGrid, 3600 * 1000);
+
+    // -----------------------------------------------------------------
+    // Cross-border world heatmap. Uses d3 + topojson-client + world-atlas
+    // TopoJSON. Choropleth on country.total_usd; right rail lists the
+    // top corridors (origin -> destination) from the same response.
+    // Range buttons swap window_days; map redraws in-place. Tooltip on
+    // country hover. Honest empty-state: when bootstrap=true OR
+    // total countries 0, the map renders neutral fill and the right
+    // rail says "no cross-border edges yet".
+    // -----------------------------------------------------------------
+    (function setupCrossBorderHeatmap() {
+      const mapEl = document.getElementById('xb-map');
+      if (!mapEl || typeof d3 === 'undefined' || typeof topojson === 'undefined') {
+        return;
+      }
+      const TOPOJSON_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json';
+      // ISO-3166 numeric -> alpha-2. world-atlas tags each country with
+      // a numeric `id` (UN M49). Our backend returns alpha-2. We need
+      // the cross-walk to look up totals per feature. Trimmed to the
+      // 18 countries currently in wallet_jurisdiction.py — fast to
+      // extend when the operator adds entries.
+      const ISO_NUM_TO_A2 = {
+        '004':'AF','008':'AL','012':'DZ','032':'AR','036':'AU','040':'AT',
+        '044':'BS','048':'BH','050':'BD','056':'BE','068':'BO','076':'BR',
+        '084':'BZ','100':'BG','124':'CA','152':'CL','156':'CN','170':'CO',
+        '188':'CR','192':'CU','196':'CY','203':'CZ','208':'DK','214':'DO',
+        '218':'EC','222':'SV','233':'EE','246':'FI','250':'FR','268':'GE',
+        '276':'DE','288':'GH','300':'GR','320':'GT','340':'HN','344':'HK',
+        '348':'HU','352':'IS','356':'IN','360':'ID','364':'IR','372':'IE',
+        '376':'IL','380':'IT','388':'JM','392':'JP','400':'JO','398':'KZ',
+        '404':'KE','410':'KR','414':'KW','417':'KG','428':'LV','440':'LT',
+        '442':'LU','458':'MY','484':'MX','504':'MA','512':'OM','528':'NL',
+        '554':'NZ','566':'NG','578':'NO','586':'PK','591':'PA','598':'PG',
+        '604':'PE','608':'PH','616':'PL','620':'PT','630':'PR','634':'QA',
+        '642':'RO','643':'RU','682':'SA','690':'SC','702':'SG','703':'SK',
+        '705':'SI','710':'ZA','716':'ZW','724':'ES','752':'SE','756':'CH',
+        '764':'TH','780':'TT','788':'TN','792':'TR','826':'GB','840':'US',
+        '858':'UY','860':'UZ','862':'VE','704':'VN','886':'YE','894':'ZM',
+        '136':'KY','092':'VG','044':'BS','044':'BS','060':'BM','832':'JE',
+        '356':'IN'
+      };
+
+      const elHeadline   = document.getElementById('xb-headline');
+      const elCorridors  = document.getElementById('xb-corridors');
+      const elCoverage   = document.getElementById('xb-coverage');
+      const elCaveat     = document.getElementById('xb-caveat');
+      const elTooltip    = document.getElementById('xb-tooltip');
+
+      function fmtUsdCompact(n) {
+        if (typeof n !== 'number' || !isFinite(n) || n === 0) return '$0';
+        const abs = Math.abs(n);
+        if (abs >= 1e9) return '$' + (abs / 1e9).toFixed(2) + 'B';
+        if (abs >= 1e6) return '$' + (abs / 1e6).toFixed(1) + 'M';
+        if (abs >= 1e3) return '$' + Math.round(abs / 1e3) + 'k';
+        return '$' + Math.round(abs);
+      }
+
+      let worldFeatures = null;
+      let currentWindow = 30;
+
+      async function loadWorld() {
+        if (worldFeatures) return worldFeatures;
+        try {
+          const topo = await d3.json(TOPOJSON_URL);
+          worldFeatures = topojson.feature(topo, topo.objects.countries).features;
+          return worldFeatures;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function setHeadline(coverage, windowDays) {
+        if (!elHeadline) return;
+        if (!coverage) { elHeadline.textContent = ''; return; }
+        const xb = coverage.cross_border_events || 0;
+        const usd = coverage.cross_border_usd || 0;
+        elHeadline.textContent = `${xb.toLocaleString('en-US')} edges · ${fmtUsdCompact(usd)} · ${windowDays}d window`;
+      }
+
+      function renderCorridors(corridors) {
+        if (!elCorridors) return;
+        if (!corridors || corridors.length === 0) {
+          elCorridors.innerHTML = '<div class="text-muted">No cross-border edges in this window yet. Coverage accrues as labeled-wallet whale Payments fire.</div>';
+          return;
+        }
+        elCorridors.innerHTML = corridors.slice(0, 10).map(c =>
+          `<div class="flex items-baseline justify-between gap-2 border-b border-border/40 pb-1">` +
+            `<span><span class="text-white">${c.origin_iso}</span> <span class="text-muted">&rarr;</span> <span class="text-white">${c.dest_iso}</span></span>` +
+            `<span class="text-emerald-400">${fmtUsdCompact(c.usd_total)}</span>` +
+          `</div>`
+        ).join('');
+      }
+
+      function renderCoverage(coverage) {
+        if (!elCoverage) return;
+        if (!coverage) { elCoverage.textContent = ''; return; }
+        const seen = coverage.whale_events_seen || 0;
+        const labeled = coverage.both_sides_labeled || 0;
+        const labeledPct = coverage.labeled_pct_of_seen;
+        elCoverage.textContent = `${seen} whale Payments observed; ${labeled} (${labeledPct !== null ? labeledPct.toFixed(0) + '%' : '—'}) had both sides labeled. Jurisdiction map: ${coverage.jurisdiction_label_count} labels across ${coverage.jurisdiction_country_count} countries.`;
+      }
+
+      function renderMap(perCountry) {
+        const features = worldFeatures;
+        if (!features) return;
+        const totals = new Map();
+        (perCountry || []).forEach(c => totals.set(c.iso_country, c.total_usd || 0));
+        const maxUsd = Math.max(1, ...Array.from(totals.values()));
+        // Sequential color scale: dark slate (no data) -> orange-700 (low)
+        // -> orange-500 (mid) -> yellow-300 (high). Log scale so small
+        // corridors are still visible alongside outliers.
+        const colorScale = d3.scaleLog()
+          .domain([1, maxUsd])
+          .range(['#7c2d12', '#fde047'])
+          .clamp(true);
+
+        const svg = d3.select(mapEl);
+        const bbox = mapEl.getBoundingClientRect();
+        const w = bbox.width || 800;
+        const h = bbox.height || 400;
+        svg.selectAll('*').remove();
+        svg.attr('viewBox', `0 0 ${w} ${h}`);
+        const projection = d3.geoNaturalEarth1()
+          .fitSize([w, h], { type: 'FeatureCollection', features: features });
+        const path = d3.geoPath(projection);
+
+        svg.append('g')
+          .selectAll('path')
+          .data(features)
+          .join('path')
+          .attr('d', path)
+          .attr('fill', d => {
+            const a2 = ISO_NUM_TO_A2[String(d.id).padStart(3, '0')];
+            const v = a2 ? totals.get(a2) : 0;
+            return (v && v > 0) ? colorScale(v) : '#1f2937';
+          })
+          .attr('stroke', '#0f172a')
+          .attr('stroke-width', 0.4)
+          .on('mousemove', function(evt, d) {
+            if (!elTooltip) return;
+            const a2 = ISO_NUM_TO_A2[String(d.id).padStart(3, '0')];
+            const v = a2 ? totals.get(a2) : 0;
+            const name = (d.properties && d.properties.name) || a2 || '?';
+            const valueStr = (v && v > 0) ? fmtUsdCompact(v) : 'no labeled flow';
+            elTooltip.innerHTML = `<span class="text-white">${name}</span> <span class="text-muted">${a2 || ''}</span><br/><span class="text-emerald-400">${valueStr}</span>`;
+            const rect = mapEl.getBoundingClientRect();
+            const offX = evt.clientX - rect.left + 12;
+            const offY = evt.clientY - rect.top + 12;
+            elTooltip.style.left = offX + 'px';
+            elTooltip.style.top  = offY + 'px';
+            elTooltip.classList.remove('hidden');
+          })
+          .on('mouseleave', function() {
+            if (elTooltip) elTooltip.classList.add('hidden');
+          });
+      }
+
+      async function refresh(windowDays) {
+        currentWindow = windowDays || currentWindow;
+        const [features, body] = await Promise.all([
+          loadWorld(),
+          (async () => {
+            try {
+              const r = await fetch(`${FLOWS_API}/stats/cross-border-flow?window_days=${currentWindow}`);
+              if (!r.ok) return null;
+              return await r.json();
+            } catch (e) { return null; }
+          })(),
+        ]);
+        if (!body) {
+          if (elCorridors) elCorridors.innerHTML = '<div class="text-muted">Service unreachable.</div>';
+          return;
+        }
+        setHeadline(body.coverage, currentWindow);
+        renderCorridors(body.top_corridors || []);
+        renderCoverage(body.coverage);
+        if (elCaveat && body.methodology && body.methodology.coverage_caveat) {
+          elCaveat.textContent = body.methodology.coverage_caveat;
+        }
+        if (features) renderMap(body.per_country || []);
+      }
+
+      // Range button wiring (matches the existing flow-range-btn UX)
+      document.querySelectorAll('.xb-range-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.xb-range-btn').forEach(b => {
+            b.classList.remove('border-accent', 'text-white');
+            b.classList.add('border-border', 'text-muted');
+            b.removeAttribute('aria-pressed');
+          });
+          btn.classList.add('border-accent', 'text-white');
+          btn.classList.remove('border-border', 'text-muted');
+          btn.setAttribute('aria-pressed', 'true');
+          refresh(parseInt(btn.dataset.xbRange, 10));
+        });
+      });
+
+      // Defer first render until d3 + topojson are actually loaded.
+      // Both are deferred CDN scripts so they may not be ready when this
+      // IIFE runs; poll briefly then fire.
+      const startInterval = setInterval(() => {
+        if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') {
+          clearInterval(startInterval);
+          refresh(currentWindow);
+          setInterval(() => refresh(currentWindow), 5 * 60 * 1000);
+        }
+      }, 200);
+    })();
 
     (function setupMobileNav() {
       const openBtn  = document.getElementById('nav-open');
