@@ -1189,9 +1189,11 @@
     // -----------------------------------------------------------------
     (function setupCrossBorderHeatmap() {
       const mapEl = document.getElementById('xb-map');
-      if (!mapEl || typeof d3 === 'undefined' || typeof topojson === 'undefined') {
-        return;
-      }
+      if (!mapEl) return;
+      // Note: we DO NOT check `typeof d3 === 'undefined'` here. d3 and
+      // topojson load via `defer`, so they're guaranteed-undefined at
+      // the moment this inline IIFE executes. The startInterval poll at
+      // the bottom is the actual readiness gate.
       const TOPOJSON_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json';
       // ISO-3166 numeric -> alpha-2. world-atlas tags each country with
       // a numeric `id` (UN M49). Our backend returns alpha-2. We need
