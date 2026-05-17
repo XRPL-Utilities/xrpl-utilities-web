@@ -389,9 +389,18 @@
           <span id="candidates-count" class="text-[10px] text-muted font-mono"></span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-5">
-          Wallets that fingerprint as regulated issuers on XRPL (clawback flag set, non-zero issued obligations) but have not yet been operator-reviewed for inclusion in the canonical tracked set above. Surfaced here so the dashboard reflects new RWA-shaped activity on XRPL without waiting on a manual update. Each candidate shows chain-derived state only. The asset class, the marketing-friendly name, and any per-issuer caveats (treasury subtraction, attestation status, unit-of-account quirks) are NOT yet operator-confirmed. Inclusion in this list is not an endorsement of the underlying asset or its issuer; a candidate may be removed if operator review determines it is not a real-world asset.
+          Wallets that fingerprint as regulated issuers on XRPL (clawback flag set, non-zero issued obligations) but have not yet been operator-reviewed for inclusion in the canonical tracked set above. Surfaced here so the dashboard reflects new RWA-shaped activity on XRPL without waiting on a manual update. Each candidate is auto-classified into one of two tiers, headless: <span class="text-white">provisional</span> (looks like a regulated issuer — non-vanity wallet, ISIN-like or fiat-suffix currency, RequireAuth or clawback flags) or <span class="text-muted">noise</span> (looks like a meme or community token — vanity wallet plus cute all-caps currency code, no institutional flags). Each candidate shows chain-derived state only; the classification is descriptive, not a compliance verdict, and a candidate may be removed if operator review determines it is not a real-world asset.
         </p>
+        <div id="candidate-provisional-header" class="hidden mb-3">
+          <h3 class="text-[11px] uppercase tracking-widest text-white font-semibold">Provisional <span id="candidate-provisional-count" class="text-muted font-mono normal-case ml-2"></span></h3>
+          <p class="text-[10px] text-muted mt-1">Fingerprints like a regulated / institutional issuer. Worth a closer look before promotion.</p>
+        </div>
         <div id="candidate-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="candidate-noise-header" class="hidden mt-8 mb-3">
+          <h3 class="text-[11px] uppercase tracking-widest text-muted font-semibold">Noise <span id="candidate-noise-count" class="text-muted font-mono normal-case ml-2"></span></h3>
+          <p class="text-[10px] text-muted mt-1">Fingerprints like a meme or community token (vanity wallet + cute currency code). Listed for transparency; very unlikely to promote.</p>
+        </div>
+        <div id="candidate-noise-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 opacity-60"></div>
         <p id="candidate-empty" class="text-xs text-muted mt-4 hidden">No unverified candidates at this time.</p>
       </div>
     </div>
@@ -903,62 +912,130 @@
       }).join('');
     }
 
+    // Headless meme/RWA classifier. Mirrors XR-Vault's _classify_candidate.
+    // A candidate is "noise" when BOTH the wallet is vanity-generated AND
+    // the currency code is a cute all-caps short word, AND it lacks the
+    // strong institutional flag (RequireAuth). allow-clawback is NOT used
+    // as an institutional signal — meme tokens set it too.
+    function classifyCandidate(c) {
+      const wallet = (c.wallet || '').trim();
+      const currency = (c.currency_ascii || '').trim();
+      const requireAuth = !!c.require_auth;
+
+      let vanityWallet = false;
+      if (wallet.length > 8) {
+        const tail = wallet.slice(1, 9);
+        let lowers = 0, digits = 0;
+        for (const ch of tail) {
+          if (/[a-z]/.test(ch)) lowers++;
+          else if (/[0-9]/.test(ch)) digits++;
+        }
+        vanityWallet = lowers >= 5 && digits <= 1;
+      }
+
+      let cuteCurrency = false;
+      if (currency) {
+        const isShortCaps = currency.length <= 5 && /^[A-Z]+$/.test(currency);
+        const hasSeparator = /[-_0-9]/.test(currency);
+        const fiatSuffixes = ['USD','EUR','GBP','AUD','BRL','CHF','JPY','MWH','Q'];
+        const hasFiatSuffix = fiatSuffixes.some(s => currency.toUpperCase().endsWith(s));
+        cuteCurrency = isShortCaps && !hasSeparator && !hasFiatSuffix;
+      }
+
+      const isNoise = vanityWallet && cuteCurrency && !requireAuth;
+      return isNoise ? 'noise' : 'provisional';
+    }
+
+    function candidateTile(c) {
+      const wallet = c.wallet || '';
+      const label = c.label || wallet.slice(0, 10);
+      const cur = c.currency_ascii || c.currency_on_ledger || '';
+      const oblig = c.obligations_amount || '0';
+      const obligF = parseFloat(oblig);
+      const obligDisplay = isFinite(obligF) ? fmtNumber(obligF) : oblig;
+      const tlines = c.trustline_count !== null && c.trustline_count !== undefined
+        ? String(c.trustline_count) + (c.trustline_truncated ? '+' : '')
+        : '…';
+      const domain = c.domain
+        ? `<a href="https://${escapeHtml(c.domain)}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${escapeHtml(c.domain)}</a>`
+        : '<span class="text-muted">no domain</span>';
+      const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(wallet)}`;
+      const firstSeen = c.first_seen ? fmtAgo(c.first_seen) : '';
+      const flagBadges = [];
+      if (c.allow_clawback) flagBadges.push('clawback');
+      if (c.require_auth)   flagBadges.push('require-auth');
+      const flagsHtml = flagBadges.length
+        ? flagBadges.map(f => `<span class="text-[9px] uppercase tracking-wider text-muted border border-border rounded px-1.5 py-0.5">${f}</span>`).join(' ')
+        : '';
+      return `
+        <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/20 hover:border-amber-500/60 rounded-xl p-5 transition">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <div class="min-w-0">
+              <div class="font-semibold text-white truncate">${escapeHtml(label)}</div>
+              <div class="text-[10px] text-muted font-mono mt-0.5 truncate">${escapeHtml(fmtAddrShort(wallet))}</div>
+            </div>
+            <span class="text-[9px] uppercase tracking-wider text-amber-400 border border-amber-500/40 rounded px-1.5 py-0.5 shrink-0">Unverified</span>
+          </div>
+          <div class="mb-3">
+            <div class="text-xl font-bold font-mono">${escapeHtml(obligDisplay)}</div>
+            <div class="text-[10px] text-muted font-mono uppercase mt-0.5">${escapeHtml(cur)} obligations</div>
+          </div>
+          <div class="text-[11px] text-muted space-y-1">
+            <div><span class="text-white">${tlines}</span> trustlines</div>
+            <div>${domain}</div>
+            ${flagsHtml ? `<div class="pt-1 flex gap-1 flex-wrap">${flagsHtml}</div>` : ''}
+            ${firstSeen ? `<div class="text-[10px] pt-1 border-t border-border mt-2">First seen ${firstSeen}</div>` : ''}
+          </div>
+        </a>
+      `;
+    }
+
     function renderCandidates(candidates) {
       const section = document.getElementById('recently-discovered');
-      const el = document.getElementById('candidate-tiles');
+      const provEl = document.getElementById('candidate-tiles');
+      const provHeader = document.getElementById('candidate-provisional-header');
+      const provCount = document.getElementById('candidate-provisional-count');
+      const noiseEl = document.getElementById('candidate-noise-tiles');
+      const noiseHeader = document.getElementById('candidate-noise-header');
+      const noiseCount = document.getElementById('candidate-noise-count');
       const empty = document.getElementById('candidate-empty');
       const counter = document.getElementById('candidates-count');
-      if (!section || !el) return;
+      if (!section || !provEl || !noiseEl) return;
       if (!candidates.length) {
         section.classList.add('hidden');
         return;
       }
       section.classList.remove('hidden');
-      if (counter) counter.textContent = `${candidates.length} pending review`;
       if (empty) empty.classList.add('hidden');
-      el.innerHTML = candidates.map(c => {
-        const wallet = c.wallet || '';
-        const label = c.label || wallet.slice(0, 10);
-        const cur = c.currency_ascii || c.currency_on_ledger || '';
-        const oblig = c.obligations_amount || '0';
-        const obligF = parseFloat(oblig);
-        const obligDisplay = isFinite(obligF) ? fmtNumber(obligF) : oblig;
-        const tlines = c.trustline_count !== null && c.trustline_count !== undefined
-          ? String(c.trustline_count) + (c.trustline_truncated ? '+' : '')
-          : '…';
-        const domain = c.domain
-          ? `<a href="https://${escapeHtml(c.domain)}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${escapeHtml(c.domain)}</a>`
-          : '<span class="text-muted">no domain</span>';
-        const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(wallet)}`;
-        const firstSeen = c.first_seen ? fmtAgo(c.first_seen) : '';
-        const flagBadges = [];
-        if (c.allow_clawback) flagBadges.push('clawback');
-        if (c.require_auth)   flagBadges.push('require-auth');
-        const flagsHtml = flagBadges.length
-          ? flagBadges.map(f => `<span class="text-[9px] uppercase tracking-wider text-muted border border-border rounded px-1.5 py-0.5">${f}</span>`).join(' ')
-          : '';
-        return `
-          <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/20 hover:border-amber-500/60 rounded-xl p-5 transition">
-            <div class="flex items-start justify-between gap-2 mb-3">
-              <div class="min-w-0">
-                <div class="font-semibold text-white truncate">${escapeHtml(label)}</div>
-                <div class="text-[10px] text-muted font-mono mt-0.5 truncate">${escapeHtml(fmtAddrShort(wallet))}</div>
-              </div>
-              <span class="text-[9px] uppercase tracking-wider text-amber-400 border border-amber-500/40 rounded px-1.5 py-0.5 shrink-0">Unverified</span>
-            </div>
-            <div class="mb-3">
-              <div class="text-xl font-bold font-mono">${escapeHtml(obligDisplay)}</div>
-              <div class="text-[10px] text-muted font-mono uppercase mt-0.5">${escapeHtml(cur)} obligations</div>
-            </div>
-            <div class="text-[11px] text-muted space-y-1">
-              <div><span class="text-white">${tlines}</span> trustlines</div>
-              <div>${domain}</div>
-              ${flagsHtml ? `<div class="pt-1 flex gap-1 flex-wrap">${flagsHtml}</div>` : ''}
-              ${firstSeen ? `<div class="text-[10px] pt-1 border-t border-border mt-2">First seen ${firstSeen}</div>` : ''}
-            </div>
-          </a>
-        `;
-      }).join('');
+
+      const provisional = [];
+      const noise = [];
+      for (const c of candidates) {
+        // Prefer server-side tier when present (Vault /stats/daily-flow);
+        // fall back to client classification when reading raw Pulse data.
+        const tier = c.tier || classifyCandidate(c);
+        (tier === 'noise' ? noise : provisional).push(c);
+      }
+
+      if (counter) counter.textContent = `${provisional.length} provisional · ${noise.length} noise`;
+
+      if (provisional.length) {
+        provHeader.classList.remove('hidden');
+        provCount.textContent = `· ${provisional.length}`;
+        provEl.innerHTML = provisional.map(candidateTile).join('');
+      } else {
+        provHeader.classList.add('hidden');
+        provEl.innerHTML = '';
+      }
+
+      if (noise.length) {
+        noiseHeader.classList.remove('hidden');
+        noiseCount.textContent = `· ${noise.length}`;
+        noiseEl.innerHTML = noise.map(candidateTile).join('');
+      } else {
+        noiseHeader.classList.add('hidden');
+        noiseEl.innerHTML = '';
+      }
     }
 
     function renderAmmPools(pools) {
