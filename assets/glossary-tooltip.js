@@ -124,10 +124,6 @@
     "funded-wallets": {
       title: "Funded XRPL wallets",
       body: "Total count of XRPL accounts holding at least the 1 XRP reserve, network-wide. Sampled once per UTC day from a public aggregator. This is every-funded-account, not just whales or institutions."
-    },
-    "sister-product-key": {
-      title: "X-Sister-Product-Key",
-      body: "Header that lets one XR-Utilities service call another's paid endpoint backend-to-backend without an x402 payment, when both share a SISTER_PRODUCT_KEY. Distinct from individual x402 payments; used only inside the XR-* portfolio."
     }
   };
 
