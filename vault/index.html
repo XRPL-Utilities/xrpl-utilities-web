@@ -310,11 +310,12 @@
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Top movers</h2>
           <div class="flex items-center gap-2">
             <button data-mover-window="24h" class="mover-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition" aria-pressed="false">24h</button>
-            <button data-mover-window="7d" class="mover-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-accent text-white transition" aria-pressed="true">7d</button>
+            <button data-mover-window="7d" class="mover-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition" aria-pressed="false">7d</button>
+            <button data-mover-window="30d" class="mover-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-accent text-white transition" aria-pressed="true">30d</button>
           </div>
         </div>
         <p id="top-movers-prose" class="text-xs text-muted leading-relaxed mb-5">
-          The issuers with the biggest net change in circulating supply over the last 7 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. RWA flows run minutes-to-days, so the 7-day window gives more signal stability than the 24-hour shuffle; use the toggle if you want the tighter rolling view.
+          The issuers with the biggest net change in circulating supply over the last 30 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. The default view because institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint infrequently in large discrete amounts — a 30-day window keeps them on the list between mint events rather than flickering in and out of a 7d boundary.
         </p>
         <div id="top-movers-list" class="space-y-2">
           <div class="bg-ink border border-border rounded-lg p-4">
@@ -801,24 +802,37 @@
     }
 
     // Track current window so the toggle can re-render against the
-    // last fetched summary body without a second roundtrip.
-    let _topMoversWindow = '7d';
+    // last fetched summary body without a second roundtrip. Default to
+    // 30d because institutional issuers mint in discrete monthly chunks
+    // that flicker in and out of the 7d window as they cross the rolling
+    // boundary — 30d smooths that into stable rankings.
+    let _topMoversWindow = '30d';
     let _topMoversLastBody = null;
+
+    const _MOVER_NET_FIELD = { '24h': 'net_24h', '7d': 'net_7d', '30d': 'net_30d' };
+    const _MOVER_LABEL = { '24h': 'net 24h flow', '7d': 'net 7d flow', '30d': 'net 30d flow' };
+    const _MOVER_EMPTY = {
+      '24h': 'No measurable RWA flow in the last 24 hours.',
+      '7d':  'No measurable RWA flow in the last 7 days.',
+      '30d': 'No measurable RWA flow in the last 30 days.',
+    };
+    const _MOVER_PROSE = {
+      '24h': "The issuers with the biggest net change in circulating supply over the last 24 hours, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow.",
+      '7d':  "The issuers with the biggest net change in circulating supply over the last 7 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. Institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint in discrete monthly chunks so they can drop out of this window unpredictably — the 30d view is steadier if you care about that cohort.",
+      '30d': "The issuers with the biggest net change in circulating supply over the last 30 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. The default view because institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint infrequently in large discrete amounts — a 30-day window keeps them on the list between mint events rather than flickering in and out of a 7d boundary.",
+    };
 
     function renderTopMovers(movers, windowKey) {
       const el = document.getElementById('top-movers-list');
       const empty = document.getElementById('top-movers-empty');
       if (!el) return;
-      const w = windowKey || _topMoversWindow || '24h';
-      const isWeek = w === '7d';
-      const netField = isWeek ? 'net_7d' : 'net_24h';
-      const labelText = isWeek ? 'net 7d flow' : 'net 24h flow';
+      const w = windowKey || _topMoversWindow || '30d';
+      const netField = _MOVER_NET_FIELD[w] || 'net_30d';
+      const labelText = _MOVER_LABEL[w] || 'net 30d flow';
       if (!movers.length) {
         el.innerHTML = '';
         if (empty) {
-          empty.textContent = isWeek
-            ? 'No measurable RWA flow in the last 7 days.'
-            : 'No measurable RWA flow in the last 24 hours.';
+          empty.textContent = _MOVER_EMPTY[w] || _MOVER_EMPTY['30d'];
           empty.classList.remove('hidden');
         }
         return;
@@ -847,13 +861,14 @@
 
     function applyTopMoversWindow() {
       if (!_topMoversLastBody) return;
-      const arr = _topMoversWindow === '7d'
-        ? (_topMoversLastBody.top_movers_7d || [])
+      const w = _topMoversWindow;
+      const arr = w === '30d' ? (_topMoversLastBody.top_movers_30d || [])
+        : w === '7d' ? (_topMoversLastBody.top_movers_7d || [])
         : (_topMoversLastBody.top_movers_24h || []);
-      renderTopMovers(arr, _topMoversWindow);
+      renderTopMovers(arr, w);
     }
 
-    // Wire the 24h/7d toggle buttons.
+    // Wire the 24h/7d/30d toggle buttons.
     document.querySelectorAll('.mover-window-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const w = btn.getAttribute('data-mover-window');
@@ -868,10 +883,8 @@
           b.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
         const proseEl = document.getElementById('top-movers-prose');
-        if (proseEl) {
-          proseEl.textContent = (w === '7d')
-            ? "The issuers with the biggest net change in circulating supply over the last 7 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. RWA flows run minutes-to-days, so the 7-day window gives more signal stability than the 24-hour shuffle; use the toggle if you want the tighter rolling view."
-            : "The issuers with the biggest net change in circulating supply over the last 24 hours, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow.";
+        if (proseEl && _MOVER_PROSE[w]) {
+          proseEl.textContent = _MOVER_PROSE[w];
         }
         applyTopMoversWindow();
       });
