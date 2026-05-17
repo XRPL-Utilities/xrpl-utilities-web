@@ -315,7 +315,7 @@
           </div>
         </div>
         <p id="top-movers-prose" class="text-xs text-muted leading-relaxed mb-5">
-          The issuers with the biggest net change in circulating supply over the last 30 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. The default view because institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint infrequently in large discrete amounts — a 30-day window keeps them on the list between mint events rather than flickering in and out of a 7d boundary.
+          The issuers with the biggest net change in circulating supply over the last 30 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. The default view because institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint infrequently in large discrete amounts; a 30-day window keeps them on the list between mint events rather than flickering in and out of a 7d boundary.
         </p>
         <div id="top-movers-list" class="space-y-2">
           <div class="bg-ink border border-border rounded-lg p-4">
@@ -414,7 +414,7 @@
           <span id="candidates-count" class="text-[10px] text-muted font-mono"></span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-5">
-          Wallets that fingerprint as regulated issuers on XRPL (clawback flag set, non-zero issued obligations) but have not yet been operator-reviewed for inclusion in the canonical tracked set above. Surfaced here so the dashboard reflects new RWA-shaped activity on XRPL without waiting on a manual update. Each candidate is auto-classified into one of two tiers, headless: <span class="text-white">provisional</span> (looks like a regulated issuer — non-vanity wallet, ISIN-like or fiat-suffix currency, RequireAuth or clawback flags) or <span class="text-muted">noise</span> (looks like a meme or community token — vanity wallet plus cute all-caps currency code, no institutional flags). Each candidate shows chain-derived state only; the classification is descriptive, not a compliance verdict, and a candidate may be removed if operator review determines it is not a real-world asset.
+          Wallets that fingerprint as regulated issuers on XRPL (clawback flag set, non-zero issued obligations) but have not yet been operator-reviewed for inclusion in the canonical tracked set above. Surfaced here so the dashboard reflects new RWA-shaped activity on XRPL without waiting on a manual update. Each candidate is auto-classified into one of two tiers, headless: <span class="text-white">provisional</span> (looks like a regulated issuer: non-vanity wallet, ISIN-like or fiat-suffix currency, RequireAuth or clawback flags) or <span class="text-muted">noise</span> (looks like a meme or community token: vanity wallet plus cute all-caps currency code, no institutional flags). Each candidate shows chain-derived state only; the classification is descriptive, not a compliance verdict, and a candidate may be removed if operator review determines it is not a real-world asset.
         </p>
         <div id="candidate-provisional-header" class="hidden mb-3">
           <h3 class="text-[11px] uppercase tracking-widest text-white font-semibold">Provisional <span id="candidate-provisional-count" class="text-muted font-mono normal-case ml-2"></span></h3>
@@ -805,7 +805,7 @@
     // last fetched summary body without a second roundtrip. Default to
     // 30d because institutional issuers mint in discrete monthly chunks
     // that flicker in and out of the 7d window as they cross the rolling
-    // boundary — 30d smooths that into stable rankings.
+    // boundary; 30d smooths that into stable rankings.
     let _topMoversWindow = '30d';
     let _topMoversLastBody = null;
 
@@ -818,8 +818,8 @@
     };
     const _MOVER_PROSE = {
       '24h': "The issuers with the biggest net change in circulating supply over the last 24 hours, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow.",
-      '7d':  "The issuers with the biggest net change in circulating supply over the last 7 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. Institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint in discrete monthly chunks so they can drop out of this window unpredictably — the 30d view is steadier if you care about that cohort.",
-      '30d': "The issuers with the biggest net change in circulating supply over the last 30 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. The default view because institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint infrequently in large discrete amounts — a 30-day window keeps them on the list between mint events rather than flickering in and out of a 7d boundary.",
+      '7d':  "The issuers with the biggest net change in circulating supply over the last 7 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. Institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint in discrete monthly chunks so they can drop out of this window unpredictably; the 30d view is steadier if you care about that cohort.",
+      '30d': "The issuers with the biggest net change in circulating supply over the last 30 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. The default view because institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint infrequently in large discrete amounts; a 30-day window keeps them on the list between mint events rather than flickering in and out of a 7d boundary.",
     };
 
     function renderTopMovers(movers, windowKey) {
@@ -953,7 +953,7 @@
     // A candidate is "noise" when BOTH the wallet is vanity-generated AND
     // the currency code is a cute all-caps short word, AND it lacks the
     // strong institutional flag (RequireAuth). allow-clawback is NOT used
-    // as an institutional signal — meme tokens set it too.
+    // as an institutional signal; meme tokens set it too.
     function classifyCandidate(c) {
       const wallet = (c.wallet || '').trim();
       const currency = (c.currency_ascii || '').trim();
@@ -1061,7 +1061,7 @@
 
       // Show the top-of-page callout when there's at least one provisional
       // candidate (operator-review-worthy). Noise-only doesn't surface a
-      // banner — those are filtered meme tokens, not interesting signal.
+      // banner; those are filtered meme tokens, not interesting signal.
       if (callout && calloutText) {
         if (provisional.length > 0) {
           callout.classList.remove('hidden');
