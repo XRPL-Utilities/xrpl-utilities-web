@@ -299,7 +299,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="lg:col-span-2 bg-ink border border-border rounded-lg p-3">
           <div class="flex items-baseline justify-between mb-2 gap-2 flex-wrap">
-            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">World map — country total USD (in + out)</h3>
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">World map: country total USD (in + out)</h3>
             <span id="xb-headline" class="text-[10px] text-muted font-mono"></span>
           </div>
           <div class="relative" style="aspect-ratio: 2 / 1;">
@@ -1294,7 +1294,7 @@
         const seen = coverage.whale_events_seen || 0;
         const labeled = coverage.both_sides_labeled || 0;
         const labeledPct = coverage.labeled_pct_of_seen;
-        elCoverage.textContent = `${seen} whale Payments observed; ${labeled} (${labeledPct !== null ? labeledPct.toFixed(0) + '%' : '—'}) had both sides labeled. Jurisdiction map: ${coverage.jurisdiction_label_count} labels across ${coverage.jurisdiction_country_count} countries.`;
+        elCoverage.textContent = `${seen} whale Payments observed; ${labeled} (${labeledPct !== null ? labeledPct.toFixed(0) + '%' : 'n/a'}) had both sides labeled. Jurisdiction map: ${coverage.jurisdiction_label_count} labels across ${coverage.jurisdiction_country_count} countries.`;
       }
 
       function renderMap(perCountry) {
