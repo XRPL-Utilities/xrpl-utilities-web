@@ -120,15 +120,15 @@ A defense-in-depth check covers a known facilitator misreport class on the XRPL 
 
 ## 4. Architecture
 
-Every service follows the same pattern. FastAPI on Python 3.13 with async handlers. Deployed on Railway with sealed environment variables for secrets and SQLite for persistence on a 50GB volume. Cloudflare Workers static-assets serving the marketing site. The MCP server runs as a stateless Node.js process on Railway.
+Every service follows the same pattern: an async HTTP service with isolated per-service persistence, deployed independently so a watcher slowdown in one service does not cascade. The marketing site is static-asset hosted at the edge. The MCP server is a stateless passthrough.
 
 Service-to-service communication uses a shared sister-product key over HTTPS, not the public x402 paywall, when one XR-* service needs data from another. This avoids billing loops and keeps internal observability clean. Public callers still hit the same endpoints via the paid surface.
 
-Background watchers run as in-process slow tasks. Each watcher has a configurable interval (typically 60 seconds for the whale watcher, 600 seconds for the RWA issuer watcher, 4 hours for the AMM-of-RWA watcher, once per UTC day for the daily snapshot writers). All polling goes through public XRPL nodes first (xrplcluster.com, s1.ripple.com) with QuickNode as fallback. Synchronous paid `/scan` calls go through QuickNode directly for tail-latency reasons.
+Background watchers run as in-process tasks on configurable intervals. The cadence per watcher is tuned for the underlying data: high-frequency on whale activity, moderate on real-world asset supply, low for daily aggregates. Polling fans out across multiple XRPL node sources so a single upstream outage does not stall the feed.
 
 Schema versioning is strict. Every API response carries a `schema_version` field. The MCP server maintains a `knownSchemaVersions` array per service and warns when a service reports a version not in the array. A pre-commit hook blocks unbumped agents.json edits to prevent silent schema drift.
 
-The verify-then-work-then-settle ordering is intentional and load-bearing. The bundled x402 server middleware most SDKs ship with settles before the handler runs, which would charge for AI failures. The custom payment module preserves the ordering by manually issuing the 402 challenge, verifying the signature, running the handler, and only then calling the facilitator settle endpoint.
+The verify-then-work-then-settle ordering is intentional and load-bearing. Most bundled x402 server middleware settles before the handler runs, which would charge for AI failures. The custom payment module preserves the ordering by manually issuing the 402 challenge, verifying the signature, running the handler, and only then calling the facilitator settle endpoint.
 
 ---
 
