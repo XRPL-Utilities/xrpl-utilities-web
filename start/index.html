@@ -231,7 +231,7 @@
           <span class="gloss" data-term="x402">x402</span> is an open standard for machine-payable APIs. When an agent calls an x402 endpoint, the server returns HTTP 402 with payment options. The agent signs an on-chain payment matching one of those options, re-sends the request with a payment-signature header, and the server verifies + runs + settles. No accounts, no API keys, no monthly invoices. An AI agent with an XRPL wallet can discover an API, pay it, and consume the response inside a single request cycle.
         </p>
         <p>
-          Every paid endpoint on this site speaks x402 v2 on XRPL mainnet. Pay in XRP or RLUSD, either works. Verification and settlement go through the t54 XRPL facilitator. Pricing is per-call or per-time-window (XR-Pulse also sells live WebSocket subscriptions from $0.50/hour).
+          Every paid endpoint on this site speaks x402 v2. Pay in XRP or RLUSD on XRPL, or USDC on Base. Same $0.10 USD price across rails. XRPL rails settle through the t54 facilitator; the Base rail settles through the Coinbase x402 facilitator. Pricing is per-call or per-time-window (XR-Pulse also sells live WebSocket subscriptions from $0.50/hour).
         </p>
         <p>
           <strong class="text-white">Why this matters.</strong> AI agents are starting to do real economic work (price queries, data lookups, transaction routing) and they need a payment standard that doesn't require an account setup with every vendor. x402 + XRPL settlement is one of the cleanest answers to that, and it's the moat under every paid endpoint here.
