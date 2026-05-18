@@ -1417,20 +1417,31 @@
           const pathD = `M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`;
           const color = colors[i] || '#155e75';
 
-          // Static arc + endpoint dots
+          // Static arc + endpoint dots. Halo + bright stroke so the
+          // line reads against the orange choropleth fill below.
+          arcGroup.append('path')
+            .attr('d', pathD)
+            .attr('fill', 'none')
+            .attr('stroke', '#0a0a0a')
+            .attr('stroke-width', 5)
+            .attr('stroke-opacity', 0.7)
+            .attr('stroke-linecap', 'round');
           arcGroup.append('path')
             .attr('d', pathD)
             .attr('fill', 'none')
             .attr('stroke', color)
-            .attr('stroke-width', 1.5)
-            .attr('stroke-opacity', 0.55)
-            .attr('stroke-linecap', 'round');
+            .attr('stroke-width', 2.5)
+            .attr('stroke-opacity', 0.95)
+            .attr('stroke-linecap', 'round')
+            .style('filter', `drop-shadow(0 0 3px ${color})`);
           arcGroup.append('circle')
-            .attr('cx', x1).attr('cy', y1).attr('r', 2.8)
-            .attr('fill', color).attr('fill-opacity', 0.9);
+            .attr('cx', x1).attr('cy', y1).attr('r', 4)
+            .attr('fill', color).attr('fill-opacity', 1)
+            .attr('stroke', '#0a0a0a').attr('stroke-width', 1.5);
           arcGroup.append('circle')
-            .attr('cx', x2).attr('cy', y2).attr('r', 2.8)
-            .attr('fill', color).attr('fill-opacity', 0.9);
+            .attr('cx', x2).attr('cy', y2).attr('r', 4)
+            .attr('fill', color).attr('fill-opacity', 1)
+            .attr('stroke', '#0a0a0a').attr('stroke-width', 1.5);
 
           // Traveling pulse (SVG animateMotion). Skip when reduce-motion
           // preference is set or when the corridor is so short the
