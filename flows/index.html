@@ -1359,15 +1359,36 @@
       // stagger so directional flow is visible at a glance. Respects
       // prefers-reduced-motion: skips the moving pulse but keeps the
       // static arcs + endpoint markers.
+      //
+      // Fallback centroid map for jurisdictions that the 110m world-atlas
+      // TopoJSON omits (small offshore finance centers like Cayman, BVI,
+      // Bermuda, Jersey, Seychelles). Without this map the top corridors
+      // are silently filtered out (most institutional XRPL flow routes
+      // through these jurisdictions, so missing them = empty arc layer).
+      const SMALL_JURISDICTION_CENTROIDS = {
+        'KY': [-80.5,  19.4],  // Cayman Islands
+        'VG': [-64.5,  18.4],  // British Virgin Islands
+        'BM': [-64.8,  32.3],  // Bermuda
+        'JE': [ -2.1,  49.2],  // Jersey
+        'SC': [ 55.5,  -4.7],  // Seychelles
+      };
+
       function renderArcs(svg, features, projection, corridors) {
-        // alpha-2 -> feature lookup so corridor origin/dest -> centroid
+        // alpha-2 -> centroid resolver. Tries world-atlas feature first;
+        // falls back to the small-jurisdiction map above for territories
+        // the 110m atlas omits.
         const a2ToFeature = {};
         features.forEach(f => {
           const a2 = ISO_NUM_TO_A2[String(f.id).padStart(3, '0')];
           if (a2) a2ToFeature[a2] = f;
         });
+        function resolveCentroid(a2) {
+          if (a2ToFeature[a2]) return d3.geoCentroid(a2ToFeature[a2]);
+          if (SMALL_JURISDICTION_CENTROIDS[a2]) return SMALL_JURISDICTION_CENTROIDS[a2];
+          return null;
+        }
         const top = (corridors || []).slice(0, 6).filter(c =>
-          a2ToFeature[c.origin_iso] && a2ToFeature[c.dest_iso]
+          resolveCentroid(c.origin_iso) && resolveCentroid(c.dest_iso)
         );
         if (!top.length) return;
 
@@ -1379,8 +1400,8 @@
         const arcGroup = svg.append('g').attr('class', 'arcs').attr('pointer-events', 'none');
 
         top.forEach((c, i) => {
-          const origGeo = d3.geoCentroid(a2ToFeature[c.origin_iso]);
-          const destGeo = d3.geoCentroid(a2ToFeature[c.dest_iso]);
+          const origGeo = resolveCentroid(c.origin_iso);
+          const destGeo = resolveCentroid(c.dest_iso);
           const p1 = projection(origGeo);
           const p2 = projection(destGeo);
           if (!p1 || !p2) return;
