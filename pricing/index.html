@@ -19,7 +19,7 @@
         "@type": "WebPage",
         "@id": "https://xrpl-utilities.com/pricing/#page",
         "name": "XRPL-Utilities Pricing",
-        "description": "Six agent-payable XRPL APIs at $0.10 USD per call via x402 v2: XR-Sentinel (wallet classification), XR-Pulse (normalized signal feed), XR-Telemetry (network snapshot), XR-Trust (XLS-80 directory), XR-Vault (real-world asset tracker), XR-Flows (ETF flow correlation). XRP or RLUSD on XRPL mainnet, no account, no subscription. Live WebSocket streaming on Pulse from $0.50/hour.",
+        "description": "Six agent-payable XRPL APIs at $0.10 USD per call via x402 v2: XR-Sentinel (wallet classification), XR-Pulse (normalized signal feed), XR-Telemetry (network snapshot), XR-Trust (XLS-80 directory), XR-Vault (real-world asset tracker), XR-Flows (ETF flow correlation). Pay in XRP or RLUSD on XRPL mainnet, or USDC on Base. No account, no subscription. Live WebSocket streaming on Pulse from $0.50/hour.",
         "url": "https://xrpl-utilities.com/pricing/",
         "isPartOf": { "@id": "https://xrpl-utilities.com/#org" }
       },
@@ -134,11 +134,11 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">Pricing</h1>
       <p class="text-xl text-muted">Six agent-payable APIs. $0.10 per call, or stream live from $0.50/hour.</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        Every paid endpoint speaks <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402 v2</a> on XRPL mainnet. XRP or RLUSD; either works. No API key, no account, no subscription. Pay per call for snapshot queries, or buy a time-boxed WebSocket window on Pulse to receive events as they fire. Treasury, facilitator, and settlement are all on-chain and verifiable. The free dashboards on this site are powered by the free endpoints listed below; the deep dives are paid.
+        Every paid endpoint speaks <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402 v2</a>. Pay in XRP or RLUSD on XRPL mainnet, or USDC on Base. Same $0.10 USD price across all rails. No API key, no account, no subscription. Pay per call for snapshot queries, or buy a time-boxed WebSocket window on Pulse to receive events as they fire. The free dashboards on this site are powered by the free endpoints listed below; the deep dives are paid.
       </p>
       <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
         <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        x402 v2 &middot; XRPL mainnet &middot; XRP or RLUSD &middot; verify-then-work-then-settle
+        x402 v2 &middot; XRP/RLUSD on XRPL or USDC on Base &middot; verify-then-work-then-settle
       </div>
     </div>
   </section>
@@ -238,7 +238,7 @@
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Permissioned-domain directory and explorer. Drill into a domain for credentials, issuers, lifecycle, identity, and on-chain trading activity. Scan by domain ID or owner address. Operator rollups across domains, subjects, and 24h activity. Browsing the directory is free; drill-downs are paid. <span class="text-white/80">Paid calls accept XRP only on this service.</span>
+            Permissioned-domain directory and explorer. Drill into a domain for credentials, issuers, lifecycle, identity, and on-chain trading activity. Scan by domain ID or owner address. Operator rollups across domains, subjects, and 24h activity. Browsing the directory is free; drill-downs are paid. <span class="text-white/80">Paid calls accept XRP or USDC on Base on this service (RLUSD not offered).</span>
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">trust.xrpl-utilities.io</span>
@@ -309,7 +309,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">2. Sign + send</div>
           <p class="text-sm text-muted leading-relaxed">
-            Pick XRP or RLUSD. Sign an XRPL Payment matching that requirement, base64-encode the JSON envelope, and re-send the original request with the envelope in the <code class="font-mono text-white text-xs">PAYMENT-SIGNATURE</code> header. The server verifies the signature before doing any work.
+            Pick a rail. Sign an XRPL Payment for the XRP or RLUSD options, or an EIP-3009 authorization for the USDC-on-Base option. Base64-encode the JSON envelope and re-send the original request with the envelope in the <code class="font-mono text-white text-xs">PAYMENT-SIGNATURE</code> header. The server verifies the signature before doing any work.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
