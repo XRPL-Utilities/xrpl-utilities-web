@@ -67,7 +67,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/assets/preview-token.js?v=v1"></script>
-  <script src="/assets/glossary-tooltip.js?v=v1" defer></script>
+  <script src="/assets/glossary-tooltip.js?v=v2" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script>
     tailwind.config = {
@@ -606,6 +606,9 @@ feed = session.post(
       <p class="text-sm text-muted leading-relaxed">
         <span class="text-white">On-chain stream.</span> The watcher reads validated XRPL ledgers continuously. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger position, currency (XRP or RLUSD), and full sender + receiver addresses. Where either address resolves to a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
       </p>
+      <p class="text-sm text-muted leading-relaxed mt-4">
+        <span class="text-white">RWA supply stream.</span> Per-issuer mint and burn detection runs in two parallel paths. The Payment classifier catches direct issuer-to-holder IOU Payments and the redemption pattern (holder returns IOU to issuer). The <span class="gloss" data-term="obligations-delta">obligations-delta</span> watcher fires when gateway_balances obligations change by more than 1M native units between passes, which catches DEX-mediated mints the Payment classifier misses (Ripple brings RLUSD into circulation via OfferCreate on the XRPL DEX, not direct Payments). Both surface as event cards with the issuer, asset, and direction; the latter explicitly tags inference_method=gateway_balances_delta so consumers can tell the two apart.
+      </p>
     </div>
   </section>
 
@@ -909,6 +912,16 @@ feed = session.post(
         ? e.active_utility : null;
       const deepFreezeAU  = isWhale && e.active_utility && e.active_utility.signal === 'issuer_deepfreeze'
         ? e.active_utility : null;
+      // rwa_obligations_delta fires when an RWA issuer's gateway_balances
+      // obligations jumps between watcher passes. Catches DEX-mediated
+      // supply changes (e.g. Ripple mints RLUSD via OfferCreate, not
+      // direct Payment) that the rwa_issuer_flow Payment classifier
+      // structurally misses. Source is rwa_obligations_delta; signal is
+      // rwa_obligations_spike (mint) or rwa_obligations_drop (burn).
+      const rwaObligationsAU = e.active_utility
+        && (e.active_utility.signal === 'rwa_obligations_spike'
+            || e.active_utility.signal === 'rwa_obligations_drop')
+        ? e.active_utility : null;
       let tierBadge = '';
       let whaleBlock = '';
       let whaleTitle = null;  // when set, overrides e.title for cleaner rendering
@@ -1168,6 +1181,34 @@ feed = session.post(
         </div>
         <div class="text-xs text-muted mt-2 pt-2 border-t border-border">
           TrustSet with tfSetDeepFreeze (0x00400000) on the issuer side. The holder can no longer send OR receive this IOU. Stronger than the regular freeze flag (which only blocks sends). Behavioral signal, not a verdict; issuers freeze for many reasons including court order, KYC failure, suspected fraud, and routine compliance.
+        </div>`;
+      }
+
+      // rwa_obligations_delta render. Inferred mint or burn at the
+      // gateway_balances obligations level (not a per-tx classification).
+      // Catches DEX-mediated supply changes the Payment classifier misses.
+      if (rwaObligationsAU) {
+        const isMint = rwaObligationsAU.direction === 'mint';
+        const arrow = isMint ? '↑' : '↓';
+        tierBadge = `<span class="text-xs px-2 py-0.5 rounded ${isMint ? 'tier-institutional' : 'tier-whale'} border uppercase">RWA ${isMint ? 'mint' : 'burn'} (inferred)</span>`;
+        const amt = rwaObligationsAU.amount || '?';
+        const cur = rwaObligationsAU.currency || '';
+        const label = rwaObligationsAU.issuer_label || rwaObligationsAU.issuer_logical_label || '';
+        whaleTitle = `${label}: ${arrow} ${amt} ${cur} (obligations ${isMint ? 'increased' : 'decreased'})`;
+        const prior = rwaObligationsAU.prior_obligations || '?';
+        const current = rwaObligationsAU.current_obligations || '?';
+        const priorTs = rwaObligationsAU.prior_observed_at
+          ? new Date(rwaObligationsAU.prior_observed_at * 1000).toISOString().replace('T', ' ').slice(0, 19) + ' UTC'
+          : 'unknown';
+        whaleBlock = `<div class="text-xs text-muted mt-2 pt-2 border-t border-border break-words">
+          <span class="text-white mr-2">Supply change</span>
+          obligations <span class="font-mono text-white">${escapeHtml(prior)}</span>
+          → <span class="font-mono text-white">${escapeHtml(current)}</span> ${escapeHtml(cur)}
+          · diff <span class="text-white">${arrow} ${escapeHtml(amt)}</span>
+          · prior reading at ${escapeHtml(priorTs)}
+        </div>
+        <div class="text-xs text-muted mt-2 pt-2 border-t border-border">
+          Inferred from <span class="gloss" data-term="obligations-delta">gateway_balances obligations</span> diff between watcher passes, not from a single classified transaction. Some issuers bring supply into circulation via DEX offers rather than direct Payments, so the per-transaction mint/burn classifier structurally misses those events. This signal closes that gap by watching the supply snapshot itself. Universal across the tracked RWA issuer set.
         </div>`;
       }
 

@@ -65,6 +65,10 @@
       title: "RWA (Real-World Asset)",
       body: "A token on a blockchain that represents an off-chain asset: a US Treasury bill, a money-market fund share, a barrel of oil, a stablecoin redeemable for fiat. On XRPL, examples include OUSG (Ondo tokenized Treasuries), TBL (OpenEden T-Bills), EURCV (Société Générale euro stablecoin)."
     },
+    "obligations-delta": {
+      title: "Obligations delta",
+      body: "Change in an issuer's gateway_balances.obligations between two readings. obligations is the on-chain total of an IOU outstanding (everything the issuer has put into circulation minus everything redeemed). Watching the delta catches supply changes from any mechanism: direct Payment mints, OfferCreate fills on the DEX, treasury sweeps, clawbacks. XR-Pulse fires rwa_obligations_spike or rwa_obligations_drop when this delta exceeds 1M native units."
+    },
     "did": {
       title: "DID (Decentralized Identifier)",
       body: "Self-sovereign on-chain identity standard (W3C). An XRPL address can publish a DID document linking to a TOML file with org_name, principals, and operator-signed attestations. XR-Trust resolves these to surface institutional identity behind raw wallet addresses."
