@@ -328,14 +328,14 @@
              daily snapshot, so it includes mints the event-watcher
              missed by bootstrapping after they landed. -->
         <div class="mt-10">
-          <h3 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">RWA supply tracker</h3>
-          <p class="text-sm text-muted mb-4 leading-relaxed">
-            On-chain RLUSD outstanding, refreshed every minute. The
-            <span class="gloss" data-term="obligations-delta">today's change</span> badge appears when net supply has moved since yesterday's UTC close: green up-arrow for mints, red down-arrow for redemptions.
+          <h3 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3 text-center">RWA supply tracker</h3>
+          <p class="text-sm text-muted mb-4 leading-relaxed text-center max-w-2xl mx-auto">
+            On-chain RLUSD outstanding on the XRP Ledger, refreshed every minute. The
+            <span class="gloss" data-term="obligations-delta">today's change</span> badge appears when net XRPL supply has moved since yesterday's UTC close: green up-arrow for mints, red down-arrow for redemptions.
           </p>
-          <div class="stat-tile stat-tile-glow p-5 max-w-xl">
+          <div class="stat-tile stat-tile-glow p-5 max-w-xl mx-auto">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="stat-tile-label">RLUSD outstanding</h3>
+              <h3 class="stat-tile-label">RLUSD outstanding on XRPL</h3>
               <span id="rlusd-supply-dot" class="stat-tile-pulse" title="updates every 60s"></span>
             </div>
             <div class="flex items-baseline gap-3 flex-wrap">
@@ -343,7 +343,7 @@
               <span class="stat-tile-sub">RLUSD</span>
               <span id="rlusd-delta-badge" class="hidden text-xs px-2 py-1 rounded border font-semibold ml-2"></span>
             </div>
-            <p class="stat-tile-sub mt-3">on XRPL mainnet, issuer <span class="font-mono">rMxC...m5De</span></p>
+            <p class="stat-tile-sub mt-3">issuer <span class="font-mono">rMxC...m5De</span>; XRPL only. RLUSD also exists on Ethereum and other chains; total cross-chain supply is larger.</p>
           </div>
         </div>
       </div>
