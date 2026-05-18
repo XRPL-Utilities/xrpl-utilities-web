@@ -343,7 +343,7 @@
               <span class="stat-tile-sub">RLUSD</span>
               <span id="rlusd-delta-badge" class="hidden text-xs px-2 py-1 rounded border font-semibold ml-2"></span>
             </div>
-            <p class="stat-tile-sub mt-3">issuer <span class="font-mono">rMxC...m5De</span>; XRPL only. RLUSD also exists on Ethereum and other chains; total cross-chain supply is larger.</p>
+            <p class="stat-tile-sub mt-3">issuer <span class="font-mono">rMxC...m5De</span>; XRPL only. Cross-chain context: <span class="text-white" id="rlusd-eth-total">checking</span> on Ethereum mainnet (separate ERC-20 contract).</p>
           </div>
         </div>
       </div>
@@ -2255,7 +2255,38 @@ feed = session.post(
         } catch (_) {}
       }
 
+      // One-shot Ethereum-RLUSD supply read. Single call to a public
+      // Ethereum RPC for cross-chain context only; Pulse stays XRPL-
+      // native data, this line just acknowledges RLUSD also lives on
+      // other chains so consumers do not mistake the XRPL number for
+      // total supply. Fails silently if Ethereum RPC is unreachable.
+      async function loadEthereumCrossChain() {
+        const el = document.getElementById('rlusd-eth-total');
+        if (!el) return;
+        try {
+          const r = await fetch('https://ethereum-rpc.publicnode.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0', id: 1, method: 'eth_call',
+              params: [{
+                to: '0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD',
+                data: '0x18160ddd',
+              }, 'latest'],
+            }),
+          });
+          if (!r.ok) throw new Error('rpc-status');
+          const result = (await r.json()).result;
+          const total = parseInt(result, 16) / 1e18;
+          if (!isFinite(total) || total <= 0) throw new Error('parse');
+          el.textContent = formatBig(total);
+        } catch (_) {
+          el.textContent = 'unavailable';
+        }
+      }
+
       load();
+      loadEthereumCrossChain();  // once on load, not on the refresh loop
       setInterval(load, REFRESH_MS);
     })();
 

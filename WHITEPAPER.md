@@ -30,13 +30,13 @@ Reading the ledger to answer institutional questions about these properties is t
 
 XRPL-Utilities is the operator-curated layer that does this work once and exposes it as six narrow APIs.
 
-The agent-payable surface emerged from the x402 protocol launched in May 2025. Coinbase, AWS Bedrock AgentCore (announced May 2026), Stripe, and Cloudflare have all converged on x402 as the HTTP-native payment standard for autonomous agents. Coinbase's facilitator alone has processed over 169 million machine-native payments across more than 590,000 buyers and 100,000 sellers as of mid-2026. The standard is past the speculative-future phase.
+The agent-payable surface emerged from the x402 protocol launched in May 2025. Coinbase, AWS Bedrock AgentCore (announced May 2026), Stripe, and Cloudflare have all converged on x402 as the HTTP-native payment standard for autonomous agents. Coinbase's facilitator has processed over a hundred million machine-native payments across hundreds of thousands of buyers and sellers since launch (live counters are published on the x402 ecosystem page at x402.org/ecosystem). The standard is past the speculative-future phase.
 
 ---
 
 ## 2. The Portfolio
 
-Six services. Each runs as its own FastAPI deployment on Railway with its own .io subdomain, agents.json manifest, and isolated data store. They communicate backend-to-backend through a shared sister-product key when they need each other's data.
+Six services. Each is its own independent deployment with its own .io subdomain, agents.json manifest, and isolated data store. They communicate backend-to-backend through a shared sister-product key when they need each other's data.
 
 ### 2.1 XR-Sentinel
 
@@ -128,7 +128,7 @@ Background watchers run as in-process tasks on configurable intervals. The caden
 
 Schema versioning is strict. Every API response carries a `schema_version` field. The MCP server maintains a `knownSchemaVersions` array per service and warns when a service reports a version not in the array. A pre-commit hook blocks unbumped agents.json edits to prevent silent schema drift.
 
-The verify-then-work-then-settle ordering is intentional and load-bearing. Most bundled x402 server middleware settles before the handler runs, which would charge for AI failures. The custom payment module preserves the ordering by manually issuing the 402 challenge, verifying the signature, running the handler, and only then calling the facilitator settle endpoint.
+The verify-then-work-then-settle ordering is intentional and load-bearing. Settlement only occurs after the handler successfully completes the work; failed AI generations, upstream timeouts, or oracle staleness return without billing the buyer. This ordering matters because the alternative (settle-then-work) charges buyers for failures that were the seller's responsibility.
 
 ---
 
@@ -202,7 +202,7 @@ Items on the roadmap as of May 2026:
 
 - **Cross-chain RLUSD reference.** XR-Pulse currently surfaces XRPL-only RLUSD obligations. A reference line acknowledging Ethereum's portion of supply (currently roughly 1.16 billion via Ripple's ERC-20 contract) would clarify the multi-chain context without requiring Pulse to absorb Ethereum data dependencies.
 
-- **Per-service social cards.** The marketing site currently uses a single shared social card for all thirteen pages. Per-service variants (each with the service's logo and headline) would polish the share previews on X / Facebook / LinkedIn.
+- **Per-service social cards.** The marketing site currently uses a single shared social card across every page. Per-service variants (each with the service's logo and headline) would polish the share previews on X / Facebook / LinkedIn.
 
 - **Discoverability surface for AgentCore.** Coinbase's Bazaar (the x402 discovery endpoint) is one of the channels through which Bedrock AgentCore buyers find paid endpoints. Listing every XR-* service in Bazaar, with accurate capability tags and pricing, is a free-distribution play.
 
@@ -248,6 +248,17 @@ All paid endpoints settle to the wallet on the corresponding rail. The XRPL wall
 Schema versions follow semantic versioning per service. Major bump on breaking response-shape changes; minor on additive fields; patch on documentation or formatting changes. The MCP server's `knownSchemaVersions` array is updated within the same session as any backend schema bump to prevent silent drift.
 
 ---
+
+## Appendix D: XLS Reference
+
+XRPL Standards (XLS) are versioned protocol specifications. Several are referenced throughout this document and the underlying signal catalogs. One-line summaries below; full specs live at github.com/XRPLF/XRPL-Standards.
+
+- **XLS-30** Automated Market Maker. Native AMM pools on XRPL with pair balances + LP shares. XR-Vault tracks every AMM-of-RWA pool through this primitive.
+- **XLS-40** Decentralized Identifier. On-chain DID ledger object that points at a self-published TOML manifest. XR-Trust + XR-Sentinel resolve DIDs to surface institutional identity behind wallet addresses.
+- **XLS-70** PermissionedDomain. The domain ledger object that defines which on-chain credentials are required to participate in a regulated venue. XR-Trust indexes every active domain on mainnet.
+- **XLS-80** Accepted credentials inside a permissioned domain. A domain declares a list of credential issuers whose attestations are accepted for membership. XR-Trust surfaces the list and the issuers' identities.
+- **XLS-81** Permissioned DEX. Offer and AMM ledger objects scoped to a specific permissioned domain (only credential-holding accounts can fill them). XR-Trust surfaces the live offers and AMMs per domain.
+- **XLS-85** TokenEscrow. Time-locked or condition-locked escrow for non-XRP IOU tokens. XR-Pulse fires events for EscrowCreate, EscrowFinish, EscrowCancel transactions and flags delivery-versus-payment candidates when two escrows share a Condition hash within an hour.
 
 ## Contact
 
