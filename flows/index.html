@@ -1297,7 +1297,7 @@
         elCoverage.textContent = `${seen} whale Payments observed; ${labeled} (${labeledPct !== null ? labeledPct.toFixed(0) + '%' : 'n/a'}) had both sides labeled. Jurisdiction map: ${coverage.jurisdiction_label_count} labels across ${coverage.jurisdiction_country_count} countries.`;
       }
 
-      function renderMap(perCountry) {
+      function renderMap(perCountry, corridors) {
         const features = worldFeatures;
         if (!features) return;
         const totals = new Map();
@@ -1350,6 +1350,88 @@
           .on('mouseleave', function() {
             if (elTooltip) elTooltip.classList.add('hidden');
           });
+
+        renderArcs(svg, features, projection, corridors || []);
+      }
+
+      // Render the top 6 cross-border corridors as curved arcs over the
+      // choropleth, with a small glowing pulse traveling each arc on a
+      // stagger so directional flow is visible at a glance. Respects
+      // prefers-reduced-motion: skips the moving pulse but keeps the
+      // static arcs + endpoint markers.
+      function renderArcs(svg, features, projection, corridors) {
+        // alpha-2 -> feature lookup so corridor origin/dest -> centroid
+        const a2ToFeature = {};
+        features.forEach(f => {
+          const a2 = ISO_NUM_TO_A2[String(f.id).padStart(3, '0')];
+          if (a2) a2ToFeature[a2] = f;
+        });
+        const top = (corridors || []).slice(0, 6).filter(c =>
+          a2ToFeature[c.origin_iso] && a2ToFeature[c.dest_iso]
+        );
+        if (!top.length) return;
+
+        const reduceMotion = window.matchMedia
+          && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Rank-ordered cyan ramp; brightest = #1 corridor by USD volume
+        const colors = ['#67e8f9', '#22d3ee', '#06b6d4', '#0891b2', '#0e7490', '#155e75'];
+
+        const arcGroup = svg.append('g').attr('class', 'arcs').attr('pointer-events', 'none');
+
+        top.forEach((c, i) => {
+          const origGeo = d3.geoCentroid(a2ToFeature[c.origin_iso]);
+          const destGeo = d3.geoCentroid(a2ToFeature[c.dest_iso]);
+          const p1 = projection(origGeo);
+          const p2 = projection(destGeo);
+          if (!p1 || !p2) return;
+          const [x1, y1] = p1, [x2, y2] = p2;
+          if (![x1, y1, x2, y2].every(Number.isFinite)) return;
+
+          // Quadratic Bezier midpoint lifted toward the top of the map
+          // for arc-on-globe feel. Lift proportional to distance so short
+          // corridors (intra-Europe) read as gentle curves and long ones
+          // (JP -> US) read as broad arcs.
+          const mx = (x1 + x2) / 2;
+          const my = (y1 + y2) / 2 - Math.hypot(x2 - x1, y2 - y1) * 0.25;
+          const pathD = `M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`;
+          const color = colors[i] || '#155e75';
+
+          // Static arc + endpoint dots
+          arcGroup.append('path')
+            .attr('d', pathD)
+            .attr('fill', 'none')
+            .attr('stroke', color)
+            .attr('stroke-width', 1.5)
+            .attr('stroke-opacity', 0.55)
+            .attr('stroke-linecap', 'round');
+          arcGroup.append('circle')
+            .attr('cx', x1).attr('cy', y1).attr('r', 2.8)
+            .attr('fill', color).attr('fill-opacity', 0.9);
+          arcGroup.append('circle')
+            .attr('cx', x2).attr('cy', y2).attr('r', 2.8)
+            .attr('fill', color).attr('fill-opacity', 0.9);
+
+          // Traveling pulse (SVG animateMotion). Skip when reduce-motion
+          // preference is set or when the corridor is so short the
+          // animation would be sub-pixel jitter.
+          const dist = Math.hypot(x2 - x1, y2 - y1);
+          if (reduceMotion || dist < 24) return;
+
+          const pulse = arcGroup.append('circle')
+            .attr('r', 3.5)
+            .attr('cx', 0).attr('cy', 0)
+            .attr('fill', color)
+            .attr('fill-opacity', 0.95)
+            .style('filter', `drop-shadow(0 0 6px ${color})`);
+
+          const animate = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+          animate.setAttribute('path', pathD);
+          animate.setAttribute('dur', (3.2 + i * 0.35) + 's');
+          animate.setAttribute('repeatCount', 'indefinite');
+          animate.setAttribute('begin', (i * 0.45) + 's');
+          animate.setAttribute('rotate', 'auto');
+          pulse.node().appendChild(animate);
+        });
       }
 
       async function refresh(windowDays) {
@@ -1374,7 +1456,7 @@
         if (elCaveat && body.methodology && body.methodology.coverage_caveat) {
           elCaveat.textContent = body.methodology.coverage_caveat;
         }
-        if (features) renderMap(body.per_country || []);
+        if (features) renderMap(body.per_country || [], body.top_corridors || []);
       }
 
       // Range button wiring (matches the existing flow-range-btn UX)
