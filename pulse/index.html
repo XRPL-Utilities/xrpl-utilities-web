@@ -2241,7 +2241,11 @@ feed = session.post(
           const data = await r.json();
           const rlusd = (data.issuers || []).find(i => i.logical_label === RLUSD_LABEL);
           if (!rlusd) return;
-          const v = parseFloat(rlusd.obligations_raw || '0');
+          // Prefer live_obligations (refreshed every 10 min by the
+          // obligations-delta watcher). Fall back to obligations_raw
+          // (the daily snapshot) on older Pulse builds that don't yet
+          // surface the live value.
+          const v = parseFloat(rlusd.live_obligations || rlusd.obligations_raw || '0');
           supplyEl.textContent = formatBig(v);
         } catch (_) {}
       }
