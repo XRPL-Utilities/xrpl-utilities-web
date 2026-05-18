@@ -321,39 +321,29 @@
           </div>
         </div>
 
-        <!-- RWA supply tracker. Two-tile row showing current RLUSD
-             obligations + today's net change derived from the new
-             rwa_obligations_delta event stream. Refreshes every 60s.
-             Built on top of /stats/rwa-summary (current obligations)
-             and /events/recent filtered by source. -->
+        <!-- RWA supply tracker. Single tile showing current RLUSD
+             obligations, with an inline today's-net-change indicator
+             that appears only when nonzero. Today's delta is the
+             diff between live obligations now and yesterday's UTC
+             daily snapshot, so it includes mints the event-watcher
+             missed by bootstrapping after they landed. -->
         <div class="mt-10">
           <h3 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">RWA supply tracker</h3>
           <p class="text-sm text-muted mb-4 leading-relaxed">
-            On-chain RLUSD supply, refreshed every minute. Net change tile sums today's UTC <span class="gloss" data-term="obligations-delta">obligations-delta</span> events: mints add, redemptions subtract.
+            On-chain RLUSD outstanding, refreshed every minute. The
+            <span class="gloss" data-term="obligations-delta">today's change</span> badge appears when net supply has moved since yesterday's UTC close: green up-arrow for mints, red down-arrow for redemptions.
           </p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="stat-tile stat-tile-glow p-5">
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="stat-tile-label">RLUSD outstanding</h3>
-                <span id="rlusd-supply-dot" class="stat-tile-pulse" title="updates every 60s"></span>
-              </div>
-              <div class="flex items-baseline gap-3">
-                <span id="rlusd-supply-value" class="stat-tile-value">--</span>
-                <span class="stat-tile-sub">RLUSD</span>
-              </div>
-              <p class="stat-tile-sub mt-3">on XRPL mainnet, issuer <span class="font-mono">rMxC...m5De</span></p>
+          <div class="stat-tile stat-tile-glow p-5 max-w-xl">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="stat-tile-label">RLUSD outstanding</h3>
+              <span id="rlusd-supply-dot" class="stat-tile-pulse" title="updates every 60s"></span>
             </div>
-            <div class="stat-tile stat-tile-gold p-5">
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="stat-tile-label">Today (UTC) net change</h3>
-                <span id="rlusd-delta-count" class="stat-tile-sub text-[10px]">--</span>
-              </div>
-              <div class="flex items-baseline gap-3">
-                <span id="rlusd-delta-value" class="stat-tile-value">--</span>
-                <span class="stat-tile-sub">RLUSD</span>
-              </div>
-              <p class="stat-tile-sub mt-3"><span id="rlusd-delta-last">no detected mint/burn since deploy</span></p>
+            <div class="flex items-baseline gap-3 flex-wrap">
+              <span id="rlusd-supply-value" class="stat-tile-value">--</span>
+              <span class="stat-tile-sub">RLUSD</span>
+              <span id="rlusd-delta-badge" class="hidden text-xs px-2 py-1 rounded border font-semibold ml-2"></span>
             </div>
+            <p class="stat-tile-sub mt-3">on XRPL mainnet, issuer <span class="font-mono">rMxC...m5De</span></p>
           </div>
         </div>
       </div>
@@ -2210,9 +2200,7 @@ feed = session.post(
     // ----------------------------------------------------------------------
     (function rwaSupply() {
       const supplyEl = document.getElementById('rlusd-supply-value');
-      const deltaEl  = document.getElementById('rlusd-delta-value');
-      const cntEl    = document.getElementById('rlusd-delta-count');
-      const lastEl   = document.getElementById('rlusd-delta-last');
+      const badgeEl  = document.getElementById('rlusd-delta-badge');
       if (!supplyEl) return;
 
       const REFRESH_MS = 60000;
@@ -2226,90 +2214,49 @@ feed = session.post(
         return n.toFixed(0);
       }
 
-      function formatRel(unixSec) {
-        const d = Math.max(0, Math.floor(Date.now() / 1000 - unixSec));
-        if (d < 60)    return d + 's ago';
-        if (d < 3600)  return Math.floor(d / 60) + 'm ago';
-        if (d < 86400) return Math.floor(d / 3600) + 'h ago';
-        return Math.floor(d / 86400) + 'd ago';
-      }
-
-      async function loadObligations() {
+      async function load() {
         try {
           const r = await fetch('https://pulse.xrpl-utilities.io/stats/rwa-summary');
           if (!r.ok) return;
           const data = await r.json();
           const rlusd = (data.issuers || []).find(i => i.logical_label === RLUSD_LABEL);
           if (!rlusd) return;
+
           // Prefer live_obligations (refreshed every 10 min by the
           // obligations-delta watcher). Fall back to obligations_raw
           // (the daily snapshot) on older Pulse builds that don't yet
           // surface the live value.
-          const v = parseFloat(rlusd.live_obligations || rlusd.obligations_raw || '0');
-          supplyEl.textContent = formatBig(v);
-        } catch (_) {}
-      }
+          const supplyVal = parseFloat(rlusd.live_obligations || rlusd.obligations_raw || '0');
+          supplyEl.textContent = formatBig(supplyVal);
 
-      async function loadDelta() {
-        try {
-          const previewHeaders = await (window.PreviewToken
-            ? window.PreviewToken.authHeaders()
-            : Promise.resolve({}));
-          const r = await fetch('https://pulse.xrpl-utilities.io/events/recent', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...previewHeaders },
-            body: JSON.stringify({ limit: 100, kind: 'activity' }),
-          });
-          if (!r.ok) return;
-          const body = await r.json();
-          const events = body.events || [];
-
-          // Today's UTC midnight in unix seconds.
-          const now = new Date();
-          const todayUtcMidnight = Date.UTC(
-            now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0
-          ) / 1000;
-
-          let netDelta = 0;
-          let eventCount = 0;
-          let mostRecent = null;
-          for (const e of events) {
-            if (e.source !== 'rwa_obligations_delta') continue;
-            const au = e.active_utility || {};
-            if (au.issuer_label !== RLUSD_LABEL && au.issuer_logical_label !== RLUSD_LABEL) continue;
-            if (typeof e.published_at !== 'number' || e.published_at < todayUtcMidnight) continue;
-            const amt = parseFloat(au.amount || '0');
-            const signed = au.direction === 'burn' ? -amt : amt;
-            netDelta += signed;
-            eventCount += 1;
-            if (!mostRecent || e.published_at > mostRecent.published_at) {
-              mostRecent = e;
-            }
+          // obligations_delta_today is the diff between live obligations
+          // now and yesterday's UTC daily snapshot. Catches mints the
+          // event-watcher missed by bootstrapping after they landed.
+          // Show the badge only when nonzero.
+          const deltaRaw = rlusd.obligations_delta_today;
+          if (deltaRaw === null || deltaRaw === undefined || deltaRaw === '') {
+            badgeEl.classList.add('hidden');
+            return;
           }
-
-          const sign = netDelta > 0 ? '+' : (netDelta < 0 ? '-' : '');
-          deltaEl.textContent = (sign || '') + formatBig(Math.abs(netDelta));
-          cntEl.textContent = eventCount === 0
-            ? 'no events today'
-            : (eventCount + ' event' + (eventCount === 1 ? '' : 's'));
-          if (mostRecent) {
-            const au = mostRecent.active_utility || {};
-            const arrow = au.direction === 'burn' ? '↓' : '↑';
-            lastEl.textContent = 'last ' + arrow + ' ' + formatBig(parseFloat(au.amount || '0'))
-              + ' RLUSD · ' + formatRel(mostRecent.published_at);
+          const deltaNum = parseFloat(deltaRaw);
+          if (!isFinite(deltaNum) || Math.abs(deltaNum) < 1) {
+            badgeEl.classList.add('hidden');
+            return;
+          }
+          if (deltaNum > 0) {
+            badgeEl.textContent = '↑ +' + formatBig(deltaNum) + ' minted today';
+            badgeEl.className = 'text-xs px-2 py-1 rounded border font-semibold ml-2 '
+              + 'text-green-400 border-green-500/50 bg-green-500/10';
           } else {
-            lastEl.textContent = 'no detected mint/burn today';
+            badgeEl.textContent = '↓ -' + formatBig(Math.abs(deltaNum)) + ' redeemed today';
+            badgeEl.className = 'text-xs px-2 py-1 rounded border font-semibold ml-2 '
+              + 'text-red-400 border-red-500/50 bg-red-500/10';
           }
         } catch (_) {}
       }
 
-      function refresh() {
-        loadObligations();
-        loadDelta();
-      }
-
-      refresh();
-      setInterval(refresh, REFRESH_MS);
+      load();
+      setInterval(load, REFRESH_MS);
     })();
 
     loadColumnInitial('news');
