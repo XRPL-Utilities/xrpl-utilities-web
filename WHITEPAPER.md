@@ -36,7 +36,7 @@ The agent-payable surface emerged from the x402 protocol launched in May 2025. C
 
 ## 2. The Portfolio
 
-Six services. Each is its own independent deployment with its own .io subdomain, agents.json manifest, and isolated data store. They communicate backend-to-backend through a shared sister-product key when they need each other's data.
+Six services. Each is its own independent deployment with its own .io subdomain, agents.json manifest, and isolated data store. They communicate backend-to-backend through a shared internal credential when one needs another's data.
 
 ### 2.1 XR-Sentinel
 
@@ -122,7 +122,7 @@ A defense-in-depth check covers a known facilitator misreport class on the XRPL 
 
 Every service follows the same pattern: an async HTTP service with isolated per-service persistence, deployed independently so a watcher slowdown in one service does not cascade. The marketing site is static-asset hosted at the edge. The MCP server is a stateless passthrough.
 
-Service-to-service communication uses a shared sister-product key over HTTPS, not the public x402 paywall, when one XR-* service needs data from another. This avoids billing loops and keeps internal observability clean. Public callers still hit the same endpoints via the paid surface.
+Service-to-service communication uses a shared internal credential over HTTPS, not the public x402 paywall, when one XR-* service needs data from another. Public callers still hit the same endpoints via the paid surface.
 
 Background watchers run as in-process tasks on configurable intervals. The cadence per watcher is tuned for the underlying data: high-frequency on whale activity, moderate on real-world asset supply, low for daily aggregates. Polling fans out across multiple XRPL node sources so a single upstream outage does not stall the feed.
 
@@ -200,8 +200,6 @@ Items on the roadmap as of May 2026:
 
 - **13F institutional-holdings tracker.** Discussed in May 2026 after the Goldman Sachs Q1 2026 13F surfaced rotated positions in XRP-exposure ETFs. The decision is whether to build it as a standalone XR-* service, a new event source inside XR-Flows, or to defer. 13F data is delayed by 45 days from quarter end and intermittent (quarterly filings only), so the value depends on whether consumers want the slow-signal aggregation. Pending operator review.
 
-- **Cross-chain RLUSD reference.** XR-Pulse currently surfaces XRPL-only RLUSD obligations. A reference line acknowledging Ethereum's portion of supply (currently roughly 1.16 billion via Ripple's ERC-20 contract) would clarify the multi-chain context without requiring Pulse to absorb Ethereum data dependencies.
-
 - **Per-service social cards.** The marketing site currently uses a single shared social card across every page. Per-service variants (each with the service's logo and headline) would polish the share previews on X / Facebook / LinkedIn.
 
 - **Discoverability surface for AgentCore.** Coinbase's Bazaar (the x402 discovery endpoint) is one of the channels through which Bedrock AgentCore buyers find paid endpoints. Listing every XR-* service in Bazaar, with accurate capability tags and pricing, is a free-distribution play.
@@ -251,7 +249,7 @@ Schema versions follow semantic versioning per service. Major bump on breaking r
 
 ## Appendix D: XLS Reference
 
-XRPL Standards (XLS) are versioned protocol specifications. Several are referenced throughout this document and the underlying signal catalogs. One-line summaries below; full specs live at github.com/XRPLF/XRPL-Standards.
+XRPL Standards (XLS) are versioned protocol specifications. Several are referenced throughout this document and the underlying signal catalogs. One-line summaries below; full specs live at https://github.com/XRPLF/XRPL-Standards.
 
 - **XLS-30** Automated Market Maker. Native AMM pools on XRPL with pair balances + LP shares. XR-Vault tracks every AMM-of-RWA pool through this primitive.
 - **XLS-40** Decentralized Identifier. On-chain DID ledger object that points at a self-published TOML manifest. XR-Trust + XR-Sentinel resolve DIDs to surface institutional identity behind wallet addresses.
