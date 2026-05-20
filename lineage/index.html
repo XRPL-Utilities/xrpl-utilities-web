@@ -263,6 +263,122 @@
     </div>
   </section>
 
+  <!-- RIPPLE ECOSYSTEM TOPOLOGY -->
+  <section id="topology">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7">
+        <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Ripple ecosystem topology</h2>
+          <span class="text-[10px] text-muted">public attribution &middot; named wallets only</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-6">
+          The named on-chain infrastructure that anchors institutional flow on XRPL. Wallets shown by name are publicly attributed by Ripple's own TOML metadata, by XRPScan's well-known list, or by on-chain behavior that uniquely identifies their function. The operator-curated mid-layer of relay nodes and pre-staging wallets is shown by role and count; specific addresses are intentionally not exposed (the curated wallet list is the moat).
+        </p>
+
+        <!-- ASCII-style flow diagram. Pure CSS so it stays legible without
+             JS or heavy charting libs. Three columns: Source / Pipeline / Exits.
+             Each column is a stack of cards; cross-column arrows are
+             rendered with vertical lines and arrow-heads using border + svg. -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-3">
+          <!-- COLUMN 1: SOURCE -->
+          <div class="space-y-3">
+            <h3 class="text-[10px] uppercase tracking-widest text-amber-400 font-semibold mb-2">Source: Ripple infrastructure</h3>
+            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Ripple RLUSD Issuer</div>
+              <div class="text-[10px] text-muted font-mono mt-1">rMxCKbEDwqr76Q&hellip;m5De</div>
+              <div class="text-[10px] text-amber-400 mt-1">mint origin &middot; burn destination</div>
+            </div>
+            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">RLUSD Distribution</div>
+              <div class="text-[10px] text-muted font-mono mt-1">r9c6A65SmhhZAL&hellip;NNk</div>
+              <div class="text-[10px] text-amber-400 mt-1">XRPScan well-known: RLUSD</div>
+            </div>
+            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Ripple XRPL MM Hub</div>
+              <div class="text-[10px] text-muted font-mono mt-1">rJqiMb94hyz41S&hellip;8nE</div>
+              <div class="text-[10px] text-amber-400 mt-1">institutional liquidity</div>
+            </div>
+            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Ripple Root Treasury</div>
+              <div class="text-[10px] text-muted font-mono mt-1">rBg2FuZT91C52N&hellip;91m</div>
+              <div class="text-[10px] text-amber-400 mt-1">XRPScan well-known: Ripple</div>
+            </div>
+            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Ripple Escrow Wallets</div>
+              <div class="text-[10px] text-muted mt-1">20 wallets, TOML-attested</div>
+              <div class="text-[10px] text-amber-400 mt-1">ripple.com/.well-known/xrp-ledger.toml</div>
+            </div>
+          </div>
+
+          <!-- COLUMN 2: PIPELINE -->
+          <div class="space-y-3">
+            <h3 class="text-[10px] uppercase tracking-widest text-accent font-semibold mb-2">Pipeline: institutional middle</h3>
+            <div class="bg-ink border border-accent/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Ripple-funded XRP MMs</div>
+              <div class="text-[10px] text-muted mt-1">7 wallets, XRPScan-unattributed</div>
+              <div class="text-[10px] text-accent mt-1">named in code &middot; receive 100M+ XRP from MM Hub</div>
+            </div>
+            <div class="bg-ink border border-accent/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">RLUSD Consolidator Cluster</div>
+              <div class="text-[10px] text-muted mt-1">role: consolidation + round-trip</div>
+              <div class="text-[10px] text-accent mt-1">specific addresses curated</div>
+            </div>
+            <div class="bg-ink border border-accent/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Mid-pipeline Relays</div>
+              <div class="text-[10px] text-muted mt-1">role: pure-payment routing</div>
+              <div class="text-[10px] text-accent mt-1">specific addresses curated</div>
+            </div>
+            <div class="bg-ink border border-accent/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Pre-staging Recipients</div>
+              <div class="text-[10px] text-muted mt-1">role: holds fresh mint output</div>
+              <div class="text-[10px] text-accent mt-1">specific addresses curated</div>
+            </div>
+            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">RLUSD Redemption / Burn Agent</div>
+              <div class="text-[10px] text-muted font-mono mt-1">rGpaXxcBQFCkEL&hellip;NqxA</div>
+              <div class="text-[10px] text-amber-400 mt-1">multisig &middot; DepositAuth &middot; on-chain inferred</div>
+            </div>
+          </div>
+
+          <!-- COLUMN 3: EXITS -->
+          <div class="space-y-3">
+            <h3 class="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold mb-2">Exits: named CEX hot wallets</h3>
+            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Binance</div>
+              <div class="text-[10px] text-muted mt-1">2 hot wallets attributed</div>
+              <div class="text-[10px] text-emerald-400 mt-1">XRPScan well-known: Binance #6, #11</div>
+            </div>
+            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Coinbase</div>
+              <div class="text-[10px] text-muted mt-1">2 hot wallets attributed</div>
+              <div class="text-[10px] text-emerald-400 mt-1">XRPScan well-known: Coinbase #2, #14</div>
+            </div>
+            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Bitso</div>
+              <div class="text-[10px] text-muted mt-1">1 hot wallet attributed</div>
+              <div class="text-[10px] text-emerald-400 mt-1">XRPScan well-known: Bitso #3</div>
+            </div>
+            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Gemini</div>
+              <div class="text-[10px] text-muted mt-1">1 OTC wallet attributed</div>
+              <div class="text-[10px] text-emerald-400 mt-1">XRPScan well-known: Gemini</div>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Additional CEX / OTC</div>
+              <div class="text-[10px] text-muted mt-1">surfaced as detection fires</div>
+              <div class="text-[10px] text-muted mt-1">resolved via XRPScan well-known on miss</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caption / movement explanation -->
+        <p class="text-[11px] text-muted leading-relaxed mt-6 border-t border-border pt-4">
+          <span class="text-amber-400 font-semibold">Source</span> wallets are Ripple-published or XRPScan-attested. Mint events originate at the issuer, route through distribution wallets, and fund the pipeline. <span class="text-accent font-semibold">Pipeline</span> nodes are the institutional middle that aggregates, routes, and pre-stages liquidity; the operator-curated specifics are not exposed publicly. <span class="text-emerald-400 font-semibold">Exits</span> are named CEX hot wallets where the flow eventually settles. Burns route from any pipeline node back through the redemption agent to the issuer.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- COUNTERPARTY DISCOVERY -->
   <section id="counterparties">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
@@ -540,7 +656,15 @@
           burstEmpty.classList.remove('hidden');
         } else {
           burstEmpty.classList.add('hidden');
-          burstList.innerHTML = bursts.slice(0, 15).map(b => `
+          // Sort by when the chain actually happened on-chain, newest first.
+          // chain_started_at is the timestamp of the first hop; detected_at
+          // is when our state machine fired (can be much later when the
+          // chain was reconstructed via the historical backfill).
+          const sortedBursts = bursts.slice().sort((a, b) => (b.chain_started_at || 0) - (a.chain_started_at || 0));
+          burstList.innerHTML = sortedBursts.slice(0, 15).map(b => {
+            const chainTs = b.chain_started_at || b.detected_at;
+            const chainDate = chainTs ? new Date(chainTs * 1000).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : '?';
+            return `
             <div class="burst-row bg-ink border border-border rounded-lg p-4">
               <div class="flex items-center justify-between gap-4 flex-wrap">
                 <div class="min-w-0">
@@ -548,13 +672,16 @@
                     ${b.hop_count}-hop ${escapeHtml(b.chain_currency || '?')} chain &middot; ${fmtUSD(b.total_usd || 0)}
                   </div>
                   <div class="text-[11px] text-muted mt-1">
+                    On-chain: <span class="text-white">${chainDate}</span> (${fmtRel(chainTs)})
+                  </div>
+                  <div class="text-[11px] text-muted mt-1">
                     Anchor: <span class="text-accent">${escapeHtml(b.anchor_label || 'unlabeled')}</span>
-                    &middot; ${fmtRel(b.detected_at)}
                     ${b.news_correlation_count > 0 ? `&middot; <span class="text-amber-400">${b.news_correlation_count} news event${b.news_correlation_count === 1 ? '' : 's'} in window</span>` : ''}
                   </div>
                 </div>
               </div>
-            </div>`).join('');
+            </div>`;
+          }).join('');
         }
       } catch (e) {
         console.warn('[lineage] ripple-counterparties fetch failed', e);
