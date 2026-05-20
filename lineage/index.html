@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XR-Lineage | Trace XRPL institutional flow</title>
+  <meta name="description" content="Real-time lineage tracker for institutional flow on XRPL. Watch Ripple treasury outflows fork through the on-chain pipeline, see auto-discovered counterparties as Ripple onboards them, and catch multi-hop relay bursts the moment they fire. Free on the web." />
+  <meta property="og:title" content="XR-Lineage" />
+  <meta property="og:description" content="Trace the flow, understand the origin. Live lineage tracker for institutional XRPL movement. Discovery + relay-burst detection + focus-watch alerts." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/lineage/" />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://xrpl-utilities.com/lineage/" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/lineage/#app",
+        "name": "XR-Lineage",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (HTTP)",
+        "description": "Live lineage tracker for institutional XRPL flow. Ripple-counterparty discovery, multi-hop relay-burst detection, and per-wallet focus alerts.",
+        "url": "https://xrpl-utilities.com/lineage/",
+        "image": "https://xrpl-utilities.com/assets/xr-lineage.png",
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://xrpl-utilities.com/#org",
+          "name": "XRPL-Utilities",
+          "url": "https://xrpl-utilities.com",
+          "logo": "https://xrpl-utilities.com/assets/logo.png"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "XRPL-Utilities", "item": "https://xrpl-utilities.com/" },
+          { "@type": "ListItem", "position": 2, "name": "XR-Lineage", "item": "https://xrpl-utilities.com/lineage/" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="XR-Lineage" />
+  <meta name="twitter:description" content="Trace the flow, understand the origin. Live lineage tracker for institutional XRPL movement." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0a0a',
+            panel: '#111111',
+            border: '#262626',
+            muted: '#a3a3a3',
+            accent: '#00b8ff',
+            'accent-dim': '#0091cc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+
+    /* Score-tier pill colors (anonymized lineage candidates). Higher
+       tier = warmer color so the grid reads at a glance. */
+    .tier-promoted_70_plus { color: #facc15; border-color: rgba(250, 204, 21, 0.45); background: rgba(250, 204, 21, 0.10); }
+    .tier-high_50_69       { color: #fb923c; border-color: rgba(251, 146, 60, 0.45); background: rgba(251, 146, 60, 0.10); }
+    .tier-mid_30_49        { color: #60a5fa; border-color: rgba(96, 165, 250, 0.45); background: rgba(96, 165, 250, 0.10); }
+    .tier-low_under_30     { color: #94a3b8; border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.08); }
+
+    .delta-positive { color: #4ade80; }
+    .delta-negative { color: #f87171; }
+    .delta-zero     { color: #71717a; }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+    .skeleton-bar {
+      background: linear-gradient(90deg, rgba(38,38,38,0.6) 0%, rgba(64,64,64,0.9) 50%, rgba(38,38,38,0.6) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+      border-radius: 0.375rem;
+    }
+
+    .burst-row { transition: border-color 0.2s ease, transform 0.2s ease; }
+    .burst-row:hover { border-color: rgba(0, 184, 255, 0.45); transform: translateY(-1px); }
+  </style>
+</head>
+
+<body class="bg-ink text-white font-sans antialiased">
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-x-5 lg:gap-x-7 nav-link whitespace-nowrap">
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
+        <a href="/lineage/"   class="nav-link-active">Lineage</a>
+      </nav>
+      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
+      <a href="/lineage/"   class="py-5 border-b border-border/60 nav-link-active">Lineage</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section>
+    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+      <img src="/assets/xr-lineage.png" alt="XR-Lineage" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+      <p class="text-xl text-muted">Trace the flow, understand the origin</p>
+      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
+        Live lineage tracker for institutional XRPL movement. Watch fresh
+        RLUSD mint and burn activity, see auto-discovered counterparties
+        as Ripple onboards them, and catch multi-hop relay bursts the
+        moment they fire on-chain. Powered by the XR-Pulse detection
+        layer.
+      </p>
+      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
+        <span class="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></span>
+        Live detection &middot; anonymized public view &middot; powered by XR-Pulse
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IS XR-LINEAGE -->
+  <section id="what-is" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Three detection layers</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Counterparty discovery</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            A background loop polls Ripple-controlled wallets at a
+            recurring interval and scores every new outgoing-Payment
+            destination against a weighted on-chain heuristic stack.
+            Candidates that clear the score threshold AND show at least
+            one provenance signal (RLUSD pre-approval test, multi-
+            exchange connectivity, or Ripple-funded-MM inflow) are
+            auto-promoted into the runtime watchlist. Personal whales
+            don't auto-promote on capital alone.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Relay-burst detection</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Multi-hop chain detector that links consecutive whale Payments
+            where one hop's receiver is the next hop's sender, same
+            currency, within a one-hour window. Fires when a chain
+            crosses three hops with twenty million dollars total
+            movement, shows the pure-payment relay fingerprint, and
+            anchors on at least one labeled wallet. Every unlabeled hop
+            in a detected chain gets auto-promoted with a synthesized
+            label.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Focus watch</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Per-wallet outgoing-Payment alerter that fires on every new
+            outgoing transaction at any value, regardless of USD floor.
+            Fills the gap between the whale-grade watcher and the multi-
+            hop chain detector for the case where a labeled wallet is
+            sitting on a large fresh balance and starts moving it in
+            small chunks. Default seed is the terminal recipients from
+            the most recent mint chain.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TODAY'S RLUSD ACTIVITY -->
+  <section id="rlusd-today">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7 glow">
+        <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Today's RLUSD activity</h2>
+          <span id="rlusd-asof" class="text-[10px] text-muted font-mono">&hellip;</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="stat-tile p-4">
+            <div class="stat-tile-label mb-2">Outstanding</div>
+            <div id="rlusd-outstanding" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
+            <div class="stat-tile-sub mt-2">live circulating supply</div>
+          </div>
+          <div class="stat-tile p-4">
+            <div class="stat-tile-label mb-2">Net flow (24h)</div>
+            <div id="rlusd-delta" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
+            <div class="stat-tile-sub mt-2">mints minus burns</div>
+          </div>
+          <div class="stat-tile p-4">
+            <div class="stat-tile-label mb-2">UTC day prior</div>
+            <div id="rlusd-prior" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
+            <div class="stat-tile-sub mt-2">snapshot baseline</div>
+          </div>
+          <div class="stat-tile p-4">
+            <div class="stat-tile-label mb-2">Trustlines</div>
+            <div id="rlusd-trustlines" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
+            <div class="stat-tile-sub mt-2">live count</div>
+          </div>
+        </div>
+        <p class="text-[11px] text-muted leading-relaxed mt-5">
+          Daily settlement state for Ripple's stablecoin issuer. Outstanding is the live gateway_balances total. Net flow over the last UTC day is the difference against the prior daily snapshot; positive means more was minted than burned, negative means net redemption to issuer. When the live number diverges sharply from the prior snapshot mid-day, that's the on-chain trace of an active mint or burn pipeline running.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COUNTERPARTY DISCOVERY -->
+  <section id="counterparties">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7">
+        <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Counterparty discovery</h2>
+          <span class="text-[10px] text-muted">live anonymized aggregates</span>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div class="stat-tile p-4">
+            <div class="stat-tile-label mb-2">Candidates</div>
+            <div id="cp-candidates" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+            <div class="stat-tile-sub mt-2">all-time tracked</div>
+          </div>
+          <div class="stat-tile p-4">
+            <div class="stat-tile-label mb-2">Auto-promoted</div>
+            <div id="cp-promoted" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+            <div class="stat-tile-sub mt-2">cleared score + provenance</div>
+          </div>
+          <div class="stat-tile p-4">
+            <div class="stat-tile-label mb-2">RLUSD pre-approval</div>
+            <div id="cp-rlusd" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+            <div class="stat-tile-sub mt-2">test transfer observed</div>
+          </div>
+          <div class="stat-tile p-4">
+            <div class="stat-tile-label mb-2">Recent bursts</div>
+            <div id="cp-bursts" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
+            <div class="stat-tile-sub mt-2">multi-hop chains detected</div>
+          </div>
+        </div>
+
+        <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-3">Score-tier distribution</h3>
+        <div id="cp-tier-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div class="text-xs text-muted">Loading&hellip;</div>
+        </div>
+
+        <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-3">Funding-source distribution</h3>
+        <div id="cp-source-grid" class="space-y-2">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-2/3"></div>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-muted leading-relaxed mt-6">
+          Anonymized aggregates only. Specific wallet addresses are intentionally not exposed on this public surface; the operator-curated wallet list is the moat. Score tiers and funding-source counts give a public read on the volume and origin of newly-onboarded institutional counterparties without disclosing identities. A row entering the promoted_70_plus tier means a wallet cleared both the weighted scoring threshold and the provenance gate.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELAY-BURST DETECTIONS -->
+  <section id="bursts">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7">
+        <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Recent relay-burst detections</h2>
+          <span class="text-[10px] text-muted">anonymized; anchor labels shown</span>
+        </div>
+        <div id="burst-list" class="space-y-2">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-1/2 mb-2"></div>
+            <div class="skeleton-bar h-3 w-1/4"></div>
+          </div>
+        </div>
+        <p id="burst-empty" class="text-xs text-muted mt-4 hidden">No relay-burst detections in the current window. Detection requires three or more hops, twenty million dollars total movement, pure-payment fingerprint, and at least one labeled anchor wallet.</p>
+        <p class="text-[11px] text-muted leading-relaxed mt-6">
+          Each row is one detected multi-hop chain. Anchor label is the strongest labeled wallet in the chain (operator-curated label wins over XRPScan well-known, which wins over auto-promoted). Hop count is the chain length. Total USD is the sum of every hop's value. News correlation count is the number of public-source headlines within thirty minutes of the chain window; non-zero means the on-chain activity coincided with a public news event.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHODOLOGY + LEGAL -->
+  <section id="methodology" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Methodology and limits</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What we measure</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            On-chain Payments, Trustlines, and Escrow activity from the validated XRPL ledger. RLUSD obligations from the issuer's gateway_balances at the live ledger. Auto-discovered candidates are scored on a weighted heuristic stack combining balance, account age, on-chain provenance signals, and cluster fingerprints. Relay bursts are detected from sequenced whale Payments meeting the configured thresholds. Detection is deterministic and reproducible.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What we don't claim</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            The wallets surfaced here are heuristic candidates, not confirmed identities. Auto-promotion attaches a synthesized label for downstream event enrichment; it is not an endorsement, regulatory determination, or investment recommendation. We are not affiliated with Ripple Labs. Use this surface as one input among many. The full attributed wallet list is intentionally not exposed publicly. DYOR.
+          </p>
+        </div>
+      </div>
+      <div class="mt-6 text-center">
+        <a href="https://pulse.xrpl-utilities.io/stats/ripple-counterparties" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-border hover:border-accent px-4 py-2 rounded-lg text-sm text-muted hover:text-white transition">
+          <span>Raw JSON</span>
+          <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+        </a>
+        <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-border hover:border-accent px-4 py-2 rounded-lg text-sm text-muted hover:text-white transition ml-2">
+          <span>Pulse API docs</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid gap-10 md:grid-cols-4 mb-10">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/logo.png" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
+            <li><a href="/lineage/"   class="text-muted hover:text-white transition">XR-Lineage</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse agents.json</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+            <li><a href="/tip/"     class="text-accent hover:text-white transition">Tip the maker</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function setupMobileNav() {
+      const openBtn  = document.getElementById('nav-open');
+      const closeBtn = document.getElementById('nav-close');
+      const overlay  = document.getElementById('mobile-nav');
+      if (!openBtn || !closeBtn || !overlay) return;
+      const open  = () => { overlay.style.display = 'flex'; openBtn.setAttribute('aria-expanded','true'); document.body.style.overflow = 'hidden'; };
+      const close = () => { overlay.style.display = 'none'; openBtn.setAttribute('aria-expanded','false'); document.body.style.overflow = ''; };
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+      overlay.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+      window.addEventListener('resize', () => { if (window.innerWidth >= 768) close(); });
+    })();
+
+    const API_BASE = 'https://pulse.xrpl-utilities.io';
+
+    function fmtUSD(n) {
+      const num = typeof n === 'string' ? parseFloat(n) : (n || 0);
+      if (!isFinite(num)) return '$0';
+      const abs = Math.abs(num);
+      const sign = num < 0 ? '-' : '';
+      if (abs >= 1_000_000_000) return `${sign}$${(abs / 1_000_000_000).toFixed(2)}B`;
+      if (abs >= 1_000_000)     return `${sign}$${(abs / 1_000_000).toFixed(1)}M`;
+      if (abs >= 1_000)         return `${sign}$${(abs / 1_000).toFixed(0)}K`;
+      return `${sign}$${abs.toFixed(0)}`;
+    }
+    function fmtInt(n) {
+      const num = typeof n === 'string' ? parseFloat(n) : (n || 0);
+      return isFinite(num) ? Math.round(num).toLocaleString('en-US') : '0';
+    }
+    function fmtRel(unixTs) {
+      if (!unixTs) return '';
+      const diffSec = Math.max(0, (Date.now() / 1000) - Number(unixTs));
+      if (diffSec < 60)    return `${Math.round(diffSec)}s ago`;
+      if (diffSec < 3600)  return `${Math.round(diffSec / 60)}m ago`;
+      if (diffSec < 86400) return `${Math.round(diffSec / 3600)}h ago`;
+      return `${Math.round(diffSec / 86400)}d ago`;
+    }
+    function fmtSetDelta(el, n) {
+      if (!isFinite(n) || n === 0) { el.textContent = fmtUSD(0); el.classList.add('delta-zero'); return; }
+      const sign = n >= 0 ? '+' : '-';
+      el.textContent = `${sign}${fmtUSD(Math.abs(n))}`;
+      el.classList.add(n >= 0 ? 'delta-positive' : 'delta-negative');
+    }
+
+    async function loadRlusdToday() {
+      try {
+        const r = await fetch(`${API_BASE}/stats/rwa-summary`);
+        if (!r.ok) throw new Error(`status ${r.status}`);
+        const j = await r.json();
+        const issuers = j.per_issuer || j.issuers || [];
+        const rlusd = issuers.find(x => (x.label || '').includes('RLUSD') && (x.wallet || '').startsWith('rMxCKb'));
+        if (!rlusd) return;
+        const live = parseFloat(rlusd.live_obligations || 0);
+        const delta = parseFloat(rlusd.obligations_delta_today || 0);
+        const hist = rlusd.daily_obligations_history || [];
+        const priorRow = hist.length >= 2 ? hist[hist.length - 2] : null;
+        const prior = priorRow ? parseFloat(priorRow.obligations_raw || 0) : 0;
+        const tlc = priorRow ? parseFloat(priorRow.trustline_count || 0) : 0;
+
+        document.getElementById('rlusd-outstanding').textContent = fmtUSD(live);
+        fmtSetDelta(document.getElementById('rlusd-delta'), delta);
+        document.getElementById('rlusd-prior').textContent = fmtUSD(prior);
+        document.getElementById('rlusd-trustlines').textContent = fmtInt(tlc) + (rlusd.trustline_count_truncated || priorRow?.trustline_count_truncated ? '+' : '');
+        document.getElementById('rlusd-asof').textContent = `as of ${new Date().toISOString().replace('T',' ').slice(0,19)}Z`;
+      } catch (e) {
+        console.warn('[lineage] rwa-summary fetch failed', e);
+        const elIds = ['rlusd-outstanding','rlusd-delta','rlusd-prior','rlusd-trustlines'];
+        elIds.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '–'; });
+        document.getElementById('rlusd-asof').textContent = 'data temporarily unavailable';
+      }
+    }
+
+    async function loadCounterparties() {
+      try {
+        const r = await fetch(`${API_BASE}/stats/ripple-counterparties`);
+        if (!r.ok) throw new Error(`status ${r.status}`);
+        const j = await r.json();
+        document.getElementById('cp-candidates').textContent = fmtInt(j.candidate_count);
+        document.getElementById('cp-promoted').textContent = fmtInt(j.promoted_count);
+        document.getElementById('cp-rlusd').textContent = fmtInt(j.rlusd_pre_approval_count);
+        document.getElementById('cp-bursts').textContent = fmtInt((j.relay_bursts_recent || []).length);
+
+        const tierGrid = document.getElementById('cp-tier-grid');
+        const tiers = j.tier_distribution || {};
+        const tierLabels = {
+          promoted_70_plus: 'Promoted (70+)',
+          high_50_69: 'High (50-69)',
+          mid_30_49: 'Mid (30-49)',
+          low_under_30: 'Low (<30)',
+        };
+        const tierOrder = ['promoted_70_plus','high_50_69','mid_30_49','low_under_30'];
+        tierGrid.innerHTML = '';
+        tierOrder.forEach(key => {
+          const count = tiers[key] || 0;
+          const wrap = document.createElement('div');
+          wrap.className = `tier-${key} border rounded-lg p-3`;
+          wrap.innerHTML = `
+            <div class="text-2xl font-bold">${fmtInt(count)}</div>
+            <div class="text-[10px] uppercase tracking-wider mt-1 opacity-80">${tierLabels[key]}</div>`;
+          tierGrid.appendChild(wrap);
+        });
+
+        const sourceGrid = document.getElementById('cp-source-grid');
+        const sources = Object.entries(j.funding_source_distribution || {});
+        if (sources.length === 0) {
+          sourceGrid.innerHTML = '<div class="text-xs text-muted">No candidates surfaced yet. The discovery loop runs every 15 minutes.</div>';
+        } else {
+          sources.sort((a, b) => b[1] - a[1]);
+          sourceGrid.innerHTML = sources.map(([label, count]) => `
+            <div class="bg-ink border border-border rounded-lg p-3 flex items-center justify-between gap-3">
+              <span class="text-sm text-white truncate">${escapeHtml(label)}</span>
+              <span class="text-sm font-mono text-accent shrink-0">${fmtInt(count)}</span>
+            </div>`).join('');
+        }
+
+        // Bursts table
+        const burstList = document.getElementById('burst-list');
+        const burstEmpty = document.getElementById('burst-empty');
+        const bursts = j.relay_bursts_recent || [];
+        if (bursts.length === 0) {
+          burstList.innerHTML = '';
+          burstEmpty.classList.remove('hidden');
+        } else {
+          burstEmpty.classList.add('hidden');
+          burstList.innerHTML = bursts.slice(0, 15).map(b => `
+            <div class="burst-row bg-ink border border-border rounded-lg p-4">
+              <div class="flex items-center justify-between gap-4 flex-wrap">
+                <div class="min-w-0">
+                  <div class="text-sm font-semibold text-white">
+                    ${b.hop_count}-hop ${escapeHtml(b.chain_currency || '?')} chain &middot; ${fmtUSD(b.total_usd || 0)}
+                  </div>
+                  <div class="text-[11px] text-muted mt-1">
+                    Anchor: <span class="text-accent">${escapeHtml(b.anchor_label || 'unlabeled')}</span>
+                    &middot; ${fmtRel(b.detected_at)}
+                    ${b.news_correlation_count > 0 ? `&middot; <span class="text-amber-400">${b.news_correlation_count} news event${b.news_correlation_count === 1 ? '' : 's'} in window</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>`).join('');
+        }
+      } catch (e) {
+        console.warn('[lineage] ripple-counterparties fetch failed', e);
+        ['cp-candidates','cp-promoted','cp-rlusd','cp-bursts'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.textContent = '–';
+        });
+        const burstList = document.getElementById('burst-list');
+        if (burstList) burstList.innerHTML = '<div class="text-xs text-muted">Data temporarily unavailable.</div>';
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    loadRlusdToday();
+    loadCounterparties();
+    // Refresh every 5 minutes; underlying data updates on minute cadences.
+    setInterval(loadRlusdToday, 5 * 60 * 1000);
+    setInterval(loadCounterparties, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
