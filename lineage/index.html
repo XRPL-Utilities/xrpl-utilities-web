@@ -187,14 +187,13 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Counterparty discovery</h3>
           <p class="text-sm text-muted leading-relaxed">
-            A background loop polls Ripple-controlled wallets at a
-            recurring interval and scores every new outgoing-Payment
-            destination against a weighted on-chain heuristic stack.
-            Candidates that clear the score threshold AND show at least
-            one provenance signal (RLUSD pre-approval test, multi-
-            exchange connectivity, or Ripple-funded-MM inflow) are
-            auto-promoted into the runtime watchlist. Personal whales
-            don't auto-promote on capital alone.
+            A background loop scores every new outgoing-Payment
+            destination from Ripple infrastructure against a weighted
+            on-chain heuristic stack. Candidates that clear the score
+            threshold and show at least one on-chain provenance signal
+            tying them to Ripple's institutional rails are auto-promoted
+            into the runtime watchlist. Personal whales don't
+            auto-promote on capital alone.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -202,12 +201,13 @@
           <p class="text-sm text-muted leading-relaxed">
             Multi-hop chain detector that links consecutive whale Payments
             where one hop's receiver is the next hop's sender, same
-            currency, within a one-hour window. Fires when a chain
-            crosses three hops with twenty million dollars total
-            movement, shows the pure-payment relay fingerprint, and
-            anchors on at least one labeled wallet. Every unlabeled hop
-            in a detected chain gets auto-promoted with a synthesized
-            label.
+            currency, within a short time window. Fires when a chain
+            exceeds the configured hop count and total-movement
+            thresholds, shows the behavioral fingerprint of institutional
+            routing, and anchors on at least one labeled wallet. Every
+            unlabeled hop in a detected chain is auto-promoted with a
+            synthesized label so future events from that wallet carry
+            context automatically.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -218,8 +218,7 @@
             Fills the gap between the whale-grade watcher and the multi-
             hop chain detector for the case where a labeled wallet is
             sitting on a large fresh balance and starts moving it in
-            small chunks. Default seed is the terminal recipients from
-            the most recent mint chain.
+            small chunks. The focus list is operator-curated.
           </p>
         </div>
       </div>
@@ -257,7 +256,7 @@
           </div>
         </div>
         <p class="text-[11px] text-muted leading-relaxed mt-5">
-          Daily settlement state for Ripple's stablecoin issuer. Outstanding is the live gateway_balances total. Net flow over the last UTC day is the difference against the prior daily snapshot; positive means more was minted than burned, negative means net redemption to issuer. When the live number diverges sharply from the prior snapshot mid-day, that's the on-chain trace of an active mint or burn pipeline running.
+          Daily settlement state for Ripple's stablecoin issuer. Outstanding is the live circulating-supply read from the validated XRPL ledger. Net flow over the last UTC day is the difference against the prior daily snapshot; positive means more was minted than burned, negative means net redemption to issuer. When the live number diverges sharply from the prior snapshot mid-day, that's the on-chain trace of an active mint or burn pipeline running.
         </p>
       </div>
     </div>
@@ -325,7 +324,7 @@
             </div>
             <div class="bg-ink border border-accent/30 rounded-lg p-3">
               <div class="text-xs font-semibold text-white">Mid-pipeline Relays</div>
-              <div class="text-[10px] text-muted mt-1">role: pure-payment routing</div>
+              <div class="text-[10px] text-muted mt-1">role: Payment-only routing</div>
               <div class="text-[10px] text-accent mt-1">specific addresses curated</div>
             </div>
             <div class="bg-ink border border-accent/30 rounded-lg p-3">
@@ -471,6 +470,48 @@
     </div>
   </section>
 
+  <!-- CROSS-PRODUCT CTA -->
+  <section id="more-tools" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3 text-center">More from the XRPL-Utilities portfolio</h2>
+      <p class="text-sm text-muted text-center max-w-2xl mx-auto mb-10 leading-relaxed">
+        Lineage is one of six tools that share an operator-curated data foundation. Each surface answers a different question about XRPL.
+      </p>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <a href="/sentinel/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/xr-sentinel.png" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Sentinel</div>
+          <div class="text-center text-[10px] text-muted mt-1">Wallet classifier</div>
+        </a>
+        <a href="/pulse/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/xr-pulse.png" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Pulse</div>
+          <div class="text-center text-[10px] text-muted mt-1">Signal feed</div>
+        </a>
+        <a href="/telemetry/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/xr-telemetry.png" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Telemetry</div>
+          <div class="text-center text-[10px] text-muted mt-1">Supply + utility</div>
+        </a>
+        <a href="/trust/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/xr-trust.png" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Trust</div>
+          <div class="text-center text-[10px] text-muted mt-1">Permissioned domains</div>
+        </a>
+        <a href="/vault/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/xr-vault.png" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Vault</div>
+          <div class="text-center text-[10px] text-muted mt-1">RWA tracker</div>
+        </a>
+        <a href="/flows/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/xr-flows.png" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Flows</div>
+          <div class="text-center text-[10px] text-muted mt-1">ETF AUM vs flow</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- METHODOLOGY + LEGAL -->
   <section id="methodology" class="border-t border-border">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
@@ -479,7 +520,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">What we measure</h3>
           <p class="text-sm text-muted leading-relaxed">
-            On-chain Payments, Trustlines, and Escrow activity from the validated XRPL ledger. RLUSD obligations from the issuer's gateway_balances at the live ledger. Auto-discovered candidates are scored on a weighted heuristic stack combining balance, account age, on-chain provenance signals, and cluster fingerprints. Relay bursts are detected from sequenced whale Payments meeting the configured thresholds. Detection is deterministic and reproducible.
+            On-chain Payments, Trustlines, and Escrow activity from the validated XRPL ledger. Issuer obligations from live ledger reads. Auto-discovered candidates are scored on a weighted heuristic stack tied to Ripple-infrastructure provenance signals. Relay bursts are detected from sequenced whale Payments meeting the configured thresholds. Detection is deterministic and reproducible.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -488,15 +529,6 @@
             The wallets surfaced here are heuristic candidates, not confirmed identities. Auto-promotion attaches a synthesized label for downstream event enrichment; it is not an endorsement, regulatory determination, or investment recommendation. We are not affiliated with Ripple Labs. Use this surface as one input among many. The full attributed wallet list is intentionally not exposed publicly. DYOR.
           </p>
         </div>
-      </div>
-      <div class="mt-6 text-center">
-        <a href="https://pulse.xrpl-utilities.io/stats/ripple-counterparties" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-border hover:border-accent px-4 py-2 rounded-lg text-sm text-muted hover:text-white transition">
-          <span>Raw JSON</span>
-          <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-        </a>
-        <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-border hover:border-accent px-4 py-2 rounded-lg text-sm text-muted hover:text-white transition ml-2">
-          <span>Pulse API docs</span>
-        </a>
       </div>
     </div>
   </section>
