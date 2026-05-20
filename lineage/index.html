@@ -283,26 +283,26 @@
           <!-- COLUMN 1: SOURCE -->
           <div class="space-y-3">
             <h3 class="text-[10px] uppercase tracking-widest text-amber-400 font-semibold mb-2">Source: Ripple infrastructure</h3>
-            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+            <a href="https://xrpscan.com/account/rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
               <div class="text-xs font-semibold text-white">Ripple RLUSD Issuer</div>
               <div class="text-[10px] text-muted font-mono mt-1">rMxCKbEDwqr76Q&hellip;m5De</div>
               <div class="text-[10px] text-amber-400 mt-1">mint origin &middot; burn destination</div>
-            </div>
-            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+            </a>
+            <a href="https://xrpscan.com/account/r9c6A65SmhhZALrkMTpqc9X3kGjv5gtNNk" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
               <div class="text-xs font-semibold text-white">RLUSD Distribution</div>
               <div class="text-[10px] text-muted font-mono mt-1">r9c6A65SmhhZAL&hellip;NNk</div>
               <div class="text-[10px] text-amber-400 mt-1">XRPScan well-known: RLUSD</div>
-            </div>
-            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+            </a>
+            <a href="https://xrpscan.com/account/rJqiMb94hyz41SBTNr2AyPNW8AzELa8nE" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
               <div class="text-xs font-semibold text-white">Ripple XRPL MM Hub</div>
               <div class="text-[10px] text-muted font-mono mt-1">rJqiMb94hyz41S&hellip;8nE</div>
               <div class="text-[10px] text-amber-400 mt-1">institutional liquidity</div>
-            </div>
-            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+            </a>
+            <a href="https://xrpscan.com/account/rBg2FuZT91C52Nny68houguJ4vt5x1o91m" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
               <div class="text-xs font-semibold text-white">Ripple Root Treasury</div>
               <div class="text-[10px] text-muted font-mono mt-1">rBg2FuZT91C52N&hellip;91m</div>
               <div class="text-[10px] text-amber-400 mt-1">XRPScan well-known: Ripple</div>
-            </div>
+            </a>
             <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
               <div class="text-xs font-semibold text-white">Ripple Escrow Wallets</div>
               <div class="text-[10px] text-muted mt-1">20 wallets, TOML-attested</div>
@@ -333,11 +333,11 @@
               <div class="text-[10px] text-muted mt-1">role: holds fresh mint output</div>
               <div class="text-[10px] text-accent mt-1">specific addresses curated</div>
             </div>
-            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+            <a href="https://xrpscan.com/account/rGpaXxcBQFCkELhqnHbrascpPDdxSbNqxA" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
               <div class="text-xs font-semibold text-white">RLUSD Redemption / Burn Agent</div>
               <div class="text-[10px] text-muted font-mono mt-1">rGpaXxcBQFCkEL&hellip;NqxA</div>
               <div class="text-[10px] text-amber-400 mt-1">multisig &middot; DepositAuth &middot; on-chain inferred</div>
-            </div>
+            </a>
           </div>
 
           <!-- COLUMN 3: EXITS -->
@@ -375,6 +375,25 @@
         <p class="text-[11px] text-muted leading-relaxed mt-6 border-t border-border pt-4">
           <span class="text-amber-400 font-semibold">Source</span> wallets are Ripple-published or XRPScan-attested. Mint events originate at the issuer, route through distribution wallets, and fund the pipeline. <span class="text-accent font-semibold">Pipeline</span> nodes are the institutional middle that aggregates, routes, and pre-stages liquidity; the operator-curated specifics are not exposed publicly. <span class="text-emerald-400 font-semibold">Exits</span> are named CEX hot wallets where the flow eventually settles. Burns route from any pipeline node back through the redemption agent to the issuer.
         </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LARGEST CHAIN VISUALIZATION -->
+  <section id="largest-chain">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7">
+        <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Today's largest chain</h2>
+          <span id="largest-chain-when" class="text-[10px] text-muted">&hellip;</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-6">
+          Step-by-step visualization of the biggest multi-hop chain in the current detection window. Each box is one hop; the arrow shows the on-chain Payment value. The anchor label identifies the publicly-attested wallet that anchors the chain. Specific addresses for operator-curated intermediate hops are intentionally not exposed.
+        </p>
+        <div id="largest-chain-flow" class="flex flex-wrap items-center gap-2">
+          <div class="text-xs text-muted">Loading&hellip;</div>
+        </div>
+        <div id="largest-chain-totals" class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs"></div>
       </div>
     </div>
   </section>
@@ -647,6 +666,11 @@
             </div>`).join('');
         }
 
+        // Today's largest chain visualization. Pick the burst with the
+        // highest total_usd in the response; render hops_public as a
+        // step-by-step flow with arrows + per-hop amounts.
+        renderLargestChain(j.relay_bursts_recent || []);
+
         // Bursts table
         const burstList = document.getElementById('burst-list');
         const burstEmpty = document.getElementById('burst-empty');
@@ -695,6 +719,76 @@
 
     function escapeHtml(s) {
       return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function renderLargestChain(bursts) {
+      const flowEl = document.getElementById('largest-chain-flow');
+      const whenEl = document.getElementById('largest-chain-when');
+      const totalsEl = document.getElementById('largest-chain-totals');
+      if (!flowEl || !whenEl || !totalsEl) return;
+      if (!bursts || bursts.length === 0) {
+        flowEl.innerHTML = '<div class="text-xs text-muted">No chains detected yet. Detection requires three or more hops, twenty million dollars total movement, and at least one labeled anchor wallet.</div>';
+        whenEl.textContent = '';
+        totalsEl.innerHTML = '';
+        return;
+      }
+      // Find the burst with the highest total_usd
+      const top = bursts.reduce((a, b) => ((b.total_usd || 0) > (a.total_usd || 0) ? b : a));
+      const hops = top.hops_public || [];
+      const chainTs = top.chain_started_at || top.detected_at;
+      const chainDate = chainTs ? new Date(chainTs * 1000).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : '?';
+      whenEl.textContent = `${chainDate} (${fmtRel(chainTs)})`;
+
+      // Build the flow: [Anchor]  →  [Hop 1 $X]  →  [Hop 2 $Y]  →  ...
+      const anchorBox = `
+        <div class="flex flex-col items-center">
+          <div class="bg-ink border border-amber-500/40 rounded-lg px-3 py-2 text-center min-w-[140px]">
+            <div class="text-[9px] uppercase tracking-widest text-amber-400 font-semibold">Anchor</div>
+            <div class="text-xs text-white font-semibold mt-1">${escapeHtml(top.anchor_label || 'unlabeled')}</div>
+          </div>
+        </div>`;
+      const arrow = (label) => `
+        <div class="flex flex-col items-center justify-center min-w-[60px] sm:min-w-[80px]">
+          <div class="text-[10px] text-accent font-mono whitespace-nowrap">${label}</div>
+          <svg class="h-3 w-full" viewBox="0 0 60 10" fill="none" preserveAspectRatio="none">
+            <line x1="0" y1="5" x2="55" y2="5" stroke="#00b8ff" stroke-width="1.5" />
+            <polygon points="55,1 60,5 55,9" fill="#00b8ff" />
+          </svg>
+        </div>`;
+      const hopBox = (i, isLast) => `
+        <div class="flex flex-col items-center">
+          <div class="bg-ink border ${isLast ? 'border-emerald-500/40' : 'border-accent/40'} rounded-lg px-3 py-2 text-center min-w-[110px]">
+            <div class="text-[9px] uppercase tracking-widest ${isLast ? 'text-emerald-400' : 'text-accent'} font-semibold">${isLast ? 'Terminal' : `Hop ${i}`}</div>
+            <div class="text-xs text-white font-semibold mt-1">[curated]</div>
+          </div>
+        </div>`;
+      let html = anchorBox;
+      hops.forEach((h, i) => {
+        html += arrow(fmtUSD(h.value || 0));
+        html += hopBox(i + 1, i === hops.length - 1);
+      });
+      flowEl.innerHTML = html;
+
+      // Totals tiles below
+      const avgHop = hops.length ? (top.total_usd || 0) / hops.length : 0;
+      const newsCount = top.news_correlation_count || 0;
+      totalsEl.innerHTML = `
+        <div class="bg-ink border border-border rounded-lg p-3">
+          <div class="text-[10px] uppercase tracking-widest text-muted">Total movement</div>
+          <div class="text-base font-semibold text-white mt-1">${fmtUSD(top.total_usd || 0)}</div>
+        </div>
+        <div class="bg-ink border border-border rounded-lg p-3">
+          <div class="text-[10px] uppercase tracking-widest text-muted">Hops</div>
+          <div class="text-base font-semibold text-white mt-1">${top.hop_count}</div>
+        </div>
+        <div class="bg-ink border border-border rounded-lg p-3">
+          <div class="text-[10px] uppercase tracking-widest text-muted">Avg per hop</div>
+          <div class="text-base font-semibold text-white mt-1">${fmtUSD(avgHop)}</div>
+        </div>
+        <div class="bg-ink border border-border rounded-lg p-3">
+          <div class="text-[10px] uppercase tracking-widest text-muted">News in window</div>
+          <div class="text-base font-semibold ${newsCount > 0 ? 'text-amber-400' : 'text-muted'} mt-1">${newsCount}</div>
+        </div>`;
     }
 
     loadRlusdToday();
