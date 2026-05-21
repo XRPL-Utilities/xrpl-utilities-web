@@ -280,94 +280,27 @@
              JS or heavy charting libs. Three columns: Source / Pipeline / Exits.
              Each column is a stack of cards; cross-column arrows are
              rendered with vertical lines and arrow-heads using border + svg. -->
+        <!-- API-driven topology. Filled from /stats/ripple-topology on load.
+             Source column shows named Ripple-attested wallets (XRPScan link).
+             Pipeline column shows operator-curated roles by count only (moat).
+             Exits column shows named CEX hot wallets grouped by entity. -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-3">
-          <!-- COLUMN 1: SOURCE -->
           <div class="space-y-3">
             <h3 class="text-[10px] uppercase tracking-widest text-amber-400 font-semibold mb-2">Source: Ripple infrastructure</h3>
-            <a href="https://xrpscan.com/account/rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
-              <div class="text-xs font-semibold text-white">Ripple RLUSD Issuer</div>
-              <div class="text-[10px] text-muted font-mono mt-1">rMxCKbEDwqr76Q&hellip;m5De</div>
-              <div class="text-[10px] text-amber-400 mt-1">mint origin &middot; burn destination</div>
-            </a>
-            <a href="https://xrpscan.com/account/r9c6A65SmhhZALrkMTpqc9X3kGjv5gtNNk" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
-              <div class="text-xs font-semibold text-white">RLUSD Distribution</div>
-              <div class="text-[10px] text-muted font-mono mt-1">r9c6A65SmhhZAL&hellip;NNk</div>
-              <div class="text-[10px] text-amber-400 mt-1">XRPScan well-known: RLUSD</div>
-            </a>
-            <a href="https://xrpscan.com/account/rJqiMb94hyz41SBTNr2AyPNW8AzELa8nE" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
-              <div class="text-xs font-semibold text-white">Ripple XRPL MM Hub</div>
-              <div class="text-[10px] text-muted font-mono mt-1">rJqiMb94hyz41S&hellip;8nE</div>
-              <div class="text-[10px] text-amber-400 mt-1">institutional liquidity</div>
-            </a>
-            <a href="https://xrpscan.com/account/rBg2FuZT91C52Nny68houguJ4vt5x1o91m" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
-              <div class="text-xs font-semibold text-white">Ripple Root Treasury</div>
-              <div class="text-[10px] text-muted font-mono mt-1">rBg2FuZT91C52N&hellip;91m</div>
-              <div class="text-[10px] text-amber-400 mt-1">XRPScan well-known: Ripple</div>
-            </a>
-            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Ripple Escrow Wallets</div>
-              <div class="text-[10px] text-muted mt-1">20 wallets, TOML-attested</div>
-              <div class="text-[10px] text-amber-400 mt-1">ripple.com/.well-known/xrp-ledger.toml</div>
+            <div id="topology-source" class="space-y-3">
+              <div class="bg-ink border border-border rounded-lg p-3 text-[11px] text-muted">Loading&hellip;</div>
             </div>
           </div>
-
-          <!-- COLUMN 2: PIPELINE -->
           <div class="space-y-3">
             <h3 class="text-[10px] uppercase tracking-widest text-accent font-semibold mb-2">Pipeline: institutional middle</h3>
-            <div class="bg-ink border border-accent/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Ripple-funded XRP MMs</div>
-              <div class="text-[10px] text-muted mt-1">7 wallets, XRPScan-unattributed</div>
-              <div class="text-[10px] text-accent mt-1">named in code &middot; receive 100M+ XRP from MM Hub</div>
+            <div id="topology-pipeline" class="space-y-3">
+              <div class="bg-ink border border-border rounded-lg p-3 text-[11px] text-muted">Loading&hellip;</div>
             </div>
-            <div class="bg-ink border border-accent/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">RLUSD Consolidator Cluster</div>
-              <div class="text-[10px] text-muted mt-1">role: consolidation + round-trip</div>
-              <div class="text-[10px] text-accent mt-1">specific addresses curated</div>
-            </div>
-            <div class="bg-ink border border-accent/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Mid-pipeline Relays</div>
-              <div class="text-[10px] text-muted mt-1">role: Payment-only routing</div>
-              <div class="text-[10px] text-accent mt-1">specific addresses curated</div>
-            </div>
-            <div class="bg-ink border border-accent/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Pre-staging Recipients</div>
-              <div class="text-[10px] text-muted mt-1">role: holds fresh mint output</div>
-              <div class="text-[10px] text-accent mt-1">specific addresses curated</div>
-            </div>
-            <a href="https://xrpscan.com/account/rGpaXxcBQFCkELhqnHbrascpPDdxSbNqxA" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
-              <div class="text-xs font-semibold text-white">RLUSD Redemption / Burn Agent</div>
-              <div class="text-[10px] text-muted font-mono mt-1">rGpaXxcBQFCkEL&hellip;NqxA</div>
-              <div class="text-[10px] text-amber-400 mt-1">multisig &middot; DepositAuth &middot; on-chain inferred</div>
-            </a>
           </div>
-
-          <!-- COLUMN 3: EXITS -->
           <div class="space-y-3">
             <h3 class="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold mb-2">Exits: named CEX hot wallets</h3>
-            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Binance</div>
-              <div class="text-[10px] text-muted mt-1">2 hot wallets attributed</div>
-              <div class="text-[10px] text-emerald-400 mt-1">XRPScan well-known: Binance #6, #11</div>
-            </div>
-            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Coinbase</div>
-              <div class="text-[10px] text-muted mt-1">2 hot wallets attributed</div>
-              <div class="text-[10px] text-emerald-400 mt-1">XRPScan well-known: Coinbase #2, #14</div>
-            </div>
-            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Bitso</div>
-              <div class="text-[10px] text-muted mt-1">1 hot wallet attributed</div>
-              <div class="text-[10px] text-emerald-400 mt-1">XRPScan well-known: Bitso #3</div>
-            </div>
-            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Gemini</div>
-              <div class="text-[10px] text-muted mt-1">1 OTC wallet attributed</div>
-              <div class="text-[10px] text-emerald-400 mt-1">XRPScan well-known: Gemini</div>
-            </div>
-            <div class="bg-ink border border-border rounded-lg p-3">
-              <div class="text-xs font-semibold text-white">Additional CEX / OTC</div>
-              <div class="text-[10px] text-muted mt-1">surfaced as detection fires</div>
-              <div class="text-[10px] text-muted mt-1">resolved via XRPScan well-known on miss</div>
+            <div id="topology-exits" class="space-y-3">
+              <div class="bg-ink border border-border rounded-lg p-3 text-[11px] text-muted">Loading&hellip;</div>
             </div>
           </div>
         </div>
@@ -630,6 +563,145 @@
       el.classList.add(n >= 0 ? 'delta-positive' : 'delta-negative');
     }
 
+    // Address-keyed marketing notes for the Source column.
+    // Operator-curated copy that the API doesn't carry. Keys are the
+    // first 14 chars of a wallet address so partial-prefix matches
+    // still resolve. Falls back to the API's `label` when no match.
+    const SOURCE_WALLET_NOTES = {
+      'rMxCKbEDwqr76Q': { display: 'Ripple RLUSD Issuer',  note: 'mint origin · burn destination' },
+      'r9c6A65SmhhZAL': { display: 'RLUSD Distribution',    note: 'XRPScan well-known: RLUSD' },
+      'rJqiMb94hyz41S': { display: 'Ripple XRPL MM Hub',   note: 'institutional liquidity' },
+      'rBg2FuZT91C52N': { display: 'Ripple Root Treasury', note: 'XRPScan well-known: Ripple' },
+      'rhzVLsX7yA57th': { display: 'Ripple Treasury (alt)', note: 'supplementary Ripple wallet' },
+      'rGpaXxcBQFCkEL': { display: 'RLUSD Redemption / Burn Agent', note: 'multisig · DepositAuth · on-chain inferred' },
+    };
+
+    // Role-keyed pipeline-card copy. Operator-curated wallets are
+    // grouped into role-buckets the API returns; the descriptions
+    // below are the publicly-safe role descriptions matching the
+    // moat protection on the API side.
+    const PIPELINE_ROLE_CARDS = {
+      mm: {
+        title: 'Market-maker tier',
+        sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
+        note: 'specific addresses curated · receive flow from Ripple MM hub',
+      },
+      other: {
+        title: 'Mid-pipeline relays',
+        sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
+        note: 'specific addresses curated · Payment-only routing',
+      },
+      treasury: {
+        title: 'Treasury / accumulation',
+        sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
+        note: 'specific addresses curated · accumulation pattern',
+      },
+      custody: {
+        title: 'Custody-style',
+        sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
+        note: 'specific addresses curated',
+      },
+      issuer: {
+        title: 'Inferred issuer-side',
+        sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
+        note: 'specific addresses curated',
+      },
+    };
+
+    function truncAddr(a) {
+      return a && a.length > 18 ? `${a.slice(0, 14)}…${a.slice(-4)}` : (a || '?');
+    }
+
+    async function loadTopology() {
+      const sourceEl   = document.getElementById('topology-source');
+      const pipelineEl = document.getElementById('topology-pipeline');
+      const exitsEl    = document.getElementById('topology-exits');
+      try {
+        const r = await fetch(`${API_BASE}/stats/ripple-topology`);
+        if (!r.ok) throw new Error(`status ${r.status}`);
+        const j = await r.json();
+
+        // ===== SOURCE COLUMN =====
+        // Group escrow wallets (label starts with "Ripple Escrow") into
+        // a single card. Render publicly-attested singletons inline.
+        const sourceCards = [];
+        const escrowWallets = [];
+        for (const w of (j.source && j.source.wallets) || []) {
+          if ((w.label || '').toLowerCase().startsWith('ripple escrow')) {
+            escrowWallets.push(w);
+          } else {
+            sourceCards.push(w);
+          }
+        }
+        let html = '';
+        for (const w of sourceCards) {
+          const key = (w.address || '').slice(0, 14);
+          const meta = SOURCE_WALLET_NOTES[key] || { display: w.label, note: w.note || '' };
+          html += `
+            <a href="https://xrpscan.com/account/${escapeHtml(w.address)}" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/30 hover:border-amber-500 rounded-lg p-3 transition">
+              <div class="text-xs font-semibold text-white">${escapeHtml(meta.display)}</div>
+              <div class="text-[10px] text-muted font-mono mt-1">${escapeHtml(truncAddr(w.address))}</div>
+              ${meta.note ? `<div class="text-[10px] text-amber-400 mt-1">${escapeHtml(meta.note)}</div>` : ''}
+            </a>`;
+        }
+        if (escrowWallets.length > 0) {
+          html += `
+            <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">Ripple Escrow Wallets</div>
+              <div class="text-[10px] text-muted mt-1">${escrowWallets.length} wallets, TOML-attested</div>
+              <div class="text-[10px] text-amber-400 mt-1">ripple.com/.well-known/xrp-ledger.toml</div>
+            </div>`;
+        }
+        sourceEl.innerHTML = html || '<div class="text-[11px] text-muted">No source wallets returned.</div>';
+
+        // ===== PIPELINE COLUMN =====
+        // Render role buckets in a fixed order so the layout is stable
+        // even when role_counts changes over time.
+        const roles = (j.pipeline && j.pipeline.role_counts) || {};
+        const ROLE_ORDER = ['mm', 'other', 'treasury', 'custody', 'issuer'];
+        let pHtml = '';
+        for (const role of ROLE_ORDER) {
+          const count = roles[role] || 0;
+          if (count === 0) continue;
+          const card = PIPELINE_ROLE_CARDS[role] || { title: role, sub: (n) => `${n} wallets`, note: 'operator-curated' };
+          pHtml += `
+            <div class="bg-ink border border-accent/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">${escapeHtml(card.title)}</div>
+              <div class="text-[10px] text-muted mt-1">${escapeHtml(card.sub(count))}</div>
+              <div class="text-[10px] text-accent mt-1">${escapeHtml(card.note)}</div>
+            </div>`;
+        }
+        if (!pHtml) pHtml = '<div class="text-[11px] text-muted">No pipeline wallets curated yet.</div>';
+        pipelineEl.innerHTML = pHtml;
+
+        // ===== EXITS COLUMN =====
+        let eHtml = '';
+        for (const ent of (j.exits && j.exits.entities) || []) {
+          const linksHtml = (ent.wallets || []).map(w =>
+            `<a href="https://xrpscan.com/account/${escapeHtml(w.address)}" target="_blank" rel="noopener noreferrer" class="font-mono text-[10px] text-muted hover:text-emerald-400 transition">${escapeHtml(truncAddr(w.address))}</a>`
+          ).join('<span class="text-muted/40">, </span>');
+          eHtml += `
+            <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-white">${escapeHtml(ent.entity)}</div>
+              <div class="text-[10px] text-muted mt-1">${ent.wallet_count} hot wallet${ent.wallet_count === 1 ? '' : 's'} attributed</div>
+              <div class="text-[10px] mt-1">${linksHtml}</div>
+            </div>`;
+        }
+        eHtml += `
+          <div class="bg-ink border border-border rounded-lg p-3">
+            <div class="text-xs font-semibold text-white">Additional CEX / OTC</div>
+            <div class="text-[10px] text-muted mt-1">surfaced as detection fires</div>
+            <div class="text-[10px] text-muted mt-1">resolved via XRPScan well-known on miss</div>
+          </div>`;
+        exitsEl.innerHTML = eHtml;
+      } catch (e) {
+        console.warn('[lineage] topology fetch failed', e);
+        for (const el of [sourceEl, pipelineEl, exitsEl]) {
+          if (el) el.innerHTML = '<div class="text-[11px] text-muted">Data temporarily unavailable.</div>';
+        }
+      }
+    }
+
     async function loadRlusdToday() {
       try {
         const r = await fetch(`${API_BASE}/stats/rwa-summary`);
@@ -842,6 +914,7 @@
         </div>`;
     }
 
+    loadTopology();
     loadRlusdToday();
     loadCounterparties();
     // Refresh every 5 minutes; underlying data updates on minute cadences.
