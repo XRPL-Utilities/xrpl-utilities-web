@@ -817,6 +817,7 @@
                     <span class="text-[10px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded border ${curClass}">${curDisplay}</span>
                     <span class="text-sm font-semibold text-white">${b.hop_count}-hop chain &middot; ${fmtUSD(b.total_usd || 0)}</span>
                   </div>
+                  ${b.chain_summary ? `<div class="text-[12px] text-white mt-1 mb-1">${escapeHtml(b.chain_summary)}</div>` : ''}
                   ${hopFlow ? `<div class="text-[12px] mt-2 mb-1">Flow: ${hopFlow}</div>` : ''}
                   <div class="text-[11px] text-muted mt-2">
                     On-chain: <span class="text-white">${chainDate}</span> (${fmtRel(chainTs)})
@@ -825,6 +826,7 @@
                     Anchor: <span class="text-accent">${escapeHtml(b.anchor_label || 'unlabeled')}</span>
                     ${b.news_correlation_count > 0 ? `&middot; <span class="text-amber-400">${b.news_correlation_count} news event${b.news_correlation_count === 1 ? '' : 's'} in window</span>` : ''}
                   </div>
+                  ${chainTs ? `<div class="text-[11px] mt-2"><a href="/pulse/?since=${Math.floor(chainTs - 60)}&kind=activity" class="text-accent hover:underline">View live whale events in this window &rarr;</a></div>` : ''}
                 </div>
               </div>
             </div>`;

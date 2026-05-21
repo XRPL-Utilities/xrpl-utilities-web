@@ -1055,6 +1055,22 @@ feed = session.post(
           ledger ${escapeHtml(String(whaleAU.ledger_index || '?'))}
         </div>`;
 
+        // "Part of detected chain" cross-link to the Lineage page when
+        // either party's label was synthesized by the relay_burst_
+        // detector. Label format: "... relay chain (detected YYYY-MM-DD,
+        // $XM, N-hop)". Parse the parenthetical and render a clickable
+        // badge that jumps the reader to /lineage/ for the aggregate
+        // chain view.
+        const _chainRefRe = /relay chain \(detected (\d{4}-\d{2}-\d{2}), \$(\d+)M, (\d+)-hop\)/i;
+        const _chainMatch = (sl && sl.match(_chainRefRe)) || (rl && rl.match(_chainRefRe));
+        if (_chainMatch) {
+          whaleBlock += `<div class="text-xs mt-2 pt-2 border-t border-border">
+            <a href="/lineage/#bursts" class="text-accent hover:underline" title="See the aggregate chain view on the Lineage page">
+              &uarr; Part of detected relay chain &middot; ${escapeHtml(_chainMatch[3])}-hop &middot; ~$${escapeHtml(_chainMatch[2])}M &middot; detected ${escapeHtml(_chainMatch[1])}
+            </a>
+          </div>`;
+        }
+
         // Sentinel cross-reference enrichment (sender + receiver
         // activity classification, advisory flags, score-trajectory
         // delta when prior history exists). Skip the line entirely
@@ -1979,7 +1995,17 @@ feed = session.post(
           const headers = await (window.PreviewToken
             ? window.PreviewToken.authHeaders()
             : Promise.resolve({}));
-          const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+          // Allow the Lineage page to deep-link a specific time window
+          // via ?since=<unix-seconds>. Falls back to the rolling 24h
+          // window when the URL param is absent or unparseable.
+          let since;
+          const sinceParam = new URLSearchParams(location.search).get('since');
+          const sinceUnix = sinceParam ? parseInt(sinceParam, 10) : NaN;
+          if (Number.isFinite(sinceUnix) && sinceUnix > 0) {
+            since = new Date(sinceUnix * 1000).toISOString();
+          } else {
+            since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+          }
           const r = await fetch(API_BASE + '/events/recent', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
