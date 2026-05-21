@@ -959,11 +959,10 @@ feed = session.post(
         ? e.active_utility : null;
       const deepFreezeAU  = isWhale && e.active_utility && e.active_utility.signal === 'issuer_deepfreeze'
         ? e.active_utility : null;
-      // rwa_obligations_delta fires when an RWA issuer's gateway_balances
-      // obligations jumps between watcher passes. Catches DEX-mediated
-      // supply changes (e.g. Ripple mints RLUSD via OfferCreate, not
-      // direct Payment) that the rwa_issuer_flow Payment classifier
-      // structurally misses. Source is rwa_obligations_delta; signal is
+      // rwa_obligations_delta fires when an RWA issuer's outstanding
+      // obligations jump between watcher passes. Catches DEX-mediated
+      // supply changes that the per-tx Payment classifier structurally
+      // misses. Source is rwa_obligations_delta; signal is
       // rwa_obligations_spike (mint) or rwa_obligations_drop (burn).
       const rwaObligationsAU = e.active_utility
         && (e.active_utility.signal === 'rwa_obligations_spike'
@@ -1232,8 +1231,8 @@ feed = session.post(
       }
 
       // rwa_obligations_delta render. Inferred mint or burn at the
-      // gateway_balances obligations level (not a per-tx classification).
-      // Catches DEX-mediated supply changes the Payment classifier misses.
+      // issuer-obligations level (not a per-tx classification). Catches
+      // DEX-mediated supply changes the per-tx classifier misses.
       if (rwaObligationsAU) {
         const isMint = rwaObligationsAU.direction === 'mint';
         const arrow = isMint ? '↑' : '↓';
