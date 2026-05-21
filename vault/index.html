@@ -249,7 +249,21 @@
   </section>
 
   <section id="vault-summary">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
+      <div class="stat-tile stat-tile-glow p-5 sm:p-6 mb-3">
+        <div class="flex items-baseline justify-between gap-4 flex-wrap">
+          <div>
+            <div class="stat-tile-label mb-2">USD-pegged RWA on XRPL</div>
+            <div id="stat-usd-pegged-total" class="text-3xl sm:text-4xl font-bold tabular-nums text-white">
+              <span class="inline-block h-9 w-32 bg-border rounded animate-pulse align-middle"></span>
+            </div>
+            <div id="stat-usd-pegged-detail" class="stat-tile-sub mt-2">&hellip;</div>
+          </div>
+          <div class="text-right text-[11px] text-muted max-w-md leading-relaxed">
+            Sum of USD stablecoins + treasuries at NAV + commercial paper at par + MMF at NAV. EUR / BRL / AUD / MWh issuers are deliberately excluded (listed below). <span id="stat-usd-pegged-excluded-summary"></span>
+          </div>
+        </div>
+      </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div class="stat-tile p-4">
           <div class="stat-tile-label mb-2">Tracked issuers</div>
@@ -819,6 +833,47 @@
       if (ammDetail) {
         const classCount = Object.keys(cls).length;
         ammDetail.textContent = classCount ? `across ${classCount} asset classes` : 'RWA-touching XLS-30';
+      }
+
+      // USD-pegged aggregate (Pulse 1.62.0). Sum over USD-denominated
+      // issuers + treasuries-at-NAV + commercial-paper-at-par + MMF;
+      // excluded EUR/BRL/AUD/MWh issuers are surfaced separately so
+      // the no-fabricated-USD brand stance is preserved.
+      const usdAgg = body.usd_pegged_aggregate || {};
+      const usdTotalEl  = document.getElementById('stat-usd-pegged-total');
+      const usdDetailEl = document.getElementById('stat-usd-pegged-detail');
+      const usdExclEl   = document.getElementById('stat-usd-pegged-excluded-summary');
+      if (usdTotalEl) {
+        const total = usdAgg.total_usd || 0;
+        // Format $1.23B / $456M / $7.8M as appropriate.
+        let formatted;
+        if (total >= 1e9) formatted = '$' + (total / 1e9).toFixed(2) + 'B';
+        else if (total >= 1e6) formatted = '$' + (total / 1e6).toFixed(1) + 'M';
+        else if (total >= 1e3) formatted = '$' + (total / 1e3).toFixed(0) + 'K';
+        else formatted = '$' + Math.round(total);
+        usdTotalEl.textContent = formatted;
+      }
+      if (usdDetailEl) {
+        const inc = usdAgg.issuer_count_included || 0;
+        const exc = usdAgg.issuer_count_excluded || 0;
+        usdDetailEl.textContent = `${inc} USD-pegged issuer${inc === 1 ? '' : 's'} aggregated · ${exc} native-unit issuer${exc === 1 ? '' : 's'} excluded`;
+      }
+      if (usdExclEl) {
+        const nonUsd = usdAgg.non_usd_pegged_natives || [];
+        if (nonUsd.length) {
+          const parts = nonUsd.slice(0, 6).map(row => {
+            const amt = row.native_amount || 0;
+            let fmt;
+            if (amt >= 1e9) fmt = (amt / 1e9).toFixed(2) + 'B';
+            else if (amt >= 1e6) fmt = (amt / 1e6).toFixed(1) + 'M';
+            else if (amt >= 1e3) fmt = (amt / 1e3).toFixed(0) + 'K';
+            else fmt = String(Math.round(amt));
+            return `${fmt} ${row.currency || '?'}`;
+          });
+          usdExclEl.textContent = 'Native-unit: ' + parts.join(' · ') + '.';
+        } else {
+          usdExclEl.textContent = '';
+        }
       }
     }
 
