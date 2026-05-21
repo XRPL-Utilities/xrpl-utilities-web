@@ -637,7 +637,7 @@ feed = session.post(
         <span class="text-white">On-chain stream.</span> The watcher reads validated XRPL ledgers continuously. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger position, currency (XRP or RLUSD), and full sender + receiver addresses. Where either address resolves to a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
       </p>
       <p class="text-sm text-muted leading-relaxed mt-4">
-        <span class="text-white">RWA supply stream.</span> Per-issuer mint and burn detection runs in two parallel paths. The Payment classifier catches direct issuer-to-holder IOU Payments and the redemption pattern (holder returns IOU to issuer). The <span class="gloss" data-term="obligations-delta">obligations-delta</span> watcher fires when gateway_balances obligations change by more than 1M native units between passes, which catches DEX-mediated mints the Payment classifier misses (Ripple brings RLUSD into circulation via OfferCreate on the XRPL DEX, not direct Payments). Both surface as event cards with the issuer, asset, and direction; the latter explicitly tags inference_method=gateway_balances_delta so consumers can tell the two apart.
+        <span class="text-white">RWA supply stream.</span> Per-issuer mint and burn detection runs in two parallel paths. The Payment classifier catches direct issuer-to-holder IOU Payments and the redemption pattern (holder returns IOU to issuer). The <span class="gloss" data-term="obligations-delta">obligations-delta</span> watcher fires when an issuer's outstanding obligations change by more than the configured threshold between passes, which catches DEX-mediated mints the Payment classifier misses (Ripple brings RLUSD into circulation via OfferCreate on the XRPL DEX, not direct Payments). Both surface as event cards with the issuer, asset, and direction; the latter explicitly tags inference_method=obligations_delta so consumers can tell the two apart.
       </p>
     </div>
   </section>
@@ -717,7 +717,22 @@ feed = session.post(
             <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
           </div>
         </a>
-      </div>
+
+        <a href="/lineage/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-lineage.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Lineage</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  Live lineage tracker for institutional XRPL movement. Fresh RLUSD mint and burn activity, auto-discovered Ripple counterparties, and multi-hop relay-burst detection. Trace the flow, understand the origin.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+</div>
     </div>
   </section>
 
@@ -1240,7 +1255,7 @@ feed = session.post(
           · prior reading at ${escapeHtml(priorTs)}
         </div>
         <div class="text-xs text-muted mt-2 pt-2 border-t border-border">
-          Inferred from <span class="gloss" data-term="obligations-delta">gateway_balances obligations</span> diff between watcher passes, not from a single classified transaction. Some issuers bring supply into circulation via DEX offers rather than direct Payments, so the per-transaction mint/burn classifier structurally misses those events. This signal closes that gap by watching the supply snapshot itself. Universal across the tracked RWA issuer set.
+          Inferred from <span class="gloss" data-term="obligations-delta">outstanding-obligations</span> diff between watcher passes, not from a single classified transaction. Some issuers bring supply into circulation via DEX offers rather than direct Payments, so the per-transaction mint/burn classifier structurally misses those events. This signal closes that gap by watching the supply snapshot itself. Universal across the tracked RWA issuer set.
         </div>`;
       }
 

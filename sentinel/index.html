@@ -238,7 +238,7 @@
         </summary>
         <div class="px-6 pb-6 pt-2">
           <p class="text-xs text-muted mb-5 leading-relaxed">
-            Operator-curated. Addresses verified against XRPScan well-known and live <code class="font-mono text-white">gateway_balances</code> probes at the dates noted. RWA issuer wallets are point-in-time observations; trustline counts and on-chain obligations move continuously. The gallery is descriptive, not an endorsement.
+            Operator-curated. Addresses verified against XRPScan well-known and live on-chain ledger reads at the dates noted. RWA issuer wallets are point-in-time observations; trustline counts and on-chain obligations move continuously. The gallery is descriptive, not an endorsement.
           </p>
           <div id="gallery-categories" class="space-y-6"></div>
         </div>
@@ -740,7 +740,22 @@ report = session.post(
             <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
           </div>
         </a>
-      </div>
+
+        <a href="/lineage/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <img src="/assets/xr-lineage.png" alt="" class="h-14 w-14 rounded-lg shrink-0" />
+              <div>
+                <div class="font-bold text-xl text-white mb-1">XR-Lineage</div>
+                <div class="text-sm text-muted leading-relaxed">
+                  Live lineage tracker for institutional XRPL movement. Fresh RLUSD mint and burn activity, auto-discovered Ripple counterparties, and multi-hop relay-burst detection. Trace the flow, understand the origin.
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
+          </div>
+        </a>
+</div>
     </div>
   </section>
 
