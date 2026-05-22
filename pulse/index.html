@@ -1369,6 +1369,17 @@ feed = session.post(
       const briefHtml = isWhale
         ? ''
         : `<p class="text-sm text-muted leading-relaxed mb-3 break-words">${escapeHtml(e.brief)}</p>`;
+      // Plain-English one-liner generated server-side from active_utility
+      // (Pulse 1.65.0). Render-only, small italic muted text below the
+      // title so non-XRPL-fluent readers can decode the card at a glance.
+      // Absent for signals not yet covered by the server-side template
+      // registry; treat as "no TLDR available" and skip silently.
+      const tldrText = (e.active_utility && typeof e.active_utility.tldr === 'string')
+        ? e.active_utility.tldr
+        : '';
+      const tldrHtml = tldrText
+        ? `<p class="text-xs text-muted/70 italic leading-relaxed mb-2 break-words">${escapeHtml(tldrText)}</p>`
+        : '';
       // NORMAL_ACTIVITY rows are suppressed entirely from the rendered
       // feed - they're sub-$1M anonymous transfers ("network noise" per
       // the tier spec). The data is still queryable via the API.
@@ -1386,6 +1397,7 @@ feed = session.post(
             <a href="${link}" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:text-accent transition leading-snug break-words min-w-0">${escapeHtml(titleText)}</a>
             <span class="text-xs text-muted shrink-0">${escapeHtml(fmtAgo(e.published_at))}</span>
           </div>
+          ${tldrHtml}
           ${briefHtml}
           <div class="flex items-center gap-2 flex-wrap">${tierBadge}${sources}${verifiedPill}${institutionalPill}${utilityPill}${isOnChainOnly ? '' : `<span class="text-xs text-muted">appearance_count: ${e.appearance_count}</span>`}</div>
           ${corrLine}
