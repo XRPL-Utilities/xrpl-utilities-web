@@ -236,6 +236,28 @@
     </div>
   </section>
 
+  <!-- ECOSYSTEM USAGE - institutional onboarding velocity -->
+  <section id="ecosystem-usage">
+    <div class="max-w-4xl mx-auto px-6 pb-10">
+      <div class="stat-tile stat-tile-glow p-5 sm:p-6">
+        <div class="flex items-baseline justify-between gap-3 mb-3">
+          <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Institutional onboarding (30d)</h3>
+          <span id="usage-window" class="stat-tile-sub text-[11px]">&hellip;</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-4">
+          Ecosystem-wide rollup of XRPL Permissioned Domain (XLS-70/80) and Permissioned DEX (XLS-81) activity over the last 30 days. Every credential issued or accepted, every permissioned offer placed, every domain created or modified. As more institutions onboard, the counters grow; this is the live institutional-adoption dashboard.
+        </p>
+        <div id="usage-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <div class="skeleton-bar h-16"></div>
+          <div class="skeleton-bar h-16"></div>
+          <div class="skeleton-bar h-16"></div>
+          <div class="skeleton-bar h-16"></div>
+        </div>
+        <p id="usage-narrative" class="text-[11px] text-muted italic mt-3">&hellip;</p>
+      </div>
+    </div>
+  </section>
+
   <!-- LIVE DIRECTORY -->
   <section id="directory">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
@@ -691,6 +713,10 @@ record = session.post(
         const tr = el('tr', 'hover:bg-ink/40 transition');
 
         const ownerCell = el('td', 'px-3 sm:px-6 py-4 align-top');
+        // Tag the owner cell with data-owner so decorateRowsWithAttribution
+        // can append the auto-walked institutional one-liner after fetch
+        // completes (Trust 2026-37).
+        if (d.owner_address) ownerCell.setAttribute('data-owner', d.owner_address);
         const ownerLabel = (d.owner_label && d.owner_label.name) ? d.owner_label.name : null;
         ownerCell.appendChild(el('div', 'font-semibold text-white text-sm break-words', ownerLabel || shorten(d.owner_address)));
         if (d.owner_label && d.owner_label.domain) {
@@ -828,6 +854,10 @@ record = session.post(
       tbl.appendChild(tbody);
       scroller.appendChild(tbl);
       target.appendChild(scroller);
+      // Async-decorate each owner cell with the auto-walked institutional
+      // one-liner. Runs after the table is in the DOM; if attribution
+      // hasn't been walked yet (404), the row stays unchanged.
+      decorateRowsWithAttribution();
     }
 
     function renderDetail(d) {
@@ -1367,9 +1397,92 @@ record = session.post(
       }
     }
 
+    // -- ECOSYSTEM USAGE (30d) --------------------------------------
+    // Fetches /permissioned-domains/usage-summary (free) and renders the
+    // four headline counters + narrative. Updates the "Institutional
+    // onboarding" tile above the directory.
+    async function loadEcosystemUsage() {
+      const grid = document.getElementById('usage-grid');
+      const win  = document.getElementById('usage-window');
+      const narr = document.getElementById('usage-narrative');
+      try {
+        const r = await fetch(API_BASE + '/permissioned-domains/usage-summary?window_days=30');
+        if (!r.ok) throw new Error('http ' + r.status);
+        const body = await r.json();
+        const eco = body.ecosystem || {};
+        const tiles = [
+          { label: 'Active domains',         value: eco.total_domains ?? 0 },
+          { label: 'Operators',              value: eco.total_operators ?? 0 },
+          { label: 'Credential events (30d)', value: (eco.credentials_issued || 0) + (eco.credentials_accepted || 0) },
+          { label: 'Permissioned offers (30d)', value: (eco.permissioned_offers_created || 0) + (eco.permissioned_offers_cancelled || 0) },
+        ];
+        grid.innerHTML = '';
+        tiles.forEach(t => {
+          const cell = document.createElement('div');
+          cell.className = 'bg-ink border border-border rounded-lg p-3 sm:p-4';
+          const val = document.createElement('div');
+          val.className = 'text-2xl sm:text-3xl font-bold text-white tabular-nums';
+          val.textContent = (t.value || 0).toLocaleString();
+          const lab = document.createElement('div');
+          lab.className = 'text-[10px] uppercase tracking-wider text-muted mt-1';
+          lab.textContent = t.label;
+          cell.appendChild(val); cell.appendChild(lab);
+          grid.appendChild(cell);
+        });
+        win.textContent = 'window: ' + (body.window_days || 30) + 'd';
+        narr.textContent = body.narrative || '';
+      } catch (e) {
+        grid.innerHTML = '<div class="text-xs text-muted col-span-2 sm:col-span-4">Could not load usage data (' + (e && e.message ? e.message : 'fetch error') + ').</div>';
+        narr.textContent = '';
+      }
+    }
+
+    // -- PER-OPERATOR ATTRIBUTION CACHE -----------------------------
+    // Lazily fetches /permissioned-domains/operators/{addr}/attribution
+    // for each owner the directory renders. Result is the auto-walked
+    // institutional context (funder + decoded credential types + IOU
+    // issuer cross-ref + one-line summary). 404 = no walk recorded yet
+    // (e.g. backfill still running); render gracefully degrades.
+    const _attributionCache = new Map();
+    async function getAttribution(ownerAddr) {
+      if (!ownerAddr) return null;
+      if (_attributionCache.has(ownerAddr)) return _attributionCache.get(ownerAddr);
+      const promise = (async () => {
+        try {
+          const r = await fetch(API_BASE + '/permissioned-domains/operators/' + encodeURIComponent(ownerAddr) + '/attribution');
+          if (!r.ok) return null;
+          const body = await r.json();
+          return (body && body.attribution) || null;
+        } catch (e) { return null; }
+      })();
+      _attributionCache.set(ownerAddr, promise);
+      return promise;
+    }
+
+    // Attach the one-line attribution summary to each row's owner cell
+    // after the directory has rendered. Walks the DOM looking for rows
+    // tagged with data-owner=<addr> by the directory renderer; for
+    // rows missing the tag this is a no-op.
+    async function decorateRowsWithAttribution() {
+      const rows = Array.from(document.querySelectorAll('[data-owner]'));
+      await Promise.all(rows.map(async (rowEl) => {
+        const addr = rowEl.getAttribute('data-owner');
+        const attr = await getAttribution(addr);
+        if (!attr || !attr.summary_one_line) return;
+        if (rowEl.querySelector('[data-attribution-line]')) return;  // dedupe
+        const line = document.createElement('div');
+        line.setAttribute('data-attribution-line', '1');
+        line.className = 'text-[11px] text-muted/80 italic mt-2 leading-snug';
+        line.textContent = attr.summary_one_line;
+        rowEl.appendChild(line);
+      }));
+    }
+
     document.getElementById('q-search').addEventListener('input', rerender);
     document.getElementById('q-dedupe').addEventListener('change', rerender);
-    document.getElementById('refresh').addEventListener('click', () => { loadDirectory(); loadJurisdictions(); loadOperators(); });
+    document.getElementById('refresh').addEventListener('click', () => {
+      loadDirectory(); loadJurisdictions(); loadOperators(); loadEcosystemUsage();
+    });
     document.getElementById('dl-json').addEventListener('click', () => {
       if (!_lastResponse) return;
       const blob = new Blob([JSON.stringify(_lastResponse, null, 2)], { type: 'application/json' });
@@ -1383,6 +1496,7 @@ record = session.post(
     loadDirectory();
     loadJurisdictions();
     loadOperators();
+    loadEcosystemUsage();
   </script>
 
 </body>
