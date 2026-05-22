@@ -1601,7 +1601,12 @@ feed = session.post(
       return h + 'h' + (m ? ' ' + m + 'm' : '');
     }
     function _shortAddr(addr) {
-      if (!addr || typeof addr !== 'string' || addr.length < 10) return '';
+      if (!addr || typeof addr !== 'string') return '';
+      // For addresses shorter than the standard XRPL r-prefix length,
+      // return the full string instead of an empty placeholder - a
+      // malformed-but-present address is more useful to surface than
+      // a blank card title.
+      if (addr.length < 10) return addr;
       return addr.slice(0, 8) + '…';
     }
     // Operator-curated watchlist labels can be verbose (e.g. the
@@ -1657,7 +1662,7 @@ feed = session.post(
             const cpLabel = _truncLabel(cpLabelRaw, 60);
             const role = (c.roles || []).join('/') || '?';
             const usdSub = c.usd_total && c.usd_total > 0 ? ' · ' + _fmtUsdShort(c.usd_total) : '';
-            return `<div class="text-[11px] text-muted leading-snug"><span class="text-white" title="${escapeHtml(cpFull)}">${escapeHtml(cpLabel)}</span> <span class="opacity-70">(${escapeHtml(role)} · ${c.count}x${usdSub})</span></div>`;
+            return `<div class="text-[11px] text-muted leading-snug"><span class="text-white" title="${escapeHtml(cpFull)}">${escapeHtml(cpLabel)}</span> <span class="opacity-70">(${escapeHtml(role)} · ${escapeHtml(String(c.count || 0))}x${usdSub})</span></div>`;
           }).join('');
           // Asset summary.
           const assets = (r.assets || []).slice(0, 3).map(a =>
@@ -1681,7 +1686,7 @@ feed = session.post(
               <div class="flex flex-wrap gap-1.5 mb-3">${kinds}</div>
               ${cps ? `<div class="border-t border-border pt-2 mb-2 space-y-1"><div class="text-[10px] uppercase tracking-wider text-muted/60 mb-1">Top counterparties</div>${cps}</div>` : ''}
               <div class="text-[10px] text-muted/70 font-mono flex items-center justify-between">
-                <span>${(r.event_count || 0)} events &middot; ${escapeHtml(span)} span</span>
+                <span>${escapeHtml(String(r.event_count || 0))} events &middot; ${escapeHtml(span)} span</span>
                 ${xrpscanUrl ? `<a href="${xrpscanUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition">xrpscan &rarr;</a>` : ''}
               </div>
             </div>
