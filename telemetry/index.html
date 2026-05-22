@@ -779,7 +779,7 @@ payload = requests.get(
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Operational SLA</h2>
       <h3 class="text-3xl font-bold mb-2">30-day uptime, measured</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        Live aggregate from <code class="font-mono text-white">/sla?days=30</code>. The recorder probes our upstream dependencies (XRPL RPC + x402 facilitator) every 5 minutes and counts each sample as healthy only if both succeed. Same liveness assertion <code class="font-mono text-white">/healthz</code> returns. No external monitoring; data is what we see from inside the service.
+        Live aggregate from <code class="font-mono text-white">/sla?days=30</code>. The recorder probes our upstream dependencies on a recurring cadence and counts each sample as healthy only if all succeed. Same liveness assertion <code class="font-mono text-white">/healthz</code> returns. No external monitoring; data is what we see from inside the service.
       </p>
 
       <div class="grid sm:grid-cols-3 gap-4">

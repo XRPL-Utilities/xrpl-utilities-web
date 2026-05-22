@@ -338,7 +338,7 @@
         <div class="mt-10">
           <h3 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3 text-center">RWA supply tracker</h3>
           <p class="text-sm text-muted mb-4 leading-relaxed text-center max-w-2xl mx-auto">
-            On-chain RLUSD outstanding on the XRP Ledger, refreshed every minute. The
+            On-chain RLUSD outstanding on the XRP Ledger, continuously refreshed. The
             <span class="gloss" data-term="obligations-delta">today's change</span> badge appears when net XRPL supply has moved since yesterday's UTC close: green up-arrow for mints, red down-arrow for redemptions.
           </p>
           <div class="stat-tile stat-tile-glow p-5 max-w-xl mx-auto">
@@ -596,6 +596,9 @@
             <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json</a>
           </div>
           <p class="text-xs text-muted leading-relaxed mt-6">
+            <span class="text-white">Free read-only views:</span> <code class="font-mono text-white">GET /stats/whale-flow-24h</code>, <code class="font-mono text-white">/stats/whale-flow-history</code>, <code class="font-mono text-white">/stats/rwa-summary</code>, and <code class="font-mono text-white">/stats/recent-choreographies</code> (newest cross-signal windows) return pre-aggregated snapshots without a payment header. Use them for dashboards; use the paid endpoints for raw event streams.
+          </p>
+          <p class="text-xs text-muted leading-relaxed mt-6">
             <span class="text-white">Or skip the integration:</span> call <code class="font-mono text-white">xrpl_pulse_recent_events</code> from any
             <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client (Claude Desktop etc.) via
             <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
@@ -632,14 +635,14 @@ feed = session.post(
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-2 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">events[]</code>: normalized records, newest-first; mixes news, whale, and permissioned-domain lifecycle in one stream</li>
+        <li><code class="font-mono text-white">events[]</code>: normalized records, newest-first; mixes news + on-chain activity (whale, permissioned-domain lifecycle, focus-watch, relay-burst, RWA obligations, cross-signal choreographies, institutional dispersion) in one stream</li>
         <li><code class="font-mono text-white">title</code>, <code class="font-mono text-white">primary_url</code>, <code class="font-mono text-white">brief</code>, <code class="font-mono text-white">published_at</code> (UNIX seconds)</li>
-        <li><code class="font-mono text-white">source_appearances[]</code>: which feed produced the event; a news source (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>), <code class="font-mono text-white">whale_xrpl</code>, or <code class="font-mono text-white">permissioned_domain_lifecycle</code></li>
-        <li><code class="font-mono text-white">appearance_count</code> + <code class="font-mono text-white">cross_verified</code>: number of independent sources covering the same story; flag set when 2+ within 48h. Whale and permissioned events are single-source by design.</li>
+        <li><code class="font-mono text-white">source_appearances[]</code>: which feed produced the event. News sources (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>) plus on-chain sources: <code class="font-mono text-white">whale_xrpl</code>, <code class="font-mono text-white">permissioned_domain_lifecycle</code>, <code class="font-mono text-white">focus_watch</code>, <code class="font-mono text-white">relay_burst</code>, <code class="font-mono text-white">rwa_obligations_delta</code>, <code class="font-mono text-white">rwa_issuer_flow</code>, <code class="font-mono text-white">sentinel_signal</code>, <code class="font-mono text-white">choreography_watcher</code>, <code class="font-mono text-white">institutional_dispersion</code></li>
+        <li><code class="font-mono text-white">appearance_count</code> + <code class="font-mono text-white">cross_verified</code>: number of independent sources covering the same story; flag set when 2+ within the dedupe window. On-chain events are single-source by design.</li>
         <li><code class="font-mono text-white">correlation</code> (news only): XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim.</li>
-        <li><code class="font-mono text-white">active_utility</code>: signal payload, shape varies by source; news carries <code class="font-mono text-white">{active, signals[]}</code>; whale rows carry transfer details + Sentinel cross-ref; permissioned rows carry tx + domain + credential or XLS-81 trade economics. See <code class="font-mono text-white">/schema</code> for the full per-source field list.</li>
+        <li><code class="font-mono text-white">active_utility</code>: signal payload, shape varies by source. News carries <code class="font-mono text-white">{active, signals[]}</code>; on-chain rows carry a top-level <code class="font-mono text-white">signal</code> field identifying the kind (e.g. <code class="font-mono text-white">whale_transfer</code>, <code class="font-mono text-white">focus_outflow</code>, <code class="font-mono text-white">relay_burst_detected</code>, <code class="font-mono text-white">rwa_obligations_spike</code>/<code class="font-mono text-white">drop</code>, <code class="font-mono text-white">institutional_choreography_detected</code>, <code class="font-mono text-white">institutional_dispersion_detected</code>) with per-signal fields. Most signal kinds also carry an optional <code class="font-mono text-white">tldr</code> string (server-generated plain-English summary). See <code class="font-mono text-white">/schema</code> for the full per-signal field list.</li>
         <li><code class="font-mono text-white">target_addresses[]</code>, <code class="font-mono text-white">sentinel_context</code>: XRPL addresses attached to the event + best-effort XR-Sentinel cross-reference</li>
-        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $100k so the $100k-$1M attribution band is visible; pass 0 to see the full $50k+ stream).</li>
+        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">kind</code> (<code class="font-mono text-white">news</code> | <code class="font-mono text-white">activity</code> filter), <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $100k so the $100k-$1M attribution band is visible; pass 0 to see the full $50k+ stream).</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
         Full field-level details at <a href="https://pulse.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
@@ -1732,7 +1735,7 @@ feed = session.post(
         listId: 'news-list',
         countId: 'news-count',
         navId: 'news-nav',
-        emptyMsg: 'No news events stored yet. Ingestion runs every 15 minutes; check back shortly.',
+        emptyMsg: 'No news events stored yet. Ingestion runs on a recurring cadence; check back shortly.',
       },
       activity: {
         kind: 'activity',
