@@ -1600,6 +1600,16 @@ feed = session.post(
       if (!addr || typeof addr !== 'string' || addr.length < 10) return '';
       return addr.slice(0, 8) + '…';
     }
+    // Operator-curated watchlist labels can be verbose (e.g. the
+    // "Cross-cluster XRP holder" label is ~370 chars). Truncate for
+    // display; full text goes in the title attribute so hover reveals it.
+    function _truncLabel(label, max) {
+      if (!label) return '';
+      max = max || 70;
+      const s = String(label);
+      if (s.length <= max) return s;
+      return s.slice(0, max - 1).trimEnd() + '…';
+    }
     async function loadChoreographies() {
       const grid = document.getElementById('choreo-grid');
       const countEl = document.getElementById('choreo-count');
@@ -1617,8 +1627,11 @@ feed = session.post(
         }
         emptyEl.classList.add('hidden');
         grid.innerHTML = rows.map(r => {
+          // Truncate long watchlist labels for display; full text in title.
+          const hubFull = r.hub_label || '';
+          const hubTrunc = _truncLabel(hubFull, 70);
           const hub = r.hub_label
-            ? `<span class="text-white">${escapeHtml(r.hub_label)}</span>`
+            ? `<span class="text-white" title="${escapeHtml(hubFull)}">${escapeHtml(hubTrunc)}</span>`
             : `<span class="font-mono">${escapeHtml(_shortAddr(r.hub_wallet))}</span>`;
           // Use human-readable signal labels from the server (1.69.0+).
           // Falls back to the raw kind name if the server didn't translate.
@@ -1635,17 +1648,23 @@ feed = session.post(
           // Top counterparties (server-extracted from constituent events).
           // Each carries label + count + usd_total + roles.
           const cps = (r.counterparties || []).slice(0, 3).map(c => {
-            const cpLabel = c.label || (c.address ? c.address.slice(0, 8) + '…' : '?');
+            const cpFull = c.label || (c.address ? c.address : '?');
+            const cpLabelRaw = c.label || (c.address ? c.address.slice(0, 8) + '…' : '?');
+            const cpLabel = _truncLabel(cpLabelRaw, 60);
             const role = (c.roles || []).join('/') || '?';
             const usdSub = c.usd_total && c.usd_total > 0 ? ' · ' + _fmtUsdShort(c.usd_total) : '';
-            return `<div class="text-[11px] text-muted leading-snug"><span class="text-white">${escapeHtml(cpLabel)}</span> <span class="opacity-70">(${escapeHtml(role)} · ${c.count}x${usdSub})</span></div>`;
+            return `<div class="text-[11px] text-muted leading-snug"><span class="text-white" title="${escapeHtml(cpFull)}">${escapeHtml(cpLabel)}</span> <span class="opacity-70">(${escapeHtml(role)} · ${c.count}x${usdSub})</span></div>`;
           }).join('');
           // Asset summary.
           const assets = (r.assets || []).slice(0, 3).map(a =>
             `<span class="text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/5 font-mono">${escapeHtml(a.currency)}</span>`
           ).join(' ');
           // Prefer server-side narrative (1.69.0+); fall back to legacy context.
-          const narrative = r.narrative || r.context || '';
+          // Narrative may embed a verbose hub label (the Cross-cluster XRP
+          // holder one is ~370 chars), so truncate the rendered version and
+          // keep the full text in title attr.
+          const narrativeFull = r.narrative || r.context || '';
+          const narrative = _truncLabel(narrativeFull, 320);
           return `
             <div class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition">
               <div class="flex items-baseline justify-between gap-3 mb-2">
@@ -1653,7 +1672,7 @@ feed = session.post(
                 ${usd ? `<div class="text-lg font-bold text-emerald-300 tabular-nums shrink-0">${escapeHtml(usd)}</div>` : ''}
               </div>
               <div class="text-[11px] text-muted font-mono mb-3 break-all">${r.hub_wallet ? escapeHtml(r.hub_wallet) : ''}</div>
-              <p class="text-xs text-muted leading-relaxed mb-3">${escapeHtml(narrative)}</p>
+              <p class="text-xs text-muted leading-relaxed mb-3" title="${escapeHtml(narrativeFull)}">${escapeHtml(narrative)}</p>
               ${assets ? `<div class="flex flex-wrap gap-1.5 mb-2">${assets}</div>` : ''}
               <div class="flex flex-wrap gap-1.5 mb-3">${kinds}</div>
               ${cps ? `<div class="border-t border-border pt-2 mb-2 space-y-1"><div class="text-[10px] uppercase tracking-wider text-muted/60 mb-1">Top counterparties</div>${cps}</div>` : ''}
