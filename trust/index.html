@@ -743,18 +743,20 @@ record = session.post(
         const did = d.owner_did;
         const tier = d.identity_tier || 'anonymous';
         const TIER_BADGES = {
-          institutional:     { label: 'INSTITUTIONAL',     cls: 'border-emerald-500/60 text-emerald-300' },
-          named_entity:      { label: 'NAMED ENTITY',       cls: 'border-accent/40 text-accent' },
-          funder_attributed: { label: 'FUNDER ATTRIBUTED',  cls: 'border-sky-500/50 text-sky-300' },
-          did_only:          { label: 'DID-ONLY',           cls: 'border-amber-500/40 text-amber-300' },
-          anonymous:         { label: 'ANONYMOUS',          cls: 'border-border text-muted' },
+          institutional:         { label: 'INSTITUTIONAL',         cls: 'border-emerald-500/60 text-emerald-300' },
+          named_entity:          { label: 'NAMED ENTITY',           cls: 'border-accent/40 text-accent' },
+          funder_attributed:     { label: 'FUNDER ATTRIBUTED',      cls: 'border-sky-500/50 text-sky-300' },
+          credential_attributed: { label: 'CREDENTIAL ATTRIBUTED',  cls: 'border-teal-500/50 text-teal-300' },
+          did_only:              { label: 'DID-ONLY',               cls: 'border-amber-500/40 text-amber-300' },
+          anonymous:             { label: 'ANONYMOUS',              cls: 'border-border text-muted' },
         };
         const tierMeta = TIER_BADGES[tier] || TIER_BADGES.anonymous;
         const tierBadge = el('div', 'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border ' + tierMeta.cls + ' text-[10px] uppercase tracking-wider font-semibold');
         tierBadge.textContent = tierMeta.label;
         const tierTooltip = [];
         if (tier === 'institutional') tierTooltip.push('TOML resolved · org_name + principals + org_url present');
-        else if (tier === 'funder_attributed') tierTooltip.push('No TOML/DID, but auto-walker attributed via parent funder + decoded credential types (high or medium confidence)');
+        else if (tier === 'funder_attributed') tierTooltip.push('No TOML/DID, but auto-walker attributed via parent funder XRPScan well-known label');
+        else if (tier === 'credential_attributed') tierTooltip.push('No TOML/DID/funder label, but accepted_credentials nominates a verified XRPScan well-known issuer');
         else if (tier === 'named_entity') tierTooltip.push('TOML resolved · self-attested org_name only');
         else if (tier === 'did_only') tierTooltip.push('On-chain DID record; no parseable TOML (e.g. IPFS DID Document)');
         else tierTooltip.push('No on-chain DID record');
