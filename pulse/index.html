@@ -925,6 +925,16 @@ feed = session.post(
     _hydrateTrackedIssuers();
 
     function renderEvent(e) {
+      // Choreography events already get their own dedicated dashboard
+      // section above the live feed (Institutional choreographies 24h),
+      // sorted by attributable USD with the full context line. Showing
+      // them ALSO in the chronological feed duplicates content without
+      // adding signal. Filter at the renderer so MCP/agent consumers
+      // querying /events/recent server-side still see them, but the
+      // human-facing live feed stays focused on per-event chronology.
+      if ((e.source_appearances || []).includes('choreography_watcher')) {
+        return '';
+      }
       // Whale events get the tier badge as their identity marker; the
       // technical 'whale_xrpl' source name on a sub-whale ($50k-$1M)
       // tier card reads as misleading, so suppress source pills entirely
