@@ -463,6 +463,34 @@
     </div>
   </section>
 
+  <!-- INSTITUTIONAL CHOREOGRAPHIES (24h) — top cross-signal clusters -->
+  <section id="choreographies" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-3">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Institutional choreographies (24h)</h2>
+          <span id="choreo-count" class="text-[11px] text-muted font-mono">&hellip;</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-5 max-w-3xl">
+          Wallets touched by multiple distinct watcher signal types in a tight window, OR wallets with two direct signals adjacent to a wallet-anonymized macro signal (relay-burst chain or RWA obligations change). Surfaces the cross-signal coordination that any single watcher would only show in part: a CEX-funded operator routing through a known consolidator while a parallel burn fires, that kind of thing. Sorted by attributable USD descending.
+        </p>
+        <div id="choreo-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-2/3 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/2 mb-2"></div>
+            <div class="skeleton-bar h-3 w-3/4"></div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg p-4">
+            <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/2 mb-2"></div>
+            <div class="skeleton-bar h-3 w-2/3"></div>
+          </div>
+        </div>
+        <p id="choreo-empty" class="text-[11px] text-muted mt-3 hidden">No institutional choreographies in the last 24 hours. The cross-signal correlator surfaces a cluster when a single wallet is touched by three or more distinct signal types within an hour; sparse cross-coordination produces no entries.</p>
+      </div>
+    </div>
+  </section>
+
   <section id="feed">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
@@ -1538,6 +1566,80 @@ feed = session.post(
       }
     }
     loadStats();
+
+    // -- INSTITUTIONAL CHOREOGRAPHIES (24h) ---------------------------
+    // Fetches /stats/recent-choreographies (free) and renders the top
+    // clusters as cards. Each cluster shows hub label/address, the
+    // distinct signal kinds as badges, the attributable USD figure,
+    // and the server-side context string.
+    function _fmtUsdShort(v) {
+      if (!v || v <= 0) return '';
+      if (v >= 1_000_000_000) return '$' + (v / 1_000_000_000).toFixed(1) + 'B';
+      if (v >= 1_000_000) return '$' + (v / 1_000_000).toFixed(1) + 'M';
+      if (v >= 1_000) return '$' + (v / 1_000).toFixed(0) + 'K';
+      return '$' + v.toFixed(0);
+    }
+    function _fmtSpan(seconds) {
+      if (!seconds || seconds <= 0) return '';
+      if (seconds < 3600) return Math.round(seconds / 60) + 'm';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.round((seconds % 3600) / 60);
+      return h + 'h' + (m ? ' ' + m + 'm' : '');
+    }
+    function _shortAddr(addr) {
+      if (!addr || typeof addr !== 'string' || addr.length < 10) return '';
+      return addr.slice(0, 8) + '…';
+    }
+    async function loadChoreographies() {
+      const grid = document.getElementById('choreo-grid');
+      const countEl = document.getElementById('choreo-count');
+      const emptyEl = document.getElementById('choreo-empty');
+      try {
+        const r = await fetch(API_BASE + '/stats/recent-choreographies?window_hours=24&limit=10');
+        if (!r.ok) throw new Error('http ' + r.status);
+        const body = await r.json();
+        const rows = body.choreographies || [];
+        countEl.textContent = (rows.length || 0) + ' cluster' + (rows.length === 1 ? '' : 's');
+        if (rows.length === 0) {
+          grid.innerHTML = '';
+          emptyEl.classList.remove('hidden');
+          return;
+        }
+        emptyEl.classList.add('hidden');
+        grid.innerHTML = rows.map(r => {
+          const hub = r.hub_label
+            ? `<span class="text-white">${escapeHtml(r.hub_label)}</span>`
+            : `<span class="font-mono">${escapeHtml(_shortAddr(r.hub_wallet))}</span>`;
+          const kinds = (r.signal_kinds || []).map(k =>
+            `<span class="text-[10px] px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-300 bg-sky-500/5 font-mono">${escapeHtml(k)}</span>`
+          ).join(' ');
+          const usd = r.total_usd_estimate ? _fmtUsdShort(r.total_usd_estimate) : '';
+          const span = _fmtSpan(r.span_seconds);
+          const xrpscanUrl = r.hub_wallet
+            ? `https://xrpscan.com/account/${escapeHtml(r.hub_wallet)}`
+            : null;
+          return `
+            <div class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition">
+              <div class="flex items-baseline justify-between gap-3 mb-2">
+                <div class="text-sm font-semibold text-white break-words">${hub}</div>
+                ${usd ? `<div class="text-lg font-bold text-emerald-300 tabular-nums shrink-0">${escapeHtml(usd)}</div>` : ''}
+              </div>
+              <div class="text-[11px] text-muted font-mono mb-3 break-all">${r.hub_wallet ? escapeHtml(r.hub_wallet) : ''}</div>
+              <div class="flex flex-wrap gap-1.5 mb-3">${kinds}</div>
+              <p class="text-xs text-muted italic leading-relaxed mb-2">${escapeHtml(r.context || '')}</p>
+              <div class="text-[10px] text-muted/70 font-mono flex items-center justify-between">
+                <span>${(r.event_count || 0)} events &middot; ${escapeHtml(span)} span</span>
+                ${xrpscanUrl ? `<a href="${xrpscanUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition">xrpscan &rarr;</a>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        grid.innerHTML = '<div class="text-xs text-muted col-span-2">Could not load choreographies (' + (e && e.message ? escapeHtml(e.message) : 'fetch error') + ').</div>';
+        countEl.textContent = '';
+      }
+    }
+    loadChoreographies();
 
     // Show-more pagination. Each column shows INITIAL_VISIBLE events on
     // load and reveals REVEAL_BATCH more on each click. Behind the button,
