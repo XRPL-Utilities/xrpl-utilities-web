@@ -1620,14 +1620,32 @@ feed = session.post(
           const hub = r.hub_label
             ? `<span class="text-white">${escapeHtml(r.hub_label)}</span>`
             : `<span class="font-mono">${escapeHtml(_shortAddr(r.hub_wallet))}</span>`;
-          const kinds = (r.signal_kinds || []).map(k =>
-            `<span class="text-[10px] px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-300 bg-sky-500/5 font-mono">${escapeHtml(k)}</span>`
-          ).join(' ');
+          // Use human-readable signal labels from the server (1.69.0+).
+          // Falls back to the raw kind name if the server didn't translate.
+          const labelMap = r.signal_labels || {};
+          const kinds = (r.signal_kinds || []).map(k => {
+            const human = labelMap[k] || k.replace(/_/g, ' ');
+            return `<span class="text-[10px] px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-300 bg-sky-500/5" title="${escapeHtml(k)}">${escapeHtml(human)}</span>`;
+          }).join(' ');
           const usd = r.total_usd_estimate ? _fmtUsdShort(r.total_usd_estimate) : '';
           const span = _fmtSpan(r.span_seconds);
           const xrpscanUrl = r.hub_wallet
             ? `https://xrpscan.com/account/${escapeHtml(r.hub_wallet)}`
             : null;
+          // Top counterparties (server-extracted from constituent events).
+          // Each carries label + count + usd_total + roles.
+          const cps = (r.counterparties || []).slice(0, 3).map(c => {
+            const cpLabel = c.label || (c.address ? c.address.slice(0, 8) + '…' : '?');
+            const role = (c.roles || []).join('/') || '?';
+            const usdSub = c.usd_total && c.usd_total > 0 ? ' · ' + _fmtUsdShort(c.usd_total) : '';
+            return `<div class="text-[11px] text-muted leading-snug"><span class="text-white">${escapeHtml(cpLabel)}</span> <span class="opacity-70">(${escapeHtml(role)} · ${c.count}x${usdSub})</span></div>`;
+          }).join('');
+          // Asset summary.
+          const assets = (r.assets || []).slice(0, 3).map(a =>
+            `<span class="text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/5 font-mono">${escapeHtml(a.currency)}</span>`
+          ).join(' ');
+          // Prefer server-side narrative (1.69.0+); fall back to legacy context.
+          const narrative = r.narrative || r.context || '';
           return `
             <div class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition">
               <div class="flex items-baseline justify-between gap-3 mb-2">
@@ -1635,8 +1653,10 @@ feed = session.post(
                 ${usd ? `<div class="text-lg font-bold text-emerald-300 tabular-nums shrink-0">${escapeHtml(usd)}</div>` : ''}
               </div>
               <div class="text-[11px] text-muted font-mono mb-3 break-all">${r.hub_wallet ? escapeHtml(r.hub_wallet) : ''}</div>
+              <p class="text-xs text-muted leading-relaxed mb-3">${escapeHtml(narrative)}</p>
+              ${assets ? `<div class="flex flex-wrap gap-1.5 mb-2">${assets}</div>` : ''}
               <div class="flex flex-wrap gap-1.5 mb-3">${kinds}</div>
-              <p class="text-xs text-muted italic leading-relaxed mb-2">${escapeHtml(r.context || '')}</p>
+              ${cps ? `<div class="border-t border-border pt-2 mb-2 space-y-1"><div class="text-[10px] uppercase tracking-wider text-muted/60 mb-1">Top counterparties</div>${cps}</div>` : ''}
               <div class="text-[10px] text-muted/70 font-mono flex items-center justify-between">
                 <span>${(r.event_count || 0)} events &middot; ${escapeHtml(span)} span</span>
                 ${xrpscanUrl ? `<a href="${xrpscanUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition">xrpscan &rarr;</a>` : ''}
