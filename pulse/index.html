@@ -598,11 +598,33 @@
           <p class="text-xs text-muted leading-relaxed mt-6">
             <span class="text-white">Free read-only views:</span> <code class="font-mono text-white">GET /stats/whale-flow-24h</code>, <code class="font-mono text-white">/stats/whale-flow-history</code>, <code class="font-mono text-white">/stats/rwa-summary</code>, and <code class="font-mono text-white">/stats/recent-choreographies</code> (newest cross-signal windows) return pre-aggregated snapshots without a payment header. Use them for dashboards; use the paid endpoints for raw event streams.
           </p>
-          <p class="text-xs text-muted leading-relaxed mt-6">
-            <span class="text-white">Or skip the integration:</span> call <code class="font-mono text-white">xrpl_pulse_recent_events</code> from any
+          <div class="mt-6 grid sm:grid-cols-2 gap-3">
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-green-400 font-semibold mb-2">Free MCP tools (7)</div>
+              <ul class="text-xs text-muted leading-relaxed space-y-1">
+                <li><code class="font-mono text-white">xrpl_pulse_network_stats</code></li>
+                <li><code class="font-mono text-white">xrpl_pulse_whale_flow_24h</code></li>
+                <li><code class="font-mono text-white">xrpl_pulse_rwa_summary</code></li>
+                <li><code class="font-mono text-white">xrpl_pulse_exchange_flow_delta</code></li>
+                <li><code class="font-mono text-white">xrpl_pulse_ripple_counterparties</code></li>
+                <li><code class="font-mono text-white">xrpl_pulse_ripple_topology</code></li>
+                <li><code class="font-mono text-white">xrpl_pulse_cex_attribution</code></li>
+              </ul>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Paid MCP tools (3)</div>
+              <ul class="text-xs text-muted leading-relaxed space-y-1">
+                <li><code class="font-mono text-white">xrpl_pulse_recent_events</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_pulse_events_by_address</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_pulse_stream_purchase</code> &middot; $0.50 to $7.50</li>
+              </ul>
+            </div>
+          </div>
+          <p class="text-xs text-muted leading-relaxed mt-4">
+            <span class="text-white">Or skip the integration:</span> call any tool above from an
             <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client (Claude Desktop etc.) via
             <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
-            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Same x402 model, just wrapped as MCP tools.
+            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Free tools work without a payment header; paid tools use the same x402 model wrapped as MCP arguments.
           </p>
         </div>
         <div class="min-w-0">

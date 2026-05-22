@@ -614,11 +614,30 @@
             <a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
             <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
           </div>
-          <p class="text-xs text-muted leading-relaxed mt-6">
-            <span class="text-white">Or skip the integration:</span> call <code class="font-mono text-white">xrpl_telemetry_snapshot</code> (or the async <code class="font-mono text-white">xrpl_telemetry_get_quote</code> / <code class="font-mono text-white">_status</code> / <code class="font-mono text-white">_results</code> trio) from any
+          <div class="mt-6 grid sm:grid-cols-2 gap-3">
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-green-400 font-semibold mb-2">Free MCP tools (3)</div>
+              <ul class="text-xs text-muted leading-relaxed space-y-1">
+                <li><code class="font-mono text-white">xrpl_telemetry_settlement_totals</code></li>
+                <li><code class="font-mono text-white">xrpl_telemetry_settlement_series</code></li>
+                <li><code class="font-mono text-white">xrpl_telemetry_dex_pair_volume</code></li>
+              </ul>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Paid MCP tools (4)</div>
+              <ul class="text-xs text-muted leading-relaxed space-y-1">
+                <li><code class="font-mono text-white">xrpl_telemetry_snapshot</code> &middot; $0.10 (inline x402)</li>
+                <li><code class="font-mono text-white">xrpl_telemetry_get_quote</code> &middot; $0.10 (invoice flow step 1)</li>
+                <li><code class="font-mono text-white">xrpl_telemetry_get_status</code> &middot; no extra (step 2)</li>
+                <li><code class="font-mono text-white">xrpl_telemetry_get_results</code> &middot; no extra (step 3)</li>
+              </ul>
+            </div>
+          </div>
+          <p class="text-xs text-muted leading-relaxed mt-4">
+            <span class="text-white">Or skip the integration:</span> call any tool above from an
             <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client (Claude Desktop etc.) via
             <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
-            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Same x402 model, just wrapped as MCP tools.
+            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Free tools work without a payment header; paid tools use the same x402 model wrapped as MCP arguments.
           </p>
         </div>
         <div class="min-w-0">

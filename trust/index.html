@@ -362,11 +362,32 @@
           <p class="text-xs text-muted leading-relaxed mt-6">
             <span class="text-white">Free read-only views:</span> <code class="font-mono text-white">GET /permissioned-domains/operators/index</code> (paginated operator list), <code class="font-mono text-white">/permissioned-domains/operators/{addr}/attribution</code> (auto-walker output: funder, gated assets, retail signals, narrative), and <code class="font-mono text-white">/permissioned-domains/usage-summary</code> (ecosystem onboarding stats) all return without a payment header. Use them for dashboards; <code class="font-mono text-white">/scan</code> stays paid for full per-domain drill-down.
           </p>
-          <p class="text-xs text-muted leading-relaxed mt-6">
-            <span class="text-white">Or skip the integration:</span> call <code class="font-mono text-white">xrpl_trust_list_domains</code>, <code class="font-mono text-white">xrpl_trust_get_domain</code>, <code class="font-mono text-white">xrpl_trust_credential_issuers</code>, <code class="font-mono text-white">xrpl_trust_recent_events</code>, <code class="font-mono text-white">xrpl_trust_operator_attribution</code>, or <code class="font-mono text-white">xrpl_trust_usage_summary</code> from any
+          <div class="mt-6 grid sm:grid-cols-2 gap-3">
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-green-400 font-semibold mb-2">Free MCP tools (5)</div>
+              <ul class="text-xs text-muted leading-relaxed space-y-1">
+                <li><code class="font-mono text-white">xrpl_trust_list_operators_index</code></li>
+                <li><code class="font-mono text-white">xrpl_trust_operator_drilldown</code></li>
+                <li><code class="font-mono text-white">xrpl_trust_operator_attribution</code></li>
+                <li><code class="font-mono text-white">xrpl_trust_usage_summary</code></li>
+                <li><code class="font-mono text-white">xrpl_trust_jurisdictions</code></li>
+              </ul>
+            </div>
+            <div class="bg-ink border border-border rounded-lg p-4">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Paid MCP tools (4)</div>
+              <ul class="text-xs text-muted leading-relaxed space-y-1">
+                <li><code class="font-mono text-white">xrpl_trust_list_domains</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_trust_get_domain</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_trust_credential_issuers</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_trust_recent_events</code> &middot; $0.10</li>
+              </ul>
+            </div>
+          </div>
+          <p class="text-xs text-muted leading-relaxed mt-4">
+            <span class="text-white">Or skip the integration:</span> call any tool above from an
             <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client (Claude Desktop etc.) via
             <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
-            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Same x402 model, just wrapped as MCP tools.
+            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Free tools work without a payment header; paid tools use the same x402 model wrapped as MCP arguments.
           </p>
         </div>
         <div class="min-w-0">
