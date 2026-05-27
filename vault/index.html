@@ -835,6 +835,7 @@
         applyTopMoversWindow();
         renderIssuerTiles(body.issuers || []);
         renderCandidates(body.candidates || []);
+        overlayTokenHealth();
       } catch (err) {
         // Best-effort. Dashboard skeletons stay visible if Pulse is unreachable.
       }
@@ -1019,7 +1020,7 @@
         const trustlines = (i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '…';
         const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(i.wallet || '')}`;
         return `
-          <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="issuer-tile bg-ink border border-border rounded-xl p-5 block">
+          <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="issuer-tile bg-ink border border-border rounded-xl p-5 block" data-wallet="${escapeHtml(i.wallet || '')}">
             <div class="flex items-start justify-between gap-2 mb-3">
               <div class="min-w-0">
                 <div class="font-semibold text-white truncate">${escapeHtml(i.logical_label || i.label || '')}</div>
@@ -1051,6 +1052,52 @@
           </a>
         `;
       }).join('');
+    }
+
+    const _HEALTH_COLORS = { green: 'bg-green-500', yellow: 'bg-yellow-500', red: 'bg-red-500' };
+    const _HEALTH_LABELS = {
+      sovereignty: 'Sov',
+      distribution: 'Dist',
+      liquidity: 'Liq',
+      transparency: 'Trans',
+      demand_pipeline: 'Demand',
+    };
+
+    async function overlayTokenHealth() {
+      try {
+        const r = await fetch(`${API_BASE}/stats/token-health`);
+        if (!r.ok) return;
+        const body = await r.json();
+        if (!body || body.available === false) return;
+        const byIssuer = {};
+        for (const t of (body.tokens || [])) {
+          if (t.issuer) byIssuer[t.issuer] = t;
+        }
+        const tiles = document.querySelectorAll('.issuer-tile[data-wallet]');
+        for (const tile of tiles) {
+          const wallet = tile.getAttribute('data-wallet');
+          const token = byIssuer[wallet];
+          if (!token || !token.health) continue;
+          const h = token.health;
+          const dots = Object.entries(_HEALTH_LABELS).map(([dim, label]) => {
+            const d = h[dim] || {};
+            const color = _HEALTH_COLORS[d.rating] || 'bg-zinc-600';
+            return `<span class="inline-flex items-center gap-1 text-[9px] text-muted" title="${label}: ${d.score}/10 (${d.rating})"><span class="inline-block w-1.5 h-1.5 rounded-full ${color}"></span>${label}</span>`;
+          }).join('');
+          const totalColor = _HEALTH_COLORS[h.overall_rating] || 'bg-zinc-600';
+          const badge = `<div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border">`
+            + `<span class="inline-flex items-center gap-1 text-[10px] font-semibold text-white" title="Health score ${h.total}/50"><span class="inline-block w-2 h-2 rounded-full ${totalColor}"></span>${h.total}/50</span>`
+            + dots + `</div>`;
+          const caveatEl = tile.querySelector('.border-t.border-border.pt-3');
+          if (caveatEl) {
+            caveatEl.insertAdjacentHTML('beforebegin', badge);
+          } else {
+            tile.insertAdjacentHTML('beforeend', badge);
+          }
+        }
+      } catch {
+        // Best-effort overlay; tiles render fine without it.
+      }
     }
 
     // Headless meme/RWA classifier. Mirrors XR-Vault's _classify_candidate.
