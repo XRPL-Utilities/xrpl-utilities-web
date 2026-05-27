@@ -171,7 +171,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">What an XRP ETF is</h3>
           <p class="text-sm text-muted leading-relaxed">
-            A spot XRP ETF holds XRP off-chain in institutional custody (Coinbase Custody, BitGo, Anchorage) and issues exchange-traded shares against it. Buying a share is buying a claim on a slice of that custodied XRP, without ever touching a wallet or a private key. The custody is pooled across all investors in the fund, so individual holders cannot be attributed to specific on-chain wallets.
+            A spot XRP ETF holds XRP off-chain in institutional custody and issues exchange-traded shares against it. Buying a share is buying a claim on a slice of that custodied XRP, without ever touching a wallet or a private key. The custody is pooled across all investors in the fund, so individual holders cannot be attributed to specific on-chain wallets.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -280,7 +280,7 @@
         </div>
 
         <div id="flows-empty" class="hidden text-xs text-muted mt-4">
-          No accrued data yet. The series starts from the first hourly scrape after each deploy.
+          No accrued data yet. The series starts after each deploy.
         </div>
       </div>
     </div>
@@ -372,7 +372,7 @@
         <div class="bg-panel border border-border rounded-xl p-6">
           <h4 class="text-white font-semibold mb-2">Off-chain AUM</h4>
           <p class="text-muted text-sm leading-relaxed">
-            ETF AUM is scraped daily from each issuer's public dashboard after the US market close. <span class="text-white">Spot tier</span> funds hold XRP directly via institutional custody (Coinbase Custody, BitGo, Anchorage). <span class="text-white">Indirect-basket tier</span> funds hold XRP alongside other large-cap crypto; we persist only the XRP-attributable slice (weight &times; total basket AUM). Each snapshot row carries a source label for lineage audit.
+            ETF AUM is collected daily from each issuer's public dashboard after the US market close. <span class="text-white">Spot tier</span> funds hold XRP directly via institutional custody. <span class="text-white">Indirect-basket tier</span> funds hold XRP alongside other large-cap crypto; we persist only the XRP-attributable slice (weight &times; total basket AUM). Each snapshot row carries a source label for lineage audit.
           </p>
         </div>
 
