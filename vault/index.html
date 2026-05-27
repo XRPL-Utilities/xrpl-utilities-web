@@ -400,6 +400,17 @@
         <p class="text-xs text-muted leading-relaxed mb-5">
           One tile per tracked issuer. <span class="text-white">Circulating</span> is how much of the token exists on-chain right now in the issuer's native units (treasury holdings excluded where applicable, like OpenEden TBL). <span class="text-white">24h &Delta;</span> is how that number moved since yesterday's snapshot. <span class="text-white">Trustlines</span> is roughly the number of holders. The colored badge is the asset class. When the underlying token sees XLS-85 escrow activity or an issuer-side deep-freeze in the last 24h, the tile adds chips for <span class="text-amber-300">N escrow(s)</span>, <span class="text-accent">DvP candidates</span> (shared-condition reciprocal pairs; candidate, not confirmed), or <span class="text-red-300">deep-frozen holders</span> (TrustSet+tfSetDeepFreeze). Ondo OUSG appears twice because Ondo operates two issuer wallets: one for institutional access (authorized-trustline gating + clawback), one for the broader retail variant. "Permissioned" here refers to those wallet-level controls, not XLS-80 PermissionedDomains (those live in <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>).
         </p>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted mb-4 px-1">
+          <span class="text-white font-semibold">Health score</span>
+          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500 align-middle mr-0.5"></span> 7-10</span>
+          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-yellow-500 align-middle mr-0.5"></span> 4-6</span>
+          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 align-middle mr-0.5"></span> 0-3</span>
+          <span class="border-l border-border pl-3">Sov = issuer sovereignty (blackholed, no clawback, no freeze)</span>
+          <span>Dist = holder distribution (concentration, holder count)</span>
+          <span>Liq = liquidity (AMM pools, trading volume)</span>
+          <span>Trans = transparency (domain, KYC, XRPScan listing)</span>
+          <span>Demand = demand pipeline (trustline-to-holder ratio)</span>
+        </div>
         <div id="issuer-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
             <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
