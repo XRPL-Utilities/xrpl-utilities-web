@@ -36,9 +36,9 @@
   function levelMeaning(level) {
     const m = {
       High:    'Bot / Exchange / AMM Cadence',
-      Medium:  'Active Wallet — Mixed Cadence',
+      Medium:  'Active Wallet, Mixed Cadence',
       Low:     'Occasional Retail-Pattern Activity',
-      Dormant: 'Inactive — No Recent On-Chain Activity',
+      Dormant: 'Inactive, No Recent On-Chain Activity',
       Unknown: 'Insufficient Data to Classify',
     };
     return m[level] || '';
@@ -263,7 +263,7 @@
     // _delta block (Sentinel populates it when the address has a prior
     // recorded scan). For stable institutional wallets the deltas are
     // typically zero / null between back-to-back scans, so a row of
-    // "+0 / — / +0 / +0" reads as "broken" rather than "no drift".
+    // "+0 / - / +0 / +0" reads as "broken" rather than "no drift".
     // Branch on whether anything actually moved: if not, render a
     // single-line "no detected drift" framing with the prior anchor.
     // If yes, render the four-cell directional grid.
@@ -316,7 +316,7 @@
           const c = el('div');
           c.appendChild(el('div', 'text-xs text-muted mb-0.5', label));
           if (value == null || (typeof value === 'number' && value === 0)) {
-            c.appendChild(el('div', 'font-medium text-muted', value == null ? '—' : '0'));
+            c.appendChild(el('div', 'font-medium text-muted', value == null ? '–' : '0'));
             return c;
           }
           // Positive = "more automated / more activity" - Sentinel narrates
@@ -347,7 +347,7 @@
         const cadenceCell = el('div');
         cadenceCell.appendChild(el('div', 'text-xs text-muted mb-0.5', 'Cadence Δ (s)'));
         if (cad == null || cad === 0) {
-          cadenceCell.appendChild(el('div', 'font-medium text-muted', cad == null ? '—' : '0'));
+          cadenceCell.appendChild(el('div', 'font-medium text-muted', cad == null ? '–' : '0'));
         } else {
           const tighter = cad < 0;
           const tone = tighter ? 'text-accent' : 'text-red-400';
@@ -433,7 +433,7 @@
       const activatorAddrText = el('div', 'text-xs text-muted font-mono mt-1', head.activator);
       card.appendChild(activatorAddrText);
 
-      // Chain summary line — only shown when the walk went past hop 0.
+      // Chain summary line, only shown when the walk went past hop 0.
       if (gen.chain.length > 1) {
         const tail = gen.terminates_at_label_name
           ? `chain terminates at ${gen.terminates_at_label_name}`

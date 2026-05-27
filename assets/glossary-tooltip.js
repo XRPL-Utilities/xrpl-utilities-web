@@ -55,7 +55,7 @@
     },
     "permissioned-domain": {
       title: "Permissioned domain",
-      body: "An on-chain membership group (XLS-80) where the owner declares the credentials required to join. Used by institutions to run regulated venues — only credentialed counterparties can trade inside."
+      body: "An on-chain membership group (XLS-80) where the owner declares the credentials required to join. Used by institutions to run regulated venues; only credentialed counterparties can trade inside."
     },
     "permissioned-dex": {
       title: "Permissioned DEX",
@@ -75,7 +75,7 @@
     },
     "dvp": {
       title: "DvP (Delivery vs Payment)",
-      body: "Atomic two-leg trade where the delivery of an asset and the payment for it settle together (or neither does). XR-Pulse flags XLS-85 escrow pairs that share a Condition hash within an hour as DvP candidates — strong indicator of a real two-party settlement, not a confirmation."
+      body: "Atomic two-leg trade where the delivery of an asset and the payment for it settle together (or neither does). XR-Pulse flags XLS-85 escrow pairs that share a Condition hash within an hour as DvP candidates, a strong indicator of a real two-party settlement, not a confirmation."
     },
     "active-float": {
       title: "Active Float",
@@ -83,7 +83,7 @@
     },
     "burst-math": {
       title: "Burst Math",
-      body: "XR-Telemetry's settlement-floor calculator. Uses the equation-of-exchange identity M·V = P·Q with M anchored at Modeled Active Float. Set Q (assumed annual settlement volume) and V (turnover rate); returns P (per-XRP price the math requires). Not a forecast — a floor."
+      body: "XR-Telemetry's settlement-floor calculator. Uses the equation-of-exchange identity M·V = P·Q with M anchored at Modeled Active Float. Set Q (assumed annual settlement volume) and V (turnover rate); returns P (per-XRP price the math requires). Not a forecast, a floor."
     },
     "whale-tier": {
       title: "Whale tier",
@@ -103,7 +103,7 @@
     },
     "ledger-close": {
       title: "Ledger close",
-      body: "XRPL produces a new validated ledger every 3-5 seconds. A transaction is final once it's included in a closed ledger — no probabilistic confirmation, no waiting for N blocks of confirmation."
+      body: "XRPL produces a new validated ledger every 3-5 seconds. A transaction is final once it's included in a closed ledger. No probabilistic confirmation, no waiting for N blocks of confirmation."
     },
     "trustline": {
       title: "Trustline",
@@ -131,7 +131,7 @@
     }
   };
 
-  // Default styling — injected once, no external CSS file required.
+  // Default styling, injected once, no external CSS file required.
   const STYLE_ID = "glossary-tooltip-style";
   if (!document.getElementById(STYLE_ID)) {
     const style = document.createElement("style");
@@ -186,7 +186,7 @@
     document.head.appendChild(style);
   }
 
-  // Attach hover + focus handlers to every .gloss element. Idempotent —
+  // Attach hover + focus handlers to every .gloss element. Idempotent;
   // running twice (e.g. after a re-render) won't double-attach.
   function attach(el) {
     if (el.dataset.glossInit === "1") return;

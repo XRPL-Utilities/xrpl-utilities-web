@@ -1,4 +1,4 @@
-/* Stat-tile — shared visual treatment for headline numbers across
+/* Stat-tile: shared visual treatment for headline numbers across
    the .com service pages. Composes with Tailwind for layout
    (padding, grid placement). Three variants by accent color:
    default = cyan, .stat-tile-gold = amber/gold (institutional /
@@ -6,7 +6,7 @@
 
    Each tile gets a subtle gradient body, a faint inner border, and
    a top accent rule. Optional .stat-tile-glow adds a soft outer
-   glow in the accent color (use sparingly — for the headline tile
+   glow in the accent color (use sparingly; for the headline tile
    of a section, not every tile).
 
    Designed to match the existing dark-ink palette and the
@@ -91,7 +91,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Delta colors for trend indicators. Use sparingly — only when the
+/* Delta colors for trend indicators. Use sparingly; only when the
    direction itself is the signal (e.g., 7d % change on a holding). */
 .stat-tile-up      { color: #4ade80; }
 .stat-tile-down    { color: #f87171; }
