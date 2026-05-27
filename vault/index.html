@@ -1065,7 +1065,7 @@
 
     async function overlayTokenHealth() {
       try {
-        const r = await fetch(`${API_BASE}/stats/token-health`);
+        const r = await fetch(`${API_BASE}/stats/token-health?limit=200`);
         if (!r.ok) return;
         const body = await r.json();
         if (!body || body.available === false) return;
