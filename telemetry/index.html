@@ -389,21 +389,35 @@
         XRP or RLUSD Payments on validated mainnet ledgers, USD-anchored at each ledger's close-time price. Other IOU tokens are excluded. Per-token oracle pricing would distort the figure.
       </p>
 
-      <div class="grid sm:grid-cols-2 gap-4">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat-tile stat-tile-muted p-6">
           <div class="stat-tile-label mb-3">Last 24 hours</div>
-          <div id="sv-24h" class="stat-tile-value text-4xl sm:text-5xl">-</div>
+          <div id="sv-24h" class="stat-tile-value text-3xl sm:text-4xl">-</div>
           <div id="sv-24h-split" class="stat-tile-sub mt-3">&nbsp;</div>
+        </div>
+        <div class="stat-tile stat-tile-muted p-6">
+          <div class="stat-tile-label mb-3">Last 7 days</div>
+          <div id="sv-7d" class="stat-tile-value text-3xl sm:text-4xl">-</div>
+          <div id="sv-7d-split" class="stat-tile-sub mt-3">&nbsp;</div>
+        </div>
+        <div class="stat-tile stat-tile-muted p-6">
+          <div class="stat-tile-label mb-3">Last 30 days</div>
+          <div id="sv-30d" class="stat-tile-value text-3xl sm:text-4xl">-</div>
+          <div id="sv-30d-split" class="stat-tile-sub mt-3">&nbsp;</div>
         </div>
         <div class="stat-tile stat-tile-glow p-6">
           <div class="stat-tile-label mb-3" style="color: rgba(0,184,255,0.95);">Annualized run-rate</div>
-          <div id="sv-annual" class="stat-tile-value text-4xl sm:text-5xl">-</div>
+          <div id="sv-annual" class="stat-tile-value text-3xl sm:text-4xl">-</div>
           <div id="sv-annual-split" class="stat-tile-sub mt-3">&nbsp;</div>
+          <div id="sv-annual-30d" class="stat-tile-sub mt-1 text-[10px]">&nbsp;</div>
         </div>
       </div>
 
       <div id="sv-bootstrap" class="hidden mt-4 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed">
-        Less than 7 days of recorded data. Values are bootstrapping; annualized figure is statistically thin.
+        Less than 7 days of recorded data. Values are bootstrapping; the 7-day and annualized figures are statistically thin.
+      </div>
+      <div id="sv-bootstrap-30d" class="hidden mt-2 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed">
+        Less than 30 days of recorded data. The 30-day total and 30-day annualized variant are still filling in.
       </div>
 
       <!-- PERMISSIONED VS OPEN-MARKET SPLIT (schema 1.5.0+).
@@ -1185,8 +1199,14 @@ payload = requests.get(
 
     const sv24h = document.getElementById('sv-24h');
     const sv24hSplit = document.getElementById('sv-24h-split');
+    const sv7d = document.getElementById('sv-7d');
+    const sv7dSplit = document.getElementById('sv-7d-split');
+    const sv30d = document.getElementById('sv-30d');
+    const sv30dSplit = document.getElementById('sv-30d-split');
     const svAnnual = document.getElementById('sv-annual');
     const svAnnualSplit = document.getElementById('sv-annual-split');
+    const svAnnual30d = document.getElementById('sv-annual-30d');
+    const svBootstrap30d = document.getElementById('sv-bootstrap-30d');
     const svBootstrap = document.getElementById('sv-bootstrap');
     const svUseMeasuredBtn = document.getElementById('bm-q-use-measured');
 
@@ -1211,33 +1231,58 @@ payload = requests.get(
       return d.toLocaleString(undefined, { month: 'short', day: '2-digit', timeZone: 'UTC' });
     };
 
-    sv24h.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
-    svAnnual.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
+    sv24h.innerHTML = '<span class="inline-block h-10 w-24 bg-border rounded animate-pulse align-middle"></span>';
+    sv7d.innerHTML = '<span class="inline-block h-10 w-24 bg-border rounded animate-pulse align-middle"></span>';
+    sv30d.innerHTML = '<span class="inline-block h-10 w-24 bg-border rounded animate-pulse align-middle"></span>';
+    svAnnual.innerHTML = '<span class="inline-block h-10 w-24 bg-border rounded animate-pulse align-middle"></span>';
 
     fetch(TELEMETRY_API + '/settlement/totals')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (!d) {
           sv24h.textContent = '-';
+          sv7d.textContent = '-';
+          sv30d.textContent = '-';
           svAnnual.textContent = '-';
           return;
         }
         sv24h.textContent = fmtUsdShort(d.volume_24h_usd);
+        sv7d.textContent = fmtUsdShort(d.volume_7d_usd);
+        sv30d.textContent = typeof d.volume_30d_usd === 'number' ? fmtUsdShort(d.volume_30d_usd) : '-';
         svAnnual.textContent = fmtUsdShort(d.annualized_run_rate_usd);
-        // Breakdown subtitles. Backend may not yet ship the split fields
-        // during a partial rollout; fall back to a single-line label.
+
+        // Per-window splits + sub-lines.
         if (typeof d.volume_24h_xrp_usd === 'number' && typeof d.volume_24h_rlusd_usd === 'number') {
           sv24hSplit.textContent = fmtUsdShort(d.volume_24h_xrp_usd) + ' XRP · ' + fmtUsdShort(d.volume_24h_rlusd_usd) + ' RLUSD';
         } else {
           sv24hSplit.textContent = 'USD across XRP + RLUSD Payments';
+        }
+        if (typeof d.volume_7d_xrp_usd === 'number' && typeof d.volume_7d_rlusd_usd === 'number') {
+          sv7dSplit.textContent = fmtUsdShort(d.volume_7d_xrp_usd) + ' XRP · ' + fmtUsdShort(d.volume_7d_rlusd_usd) + ' RLUSD';
+        } else {
+          sv7dSplit.textContent = '7-day total';
+        }
+        if (typeof d.volume_30d_xrp_usd === 'number' && typeof d.volume_30d_rlusd_usd === 'number') {
+          sv30dSplit.textContent = fmtUsdShort(d.volume_30d_xrp_usd) + ' XRP · ' + fmtUsdShort(d.volume_30d_rlusd_usd) + ' RLUSD';
+        } else {
+          sv30dSplit.textContent = '30-day total';
         }
         if (typeof d.annualized_run_rate_xrp_usd === 'number' && typeof d.annualized_run_rate_rlusd_usd === 'number') {
           svAnnualSplit.textContent = fmtUsdShort(d.annualized_run_rate_xrp_usd) + ' XRP · ' + fmtUsdShort(d.annualized_run_rate_rlusd_usd) + ' RLUSD';
         } else {
           svAnnualSplit.textContent = '7d × 52 · pace, not a forecast';
         }
+        // 30d-anchored variant as a sub-line so a visitor can compare the
+        // two pace methodologies at a glance. Same arithmetic identity,
+        // less burst-sensitive.
+        if (typeof d.annualized_run_rate_30d_usd === 'number') {
+          svAnnual30d.textContent = '30d pace: ' + fmtUsdShort(d.annualized_run_rate_30d_usd);
+        }
         if (d.coverage && d.coverage.bootstrap === true) {
           svBootstrap.classList.remove('hidden');
+        }
+        if (d.coverage && d.coverage.bootstrap_30d === true && svBootstrap30d) {
+          svBootstrap30d.classList.remove('hidden');
         }
 
         // Permissioned vs open-market split (schema 1.5.0+). Honest
@@ -1287,6 +1332,8 @@ payload = requests.get(
       })
       .catch(() => {
         sv24h.textContent = '-';
+        sv7d.textContent = '-';
+        sv30d.textContent = '-';
         svAnnual.textContent = '-';
       });
 
