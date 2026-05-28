@@ -968,6 +968,7 @@ payload = requests.get(
     //   $1.1524 -> $1.15   $156.0976 -> $156.10   $0.0269 -> $0.0269
     const fmtUsd4 = n => {
       const num = Number(n);
+      if (!isFinite(num)) return '-';
       const opts = Math.abs(num) >= 1
         ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
         : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
@@ -981,6 +982,7 @@ payload = requests.get(
     //   $1.014 -> $1.014   $9.999 -> $9.999   $10 -> $10.00   $156 -> $156.00
     const fmtUsdEq = n => {
       const num = Number(n);
+      if (!isFinite(num)) return '-';
       const opts = Math.abs(num) >= 10
         ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
         : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
@@ -1106,8 +1108,8 @@ payload = requests.get(
     function currentP() {
       const q = Number(bmQ.value);
       const v = Number(bmV.value);
-      const m = SNAPSHOT.available_liquid_supply;
-      if (!isFinite(q) || !isFinite(v) || v <= 0 || m <= 0) return null;
+      const m = Number(SNAPSHOT.available_liquid_supply);
+      if (!isFinite(q) || !isFinite(v) || !isFinite(m) || v <= 0 || m <= 0) return null;
       return q / (v * m);
     }
 
