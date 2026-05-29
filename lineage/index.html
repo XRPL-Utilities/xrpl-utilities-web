@@ -318,7 +318,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
       <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7">
         <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Today's largest chain</h2>
+          <h2 id="largest-chain-title" class="text-sm uppercase tracking-widest text-accent font-semibold">Today's largest chain</h2>
           <span id="largest-chain-when" class="text-[10px] text-muted">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
@@ -850,12 +850,29 @@
       const flowEl = document.getElementById('largest-chain-flow');
       const whenEl = document.getElementById('largest-chain-when');
       const totalsEl = document.getElementById('largest-chain-totals');
+      const titleEl = document.getElementById('largest-chain-title');
       if (!flowEl || !whenEl || !totalsEl) return;
 
-      // Filter to actual today (UTC). Without this, the picker grabs the
-      // all-time-largest burst in the response window and labels it
-      // "today's" -- the May 20 $230M RLUSD mint chain stayed pinned as
-      // "today's largest" for 8 days post-event.
+      if (!bursts || bursts.length === 0) {
+        if (titleEl) titleEl.textContent = "Today's largest chain";
+        flowEl.innerHTML = '<div class="text-xs text-muted">No chains detected yet. Detection requires three or more hops, twenty million dollars total movement, and at least one labeled anchor wallet.</div>';
+        whenEl.textContent = '';
+        totalsEl.innerHTML = '';
+        return;
+      }
+
+      // Peak hop = largest single Payment in the chain. Honest "money
+      // that moved" signal vs sum(hop_usd) which triple-counts when the
+      // same dollars relay through each node.
+      const peakOf = (b) => {
+        const hs = b.hops_public || [];
+        return hs.length ? Math.max(...hs.map(h => h.value || 0)) : 0;
+      };
+
+      // Filter to actual today (UTC). Without this, the picker grabbed
+      // the all-time-largest burst in the response window and labeled
+      // it "today's" -- the May 20 $230M RLUSD mint chain stayed pinned
+      // as "today's largest" for 8 days post-event.
       const todayUtc = new Date().toISOString().slice(0, 10);
       const isToday = (ts) => {
         if (!ts) return false;
@@ -863,33 +880,28 @@
       };
       const todaysBursts = (bursts || []).filter(b => isToday(b.chain_started_at || b.detected_at));
 
-      if (todaysBursts.length === 0) {
-        // Honest empty state. If we have a most-recent for context,
-        // surface it so visitors know the section isn't broken.
-        const mostRecent = (bursts || []).slice().sort((a, b) =>
+      let top;
+      let isFallback = false;
+      if (todaysBursts.length > 0) {
+        top = todaysBursts.reduce((a, b) => (peakOf(b) > peakOf(a) ? b : a));
+        if (titleEl) titleEl.textContent = "Today's largest chain";
+      } else {
+        // No chain today -- fall back to the most recent detected
+        // chain. Keeps the panel useful on quiet days; visitors see
+        // the actual largest-chain shape rather than an empty card.
+        top = bursts.slice().sort((a, b) =>
           (b.chain_started_at || b.detected_at || 0) - (a.chain_started_at || a.detected_at || 0))[0];
-        let recentLine = '';
-        if (mostRecent) {
-          const ts = mostRecent.chain_started_at || mostRecent.detected_at;
-          const tsDate = ts ? new Date(ts * 1000).toISOString().slice(0, 10) : '?';
-          const hops = mostRecent.hops_public || [];
-          const peak = hops.length ? Math.max(...hops.map(h => h.value || 0)) : 0;
-          recentLine = `<div class="text-xs text-muted mt-3">Most recent detection: ${fmtUSD(peak)} peak hop on ${tsDate} (${fmtRel(ts)}).</div>`;
-        }
-        flowEl.innerHTML = `<div class="text-xs text-muted">No multi-hop chain detected today. Detection requires three or more hops, twenty million dollars total movement, and at least one labeled anchor wallet.</div>${recentLine}`;
+        const ts = top && (top.chain_started_at || top.detected_at);
+        const tsDate = ts ? new Date(ts * 1000).toISOString().slice(0, 10) : '?';
+        if (titleEl) titleEl.textContent = `Last largest chain (${tsDate})`;
+        isFallback = true;
+      }
+      if (!top) {
+        flowEl.innerHTML = '<div class="text-xs text-muted">No chain data available.</div>';
         whenEl.textContent = '';
         totalsEl.innerHTML = '';
         return;
       }
-
-      // Among today's bursts, pick the one with the highest peak hop.
-      // (peak hop is a more honest "biggest chain" signal than summed
-      // hop values, which triple-count same-money flows down a relay.)
-      const peakOf = (b) => {
-        const hs = b.hops_public || [];
-        return hs.length ? Math.max(...hs.map(h => h.value || 0)) : 0;
-      };
-      const top = todaysBursts.reduce((a, b) => (peakOf(b) > peakOf(a) ? b : a));
       const hops = top.hops_public || [];
       const chainTs = top.chain_started_at || top.detected_at;
       const chainDate = chainTs ? new Date(chainTs * 1000).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : '?';
@@ -918,7 +930,10 @@
             <div class="text-xs text-white font-semibold mt-1">${isLast ? 'Holding wallet' : 'Routing node'}</div>
           </div>
         </div>`;
-      let html = anchorBox;
+      const fallbackNotice = isFallback
+        ? `<div class="w-full text-xs text-amber-400/90 bg-amber-500/5 border border-amber-500/20 rounded-md px-3 py-2 mb-3">No multi-hop chain detected today. Showing the last detected chain for context.</div>`
+        : '';
+      let html = fallbackNotice + anchorBox;
       hops.forEach((h, i) => {
         html += arrow(fmtUSD(h.value || 0));
         html += hopBox(i + 1, i === hops.length - 1);
