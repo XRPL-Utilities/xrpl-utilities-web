@@ -851,14 +851,45 @@
       const whenEl = document.getElementById('largest-chain-when');
       const totalsEl = document.getElementById('largest-chain-totals');
       if (!flowEl || !whenEl || !totalsEl) return;
-      if (!bursts || bursts.length === 0) {
-        flowEl.innerHTML = '<div class="text-xs text-muted">No chains detected yet. Detection requires three or more hops, twenty million dollars total movement, and at least one labeled anchor wallet.</div>';
+
+      // Filter to actual today (UTC). Without this, the picker grabs the
+      // all-time-largest burst in the response window and labels it
+      // "today's" -- the May 20 $230M RLUSD mint chain stayed pinned as
+      // "today's largest" for 8 days post-event.
+      const todayUtc = new Date().toISOString().slice(0, 10);
+      const isToday = (ts) => {
+        if (!ts) return false;
+        return new Date(ts * 1000).toISOString().slice(0, 10) === todayUtc;
+      };
+      const todaysBursts = (bursts || []).filter(b => isToday(b.chain_started_at || b.detected_at));
+
+      if (todaysBursts.length === 0) {
+        // Honest empty state. If we have a most-recent for context,
+        // surface it so visitors know the section isn't broken.
+        const mostRecent = (bursts || []).slice().sort((a, b) =>
+          (b.chain_started_at || b.detected_at || 0) - (a.chain_started_at || a.detected_at || 0))[0];
+        let recentLine = '';
+        if (mostRecent) {
+          const ts = mostRecent.chain_started_at || mostRecent.detected_at;
+          const tsDate = ts ? new Date(ts * 1000).toISOString().slice(0, 10) : '?';
+          const hops = mostRecent.hops_public || [];
+          const peak = hops.length ? Math.max(...hops.map(h => h.value || 0)) : 0;
+          recentLine = `<div class="text-xs text-muted mt-3">Most recent detection: ${fmtUSD(peak)} peak hop on ${tsDate} (${fmtRel(ts)}).</div>`;
+        }
+        flowEl.innerHTML = `<div class="text-xs text-muted">No multi-hop chain detected today. Detection requires three or more hops, twenty million dollars total movement, and at least one labeled anchor wallet.</div>${recentLine}`;
         whenEl.textContent = '';
         totalsEl.innerHTML = '';
         return;
       }
-      // Find the burst with the highest total_usd
-      const top = bursts.reduce((a, b) => ((b.total_usd || 0) > (a.total_usd || 0) ? b : a));
+
+      // Among today's bursts, pick the one with the highest peak hop.
+      // (peak hop is a more honest "biggest chain" signal than summed
+      // hop values, which triple-count same-money flows down a relay.)
+      const peakOf = (b) => {
+        const hs = b.hops_public || [];
+        return hs.length ? Math.max(...hs.map(h => h.value || 0)) : 0;
+      };
+      const top = todaysBursts.reduce((a, b) => (peakOf(b) > peakOf(a) ? b : a));
       const hops = top.hops_public || [];
       const chainTs = top.chain_started_at || top.detected_at;
       const chainDate = chainTs ? new Date(chainTs * 1000).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : '?';
@@ -894,21 +925,26 @@
       });
       flowEl.innerHTML = html;
 
-      // Totals tiles below
-      const avgHop = hops.length ? (top.total_usd || 0) / hops.length : 0;
+      // Totals tiles below. Peak hop = largest single Payment value
+      // observed in the chain. This is the honest "money that moved"
+      // figure; the per-hop values aggregated together (still surfaced
+      // separately) overstate because the same dollars typically move
+      // through each relay node sequentially.
+      const peakHop = hops.length ? Math.max(...hops.map(h => h.value || 0)) : 0;
+      const aggregateHopUsd = top.total_usd || 0;
       const newsCount = top.news_correlation_count || 0;
       totalsEl.innerHTML = `
         <div class="bg-ink border border-border rounded-lg p-3">
-          <div class="text-[10px] uppercase tracking-widest text-muted">Total movement</div>
-          <div class="text-base font-semibold text-white mt-1">${fmtUSD(top.total_usd || 0)}</div>
+          <div class="text-[10px] uppercase tracking-widest text-muted" title="Largest single Payment observed across the chain. The honest 'money that moved' figure.">Peak hop</div>
+          <div class="text-base font-semibold text-white mt-1">${fmtUSD(peakHop)}</div>
         </div>
         <div class="bg-ink border border-border rounded-lg p-3">
           <div class="text-[10px] uppercase tracking-widest text-muted">Hops</div>
           <div class="text-base font-semibold text-white mt-1">${top.hop_count}</div>
         </div>
         <div class="bg-ink border border-border rounded-lg p-3">
-          <div class="text-[10px] uppercase tracking-widest text-muted">Avg per hop</div>
-          <div class="text-base font-semibold text-white mt-1">${fmtUSD(avgHop)}</div>
+          <div class="text-[10px] uppercase tracking-widest text-muted" title="Sum of per-hop Payment values. Overstates actual money moved when the same dollars flow through each relay node.">Aggregate hop value</div>
+          <div class="text-base font-semibold text-muted mt-1">${fmtUSD(aggregateHopUsd)}</div>
         </div>
         <div class="bg-ink border border-border rounded-lg p-3">
           <div class="text-[10px] uppercase tracking-widest text-muted">News in window</div>
