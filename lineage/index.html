@@ -893,7 +893,7 @@
           (b.chain_started_at || b.detected_at || 0) - (a.chain_started_at || a.detected_at || 0))[0];
         const ts = top && (top.chain_started_at || top.detected_at);
         const tsDate = ts ? new Date(ts * 1000).toISOString().slice(0, 10) : '?';
-        if (titleEl) titleEl.textContent = `Last largest chain (${tsDate})`;
+        if (titleEl) titleEl.textContent = `Last detected chain (${tsDate})`;
         isFallback = true;
       }
       if (!top) {
