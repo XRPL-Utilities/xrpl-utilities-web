@@ -763,7 +763,7 @@
         const sourceGrid = document.getElementById('cp-source-grid');
         const sources = Object.entries(j.funding_source_distribution || {});
         if (sources.length === 0) {
-          sourceGrid.innerHTML = '<div class="text-xs text-muted">No candidates surfaced yet. The discovery loop runs every 15 minutes.</div>';
+          sourceGrid.innerHTML = '<div class="text-xs text-muted">No candidates surfaced yet. The discovery loop checks back on a recurring basis.</div>';
         } else {
           sources.sort((a, b) => b[1] - a[1]);
           sourceGrid.innerHTML = sources.map(([label, count]) => `
