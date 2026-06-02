@@ -978,10 +978,18 @@
       const ctx = document.getElementById('chart-etf-aum');
       if (!ctx) return;
 
-      // Union of all dates across all tickers.
+      // Date axis = only days that actually have data. Per-ticker rows are
+      // real readings; the totals series can carry null-valued rows for days
+      // with no snapshot (e.g. the 2026-05-09/10 weekend, when the scraper
+      // did not persist). Plotting those as empty bars reads as broken, and
+      // the values are not recoverable after the fact (no weekend price
+      // prints to derive from). Omit no-data days entirely - matching the
+      // delta chart and the standard convention of not plotting non-data days.
       const dateSet = new Set();
-      Object.values(series).forEach(rows => rows.forEach(r => dateSet.add(r.snapshot_date)));
-      totals.forEach(r => dateSet.add(r.snapshot_date));
+      Object.values(series).forEach(rows => rows.forEach(r => {
+        if (r.aum_usd != null) dateSet.add(r.snapshot_date);
+      }));
+      totals.forEach(r => { if (r.aum_usd_total != null) dateSet.add(r.snapshot_date); });
       const dates = Array.from(dateSet).sort();
 
       const orderedTickers = tracked.length ? tracked : Object.keys(series).sort();
