@@ -725,7 +725,7 @@
 
       renderEtfAumChart(series, totals, tracked);
       renderEtfAumDeltaChart(series, totals, tracked);
-      renderChainFlowChart(chainFlow, correlation);
+      renderChainFlowChart(chainFlow, correlation, days);
       renderMoexIndexPanel(moex);
       renderSummaryTiles(series, totals, tracked, euTotals);
     }
@@ -1051,7 +1051,7 @@
       });
     }
 
-    function renderChainFlowChart(chainFlow, correlation) {
+    function renderChainFlowChart(chainFlow, correlation, requestedDays) {
       if (typeof Chart === 'undefined') return;
       const ctx = document.getElementById('chart-chain-flow');
       if (!ctx) return;
@@ -1073,16 +1073,25 @@
       const hasInProgress = inProgress.some(Boolean);
 
       if (statusEl) {
-        const base = `${chainFlow.length} day${chainFlow.length === 1 ? '' : 's'}`;
+        // Fit the label to actual coverage: show the real date span the chart
+        // covers, not the selected range (the on-chain window can be shorter).
+        const span = labels.length
+          ? `${labels[0]} to ${labels[labels.length - 1]} `
+          : '';
+        const base = `${span}(${chainFlow.length}d)`;
         statusEl.textContent = hasInProgress ? `${base} - today in-progress` : base;
       }
       if (caveatEl) {
         const parts = [];
         if (hasInProgress) {
-          parts.push(`Today's bar (${todayUtc} UTC) is in-progress: the XR-Pulse writer rolls a single row per UTC day and overwrites it as new polls land, so this value updates through the day and may briefly match yesterday until the next refresh.`);
+          parts.push(`Today's bar (${todayUtc} UTC) is in-progress: the per-venue daily totals refresh through the day as new on-chain activity is scanned, so this value updates and may briefly match yesterday until the next refresh.`);
         }
-        if (chainFlow.length < 7) {
-          parts.push(`Series accrues forward one row per UTC day from the XR-Pulse writer; only ${chainFlow.length} day${chainFlow.length === 1 ? '' : 's'} so far. Multi-week pattern visible after about a week of accrual.`);
+        // When the on-chain history is shorter than the selected range (the
+        // AUM series above can reach further back), the chart fits to actual
+        // coverage instead of padding the axis with empty space. Say so, so a
+        // shorter window doesn't read as missing data.
+        if (requestedDays && chainFlow.length < requestedDays) {
+          parts.push(`Fitted to actual coverage: XRPL exchange-flow history currently spans ${chainFlow.length} days, shorter than the selected ${requestedDays}-day range and the AUM series above. This is the full on-chain depth available, not missing data.`);
         }
         if (correlation.note) parts.push(correlation.note);
         caveatEl.textContent = parts.join(' ');
