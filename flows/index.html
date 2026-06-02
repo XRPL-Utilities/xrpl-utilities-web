@@ -911,6 +911,11 @@
           backgroundColor: colors,
           borderWidth: 0,
           stack: 'delta',
+          // Floor non-zero segments so a small real move (e.g. the European
+          // ETPs on a US market holiday like 2026-05-25 Memorial Day, when US
+          // funds are flat) is visible instead of reading as a gap. Exact-zero
+          // segments stay invisible, so a true no-change day still shows flat.
+          minBarLength: 2,
         };
       });
 
@@ -1115,6 +1120,11 @@
             backgroundColor: data.map((v, i) => fillFor(v, inProgress[i])),
             borderColor: data.map(v => strokeFor(v)),
             borderWidth: data.map((_, i) => (inProgress[i] ? 2 : 1)),
+            // Floor the bar height so a real but tiny net (e.g. 2026-05-18 at
+            // -0.2M XRP against a +/-40M scale) still renders a visible nub
+            // instead of looking like a gap. Only affects non-zero values;
+            // genuine zero days stay flat.
+            minBarLength: 3,
           }],
         },
         options: {
