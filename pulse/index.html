@@ -353,6 +353,25 @@
             </div>
             <p class="stat-tile-sub mt-3">issuer <span class="font-mono">rMxC...m5De</span>; XRPL only. Cross-chain context: <span class="text-white" id="rlusd-eth-total">checking</span> on Ethereum mainnet (separate ERC-20 contract).</p>
           </div>
+
+          <!-- RLUSD mint->CEX distribution. Complements the supply tile:
+               supply says how much RLUSD exists; this says where freshly
+               minted RLUSD went over the trailing week (named exchange vs
+               transit hop vs unattributed). The to-exchange share is
+               institutional stablecoin provisioning, not XRP sell-side. -->
+          <div class="stat-tile p-5 max-w-xl mx-auto mt-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="stat-tile-label">RLUSD distribution &middot; mint &rarr; CEX (7d)</h3>
+              <span id="rlusd-dist-dot" class="stat-tile-pulse" title="updates every 5 min"></span>
+            </div>
+            <div class="flex items-baseline gap-3 flex-wrap">
+              <span id="rlusd-dist-total" class="stat-tile-value">--</span>
+              <span class="stat-tile-sub">RLUSD distributed</span>
+              <span id="rlusd-dist-pct" class="hidden text-xs px-2 py-1 rounded border font-semibold ml-2"></span>
+            </div>
+            <div id="rlusd-dist-venues" class="mt-3 space-y-1 text-sm"></div>
+            <p class="stat-tile-sub mt-3">RLUSD routed to a named exchange is institutional stablecoin provisioning, not XRP sell-side. Amounts are face value (RLUSD is USD-pegged). <a href="https://pulse.xrpl-utilities.io/stats/rlusd-distribution?days=7" class="text-accent hover:underline" target="_blank" rel="noopener">view JSON</a></p>
+          </div>
         </div>
       </div>
     </div>
@@ -2530,6 +2549,66 @@ feed = session.post(
 
       load();
       loadEthereumCrossChain();  // once on load, not on the refresh loop
+      setInterval(load, REFRESH_MS);
+    })();
+
+    // ----------------------------------------------------------------------
+    // RLUSD mint->CEX distribution tile. Reads the free
+    // /stats/rlusd-distribution endpoint and shows where freshly minted
+    // RLUSD went over the trailing week: total distributed, the share that
+    // reached a named exchange, and the top exchange recipients. The
+    // to-exchange read is the corrective to mistaking a fresh RLUSD mint
+    // for XRP sell-pressure - RLUSD into a CEX is stablecoin provisioning.
+    // ----------------------------------------------------------------------
+    (function rlusdDistribution() {
+      const totalEl  = document.getElementById('rlusd-dist-total');
+      const pctEl    = document.getElementById('rlusd-dist-pct');
+      const venuesEl = document.getElementById('rlusd-dist-venues');
+      if (!totalEl) return;
+
+      const REFRESH_MS = 300000;
+
+      function fmtBig(n) {
+        if (!isFinite(n)) return '--';
+        if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+        if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+        if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(0) + 'k';
+        return n.toFixed(0);
+      }
+
+      async function load() {
+        try {
+          const r = await fetch(API_BASE + '/stats/rlusd-distribution?days=7');
+          if (!r.ok) return;
+          const d = await r.json();
+          totalEl.textContent = fmtBig(d.distributed_total_rlusd || 0);
+
+          const pct = d.to_exchange_pct;
+          if (pct !== null && pct !== undefined && isFinite(pct)) {
+            pctEl.textContent = pct.toFixed(1) + '% to exchanges';
+            pctEl.className = 'text-xs px-2 py-1 rounded border font-semibold ml-2 '
+              + 'text-accent border-accent/40 bg-accent/10';
+            pctEl.classList.remove('hidden');
+          } else {
+            pctEl.classList.add('hidden');
+          }
+
+          const byEx = (d.by_exchange || []).slice(0, 4);
+          if (byEx.length) {
+            venuesEl.innerHTML = byEx.map(e =>
+              `<div class="flex items-center justify-between gap-3">`
+              + `<span class="text-white">${escapeHtml(e.label || '?')}</span>`
+              + `<span class="font-mono text-muted">${fmtBig(e.rlusd || 0)} RLUSD`
+              + (e.tx_count ? ` <span class="opacity-60">(${e.tx_count})</span>` : '')
+              + `</span></div>`
+            ).join('');
+          } else {
+            venuesEl.innerHTML = '<div class="text-muted">No exchange-bound distribution in the last 7 days.</div>';
+          }
+        } catch (_) {}
+      }
+
+      load();
       setInterval(load, REFRESH_MS);
     })();
 
