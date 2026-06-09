@@ -95,6 +95,8 @@
     .class-commercial_paper  { color: #fb923c; border-color: rgba(251, 146, 60, 0.45); background: rgba(251, 146, 60, 0.10); }
     .class-money_market      { color: #f472b6; border-color: rgba(244, 114, 182, 0.45); background: rgba(244, 114, 182, 0.10); }
     .class-commodity_energy  { color: #fdba74; border-color: rgba(253, 186, 116, 0.45); background: rgba(253, 186, 116, 0.10); }
+    .class-private_credit    { color: #a3e635; border-color: rgba(163, 230, 53, 0.45); background: rgba(163, 230, 53, 0.10); }
+    .class-gateway_iou       { color: #94a3b8; border-color: rgba(148, 163, 184, 0.45); background: rgba(148, 163, 184, 0.10); }
 
     .delta-positive { color: #4ade80; }
     .delta-negative { color: #f87171; }
@@ -782,6 +784,8 @@
         commercial_paper:  'C-PAPER',
         money_market:      'MMF',
         commodity_energy:  'ENERGY',
+        private_credit:    'PVT CREDIT',
+        gateway_iou:       'GATEWAY IOU',
       };
       return map[c] || (c || '').toUpperCase();
     }
