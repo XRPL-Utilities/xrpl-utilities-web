@@ -788,6 +788,34 @@ report = session.post(
               <span class="block text-xs mt-2 opacity-70">Fires when: the wallet is the issuer of record on at least 3 distinct currency codes with outstanding obligations.</span>
             </dd>
           </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">WHALE_ACCUMULATOR</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Most of the wallet's recent whale-scale activity is inbound, so it is building a position at whale scale rather than offloading. Sharpens WHALE_RECENT_ACTIVITY with a direction read.
+              <span class="block text-xs mt-2 opacity-70">Fires when: at least 80% of the wallet's whale-tier events in the last 30 days are inbound, with a floor of 5 events.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">WHALE_DISTRIBUTOR</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Most of the wallet's recent whale-scale activity is outbound, so it is paying out or offloading at whale scale rather than building. The outbound counterpart to WHALE_ACCUMULATOR.
+              <span class="block text-xs mt-2 opacity-70">Fires when: at least 80% of the wallet's whale-tier events in the last 30 days are outbound, with a floor of 5 events.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">WHALE_INSTITUTIONAL_TIER</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet has been moving money at the higher institutional tier, not just clearing the whale floor. Distinguishes institutional ticket sizes from plain whale moves.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet has at least 2 institutional-flow-tier events in the last 30 days.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">IDENTITY_ATTESTED_INSTITUTION</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet has published an on-chain identity (a decentralized identifier) naming an organization and two or more principals, resolved through its linked domain manifest. A self-attested institutional identity. Note: the attestation is operator-published, not independently verified.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet has a published DID document with an organization name and at least 2 named principals.</span>
+            </dd>
+          </div>
         </dl>
       </details>
     </div>
