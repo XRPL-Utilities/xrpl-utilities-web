@@ -760,6 +760,34 @@ report = session.post(
               <span class="block text-xs mt-2 opacity-70">Fires when: the scan window contains at least one Clawback or AMMClawback transaction.</span>
             </dd>
           </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">HIGH_FAILURE_RATE</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              More than a third of the wallet's recent transactions failed. Consistent with a testing wallet, a misconfigured automation, or aggressive order placement that keeps hitting rejection thresholds.
+              <span class="block text-xs mt-2 opacity-70">Fires when: failed transactions exceed 30% of the in-window total, with a floor of 10 transactions.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">AMM_LIQUIDITY_PROVIDER</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet actively provisions automated-market-maker liquidity (deposits, withdrawals, votes, bids). Different from being an AMM pool account itself, which the scan treats as a passive counterparty.
+              <span class="block text-xs mt-2 opacity-70">Fires when: AMM operations are at least 30% of in-window activity, with a floor of 3 such operations, and the wallet is not itself an AMM pool.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">NFT_MARKETPLACE_ACTIVE</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              Regular NFT minting or trading activity, consistent with a creator, a marketplace, or NFT automation.
+              <span class="block text-xs mt-2 opacity-70">Fires when: NFT operations number at least 10 and make up at least 20% of in-window activity.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">MULTI_ASSET_ISSUER</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet issues three or more distinct currencies, consistent with a real-world-asset tokenizer, a multi-stablecoin operator, or an institutional treasury running parallel asset classes.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet is the issuer of record on at least 3 distinct currency codes with outstanding obligations.</span>
+            </dd>
+          </div>
         </dl>
       </details>
     </div>
