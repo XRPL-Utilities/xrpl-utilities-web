@@ -372,8 +372,9 @@ report = session.post(
       <ul class="space-y-3 text-muted leading-relaxed">
         <li><code class="font-mono text-white">activity_score</code>: 0 to 100, scaled to how automated and service-like the wallet behaves</li>
         <li><code class="font-mono text-white">activity_level</code>: Low / Medium / High / Dormant / Unknown</li>
+        <li><code class="font-mono text-white">institutional_posture</code>: a second, separate score (0 to 100) for how much institutional sophistication the wallet's signals reveal, with a tier (none / minimal / moderate / institutional / core-institutional) and the exact signals that drove it. Deterministic and fully traceable, distinct from the automation score above. Behavioral, not a risk or compliance score.</li>
         <li><code class="font-mono text-white">confidence</code>: low / medium / high tier based on transaction depth</li>
-        <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog (35 entries today)</li>
+        <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog (56 entries today)</li>
         <li><code class="font-mono text-white">features</code>: tx types, IN/OUT split, currencies, dust counts, offer churn, time span, TrustSet / AMM / NFT op counts, failed-tx ratio, median seconds between txs, per-currency net flows, and (for issuers) live outstanding-IOU obligations under <code class="font-mono text-white">issuer_summary</code></li>
         <li><code class="font-mono text-white">genesis</code>: account-genesis block; activator address + public label, initial XRP funded, activation timestamp + age, and the multi-hop activator chain (terminates at first labeled venue or 5 hops)</li>
         <li><code class="font-mono text-white">top_counterparties</code>: top 20 with verified public labels and direction</li>
