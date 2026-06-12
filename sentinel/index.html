@@ -669,6 +669,97 @@ report = session.post(
               <span class="block text-xs mt-2 opacity-70">Fires when: dust payments exceed 20% of 10+ in-window payments.</span>
             </dd>
           </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">ISSUES_MPT</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet issues a Multi-Purpose Token (XLS-33), the newer fixed-metadata token type used for stablecoins, tokenized real-world assets, and institutional instruments. A different issuance model from classic trustline IOUs.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one MPTokenIssuance object.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">HOLDS_MPT</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet holds a Multi-Purpose Token, placing it as a holder or distribution endpoint rather than the issuer.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one MPToken object.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">OPERATES_PRICE_ORACLE</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet publishes on-chain price-feed data (XLS-47). An infrastructure and data-provider role rather than a trading or holding wallet.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one Oracle object.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">BRIDGE_OPERATOR</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet operates a side of a cross-chain bridge (XLS-38), not just transacts with one. This is the bridge itself, distinct from BRIDGE_INTERACTION which flags a bridge counterparty.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one Bridge object.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">HAS_DID</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet has anchored a decentralized identifier on-chain (XLS-40), often a named or regulated entity that has published verifiable identity.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns a DID object.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">CREDENTIAL_HOLDER</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet holds an issued credential (XLS-70), meaning it has been verified or whitelisted to participate in permissioned domains and venues. This is the credentialed-holder side of the permissioning stack.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one Credential object.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">HOLDS_CHECKS</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet is party to a deferred or pull-payment settlement using the XRPL Check primitive, a pattern closer to invoicing than spot transfers.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one Check object.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">PAYMENT_CHANNEL_OPERATOR</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet runs an XRPL Payment Channel, the rail behind streaming and agent-native micropayments.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one PayChannel object.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">TOKEN_ESCROW_USER</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet locks a token (IOU or MPT) in escrow rather than XRP (XLS-85), a pattern used for over-the-counter settlement, vesting, and asset delivery.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns an Escrow object whose locked amount is a token rather than XRP.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">GLOBAL_FREEZE_ACTIVE</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The issuer has frozen every trustline to its token at once. An incident, wind-down, or migration posture, broader than a single deep-frozen line.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the account has the global-freeze flag set.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">NO_FREEZE_COMMITTED</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The issuer has permanently given up its ability to freeze holdings, a credible commitment common on tokens that market decentralization.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the account has the no-freeze flag set.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">PUNITIVE_TRANSFER_RATE</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The issuer charges holders more than 0.5% to transfer its token between each other, a fee-extracting or deliberately illiquid posture.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the account's transfer rate is above 0.5%.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">DIRECT_CLAWBACK_ACTOR</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet has actually reversed a holder's balance with a clawback, an enforcement action rather than just the capability.
+              <span class="block text-xs mt-2 opacity-70">Fires when: the scan window contains at least one Clawback or AMMClawback transaction.</span>
+            </dd>
+          </div>
         </dl>
       </details>
     </div>
