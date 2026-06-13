@@ -26,7 +26,7 @@
         "name": "XR-Sentinel",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any (HTTP API)",
-        "description": "AI-assisted behavioral pattern classifier for XRP Ledger wallets. Returns 0-100 activity score, signal catalog, and AI-generated narrative summary.",
+        "description": "AI-assisted behavioral pattern classifier for XRP Ledger wallets. Returns a 0-100 activity score, a separate 0-100 institutional-posture score, signal catalog, and AI-generated narrative summary.",
         "url": "https://xrpl-utilities.com/sentinel/",
         "image": "https://xrpl-utilities.com/assets/xr-sentinel.png",
         "publisher": {
@@ -270,7 +270,10 @@
             Sentinel reads a wallet's last 90 days of on-chain activity and tells you what kind of actor it looks like. Bots, retail wallets, exchanges, AMM pools, issuers, and market makers each leave a distinct signature.
             </p>
             <p class="text-sm text-muted leading-relaxed mt-3">
-            You get back an activity level (Low / Medium / High / Dormant / Unknown), a 0&ndash;100 score, structured signal flags, and a short AI narrative tying it together.
+            You get back two separate 0&ndash;100 scores: an activity level (Low / Medium / High / Dormant / Unknown) for how automated the wallet is, and an institutional-posture score for how much institutional sophistication its signals reveal. Plus structured signal flags and a short AI narrative tying it together.
+          </p>
+          <p class="text-sm text-muted leading-relaxed mt-3">
+            The two scores are independent: a busy retail wallet can score high on activity and zero on posture, while a quiet issuer does the reverse. Posture is deterministic and fully traceable, the score is the sum of the institutional-marker signal weights, each shown next to the signal that earned it.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -282,7 +285,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">What it isn't</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Not a risk score, sanctions screen, AML determination, or credit rating. A "High" activity level usually means an exchange, market maker, or bot, not a warning. The full signal catalog is at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a>; consumers set their own thresholds.
+            Neither score is a risk score, sanctions screen, AML determination, or credit rating. A "High" activity level usually means an exchange, market maker, or bot, not a warning; a high institutional posture means the wallet is configured like an institution, not that it is safe or unsafe. The full signal catalog is at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a>; consumers set their own thresholds.
           </p>
         </div>
       </div>
