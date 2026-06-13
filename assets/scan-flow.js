@@ -259,6 +259,41 @@
     });
     card.appendChild(meta);
 
+    // Institutional-posture block (Sentinel schema 2.28.0+). A SECOND scoring
+    // axis, separate from activity_score: activity_score measures how automated
+    // the wallet is, posture measures how much institutional sophistication its
+    // signal set reveals. Deterministic - the score is the capped sum of the
+    // institutional-marker signal weights, and contributors lists exactly which
+    // signals drove it. Renders whenever present, including a 0 / none result,
+    // so a plain wallet visibly reads "none" rather than showing nothing.
+    const posture = report.institutional_posture;
+    if (posture && typeof posture === 'object' && typeof posture.score === 'number') {
+      const pWrap = el('div', 'bg-ink border border-border rounded-lg p-4 mb-4');
+      const pHead = el('div', 'flex items-baseline justify-between mb-2');
+      pHead.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent font-semibold', 'Institutional posture'));
+      const pRight = el('div', 'flex items-baseline gap-2');
+      pRight.appendChild(el('span', 'border border-border rounded-full px-2 py-0.5 text-xs font-semibold', posture.tier || 'none'));
+      const pScore = el('span', 'text-sm font-bold');
+      pScore.appendChild(document.createTextNode(String(posture.score)));
+      pScore.appendChild(el('span', 'text-muted text-xs font-normal', '/100'));
+      pRight.appendChild(pScore);
+      pHead.appendChild(pRight);
+      pWrap.appendChild(pHead);
+
+      const contribs = Array.isArray(posture.contributors) ? posture.contributors : [];
+      if (contribs.length) {
+        const pills = el('div', 'flex flex-wrap gap-2 mb-2');
+        contribs.forEach(c => pills.appendChild(el('span', 'font-mono text-xs bg-ink border border-border rounded px-2 py-1', c.signal + ' +' + c.weight)));
+        pWrap.appendChild(pills);
+      } else {
+        pWrap.appendChild(el('div', 'text-xs text-muted mb-2', 'No institutional-marker signals fired; this wallet scores on the activity axis only.'));
+      }
+
+      pWrap.appendChild(el('div', 'text-xs text-muted leading-relaxed',
+        'A second score, separate from the activity index above: how much institutional sophistication the signal set reveals (0-100). Deterministic and fully traceable, the score is the sum of the signal weights shown. Behavioral, not a risk or compliance score.'));
+      card.appendChild(pWrap);
+    }
+
     // Trajectory block. Renders only when the API response carries a
     // _delta block (Sentinel populates it when the address has a prior
     // recorded scan). For stable institutional wallets the deltas are
