@@ -285,7 +285,7 @@
       // an isolated word. The wallet's current tier is lit in accent; the
       // ascending thresholds make the climb from none to core-institutional
       // explicit. Kept in sync with signals.py _POSTURE_TIERS.
-      const TIER_LADDER = [['none', 0], ['minimal', 1], ['moderate', 20], ['institutional', 50], ['core-institutional', 80]];
+      const TIER_LADDER = [['none', 0], ['minimal', 1], ['moderate', 20], ['institutional', 40], ['core-institutional', 60]];
       const ladder = el('div', 'flex flex-wrap items-center gap-x-1.5 gap-y-1 mb-3 text-xs');
       TIER_LADDER.forEach(([name, thresh], i) => {
         if (i > 0) ladder.appendChild(el('span', 'text-muted opacity-40', '·'));

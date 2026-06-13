@@ -61,7 +61,7 @@
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/assets/preview-token.js?v=v1"></script>
-  <script src="/assets/scan-flow.js?v=posture2"></script>
+  <script src="/assets/scan-flow.js?v=posture3"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -558,6 +558,20 @@ report = session.post(
             <dd class="text-sm text-muted leading-relaxed">
               The wallet is configured as a permissioned IOU issuer: every holder must be operator-authorized before they can hold the token, and the issuer can claw back outstanding balances. Structural pattern of a tokenized treasury, regulated stablecoin, or institutional pilot. Behavioral context, not a risk verdict.
               <span class="block text-xs mt-2 opacity-70">Fires when: the scanned address has both <code class="font-mono">lsfRequireAuth</code> and <code class="font-mono">lsfAllowTrustLineClawback</code> set on its AccountRoot flags. Surfaced in the response's <code class="font-mono">features.account_flags</code>.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">VERIFIED_INSTITUTIONAL_ENTITY</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              The wallet carries a verified XRPScan label. Verification is reserved for identified businesses and services (exchanges, issuers, custodians, gateways, infrastructure), so a verified label is high-confidence evidence the wallet is run by a known institution rather than an anonymous individual. This is the keystone institutional-posture marker: it fires on the wallet's identified-entity status itself, not on any specific on-ledger primitive.
+              <span class="block text-xs mt-2 opacity-70">Verification confirms identity, not conduct. Read from the target wallet's label.</span>
+            </dd>
+          </div>
+          <div class="bg-panel/50 border border-border rounded-lg p-4">
+            <dt class="font-mono text-sm text-white mb-1">FIXED_SUPPLY_ISSUER</dt>
+            <dd class="text-sm text-muted leading-relaxed">
+              An issuer whose master key is disabled with no usable regular key (blackholed), so no further units of its token can ever be minted. An irreversible, on-chain commitment that the supply cannot be inflated, which serious token issuers make to assure holders.
+              <span class="block text-xs mt-2 opacity-70">Read from the account-flags snapshot resolved for issuer-likely wallets.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
