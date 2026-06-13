@@ -61,7 +61,7 @@
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/assets/preview-token.js?v=v1"></script>
-  <script src="/assets/scan-flow.js?v=posture3"></script>
+  <script src="/assets/scan-flow.js?v=registry"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -563,8 +563,8 @@ report = session.post(
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">VERIFIED_INSTITUTIONAL_ENTITY</dt>
             <dd class="text-sm text-muted leading-relaxed">
-              The wallet carries a verified XRPScan label. Verification is reserved for identified businesses and services (exchanges, issuers, custodians, gateways, infrastructure), so a verified label is high-confidence evidence the wallet is run by a known institution rather than an anonymous individual. This is the keystone institutional-posture marker: it fires on the wallet's identified-entity status itself, not on any specific on-ledger primitive.
-              <span class="block text-xs mt-2 opacity-70">Verification confirms identity, not conduct. Read from the target wallet's label.</span>
+              The wallet is a positively identified institution, by either of two independent sources: a verified XRPScan label (reserved for identified businesses and services such as exchanges, issuers, custodians, gateways, and infrastructure), or membership in our curated registry of known real-world-asset and institutional issuer wallets. The registry covers genuine issuers that public label sources do not mark verified, so a real institution is not missed just because it lacks a verified tag. This is the keystone institutional-posture marker: it fires on the wallet's identified-entity status itself, not on any specific on-ledger primitive.
+              <span class="block text-xs mt-2 opacity-70">Identification confirms identity, not conduct.</span>
             </dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
