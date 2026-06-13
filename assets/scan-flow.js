@@ -280,6 +280,23 @@
       pHead.appendChild(pRight);
       pWrap.appendChild(pHead);
 
+      // Tier ladder. Renders the full five-step scale with its score
+      // thresholds so the badge tier reads as a position on a spectrum, not
+      // an isolated word. The wallet's current tier is lit in accent; the
+      // ascending thresholds make the climb from none to core-institutional
+      // explicit. Kept in sync with signals.py _POSTURE_TIERS.
+      const TIER_LADDER = [['none', 0], ['minimal', 1], ['moderate', 20], ['institutional', 50], ['core-institutional', 80]];
+      const ladder = el('div', 'flex flex-wrap items-center gap-x-1.5 gap-y-1 mb-3 text-xs');
+      TIER_LADDER.forEach(([name, thresh], i) => {
+        if (i > 0) ladder.appendChild(el('span', 'text-muted opacity-40', '·'));
+        const active = name === (posture.tier || 'none');
+        const seg = el('span', active ? 'text-accent font-semibold' : 'text-muted');
+        seg.appendChild(document.createTextNode(name));
+        seg.appendChild(el('span', 'text-muted ml-1', thresh + '+'));
+        ladder.appendChild(seg);
+      });
+      pWrap.appendChild(ladder);
+
       const contribs = Array.isArray(posture.contributors) ? posture.contributors : [];
       if (contribs.length) {
         const pills = el('div', 'flex flex-wrap gap-2 mb-2');
@@ -290,7 +307,7 @@
       }
 
       pWrap.appendChild(el('div', 'text-xs text-muted leading-relaxed',
-        'A second score, separate from the activity index above: how much institutional sophistication the signal set reveals (0-100). Deterministic and fully traceable, the score is the sum of the signal weights shown. Behavioral, not a risk or compliance score.'));
+        'Where this wallet sits on the five-step institutional scale above (0-100), a second axis separate from the activity index. It reflects how much institutional sophistication the signal set reveals, scored deterministically as the sum of the marker weights shown. Behavioral, not a risk or compliance score.'));
       card.appendChild(pWrap);
     }
 
