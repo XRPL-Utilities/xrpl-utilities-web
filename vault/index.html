@@ -1037,9 +1037,9 @@
         const caveat = i.caveat ? `<div class="text-[10px] text-muted mt-3 leading-snug border-t border-border pt-3">${escapeHtml(i.caveat)}</div>` : '';
         const net = i.net_24h || '0';
         // MPTs (XLS-33) use MPToken holder objects, not trustlines, and the
-        // snapshot doesn't enumerate holders — so show n/a rather than a
+        // snapshot doesn't enumerate holders, so show n/a rather than a
         // misleading "0".
-        const trustlines = isMpt ? '—'
+        const trustlines = isMpt ? 'n/a'
           : ((i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '…');
         const mptBadge = isMpt ? '<span class="badge-mpt text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">MPT</span>' : '';
         const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(i.wallet || '')}`;
