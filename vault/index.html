@@ -96,7 +96,9 @@
     .class-money_market      { color: #f472b6; border-color: rgba(244, 114, 182, 0.45); background: rgba(244, 114, 182, 0.10); }
     .class-commodity_energy  { color: #fdba74; border-color: rgba(253, 186, 116, 0.45); background: rgba(253, 186, 116, 0.10); }
     .class-private_credit    { color: #a3e635; border-color: rgba(163, 230, 53, 0.45); background: rgba(163, 230, 53, 0.10); }
+    .class-structured_product { color: #818cf8; border-color: rgba(129, 140, 248, 0.45); background: rgba(129, 140, 248, 0.10); }
     .class-gateway_iou       { color: #94a3b8; border-color: rgba(148, 163, 184, 0.45); background: rgba(148, 163, 184, 0.10); }
+    .badge-mpt               { color: #c4b5fd; border-color: rgba(196, 181, 253, 0.45); background: rgba(196, 181, 253, 0.10); }
 
     .delta-positive { color: #4ade80; }
     .delta-negative { color: #f87171; }
@@ -785,6 +787,7 @@
         money_market:      'MMF',
         commodity_energy:  'ENERGY',
         private_credit:    'PVT CREDIT',
+        structured_product: 'STRUCTURED',
         gateway_iou:       'GATEWAY IOU',
       };
       return map[c] || (c || '').toUpperCase();
@@ -1030,9 +1033,15 @@
       el.innerHTML = sorted.map(i => {
         const cls = i.asset_class || '';
         const status = i.mint_status || 'live';
+        const isMpt = i.token_standard === 'mpt';
         const caveat = i.caveat ? `<div class="text-[10px] text-muted mt-3 leading-snug border-t border-border pt-3">${escapeHtml(i.caveat)}</div>` : '';
         const net = i.net_24h || '0';
-        const trustlines = (i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '…';
+        // MPTs (XLS-33) use MPToken holder objects, not trustlines, and the
+        // snapshot doesn't enumerate holders — so show n/a rather than a
+        // misleading "0".
+        const trustlines = isMpt ? '—'
+          : ((i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '…');
+        const mptBadge = isMpt ? '<span class="badge-mpt text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">MPT</span>' : '';
         const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(i.wallet || '')}`;
         return `
           <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="issuer-tile bg-ink border border-border rounded-xl p-5 block" data-wallet="${escapeHtml(i.wallet || '')}">
@@ -1041,7 +1050,10 @@
                 <div class="font-semibold text-white truncate">${escapeHtml(i.logical_label || i.label || '')}</div>
                 <div class="text-[11px] text-muted truncate">${escapeHtml(i.label || '')}</div>
               </div>
-              <span class="status-${status} text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(status === 'rails_only' ? 'rails' : status)}</span>
+              <div class="flex items-center gap-1 flex-shrink-0">
+                ${mptBadge}
+                <span class="status-${status} text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(status === 'rails_only' ? 'rails' : status)}</span>
+              </div>
             </div>
             <div class="flex items-baseline gap-2 mb-1">
               <span class="text-2xl font-bold font-mono">${escapeHtml(fmtNumber(i.circulating || '0'))}</span>
