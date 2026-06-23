@@ -258,14 +258,14 @@
       <div class="stat-tile stat-tile-glow p-5 sm:p-6 mb-3">
         <div class="flex items-baseline justify-between gap-4 flex-wrap">
           <div>
-            <div class="stat-tile-label mb-2">USD-pegged RWA on XRPL</div>
+            <div class="stat-tile-label mb-2">Total tracked RWA (USD-equivalent)</div>
             <div id="stat-usd-pegged-total" class="text-3xl sm:text-4xl font-bold tabular-nums text-white">
               <span class="inline-block h-9 w-32 bg-border rounded animate-pulse align-middle"></span>
             </div>
             <div id="stat-usd-pegged-detail" class="stat-tile-sub mt-2">&hellip;</div>
           </div>
           <div class="text-right text-[11px] text-muted max-w-md leading-relaxed">
-            Sum of USD stablecoins + treasuries at NAV + commercial paper at par + MMF at NAV. Non-USD native-unit issuers (EUR, BRL, AUD, MWh, gold, BOB) are deliberately excluded (listed below). <span id="stat-usd-pegged-excluded-summary"></span>
+            USD-equivalent rollup: USD stablecoins at $1, treasuries at NAV, commercial paper at par, MMFs at NAV, plus EUR/AUD/BRL/JPY converted at assumed FX rates and energy at an assumed price per MWh. These peg assumptions are estimates, not on-chain truth. Native-unit tokens with no peg (gold, BOB, and other natives) are listed separately below. <span id="stat-usd-pegged-excluded-summary"></span>
           </div>
         </div>
       </div>
@@ -524,11 +524,11 @@
   <section class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">What this tracks</h2>
-      <h3 class="text-3xl font-bold mb-6">Verified issuers, native units, no fabricated USD</h3>
+      <h3 class="text-3xl font-bold mb-6">Verified issuers, native units, transparent valuation</h3>
       <ul class="grid md:grid-cols-2 gap-x-8 gap-y-5 text-muted leading-relaxed list-none">
         <li>
           <span class="text-white font-semibold">Verified issuers, native units.</span>
-          Every issuer checked against the ledger; reported in shares, megawatt-hours, or peg unit. Never multiplied by an off-chain price oracle. Bring your own valuation if you need USD.
+          Every issuer is checked against the ledger and reported in its native unit (shares, megawatt-hours, peg unit), never multiplied by a price oracle. The single headline figure is a USD-equivalent convenience rollup that applies clearly-disclosed peg assumptions; every per-issuer number below it stays native.
         </li>
         <li>
           <span class="text-white font-semibold">Treasury-aware.</span>
@@ -905,7 +905,7 @@
       if (usdDetailEl) {
         const inc = usdAgg.issuer_count_included || 0;
         const exc = usdAgg.issuer_count_excluded || 0;
-        usdDetailEl.textContent = `${inc} USD-pegged issuer${inc === 1 ? '' : 's'} aggregated · ${exc} native-unit issuer${exc === 1 ? '' : 's'} excluded`;
+        usdDetailEl.textContent = `${inc} issuer${inc === 1 ? '' : 's'} converted into the total · ${exc} no-peg native issuer${exc === 1 ? '' : 's'} shown separately`;
       }
       if (usdExclEl) {
         const nonUsd = usdAgg.non_usd_pegged_natives || [];
