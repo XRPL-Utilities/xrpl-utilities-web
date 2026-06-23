@@ -610,10 +610,12 @@
   function renderUtilityFloorCard(uf) {
     const card = sectionCard('Required equilibrium price');
     const hasSpot = typeof uf.current_price_usd === 'number';
-    // Baseline (= P from Burst Math) keeps the precise threshold so a
-    // $1.014 floor reads as $1.014, not $1.01. Spot is a market quote
-    // where 2 decimals is plenty.
-    const rows = [['Required floor', fmtUsdEq(uf.baseline_usd) + ' / XRP']];
+    // Floor field was renamed baseline_usd -> algebraic_p_at_assumed_qv_usd at
+    // schema 1.12.0; read the new name, fall back to the old for back-compat.
+    const floorUsd = uf.algebraic_p_at_assumed_qv_usd ?? uf.baseline_usd;
+    // Keeps the precise threshold so a $1.014 floor reads as $1.014, not $1.01.
+    // Spot is a market quote where 2 decimals is plenty.
+    const rows = [['Required floor', fmtUsdEq(floorUsd) + ' / XRP']];
     if (hasSpot) {
       // Build the spot row as a DOM node so the 24h arrow + change % can
       // carry its own color (green up, red down, muted on zero), matching
@@ -630,8 +632,8 @@
         spotNode.appendChild(el('span', cls, arrow + ' ' + sign + ch.toFixed(2) + '% 24h'));
       }
       rows.push(['Current spot', spotNode]);
-      if (uf.baseline_usd > 0) {
-        rows.push(['Premium', (uf.current_price_usd / uf.baseline_usd).toFixed(2) + '×']);
+      if (floorUsd > 0) {
+        rows.push(['Premium', (uf.current_price_usd / floorUsd).toFixed(2) + '×']);
       }
     }
     rows.push(['Active Float (M)', fmtXrpAmount(uf.available_liquid_supply_xrp)]);
