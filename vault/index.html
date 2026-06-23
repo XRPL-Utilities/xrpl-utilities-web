@@ -265,7 +265,7 @@
             <div id="stat-usd-pegged-detail" class="stat-tile-sub mt-2">&hellip;</div>
           </div>
           <div class="text-right text-[11px] text-muted max-w-md leading-relaxed">
-            Sum of USD stablecoins + treasuries at NAV + commercial paper at par + MMF at NAV. EUR / BRL / AUD / MWh issuers are deliberately excluded (listed below). <span id="stat-usd-pegged-excluded-summary"></span>
+            Sum of USD stablecoins + treasuries at NAV + commercial paper at par + MMF at NAV. Non-USD native-unit issuers (EUR, BRL, AUD, MWh, gold, BOB) are deliberately excluded (listed below). <span id="stat-usd-pegged-excluded-summary"></span>
           </div>
         </div>
       </div>
@@ -363,7 +363,7 @@
           </div>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
-          Daily settlement activity across every tracked real-world-asset issuer. The top chart counts every mint and redemption event per UTC day, stacked by issuer; currency-agnostic, so a Braza BBRL redemption sits alongside an Ondo OUSG mint as one settlement event. The bottom chart sums the dollar value of net flow per day, restricted to issuers whose native unit sits at or near 1 USD (fiat USD stables, treasury bills at NAV, commercial paper, money-market funds); EUR / BRL / AUD / MWh issuers are excluded from the dollar aggregate by design.
+          Daily settlement activity across every tracked real-world-asset issuer. The top chart counts every mint and redemption event per UTC day, stacked by issuer; currency-agnostic, so a Braza BBRL redemption sits alongside an Ondo OUSG mint as one settlement event. The bottom chart sums the dollar value of net flow per day, restricted to issuers whose native unit sits at or near 1 USD (fiat USD stables, treasury bills at NAV, commercial paper, money-market funds); non-USD native-unit issuers (EUR, BRL, AUD, MWh, gold, BOB) are excluded from the dollar aggregate by design.
         </p>
 
         <div class="mb-6">
