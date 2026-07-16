@@ -1028,11 +1028,14 @@ feed = session.post(
       // to value-based inference matching the same thresholds.
       const isWhale = (e.source_appearances || []).indexOf('whale_xrpl') !== -1;
       const isPermDomain = (e.source_appearances || []).indexOf('permissioned_domain_lifecycle') !== -1;
-      // On-chain rows (whale_xrpl, permissioned_domain_lifecycle) have
-      // appearance_count stripped server-side because each event has a
-      // unique tx-hash-derived id (always 1, never cross-verified). Skip
-      // the badge to avoid rendering "appearance_count: undefined".
-      const isOnChainOnly = isWhale || isPermDomain;
+      const isRwaObligations = (e.source_appearances || []).indexOf('rwa_obligations_delta') !== -1;
+      // On-chain rows (whale_xrpl, permissioned_domain_lifecycle,
+      // rwa_obligations_delta) have appearance_count stripped server-side
+      // because each event has a unique id (tx-hash-derived, or a
+      // per-watcher-pass obligations snapshot) that is always 1, never
+      // cross-verified. Skip the badge to avoid rendering
+      // "appearance_count: undefined".
+      const isOnChainOnly = isWhale || isPermDomain || isRwaObligations;
       const whaleAU = isWhale && e.active_utility && e.active_utility.signal === 'whale_transfer'
         ? e.active_utility : null;
       // Two other whale_xrpl sub-signals from the same source: XLS-85
