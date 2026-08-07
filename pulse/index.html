@@ -966,11 +966,16 @@ feed = session.post(
           if (issuer && issuer.wallet) TRACKED_RWA_ISSUERS.add(issuer.wallet);
         }
       } catch (_) {
-        // Network blip; leave set empty. Filter falls open (all
-        // token-escrow events render) until next page load.
+        // Network blip; leave set empty. An empty set matches nothing, so
+        // every token-escrow row stays suppressed until the next page
+        // load - conservative, but it never floods the column with the
+        // memecoin escrow stream.
       }
     }
-    _hydrateTrackedIssuers();
+    // Kept as a promise so the activity filter can wait for the set
+    // before deciding which escrow rows survive. Without the wait, a
+    // fetch that lands first would drop tracked-issuer escrows too.
+    const _trackedIssuersReady = _hydrateTrackedIssuers();
 
     function renderEvent(e) {
       // Choreography events already get their own dedicated dashboard
@@ -1820,31 +1825,53 @@ feed = session.post(
       }
     }
 
-    function filterActivityEvents(events) {
-      // Drop sub-$1M anonymous whales (NORMAL_ACTIVITY) so the marketing
-      // feed surfaces signal not noise. sentinel_signal and
+    // Single source of truth for "does this activity event become a
+    // card?". renderEvent() still re-checks each rule defensively, but
+    // the cache must agree with it: col.shown slices col.events, so any
+    // row that renders to '' would otherwise consume a visible slot and
+    // leave a hole. When one issuer floods the stream (memecoin escrow
+    // bursts routinely run >90% of a fetch window) that turns a 12-card
+    // column into one or two cards.
+    function isRenderableActivityEvent(e) {
+      const srcs = e.source_appearances || [];
+      const au = e.active_utility || {};
+      // Choreographies have their own dashboard section above the feed.
+      if (srcs.includes('choreography_watcher')) return false;
+      // Once-per-UTC-day AMM state captures, not transactional activity.
+      if (au.signal === 'rwa_amm_pool_state') return false;
+      // Escrows on non-curated issuers: memecoin and community-token noise.
+      if (au.signal === 'token_escrow_event' && au.issuer
+          && !TRACKED_RWA_ISSUERS.has(au.issuer)) return false;
+      // Sub-$1M anonymous whales. sentinel_signal and
       // permissioned_domain_lifecycle events pass through untouched.
-      return events.filter(e => {
-        if (!(e.source_appearances || []).includes('whale_xrpl')) return true;
-        return inferWhaleTier(e) !== 'NORMAL_ACTIVITY';
-      });
+      if (srcs.includes('whale_xrpl') && inferWhaleTier(e) === 'NORMAL_ACTIVITY') return false;
+      return true;
+    }
+
+    async function filterActivityEvents(events) {
+      await _trackedIssuersReady;
+      return events.filter(isRenderableActivityEvent);
     }
 
     async function fetchNextBatch(key) {
       // Pull the next batch of older events into the local cache. Skip if
       // we're already loading or know there's nothing more on the server.
+      // Returns the number of raw server rows consumed, which is not the
+      // same as cache growth: a window can be 100% suppressed rows and
+      // still be forward progress, because the cursor moved. Callers
+      // topping up the cache must loop on this, not on events.length.
       const col = _columns[key];
-      if (col.loading || col.exhausted) return;
+      if (col.loading || col.exhausted) return 0;
       col.loading = true;
       try {
         const fetchSize = col.kind === 'activity' ? FETCH_BATCH * ACTIVITY_FETCH_MULTIPLIER : FETCH_BATCH;
         const raw = await fetchEvents({ kind: col.kind, before_iso: col.oldestCursor, limit: fetchSize });
         if (raw.length === 0) {
           col.exhausted = true;
-          return;
+          return 0;
         }
         col.oldestCursor = new Date(raw[raw.length - 1].published_at * 1000).toISOString();
-        const visible = col.kind === 'activity' ? filterActivityEvents(raw) : raw;
+        const visible = col.kind === 'activity' ? await filterActivityEvents(raw) : raw;
         // Dedupe against existing cache by event_id - cursor windows can
         // briefly overlap if events with identical published_at straddle
         // the cursor boundary.
@@ -1852,8 +1879,22 @@ feed = session.post(
         for (const ev of visible) {
           if (!seen.has(ev.event_id)) col.events.push(ev);
         }
+        return raw.length;
       } finally {
         col.loading = false;
+      }
+    }
+
+    // Pull windows until the cache holds `target` renderable events.
+    // Bounded so a long spam-only stretch can't spin the browser through
+    // the whole history; the Show-more button remains available.
+    const MAX_TOPUP_FETCHES = 6;
+    async function fillCacheTo(key, target) {
+      const col = _columns[key];
+      for (let i = 0; i < MAX_TOPUP_FETCHES; i++) {
+        if (col.events.length >= target || col.exhausted) return;
+        const consumed = await fetchNextBatch(key);
+        if (!consumed) return;  // server had nothing more
       }
     }
 
@@ -1899,7 +1940,10 @@ feed = session.post(
       col.loading = false;
       renderColumn(key);  // skeleton
       try {
-        await fetchNextBatch(key);
+        // Top up like showMore does: one fetch window can be almost
+        // entirely suppressed rows (a single issuer flooding escrows),
+        // which used to leave the column showing one card.
+        await fillCacheTo(key, INITIAL_VISIBLE);
         col.shown = Math.min(INITIAL_VISIBLE, col.events.length);
         annotateCrossLinks();
         renderColumn(key);
@@ -1913,15 +1957,8 @@ feed = session.post(
       const col = _columns[key];
       if (col.loading) return;
       // Top up the cache so we always have at least REVEAL_BATCH more
-      // ready behind what we're about to show. Loops in case a single
-      // fetch returned fewer rows than expected (e.g. lots of NORMAL
-      // dropouts in a quiet window).
-      const targetCacheSize = col.shown + REVEAL_BATCH + REVEAL_PREFETCH_MARGIN;
-      while (col.events.length < targetCacheSize && !col.exhausted) {
-        const before = col.events.length;
-        await fetchNextBatch(key);
-        if (col.events.length === before) break;  // no progress; bail
-      }
+      // ready behind what we're about to show.
+      await fillCacheTo(key, col.shown + REVEAL_BATCH + REVEAL_PREFETCH_MARGIN);
       col.shown = Math.min(col.events.length, col.shown + REVEAL_BATCH);
       annotateCrossLinks();
       renderColumn(key);
