@@ -13,7 +13,15 @@
   },
   "assets": {
     "directory": ".",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // In static-assets mode the assets binding answers first and the Worker
+    // only runs when nothing matches. That fallthrough is not reliable for
+    // API paths: /api/x/pulse/stats and /api/x/vault/healthz were observed
+    // returning the assets 404 (empty body) and the real upstream response
+    // on alternating requests, depending on which handler won. Pinning
+    // /api/* to the Worker removes the race for both the proxy and the
+    // preview-token mint.
+    "run_worker_first": ["/api/*"]
   },
   "compatibility_flags": [
     "nodejs_compat"
