@@ -24,6 +24,7 @@ dependencies.
 | `tip/index.html` | Tip jar page (XRPL Payment to the operator wallet) |
 | `assets/logo.png`, `assets/xr-*.png` | Brand assets |
 | `assets/preview-token.js` | Cloudflare Turnstile-issued preview-JWT minter for free in-browser API calls |
+| `assets/api-resilient.js` | Wraps `fetch` so API calls that a visitor's network blocks retry same-origin via `/api/x/<service>/` |
 | `assets/scan-flow.js` | Single + bulk scan UI, payment polling, QR rendering, CSV export |
 | `assets/telemetry-flow.js` | Telemetry payment polling + result rendering for the `/telemetry/` page |
 | `assets/glossary-tooltip.js` | Shared hover-tooltip component for XRPL jargon (XLS-80, AMM, DvP, x402, etc.) |

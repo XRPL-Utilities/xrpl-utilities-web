@@ -13,6 +13,9 @@
  *   POST /api/preview-token  - mint a Turnstile-gated short-TTL JWT for
  *                              the marketing site to attach to API calls
  *                              against XR-* services.
+ *   ANY  /api/x/<service>/*  - same-origin passthrough to the XR-* API
+ *                              hosts, for visitors whose network blocks
+ *                              *.xrpl-utilities.io directly.
  *
  * Required env (Cloudflare Pages dashboard → Settings → Variables):
  *   - TURNSTILE_SECRET_KEY  Turnstile site secret. Never embedded in HTML.
@@ -150,6 +153,118 @@ async function handlePreviewTokenMint(request, env) {
   });
 }
 
+/* ---------------------------------------------------------------------
+ * Same-origin API passthrough.
+ *
+ * Why this exists: on 2026-08-10 an operator on a new Xfinity line found
+ * every data panel on the site empty. The pages loaded (they come from
+ * this domain, via Cloudflare) but every call to *.xrpl-utilities.io died
+ * with ERR_SSL_PROTOCOL_ERROR. Cause was xFi Advanced Security blocking
+ * the API hosts — a filter that ships ON by default for the largest home
+ * ISP in the US. Server side was healthy throughout: valid TLS 1.3, full
+ * chain, correct SNI, every endpoint 200 from everywhere else.
+ *
+ * A visitor in that state sees a fully-rendered site with no numbers in
+ * it and no way to know why. They conclude the product is broken.
+ *
+ * So: the browser can reach this domain by definition — it just loaded
+ * the page from it — and this route lets the site's data ride that same
+ * connection when the direct one is unreachable. It is a FALLBACK, not
+ * the default path (see assets/api-resilient.js): unblocked visitors
+ * keep talking to the API hosts directly, so this adds no hop, no Worker
+ * request, and no single point of failure for the common case.
+ *
+ * Deliberately NOT a general proxy. The service name is matched against a
+ * fixed map — an attacker cannot steer it at an arbitrary host — and only
+ * an explicit header allowlist crosses in either direction.
+ * ------------------------------------------------------------------- */
+
+const PROXY_TARGETS = {
+  sentinel: "https://sentinel.xrpl-utilities.io",
+  pulse: "https://pulse.xrpl-utilities.io",
+  trust: "https://trust.xrpl-utilities.io",
+  telemetry: "https://telemetry.xrpl-utilities.io",
+  vault: "https://vault.xrpl-utilities.io",
+  flows: "https://flows.xrpl-utilities.io",
+};
+
+// Sent upstream. Authorization carries the preview token; the PAYMENT-*
+// pair is x402 payment negotiation, which must survive the hop or the
+// paid flows on /sentinel/ break behind the proxy.
+const PROXY_REQUEST_HEADERS = [
+  "accept",
+  "authorization",
+  "content-type",
+  "payment-signature",
+  "x-payment",
+];
+
+// Returned to the page. Same reasoning in reverse — the x402 client reads
+// PAYMENT-REQUIRED off the 402 to build its payment.
+const PROXY_RESPONSE_HEADERS = [
+  "content-type",
+  "cache-control",
+  "payment-required",
+  "payment-response",
+  "x-payment-response",
+  "retry-after",
+];
+
+async function handleApiProxy(request, url) {
+  // /api/x/<service>/<upstream path...>
+  const rest = url.pathname.slice("/api/x/".length);
+  const slash = rest.indexOf("/");
+  const service = slash === -1 ? rest : rest.slice(0, slash);
+  const upstreamPath = slash === -1 ? "/" : rest.slice(slash);
+
+  const target = Object.prototype.hasOwnProperty.call(PROXY_TARGETS, service)
+    ? PROXY_TARGETS[service]
+    : null;
+  if (!target) {
+    return jsonResponse(404, { error: "unknown_service" });
+  }
+  if (request.method !== "GET" && request.method !== "POST") {
+    return new Response("Method Not Allowed", {
+      status: 405,
+      headers: { allow: "GET, POST" },
+    });
+  }
+
+  const headers = new Headers();
+  for (const name of PROXY_REQUEST_HEADERS) {
+    const value = request.headers.get(name);
+    if (value) headers.set(name, value);
+  }
+  // The API hosts key their free-preview CORS allowlist off Origin. Server
+  // to server there is no browser Origin to forward, so state the one this
+  // request actually came from.
+  headers.set("Origin", url.origin);
+
+  let upstream;
+  try {
+    upstream = await fetch(target + upstreamPath + url.search, {
+      method: request.method,
+      headers,
+      body: request.method === "POST" ? await request.arrayBuffer() : undefined,
+    });
+  } catch (err) {
+    // The proxy is the fallback path; if it fails too there is nowhere
+    // left to go, so say so plainly rather than surfacing a bare 500.
+    return jsonResponse(502, {
+      error: "upstream_unreachable",
+      service,
+      detail: String(err && err.message ? err.message : err),
+    });
+  }
+
+  const out = new Headers();
+  for (const name of PROXY_RESPONSE_HEADERS) {
+    const value = upstream.headers.get(name);
+    if (value) out.set(name, value);
+  }
+  return new Response(upstream.body, { status: upstream.status, headers: out });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -181,6 +296,10 @@ export default {
         status: 405,
         headers: { allow: "POST" },
       });
+    }
+
+    if (url.pathname.startsWith("/api/x/")) {
+      return handleApiProxy(request, url);
     }
 
     // Everything else: static assets bound at env.ASSETS via wrangler.jsonc
