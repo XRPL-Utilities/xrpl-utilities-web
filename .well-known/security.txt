@@ -1,0 +1,10 @@
+# RFC 9116 security contact for XRPL-Utilities LLC.
+# Also a reputation signal: a young .io domain whose subdomains serve bare
+# JSON APIs scores badly on automated classifiers, and a published security
+# contact is one of the cheap signals that says a real operator runs this.
+
+Contact: mailto:xrpl-utilities@proton.me
+Expires: 2027-08-10T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://xrpl-utilities.com/.well-known/security.txt
+Policy: https://xrpl-utilities.com/terms/
