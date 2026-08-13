@@ -307,20 +307,28 @@
           <div>
             <div id="xls85-all-time" class="stat-tile-value">&hellip;</div>
             <div class="stat-tile-label mt-2">events all-time</div>
+            <div id="xls85-all-time-raw" class="stat-tile-sub text-[10px] mt-1"></div>
           </div>
           <div>
             <div id="xls85-7d" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
             <div class="stat-tile-label mt-2">last 7d</div>
+            <div id="xls85-7d-raw" class="stat-tile-sub text-[10px] mt-1"></div>
           </div>
           <div>
             <div id="xls85-24h" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
             <div class="stat-tile-label mt-2">last 24h</div>
+            <div id="xls85-24h-raw" class="stat-tile-sub text-[10px] mt-1"></div>
           </div>
           <div>
-            <div id="xls85-dvp" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
-            <div class="stat-tile-label mt-2">DvP candidates</div>
+            <div id="xls85-issuers" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
+            <div class="stat-tile-label mt-2">distinct issuers</div>
+            <div id="xls85-dvp-sub" class="stat-tile-sub text-[10px] mt-1"></div>
           </div>
         </div>
+        <!-- Shown only when automated high-rate emitters are present in the
+             window. Counts above are already net of them; this explains the
+             gap rather than leaving two different numbers unexplained. -->
+        <p id="xls85-caveat" class="hidden text-[11px] leading-relaxed mt-4 rounded border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-amber-200/90"></p>
         <p class="text-[11px] text-muted leading-relaxed mt-5">
           XLS-85 enables time-locked or condition-locked escrow of non-XRP IOU tokens. Used for vesting, deferred settlement, and atomic two-leg trades. DvP candidates are paired escrows sharing a Condition hash within an hour (delivery-versus-payment pattern, candidate not confirmed). The counts here cover XLS-85 activity across all XRPL IOUs that Pulse's whale watcher observes; the per-issuer chips on the tiles below scope to operator-tracked RWA issuers only, which is a smaller subset.
         </p>
@@ -1397,10 +1405,52 @@
           const el = document.getElementById(id);
           if (el) el.textContent = v;
         };
-        setText('xls85-all-time', fmt(body.all_time));
-        setText('xls85-7d',       fmt(body.last_7d));
-        setText('xls85-24h',      fmt(body.last_24h));
-        setText('xls85-dvp',      fmt(body.dvp_all_time));
+        // Lead with the organic counts. A raw event count is not an
+        // adoption measure: one issuer looping conditional escrows on its
+        // own token moves it as much as a whole ecosystem would, and on
+        // 2026-08-12 one reached 77% of the all-time record in a day.
+        // The API separates the two; older payloads without `organic`
+        // fall back to raw so a stale deploy still renders.
+        const org = body.organic || {};
+        const pick = (o, r) => (typeof o === 'number') ? o : r;
+        setText('xls85-all-time', fmt(pick(org.all_time, body.all_time)));
+        setText('xls85-7d',       fmt(pick(org.last_7d,  body.last_7d)));
+        setText('xls85-24h',      fmt(pick(org.last_24h, body.last_24h)));
+        setText('xls85-issuers',  fmt(pick(org.distinct_issuers, body.distinct_issuers)));
+        setText('xls85-dvp-sub',  fmt(body.dvp_all_time) + ' DvP candidates');
+
+        // Sub-line shows the raw total only where it actually differs, so
+        // the tile never displays two numbers without saying why.
+        const rawLine = (id, orgVal, rawVal) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.textContent = (typeof orgVal === 'number' && typeof rawVal === 'number' && rawVal > orgVal)
+            ? fmt(rawVal) + ' incl. automated'
+            : '';
+        };
+        rawLine('xls85-all-time-raw', org.all_time, body.all_time);
+        rawLine('xls85-7d-raw',       org.last_7d,  body.last_7d);
+        rawLine('xls85-24h-raw',      org.last_24h, body.last_24h);
+
+        // Deliberately does not render body.data_note verbatim: that
+        // string names the flagged issuer, which is fine for an API
+        // consumer but is not something to publish on a marketing page
+        // about a party nobody has worked up.
+        const caveatEl = document.getElementById('xls85-caveat');
+        if (caveatEl) {
+          const n = (body.high_rate_issuers || []).length;
+          if (n > 0) {
+            const hidden = (body.all_time || 0) - (org.all_time || 0);
+            caveatEl.textContent =
+              'Counts above exclude ' + fmt(hidden) + ' events from ' + n +
+              ' high-rate automated ' + (n === 1 ? 'issuer' : 'issuers') +
+              '. Repetition on a single token is throughput, not adoption, so it is reported separately rather than folded into the headline.';
+            caveatEl.classList.remove('hidden');
+          } else {
+            caveatEl.textContent = '';
+            caveatEl.classList.add('hidden');
+          }
+        }
         const sinceEl = document.getElementById('xls85-since');
         if (sinceEl && body.earliest_event_at) {
           const d = new Date(body.earliest_event_at * 1000);
