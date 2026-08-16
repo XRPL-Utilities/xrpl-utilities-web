@@ -1034,15 +1034,18 @@ feed = session.post(
       // Legacy events without a `tier` field (pre-1.14.0 emits) fall back
       // to value-based inference matching the same thresholds.
       const isWhale = (e.source_appearances || []).indexOf('whale_xrpl') !== -1;
-      const isPermDomain = (e.source_appearances || []).indexOf('permissioned_domain_lifecycle') !== -1;
-      const isRwaObligations = (e.source_appearances || []).indexOf('rwa_obligations_delta') !== -1;
-      // On-chain rows (whale_xrpl, permissioned_domain_lifecycle,
-      // rwa_obligations_delta) have appearance_count stripped server-side
-      // because each event has a unique id (tx-hash-derived, or a
-      // per-watcher-pass obligations snapshot) that is always 1, never
-      // cross-verified. Skip the badge to avoid rendering
-      // "appearance_count: undefined".
-      const isOnChainOnly = isWhale || isPermDomain || isRwaObligations;
+      // On-chain rows have appearance_count stripped server-side because
+      // each event has a unique id (tx-hash-derived, or a per-watcher-pass
+      // snapshot) that is always 1 and never cross-verified.
+      // Test the field itself rather than a source allow-list: the server
+      // strips from every source in db.ACTIVITY_SOURCES, which is 11 and
+      // grows with each new watcher. The old hardcoded trio missed the
+      // other eight (rwa_issuer_daily, rwa_issuer_flow, rwa_amm_pool_state,
+      // relay_burst, focus_watch, choreography_watcher,
+      // institutional_dispersion, sentinel_signal) and rendered
+      // "appearance_count: undefined" on all of them.
+      const hasAppearanceCount = typeof e.appearance_count === 'number';
+      const isOnChainOnly = !hasAppearanceCount;
       const whaleAU = isWhale && e.active_utility && e.active_utility.signal === 'whale_transfer'
         ? e.active_utility : null;
       // Two other whale_xrpl sub-signals from the same source: XLS-85
