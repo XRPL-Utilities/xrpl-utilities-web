@@ -107,6 +107,7 @@
     .delta-zero     { color: #71717a; }
 
     .status-live        { color: #4ade80; border-color: rgba(74, 222, 128, 0.35); background: rgba(74, 222, 128, 0.10); }
+    .status-dormant     { color: #fbbf24; border-color: rgba(251, 191, 36, 0.35); background: rgba(251, 191, 36, 0.10); }
     .status-rails_only  { color: #94a3b8; border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.10); }
 
     @keyframes shimmer {
@@ -884,7 +885,11 @@
       if (trackedEl)     trackedEl.textContent = String(t.tracked_issuers ?? '…');
       if (trackedDetail) {
         const pending = t.candidates_pending ?? 0;
-        const base = `${t.live_issuers ?? 0} live · ${t.rails_only_issuers ?? 0} rails-only`;
+        // dormant is only shown when non-zero so the line stays short in
+        // the normal case; it is real outstanding supply that stopped moving,
+        // NOT the same thing as rails-only (which never issued at all).
+        const dormant = t.dormant_issuers ?? 0;
+        const base = `${t.live_issuers ?? 0} live${dormant > 0 ? ` · ${dormant} dormant` : ''} · ${t.rails_only_issuers ?? 0} rails-only`;
         trackedDetail.textContent = pending > 0 ? `${base} · +${pending} unverified` : base;
       }
       if (mintsEl)       mintsEl.textContent = String(t.mints_24h_total ?? 0);
@@ -1033,11 +1038,14 @@
         el.innerHTML = '<div class="text-xs text-muted">No issuers loaded.</div>';
         return;
       }
-      // Sort: live issuers with non-zero circulating first (by circulating
-      // desc), then live issuers with zero, then rails_only.
+      // Sort by status band, then circulating desc within a band:
+      // live first, then dormant (real supply, just static), then
+      // rails_only (never issued). Ranking dormant with rails_only would
+      // bury a programme that still has money outstanding.
+      const statusRank = (s) => (s === 'live' ? 2 : s === 'dormant' ? 1 : 0);
       const sorted = issuers.slice().sort((a, b) => {
-        const aLive = a.mint_status === 'live' ? 1 : 0;
-        const bLive = b.mint_status === 'live' ? 1 : 0;
+        const aLive = statusRank(a.mint_status);
+        const bLive = statusRank(b.mint_status);
         if (aLive !== bLive) return bLive - aLive;
         const aCirc = parseFloat(a.circulating || '0') || 0;
         const bCirc = parseFloat(b.circulating || '0') || 0;
