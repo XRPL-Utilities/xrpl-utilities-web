@@ -101,6 +101,7 @@
     .class-gateway_iou       { color: #94a3b8; border-color: rgba(148, 163, 184, 0.45); background: rgba(148, 163, 184, 0.10); }
     .class-real_estate       { color: #2dd4bf; border-color: rgba(45, 212, 191, 0.45); background: rgba(45, 212, 191, 0.10); }
     .badge-mpt               { color: #c4b5fd; border-color: rgba(196, 181, 253, 0.45); background: rgba(196, 181, 253, 0.10); }
+    .badge-concentrated      { color: #fbbf24; border-color: rgba(251, 191, 36, 0.45); background: rgba(251, 191, 36, 0.10); }
 
     .delta-positive { color: #4ade80; }
     .delta-negative { color: #f87171; }
@@ -542,8 +543,8 @@
           Every issuer is checked against the ledger and reported in its native unit (shares, megawatt-hours, peg unit), never multiplied by a price oracle. The single headline figure is a USD-equivalent convenience rollup that applies clearly-disclosed peg assumptions; every per-issuer number below it stays native.
         </li>
         <li>
-          <span class="text-white font-semibold">Treasury-aware.</span>
-          Issuer's own holdings excluded where applicable (e.g. OpenEden TBL), so "circulating" matches what's in holders' hands. Public aggregators show the unfiltered number and overstate by orders of magnitude.
+          <span class="text-white font-semibold">Treasury-aware, and honest about who holds the rest.</span>
+          Issuer's own holdings are excluded where applicable (e.g. OpenEden TBL), so "circulating" tracks what left the issuer. That still counts every issued unit regardless of where it sits, so each issuer also carries a holder-spread reading: a token whose supply sits in one or two wallets is tagged 1 HOLDER or CONCENTRATED rather than quietly counted as float. Issuers with very large trustline sets carry no tag, which means not measured, not spread out.
         </li>
         <li>
           <span class="text-white font-semibold">Live and historical.</span>
@@ -1063,6 +1064,17 @@
         const trustlines = isMpt ? 'n/a'
           : ((i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '…');
         const mptBadge = isMpt ? '<span class="badge-mpt text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">MPT</span>' : '';
+        // Holder spread. An issuance parked in one or two wallets is not a
+        // float, and the circulating figure above reads the same either way.
+        // Absent block means not measurable (very large trustline sets, MPTs),
+        // so show nothing rather than implying the supply is spread out.
+        const fc = i.float_concentration || null;
+        const fcFlag = fc && fc.flag;
+        const fcPct = fc && typeof fc.top_holder_pct === 'number'
+          ? (fc.top_holder_pct * 100).toFixed(1) + '%' : null;
+        const fcBadge = (fcFlag === 'single_holder' || fcFlag === 'concentrated')
+          ? `<span class="badge-concentrated text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap" title="Top holder holds ${escapeHtml(fcPct || '')} of supply across ${escapeHtml(String((fc && fc.holders_nonzero) || 0))} holders. Circulating counts every issued unit regardless of who holds it.">${fcFlag === 'single_holder' ? '1 HOLDER' : 'CONCENTRATED'}</span>`
+          : '';
         const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(i.wallet || '')}`;
         return `
           <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="issuer-tile bg-ink border border-border rounded-xl p-5 block" data-wallet="${escapeHtml(i.wallet || '')}">
@@ -1072,6 +1084,7 @@
                 <div class="text-[11px] text-muted truncate">${escapeHtml(i.label || '')}</div>
               </div>
               <div class="flex items-center gap-1 flex-shrink-0">
+                ${fcBadge}
                 ${mptBadge}
                 <span class="status-${status} text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(status === 'rails_only' ? 'rails' : status)}</span>
               </div>
