@@ -379,6 +379,46 @@
   </section>
 
   <!-- WHY THIS MATTERS -->
+  <!-- Ledger-wide primitive adoption. Every XRPL adoption claim is made against
+       a denominator nobody publishes; this is that denominator. Counts are of
+       ledger OBJECTS, not of distinct operators or issuers -- the copy says so
+       explicitly because "18 PermissionedDomains" reads as "18 operators" and
+       there are fewer. Source: Pulse /stats/xrpl-primitives (free). -->
+  <section id="primitives" class="border-t border-border bg-panel/20">
+    <div class="mx-auto max-w-6xl px-6 py-14">
+      <div class="flex items-baseline justify-between flex-wrap gap-3">
+        <h2 class="text-xl font-semibold tracking-tight">What the ledger is actually used for</h2>
+        <span id="primitives-meta" class="text-[10px] uppercase tracking-[0.2em] text-muted/60 font-mono">loading...</span>
+      </div>
+      <p class="mt-2 text-sm text-muted max-w-3xl">
+        Ledger-wide counts of every XRPL object type, sampled daily. These are the
+        denominators behind adoption claims. They count <em>objects on the ledger</em>,
+        not distinct operators or issuers &mdash; one operator can hold several.
+      </p>
+      <div id="primitives-grid" class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="stat-tile p-5">
+          <h3 class="stat-tile-label mb-3">Circulating XRP</h3>
+          <span id="primitives-circulating" class="stat-tile-value">--</span>
+          <p class="stat-tile-sub mt-3"><span id="primitives-escrowed">--</span> still in escrow</p>
+        </div>
+        <div class="stat-tile p-5">
+          <h3 class="stat-tile-label mb-3">Burned to date</h3>
+          <span id="primitives-burned" class="stat-tile-value">--</span>
+          <p class="stat-tile-sub mt-3">destroyed as transaction fees</p>
+        </div>
+        <div class="stat-tile p-5">
+          <h3 class="stat-tile-label mb-3">AMM pools</h3>
+          <span id="primitives-amm" class="stat-tile-value">--</span>
+          <p class="stat-tile-sub mt-3"><span id="primitives-amm-locked">--</span> XRP locked</p>
+        </div>
+      </div>
+      <p class="mt-4 text-[11px] text-muted/70 font-mono">
+        source: <a class="underline hover:text-fg" href="https://pulse.xrpl-utilities.io/stats/xrpl-primitives">/stats/xrpl-primitives</a> &middot; free, no key
+      </p>
+    </div>
+  </section>
+
   <section id="why" class="border-t border-border">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">What's on the feed and why</h2>
@@ -2027,6 +2067,77 @@ feed = session.post(
       else if (action === 'retry') loadColumnInitial(key);
     });
 
+    // Ledger-wide object counts + supply. Free endpoint, no x402.
+    // Deliberately renders NOTHING rather than zeroes when the series is still
+    // bootstrapping: Pulse returns latest=null until the first daily sample
+    // lands, and a grid of "0 PermissionedDomains" would be a false claim about
+    // the ledger rather than an honest "not measured yet".
+    const PRIMITIVE_TILES = [
+      ['PermissionedDomain', 'Permissioned domains', 'XLS-80 gated venues'],
+      ['Credential', 'Credentials', 'XLS-70 issued attestations'],
+      ['DID', 'DIDs', 'on-ledger identifiers'],
+      ['Oracle', 'Price oracles', 'XLS-47'],
+      ['MPTokenIssuance', 'MPT issuances', 'XLS-33 multi-purpose tokens'],
+      ['Escrow', 'Escrows', 'time/condition locked'],
+    ];
+
+    function fmtCount(n) {
+      if (n === null || n === undefined) return '--';
+      return n.toLocaleString('en-US');
+    }
+
+    function fmtXrp(n) {
+      if (!n && n !== 0) return '--';
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+      if (n >= 1e3) return Math.round(n / 1e3) + 'K';
+      return Math.round(n).toLocaleString('en-US');
+    }
+
+    async function loadPrimitives() {
+      const meta = document.getElementById('primitives-meta');
+      const grid = document.getElementById('primitives-grid');
+      if (!grid) return;
+      try {
+        const r = await fetch(`${API_BASE}/stats/xrpl-primitives`, { cache: 'no-store' });
+        if (!r.ok) { if (meta) meta.textContent = 'unavailable'; return; }
+        const body = await r.json();
+        const latest = body && body.latest;
+        if (!latest) {
+          if (meta) meta.textContent = 'first sample pending';
+          return;
+        }
+        const counts = latest.counts || {};
+        const dprev = (body.deltas && body.deltas.since_previous) || {};
+        grid.innerHTML = PRIMITIVE_TILES.map(([key, label, sub]) => {
+          const d = dprev[key];
+          // Only show a delta when we actually measured one. A missing count on
+          // either side yields null upstream, which must not render as "0".
+          const chip = (typeof d === 'number' && d !== 0)
+            ? `<span class="stat-tile-sub ${d > 0 ? 'text-emerald-400' : 'text-rose-400'}">${d > 0 ? '+' : ''}${d}</span>`
+            : '';
+          return `<div class="stat-tile p-4">
+            <h3 class="stat-tile-label mb-2">${label}</h3>
+            <div class="flex items-baseline gap-2">
+              <span class="stat-tile-value">${fmtCount(counts[key])}</span>${chip}
+            </div>
+            <p class="stat-tile-sub mt-2">${sub}</p>
+          </div>`;
+        }).join('');
+        const sup = latest.supply || {};
+        const amm = latest.amm || {};
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        set('primitives-circulating', fmtXrp(sup.circulating_xrp));
+        set('primitives-escrowed', fmtXrp(sup.escrowed_xrp));
+        set('primitives-burned', fmtXrp(sup.burned_xrp));
+        set('primitives-amm', fmtCount(amm.count));
+        set('primitives-amm-locked', fmtXrp(amm.xrp_locked));
+        if (meta) meta.textContent = latest.sample_date + ' UTC';
+      } catch {
+        if (meta) meta.textContent = 'unavailable';
+      }
+    }
+
     async function loadWhaleSummary() {
       // Pull pre-bucketed 24h aggregates from /stats/whale-flow-24h. The
       // server filters to INSTITUTIONAL_FLOW + WHALE_MOVE tiers and
@@ -2660,6 +2771,7 @@ feed = session.post(
     loadColumnInitial('news');
     loadColumnInitial('activity');
     loadWhaleSummary();
+    loadPrimitives();
   </script>
 </body>
 </html>
