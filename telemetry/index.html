@@ -450,7 +450,7 @@
           </div>
         </div>
         <p id="sv-perm-caveat" class="hidden text-xs text-muted leading-relaxed mt-4">
-          XLS-81 (Permissioned DEX) is live on mainnet. Permissioned settlement classifies a Payment when the tx body or affected Offer/AMM node carries a DomainID. The metric is at or near 0% today as institutional venues come online; the trajectory becomes the signal as adoption ramps.
+          XLS-81 (Permissioned DEX) is live on mainnet. This figure counts <strong>Payments only</strong>: a Payment is classified as permissioned when the tx body or an affected Offer/AMM node carries a DomainID. Trading on a permissioned book settles as an OfferCreate crossing rather than a Payment, and is <strong>not</strong> counted here. So a 0% reading is a limit of this particular metric, not a measurement that permissioned venues are idle, and it should not be read as an adoption trajectory. We verified separately on 2026-08-21 that permissioned books are in fact close to idle: of the permissioned domains we track, four carry a live book, and their only crossings on record are two internal bootstrap trades worth about 10 EUROP each. Both statements are true at once, and only the second one is a measurement.
         </p>
       </div>
 
