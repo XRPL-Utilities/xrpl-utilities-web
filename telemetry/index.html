@@ -450,6 +450,9 @@
             <div id="sv-open-pct" class="text-[10px] text-muted mt-1 font-mono">&nbsp;</div>
           </div>
         </div>
+        <p id="sv-perm-caveat" class="hidden text-xs text-muted leading-relaxed mt-4">
+          XLS-81 (Permissioned DEX) is live on mainnet. This figure counts <strong>Payments only</strong>: a Payment is classified as permissioned when the tx body or an affected Offer/AMM node carries a DomainID. Trading on a permissioned book settles as an OfferCreate crossing rather than a Payment, and is <strong>not</strong> counted here. So a 0% reading is a limit of this particular metric, not a measurement that permissioned venues are idle, and it should not be read as an adoption trajectory. We verified separately on 2026-08-21 that permissioned books are in fact close to idle: of the permissioned domains we track, four carry a live book, and their only crossings on record are two internal bootstrap trades worth about 10 EUROP each. Both statements are true at once, and only the second one is a measurement.
+        </p>
         <!-- Permissioned DEX crossings (Telemetry 1.26.0). The block above
              counts Payments and is structurally blind to permissioned
              trading; this one counts domain-scoped Offer crossings. It is a
@@ -480,9 +483,6 @@
           </p>
           <p id="sv-pdex-coverage" class="hidden text-xs text-muted leading-relaxed mt-2"></p>
         </div>
-        <p id="sv-perm-caveat" class="hidden text-xs text-muted leading-relaxed mt-4">
-          XLS-81 (Permissioned DEX) is live on mainnet. This figure counts <strong>Payments only</strong>: a Payment is classified as permissioned when the tx body or an affected Offer/AMM node carries a DomainID. Trading on a permissioned book settles as an OfferCreate crossing rather than a Payment, and is <strong>not</strong> counted here. So a 0% reading is a limit of this particular metric, not a measurement that permissioned venues are idle, and it should not be read as an adoption trajectory. We verified separately on 2026-08-21 that permissioned books are in fact close to idle: of the permissioned domains we track, four carry a live book, and their only crossings on record are two internal bootstrap trades worth about 10 EUROP each. Both statements are true at once, and only the second one is a measurement.
-        </p>
       </div>
 
       <div class="mt-8 bg-panel border border-border rounded-2xl p-6">
@@ -1246,9 +1246,16 @@ payload = requests.get(
 
     // Compact USD formatter for headline + axis ticks ($591.6M, $4.2B, $220B).
     // Raw integers past 9 digits are unreadable as headlines.
+    // A measured zero must render as $0, never as the same dash we use for
+    // "no data". Conflating them is the exact failure this page's
+    // permissioned blocks exist to avoid: "we measured zero crossings" and
+    // "we have no reading" are different facts and must look different.
+    // Negatives are impossible for a volume and would indicate a bug, so
+    // they are rendered rather than hidden behind a dash.
     const fmtUsdShort = n => {
       const num = Number(n);
-      if (!isFinite(num) || num <= 0) return '-';
+      if (n === null || n === undefined || n === '' || !isFinite(num)) return '-';
+      if (num === 0) return '$0';
       const abs = Math.abs(num);
       if (abs >= 1e12) return '$' + (num / 1e12).toFixed(2) + 'T';
       if (abs >= 1e9)  return '$' + (num / 1e9).toFixed(1) + 'B';
