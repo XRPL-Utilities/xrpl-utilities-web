@@ -339,8 +339,19 @@
       deltaWrap.appendChild(el('span', 'text-xs text-muted', '24h'));
       right.appendChild(deltaWrap);
     } else {
+      // A null delta has two very different causes and this card used to assert
+      // the wrong one. "Bootstrapping" is temporary; "the measurement basis
+      // changed" means the two snapshots are not comparable and differencing
+      // them would print a methodology step as a market move. Telemetry says
+      // which in delta_24h_unavailable_reason -- use it rather than guessing.
+      const reason = af.delta_24h_unavailable_reason;
+      const basisChanged = typeof reason === 'string' && reason.indexOf('basis') !== -1;
       right.appendChild(el('div', 'text-xs text-muted mt-2',
-        '24h delta bootstrapping (first daily snapshot still rotating).'));
+        basisChanged
+          ? 'No 24h delta: the AMM-locked measurement basis changed, so today and yesterday are not comparable. Publishing a delta here would report a methodology change as a market move. Resumes once both snapshots share a basis.'
+          : (typeof reason === 'string' && reason)
+            ? '24h delta unavailable: ' + reason
+            : '24h delta bootstrapping (first daily snapshot still rotating).'));
     }
 
     if (typeof af.proxy_ratio === 'number') {
