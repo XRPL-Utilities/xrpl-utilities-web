@@ -423,12 +423,13 @@
 
       <!-- PERMISSIONED VS OPEN-MARKET SPLIT (schema 1.5.0+).
            Renders the share of XRPL settlement that flowed through XLS-81
-           permissioned venues vs the open market. Today's number is
-           expected to be near 0%; XLS-81 mainnet is just lighting up,
-           and the walker only counts Payments where DomainID is on the
-           tx body or affected Offer/AMM node. This metric exists from
-           day one so its trajectory is observable as institutional
-           adoption ramps. -->
+           permissioned venues vs the open market. This block counts
+           PAYMENTS only, so it cannot see permissioned TRADING at all: an
+           XLS-81 trade is an OfferCreate crossing a domain-scoped book,
+           not a Payment. Do not describe its 0% as an adoption
+           trajectory; it would read 0% no matter how much permissioned
+           trading happened. The Permissioned-DEX block below is the one
+           that measures crossings (Telemetry schema 1.26.0). -->
       <div id="sv-permissioned" class="mt-6 bg-panel border border-border rounded-2xl p-6">
         <div class="flex items-baseline justify-between mb-4 flex-wrap gap-2">
           <div>
@@ -448,6 +449,36 @@
             <div id="sv-open-usd" class="font-mono">&hellip;</div>
             <div id="sv-open-pct" class="text-[10px] text-muted mt-1 font-mono">&nbsp;</div>
           </div>
+        </div>
+        <!-- Permissioned DEX crossings (Telemetry 1.26.0). The block above
+             counts Payments and is structurally blind to permissioned
+             trading; this one counts domain-scoped Offer crossings. It is a
+             SEPARATE axis, not a slice of settlement volume, because a
+             crossing is not a Payment. Never add the two together. -->
+        <div class="mt-6 pt-6 border-t border-border">
+          <div class="flex items-baseline justify-between mb-3 flex-wrap gap-2">
+            <div>
+              <div class="text-xs uppercase tracking-widest text-accent font-semibold">Permissioned DEX crossings</div>
+              <div class="text-xs text-muted mt-1">Domain-scoped XLS-81 order-book fills in the last 24h. Separate axis from settlement volume above, not a share of it.</div>
+            </div>
+            <div id="sv-pdex-fills" class="text-3xl sm:text-4xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3 text-sm">
+            <div class="bg-ink border border-border rounded-lg px-4 py-3">
+              <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Priced crossing volume</div>
+              <div id="sv-pdex-usd" class="font-mono">&hellip;</div>
+              <div class="text-[10px] text-muted mt-1 font-mono">XRP or RLUSD leg valued</div>
+            </div>
+            <div class="bg-ink border border-border rounded-lg px-4 py-3">
+              <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Counted but unpriceable</div>
+              <div id="sv-pdex-unpriced" class="font-mono">&hellip;</div>
+              <div class="text-[10px] text-muted mt-1 font-mono">neither leg XRP or RLUSD</div>
+            </div>
+          </div>
+          <p class="text-xs text-muted leading-relaxed mt-4">
+            Unlike the Payment figures above, this is <strong>not</strong> restricted to the XRP/RLUSD pair, because permissioned books trade pairs like EUROP/RLUSD. Whichever leg is XRP or RLUSD is valued and the other leg is left unvalued. A crossing where neither leg is priceable is real activity we can count but not value, so it is reported on the right rather than folded into the volume figure as zero.
+          </p>
+          <p id="sv-pdex-coverage" class="hidden text-xs text-muted leading-relaxed mt-2"></p>
         </div>
         <p id="sv-perm-caveat" class="hidden text-xs text-muted leading-relaxed mt-4">
           XLS-81 (Permissioned DEX) is live on mainnet. This figure counts <strong>Payments only</strong>: a Payment is classified as permissioned when the tx body or an affected Offer/AMM node carries a DomainID. Trading on a permissioned book settles as an OfferCreate crossing rather than a Payment, and is <strong>not</strong> counted here. So a 0% reading is a limit of this particular metric, not a measurement that permissioned venues are idle, and it should not be read as an adoption trajectory. We verified separately on 2026-08-21 that permissioned books are in fact close to idle: of the permissioned domains we track, four carry a live book, and their only crossings on record are two internal bootstrap trades worth about 10 EUROP each. Both statements are true at once, and only the second one is a measurement.
@@ -1317,6 +1348,40 @@ payload = requests.get(
         }
         if (typeof permCount === 'number' && elPermCount) {
           elPermCount.textContent = permCount.toLocaleString('en-US') + ' payments';
+        }
+
+        // Permissioned DEX crossings (Telemetry 1.26.0). Rendered only when
+        // the backend actually ships the fields, so an older deploy keeps its
+        // skeleton rather than showing a fabricated zero.
+        const pdexFills = d.permissioned_dex_24h_fill_count;
+        const pdexUsd = d.permissioned_dex_24h_usd;
+        const pdexUnpriced = d.permissioned_dex_24h_unpriced_fill_count;
+        const pdexSince = d.permissioned_dex_measured_since_hour;
+        const elPdexFills = document.getElementById('sv-pdex-fills');
+        const elPdexUsd = document.getElementById('sv-pdex-usd');
+        const elPdexUnpriced = document.getElementById('sv-pdex-unpriced');
+        const elPdexCoverage = document.getElementById('sv-pdex-coverage');
+        if (typeof pdexFills === 'number' && elPdexFills) {
+          elPdexFills.textContent = pdexFills.toLocaleString('en-US');
+        }
+        if (typeof pdexUsd === 'number' && elPdexUsd) {
+          elPdexUsd.textContent = fmtUsdShort(pdexUsd);
+        }
+        if (typeof pdexUnpriced === 'number' && elPdexUnpriced) {
+          elPdexUnpriced.textContent = pdexUnpriced.toLocaleString('en-US')
+            + (pdexUnpriced === 1 ? ' crossing' : ' crossings');
+        }
+        // A watermark means earlier hours were walked before this parser
+        // existed. Their zeros are unmeasured, not measured zero, and saying
+        // so is the whole reason the watermark is published.
+        if (typeof pdexSince === 'number' && pdexSince > 0 && elPdexCoverage) {
+          const since = new Date(pdexSince * 1000)
+            .toISOString().replace('T', ' ').slice(0, 16);
+          elPdexCoverage.textContent =
+            'Crossing measurement begins ' + since + ' UTC. Hours before that were '
+            + 'processed before this metric existed, so they are unmeasured rather '
+            + 'than zero, and history earlier than that point is not comparable.';
+          elPdexCoverage.classList.remove('hidden');
         }
         if (typeof permPct === 'number' && elOpenPct) {
           const openPctVal = Math.max(0, 100 - permPct);
