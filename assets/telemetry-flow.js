@@ -556,6 +556,23 @@
       header.appendChild(el('div', 'text-sm text-white font-medium', fmtPctRaw(p.apr_pct) + ' APR'));
       r.appendChild(header);
 
+      // `pair` is a DISPLAY string built from a third-party name and is not
+      // unique -- XRPSCAN names three different tokens from one issuer
+      // "Axelar Bridge". Identity is quote_currency + quote_issuer, so show
+      // the issuer (and its entity name when known) rather than leaving two
+      // different tokens indistinguishable on screen.
+      if (p.quote_issuer) {
+        const idRow = el('div', 'flex items-center gap-1.5 mb-2 text-[10px] text-muted flex-wrap');
+        if (p.quote_issuer_name) {
+          idRow.appendChild(el('span', 'text-white/70', p.quote_issuer_name));
+          idRow.appendChild(el('span', '', '·'));
+        }
+        const addr = el('span', 'font-mono break-all', p.quote_issuer);
+        addr.title = 'Issuer of the quote asset — the identity behind the pair label';
+        idRow.appendChild(addr);
+        r.appendChild(idRow);
+      }
+
       const grid = el('div', 'grid grid-cols-3 gap-2');
       const cells = [
         ['TVL',       fmtUsd(p.tvl_usd, 0)],
@@ -572,6 +589,25 @@
 
       pairsList.appendChild(r);
     });
+    // How supply.amm_locked_xrp was measured on this refresh. It is a
+    // ledger-wide aggregate, deliberately NOT a sum of the pairs above -- a
+    // reader who assumes otherwise will not be able to reconcile the two.
+    if (amm.locked_xrp_basis || amm.locked_xrp_measured === false) {
+      const basis = amm.locked_xrp_basis;
+      const note =
+        amm.locked_xrp_measured === false
+          ? 'AMM-locked XRP was not measured this refresh (upstream unreadable) — not zero.'
+          : basis === 'ledger_wide'
+            ? 'AMM-locked XRP counts every pool on the ledger (~30,350), not just the pairs above.'
+            : basis === 'curated_pools'
+              ? 'AMM-locked XRP is on the fallback curated basis this refresh — it understates the ledger-wide total.'
+              : 'AMM-locked XRP basis: ' + String(basis);
+      pairsCol.appendChild(el(
+        'div',
+        'mt-2 text-[10px] text-muted leading-relaxed',
+        note + (amm.locked_xrp_stale ? ' Carried forward from the last good reading.' : ''),
+      ));
+    }
     if (!(amm.pairs || []).length) {
       pairsList.appendChild(el('div', 'bg-ink border border-border rounded-lg p-3 text-xs text-muted', 'No pair data this snapshot.'));
     }

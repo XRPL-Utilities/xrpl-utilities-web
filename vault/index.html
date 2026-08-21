@@ -898,7 +898,24 @@
       if (ammEl)         ammEl.textContent = String(t.amm_pools_tracked ?? 0);
       if (ammDetail) {
         const classCount = Object.keys(cls).length;
-        ammDetail.textContent = classCount ? `across ${classCount} asset classes` : 'RWA-touching XLS-30';
+        const base = classCount ? `across ${classCount} asset classes` : 'RWA-touching XLS-30';
+        // A bare "20" is a numerator with no denominator -- a reader cannot
+        // tell whether that is every pool or a fraction. Pulse now reports how
+        // many exist ledger-wide. The gap is deliberate: the unmeasured
+        // remainder is overwhelmingly memecoins opening a nominal pair against
+        // a regulated ticker, so we count them but do not measure them.
+        // null (never readable) is NOT rendered as 0.
+        const onLedger = t.amm_pools_on_ledger;
+        if (typeof onLedger === 'number' && onLedger > 0) {
+          const stale = t.amm_pools_on_ledger_stale ? ' (cached)' : '';
+          ammDetail.textContent = `${base} · measured, of ${onLedger} on-ledger${stale}`;
+          ammDetail.title =
+            'We measure pools with live reserves via a curated per-issuer probe. ' +
+            'The ledger-wide count includes every pool holding a tracked issuer\'s ' +
+            'token — mostly nominal pairs holding trivial amounts. Count is not exposure.';
+        } else {
+          ammDetail.textContent = base;
+        }
       }
 
       // USD-pegged aggregate (Pulse 1.62.0). Sum over USD-denominated
