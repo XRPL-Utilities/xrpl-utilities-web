@@ -17,9 +17,17 @@
   // 0xff), which silently mangles any non-ASCII character into a different
   // one - a QR that scans cleanly and pays the wrong string. Deep links are
   // ASCII today; this makes that not matter.
-  if (global.qrcode && global.qrcode.stringToBytesFuncs
-      && global.qrcode.stringToBytesFuncs['UTF-8']) {
-    global.qrcode.stringToBytes = global.qrcode.stringToBytesFuncs['UTF-8'];
+  //
+  // Applied at call time, not load time. If a page ever lists this file before
+  // the vendored encoder, a load-time swap would find global.qrcode undefined,
+  // skip silently, and never retry - and nothing would throw, because the
+  // vendor still loads and toCanvas still works. The only symptom would be a
+  // QR encoding different bytes than the page shows.
+  function useUtf8Bytes() {
+    const enc = global.qrcode;
+    if (enc && enc.stringToBytesFuncs && enc.stringToBytesFuncs['UTF-8']) {
+      enc.stringToBytes = enc.stringToBytesFuncs['UTF-8'];
+    }
   }
 
   // Returns a <canvas> of about sizePx square encoding text, named for
@@ -31,6 +39,7 @@
     if (typeof global.qrcode !== 'function') {
       throw new Error('qr encoder not loaded');
     }
+    useUtf8Bytes();
     const qr = global.qrcode(0, 'M'); // 0 = smallest version the data fits in
     qr.addData(String(text));
     qr.make();

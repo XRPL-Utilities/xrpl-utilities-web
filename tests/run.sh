@@ -15,6 +15,7 @@ node --check assets/telemetry-flow.js
 node tests/trust_xss_test.mjs
 node tests/worker_proxy_test.mjs
 node tests/qr_render_test.mjs
+node tests/telemetry_null_test.mjs
 python3 tests/qr_matrix_crosscheck.py
 
 echo "all checks passed"

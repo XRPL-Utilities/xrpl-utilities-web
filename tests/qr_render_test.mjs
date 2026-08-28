@@ -63,6 +63,26 @@ for (const [page, script] of Object.entries(flowPages)) {
     && body.includes('/assets/vendor/qrcode-generator.min.js?v='));
   if (m) (tokens[script] = tokens[script] || []).push(m[1]);
 }
+// /tip/ has the same window.XRQr dependency, but its call site is an inline
+// script rather than a flow file, so the loop above never looked at it. Drop
+// either tag and tip/index.html falls back to 'QR unavailable' on every amount
+// button with the suite still green.
+const encoderPages = Object.keys(flowPages).concat(['tip/index.html']);
+for (const page of encoderPages) {
+  const body = fs.readFileSync(path.join(repo, page), 'utf8');
+  const vendor = body.indexOf('/assets/vendor/qrcode-generator.min.js?v=');
+  const wrapper = body.indexOf('/assets/qr-code.js?v=');
+  check(`${page} loads both QR encoder scripts`, vendor !== -1 && wrapper !== -1,
+    `vendor=${vendor} wrapper=${wrapper}`);
+  // Order matters as well as presence: assets/qr-code.js swaps the vendored
+  // encoder's default latin-1 byte conversion for UTF-8, and if the vendor tag
+  // came second that swap would target an encoder that is not loaded yet.
+  // Nothing throws in that case - the QR just silently encodes different bytes
+  // than the Recipient / Amount / Destination Tag rows show.
+  check(`${page} loads the vendored encoder before the wrapper`,
+    vendor !== -1 && wrapper !== -1 && vendor < wrapper,
+    `vendor=${vendor} wrapper=${wrapper}`);
+}
 check('both scan-flow.js pages share one cache-bust token',
   new Set(tokens['scan-flow.js'] || []).size === 1,
   JSON.stringify(tokens['scan-flow.js']));
@@ -122,6 +142,26 @@ vm.runInContext('qrcode = undefined;', ctx);
 let threw = false;
 try { vm.runInContext('XRQr.toCanvas(TEXT, 192)', ctx); } catch (e) { threw = true; }
 check('throws when the encoder is absent', threw);
+
+// Load order must not decide the byte conversion. Load the wrapper first, the
+// vendored encoder second, then encode: the payload's non-ASCII character has
+// to come out as its UTF-8 bytes, not latin-1 charCode & 0xff. Without the
+// call-time swap this reversed order leaves the encoder on its default and the
+// QR encodes a different string than the page displays, with nothing thrown.
+{
+  const rev = { console, Math, JSON, document: { createElement: () => fakeCanvas() } };
+  rev.window = rev;
+  rev.globalThis = rev;
+  vm.createContext(rev);
+  vm.runInContext(fs.readFileSync(path.join(repo, 'assets/qr-code.js'), 'utf8'), rev);
+  vm.runInContext(fs.readFileSync(path.join(repo, 'assets/vendor/qrcode-generator.min.js'), 'utf8'), rev);
+  rev.NONASCII = 'xrpl:rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5?dt=1&label=café';
+  vm.runInContext('XRQr.toCanvas(NONASCII, 192)', rev);
+  const utf8 = vm.runInContext(
+    'JSON.stringify(qrcode.stringToBytes("caf\\u00e9"))', rev);
+  check('encoder uses UTF-8 bytes regardless of script order',
+    utf8 === JSON.stringify(Array.from(Buffer.from('café', 'utf8'))), utf8);
+}
 
 console.log(fails ? `${fails} FAILED` : 'payment qr: ok');
 process.exit(fails ? 1 : 0);

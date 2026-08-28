@@ -33,23 +33,38 @@
     return xrp.toLocaleString(undefined, { maximumFractionDigits: 6 }) + ' XRP';
   }
 
+  // Telemetry publishes null (never 0) for a field it could not measure.
+  // Number(null) is 0, so every formatter below has to reject a non-finite
+  // input explicitly or a degraded refresh prints a fabricated zero. UNMEASURED
+  // is what the caller renders in that slot.
+  const UNMEASURED = '-';
+
+  function isNum(x) {
+    return typeof x === 'number' && isFinite(x);
+  }
+
   function fmtXrpAmount(xrp) {
+    if (!isNum(xrp)) return UNMEASURED;
     return Number(xrp).toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' XRP';
   }
 
   function fmtPct(n) {
+    if (!isNum(n)) return UNMEASURED;
     return (Number(n) * 100).toFixed(2) + '%';
   }
 
   function fmtPctRaw(n) {
+    if (!isNum(n)) return UNMEASURED;
     return Number(n).toFixed(2) + '%';
   }
 
   function fmtRatio(n) {
+    if (!isNum(n)) return UNMEASURED;
     return Number(n).toFixed(3);
   }
 
   function fmtUsd(n, digits) {
+    if (!isNum(n)) return UNMEASURED;
     return '$' + Number(n).toLocaleString(undefined, {
       minimumFractionDigits: digits != null ? digits : 2,
       maximumFractionDigits: digits != null ? digits : 2,
@@ -62,6 +77,7 @@
   // $1.1524 -> $1.15, $156.0976 -> $156.10, $0.0269 -> $0.0269.
   // For prices only - aggregates use fmtUsd(n, 0).
   function fmtUsdPrice(n) {
+    if (!isNum(n)) return UNMEASURED;
     const num = Number(n);
     const opts = Math.abs(num) >= 1
       ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
@@ -75,6 +91,7 @@
   // unit M. Used for the Required-floor row in renderUtilityFloorCard.
   // $1.014 -> $1.014, $9.999 -> $9.999, $10 -> $10.00, $156 -> $156.00.
   function fmtUsdEq(n) {
+    if (!isNum(n)) return UNMEASURED;
     const num = Number(n);
     const opts = Math.abs(num) >= 10
       ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
