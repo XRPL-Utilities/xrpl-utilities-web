@@ -24,5 +24,9 @@ jobs:
           node-version: "20"
 
       - name: Run tests
+        # A hanging job never reports. One live-network test made this
+        # step sit in_progress for over two hours instead of failing, so
+        # the repo looked busy rather than broken. Fail fast instead.
+        timeout-minutes: 10
         # Hermetic: no network, no install step needed.
         run: bash tests/run.sh
