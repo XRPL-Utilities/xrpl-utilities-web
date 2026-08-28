@@ -155,21 +155,33 @@
     const grid = el('div', 'grid md:grid-cols-2 gap-6 items-start');
     const qrCol = el('div');
     qrCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Scan with Xaman / mobile wallet'));
+    // qr_code comes from our own backend, which is as trusted as the quote
+    // itself. Everything else is encoded here (see /assets/qr-code.js) - the
+    // old third-party image-host fallback meant a stranger generated the
+    // pixels a payer scans, so a transient omission of qr_code must not
+    // silently reintroduce it.
     const qrBox = el('div', 'bg-white p-3 rounded-lg inline-block');
-    const qrImg = document.createElement('img');
-    qrImg.alt = 'XRPL payment QR code';
-    qrImg.width = 192;
-    qrImg.height = 192;
-    qrImg.style.display = 'block';
-    qrImg.src = quote.qr_code ||
-      ('https://api.qrserver.com/v1/create-qr-code/?size=192x192&margin=0&data=' +
-       encodeURIComponent(safeUrl(quote.deep_link)));
-    qrImg.onerror = () => {
-      qrBox.remove();
-      qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
-    };
-    qrBox.appendChild(qrImg);
-    qrCol.appendChild(qrBox);
+    if (quote.qr_code) {
+      const qrImg = document.createElement('img');
+      qrImg.alt = 'XRPL payment QR code';
+      qrImg.width = 192;
+      qrImg.height = 192;
+      qrImg.style.display = 'block';
+      qrImg.src = quote.qr_code;
+      qrImg.onerror = () => {
+        qrBox.remove();
+        qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
+      };
+      qrBox.appendChild(qrImg);
+      qrCol.appendChild(qrBox);
+    } else {
+      try {
+        qrBox.appendChild(global.XRQr.toCanvas(safeUrl(quote.deep_link), 192));
+        qrCol.appendChild(qrBox);
+      } catch (e) {
+        qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
+      }
+    }
     grid.appendChild(qrCol);
 
     const manualCol = el('div', 'space-y-3');

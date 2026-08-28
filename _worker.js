@@ -210,6 +210,17 @@ const PROXY_RESPONSE_HEADERS = [
   "retry-after",
 ];
 
+// What the XR-* services actually answer with on this path. Anything else
+// gets served as a download rather than as a document — see the comment on
+// hardenProxyResponse below.
+const PROXY_ALLOWED_MEDIA_TYPES = [
+  "application/json",
+  "application/problem+json",
+  "text/plain",
+  "text/markdown",
+  "text/event-stream",
+];
+
 async function handleApiProxy(request, url) {
   // /api/x/<service>/<upstream path...>
   const rest = url.pathname.slice("/api/x/".length);
@@ -262,6 +273,46 @@ async function handleApiProxy(request, url) {
     const value = upstream.headers.get(name);
     if (value) out.set(name, value);
   }
+
+  // _headers is applied by the static-assets binding only, and wrangler.jsonc
+  // pins /api/* to this Worker, so a passthrough body reaches the browser on
+  // xrpl-utilities.com with the upstream's content-type and none of the site's
+  // protections. An upstream that answers HTML — FastAPI's /docs, an error
+  // page from something in front of Railway, or any route that reflects the
+  // query string (url.search is forwarded verbatim above) — would then be a
+  // same-origin document with no CSP over it, on the origin that holds the
+  // preview token in localStorage. So: stamp the protections here, and refuse
+  // HTML rather than downgrade it. This path exists for the site's JSON data
+  // panels (see assets/api-resilient.js); the .io hosts serve their own docs
+  // under their own headers.
+  out.set("x-content-type-options", "nosniff");
+  out.set("x-frame-options", "DENY");
+  out.set("referrer-policy", "strict-origin-when-cross-origin");
+  // Ignored by the page for a fetch()/XHR response, so the data panels pay
+  // nothing for it; it only binds the document created if someone navigates
+  // to a proxy URL directly.
+  out.set(
+    "content-security-policy",
+    "default-src 'none'; frame-ancestors 'none'; sandbox",
+  );
+
+  const rawType = upstream.headers.get("content-type");
+  if (rawType) {
+    const semi = rawType.indexOf(";");
+    const media = (semi === -1 ? rawType : rawType.slice(0, semi))
+      .trim()
+      .toLowerCase();
+    const params = semi === -1 ? "" : rawType.slice(semi);
+    if (media === "text/html" || media === "application/xhtml+xml") {
+      return jsonResponse(404, { error: "unsupported_upstream_content_type" });
+    }
+    if (!PROXY_ALLOWED_MEDIA_TYPES.includes(media)) {
+      out.set("content-type", "application/octet-stream");
+    } else {
+      out.set("content-type", media + params);
+    }
+  }
+
   return new Response(upstream.body, { status: upstream.status, headers: out });
 }
 

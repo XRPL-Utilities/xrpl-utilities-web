@@ -1,5 +1,6 @@
 // Shared payment + polling + results rendering for /sentinel/ and /sentinel/bulk/.
-// Pure ES2018, no framework. Loads QR generation from a CDN (window.QRCode).
+// Pure ES2018, no framework. QR generation is local: /assets/qr-code.js on
+// top of the vendored encoder under /assets/vendor/.
 
 (function (global) {
   'use strict';
@@ -93,21 +94,17 @@
     const grid = el('div', 'grid md:grid-cols-2 gap-6 items-start');
     const qrCol = el('div');
     qrCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Scan with Xaman / mobile wallet'));
-    const qrBox = el('div', 'bg-white p-3 rounded-lg inline-block');
-    const qrImg = document.createElement('img');
-    qrImg.alt = 'XRPL payment QR code';
-    qrImg.width = 192;
-    qrImg.height = 192;
-    qrImg.style.display = 'block';
-    qrImg.src =
-      'https://api.qrserver.com/v1/create-qr-code/?size=192x192&margin=0&data=' +
-      encodeURIComponent(safeUrl(quote.deep_link));
-    qrImg.onerror = () => {
-      qrBox.remove();
+    // Encoded on this origin, not fetched from an image host: the r-address a
+    // wallet scans has to be the one this page is showing. See
+    // /assets/qr-code.js. On any encoder failure fall through to the manual
+    // column rather than leaving an empty white box.
+    try {
+      const qrBox = el('div', 'bg-white p-3 rounded-lg inline-block');
+      qrBox.appendChild(global.XRQr.toCanvas(safeUrl(quote.deep_link), 192));
+      qrCol.appendChild(qrBox);
+    } catch (e) {
       qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
-    };
-    qrBox.appendChild(qrImg);
-    qrCol.appendChild(qrBox);
+    }
     grid.appendChild(qrCol);
 
     const manualCol = el('div', 'space-y-3');

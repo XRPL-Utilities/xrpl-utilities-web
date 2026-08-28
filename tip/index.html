@@ -130,7 +130,7 @@
 
           <div class="grid sm:grid-cols-[auto_1fr] gap-6 items-start mb-6">
             <div class="bg-white p-3 rounded-lg w-[160px] h-[160px] flex items-center justify-center shrink-0">
-              <img id="qr" alt="XRPL payment QR" width="136" height="136" />
+              <div id="qr"></div>
             </div>
             <div class="min-w-0">
               <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Treasury address</div>
@@ -223,6 +223,8 @@
     </div>
   </footer>
 
+  <script src="/assets/vendor/qrcode-generator.min.js?v=2.0.4"></script>
+  <script src="/assets/qr-code.js?v=v1"></script>
   <script>
     const ADDR = "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5";
     const DT = 90210;
@@ -233,19 +235,30 @@
     // pay-to-address. dt = destination tag. Amount is updated dynamically
     // by the amount selector below.
     //
-    // Rendered as an <img> via api.qrserver.com (already allowlisted in
-    // the CSP img-src). A JS library would have required cdnjs in CSP
-    // script-src, which the marketing site doesn't allowlist.
+    // Encoded on this origin by /assets/qr-code.js. It used to be an <img>
+    // from api.qrserver.com, which put the donation address a wallet
+    // actually scans in a third party's hands - the address printed below
+    // would still read correctly while the QR paid someone else.
     function makeUri(amtXrp) {
       const params = ["dt=" + DT];
       if (amtXrp && amtXrp > 0) params.push("amount=" + amtXrp);
       return "xrpl:" + ADDR + "?" + params.join("&");
     }
     function renderQr(uri) {
-      const el = document.getElementById("qr");
-      const src = "https://api.qrserver.com/v1/create-qr-code/?size=136x136&margin=0&data="
-        + encodeURIComponent(uri);
-      el.src = src;
+      const box = document.getElementById("qr");
+      box.textContent = "";
+      // The catch below repurposes the container as failure text; the amount
+      // buttons re-render on every click, so without this reset a later
+      // successful QR would still be wearing the failure styling.
+      box.className = "";
+      try {
+        box.appendChild(window.XRQr.toCanvas(uri, 136, "XRPL payment QR"));
+      } catch (e) {
+        // The address + tag are on the card in copyable form, so say so
+        // rather than leaving an empty white square.
+        box.className = "text-[11px] text-ink text-center px-1";
+        box.textContent = "QR unavailable - copy the address and tag below.";
+      }
     }
 
     // ----------- Amount selector -----------

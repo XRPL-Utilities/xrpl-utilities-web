@@ -1312,7 +1312,11 @@ record = session.post(
       else if (n >= 1e3) disp = (n / 1e3).toFixed(2) + 'K';
       else if (n >= 1) disp = n.toFixed(2);
       else disp = n.toFixed(6).replace(/0+$/, '').replace(/\.$/, '');
-      const cur = currency || 'XRP';
+      // The currency code is an arbitrary XRPL currency (an issuer picks the
+      // 160-bit code), and callers concatenate this return value into HTML.
+      // Escape here rather than at each call site so a new caller can't
+      // reintroduce the injection by forgetting.
+      const cur = escapeHtml(currency || 'XRP');
       return disp + ' ' + cur;
     }
 
@@ -1354,7 +1358,7 @@ record = session.post(
           const jur = o.jurisdiction || null;
           const jurName = jur ? (JURISDICTION_NAMES[jur] || jur) : null;
           const jurBadge = jur
-            ? ('<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border text-[10px] uppercase tracking-wider text-muted font-mono" title="' + jurName + '">' + jur + '</span>')
+            ? ('<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border text-[10px] uppercase tracking-wider text-muted font-mono" title="' + escapeHtml(jurName) + '">' + escapeHtml(jur) + '</span>')
             : '';
           // Top volume pair, if any. volume_24h_by_pair is a list of
           // {gets_currency, gets_issuer, gets_value, pays_currency,
@@ -1367,12 +1371,18 @@ record = session.post(
             ? ('<div class="text-[11px] text-muted mt-2"><span class="text-white font-mono">' + fmtAmountShort(top.gets_value, top.gets_currency) + '</span> &rarr; <span class="text-white font-mono">' + fmtAmountShort(top.pays_value, top.pays_currency) + '</span><span class="text-muted"> &middot; ' + (top.consumed_offers_count || 0) + ' offers filled</span>' + (pairs.length > 1 ? '<span class="text-muted"> &middot; +' + (pairs.length - 1) + ' more pair' + (pairs.length === 2 ? '' : 's') + '</span>' : '') + '</div>')
             : '';
           const xrpscan = 'https://xrpscan.com/account/' + encodeURIComponent(addr);
+          // Everything below goes through innerHTML, and identity_org_name /
+          // owner_label.name are harvested from the .well-known/xrp-ledger.toml
+          // at whatever host the operator's own Domain field points at. Anyone
+          // who can afford a PermissionedDomain controls that string, so it is
+          // hostile input: escape it, or an [[ORGANIZATION]] name becomes
+          // script on this origin (which holds the preview token).
           return (
             '<a href="' + xrpscan + '" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-border rounded-lg p-3 hover:border-accent transition">' +
               '<div class="flex items-start justify-between gap-3">' +
                 '<div class="min-w-0">' +
-                  '<div class="font-semibold text-white text-sm break-words">' + display + '</div>' +
-                  '<div class="text-[11px] text-muted font-mono break-all mt-0.5">' + addr + '</div>' +
+                  '<div class="font-semibold text-white text-sm break-words">' + escapeHtml(display) + '</div>' +
+                  '<div class="text-[11px] text-muted font-mono break-all mt-0.5">' + escapeHtml(addr) + '</div>' +
                 '</div>' +
                 '<div class="flex items-center gap-2 shrink-0">' + jurBadge + '</div>' +
               '</div>' +
@@ -1414,7 +1424,7 @@ record = session.post(
           grid.innerHTML = tracked.map(b => {
             const iso = b.jurisdiction;
             const name = JURISDICTION_NAMES[iso] || iso;
-            return '<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-ink text-sm"><span class="font-mono text-[11px] text-muted">' + iso + '</span><span class="text-white">' + name + '</span><span class="text-xs text-muted">&middot; ' + b.count + ' entit' + (b.count === 1 ? 'y' : 'ies') + '</span></span>';
+            return '<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-ink text-sm"><span class="font-mono text-[11px] text-muted">' + escapeHtml(iso) + '</span><span class="text-white">' + escapeHtml(name) + '</span><span class="text-xs text-muted">&middot; ' + b.count + ' entit' + (b.count === 1 ? 'y' : 'ies') + '</span></span>';
           }).join('');
         }
         const unat = data.unattributed || {};

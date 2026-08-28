@@ -352,6 +352,15 @@
       let label, color, sub;
       if (status === "active") {
         label = "All systems operational"; color = "text-good"; sub = productName + " is serving live traffic.";
+      } else if (status === "preview") {
+        // XR-Flows answers 'preview' by design until its ETF scrapers have
+        // produced real data. Without this branch a healthy service renders
+        // "Status unknown" to visitors.
+        label = "Preview data"; color = "text-warn"; sub = productName + " is up; the figures it serves are preview data, not live.";
+      } else if (status === "starting") {
+        // XR-Vault answers 'starting' for ~4min after a redeploy, while its
+        // upstream cache is still cold. HTTP 200, service reachable.
+        label = "Starting up"; color = "text-warn"; sub = productName + " is up; upstream data is still warming.";
       } else if (status === "degraded") {
         label = "Partially degraded"; color = "text-warn"; sub = "One or more upstream subsystems are reporting issues. Requests may fail.";
       } else if (status === "down") {
