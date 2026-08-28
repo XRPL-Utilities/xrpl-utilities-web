@@ -63,6 +63,31 @@
     return Number(n).toFixed(3);
   }
 
+  // Plain 2-decimal number, guarded like every other formatter above. The
+  // Velocity (V) row used to call Number(x).toFixed(2) directly: a null V
+  // printed a confident "0.00" and a missing V printed "NaN", both on the
+  // surface the customer paid for.
+  function fmtNum2(n) {
+    if (!isNum(n)) return UNMEASURED;
+    return Number(n).toFixed(2);
+  }
+
+  // Value cell for a slot Telemetry could not measure. The dash alone tells a
+  // reader nothing, and the payload already carries the cause, so print the
+  // cause in the slot where the number would have been. Muted sub-line, the
+  // same treatment the Active Float card gives a suppressed 24h delta.
+  function unmeasuredCell(reason) {
+    if (!(typeof reason === 'string' && reason)) return UNMEASURED;
+    const node = el('span');
+    node.appendChild(document.createTextNode(UNMEASURED));
+    node.appendChild(el(
+      'div',
+      'text-xs text-muted font-normal mt-1 leading-relaxed',
+      'Not measured this refresh: ' + reason,
+    ));
+    return node;
+  }
+
   function fmtUsd(n, digits) {
     if (!isNum(n)) return UNMEASURED;
     return '$' + Number(n).toLocaleString(undefined, {
@@ -597,7 +622,7 @@
           idRow.appendChild(el('span', '', '·'));
         }
         const addr = el('span', 'font-mono break-all', p.quote_issuer);
-        addr.title = 'Issuer of the quote asset — the identity behind the pair label';
+        addr.title = 'Issuer of the quote asset, the identity behind the pair label';
         idRow.appendChild(addr);
         r.appendChild(idRow);
       }
@@ -625,11 +650,11 @@
       const basis = amm.locked_xrp_basis;
       const note =
         amm.locked_xrp_measured === false
-          ? 'AMM-locked XRP was not measured this refresh (upstream unreadable) — not zero.'
+          ? 'AMM-locked XRP was not measured this refresh (upstream unreadable). Not zero.'
           : basis === 'ledger_wide'
             ? 'AMM-locked XRP counts every pool on the ledger (~30,350), not just the pairs above.'
             : basis === 'curated_pools'
-              ? 'AMM-locked XRP is on the fallback curated basis this refresh — it understates the ledger-wide total.'
+              ? 'AMM-locked XRP is on the fallback curated basis this refresh. It understates the ledger-wide total.'
               : 'AMM-locked XRP basis: ' + String(basis);
       pairsCol.appendChild(el(
         'div',
@@ -683,7 +708,7 @@
     return card;
   }
 
-  function renderUtilityFloorCard(uf) {
+  function renderUtilityFloorCard(uf, payload) {
     const card = sectionCard('Required equilibrium price');
     const hasSpot = typeof uf.current_price_usd === 'number';
     // Floor field was renamed baseline_usd -> algebraic_p_at_assumed_qv_usd at
@@ -691,7 +716,12 @@
     const floorUsd = uf.algebraic_p_at_assumed_qv_usd ?? uf.baseline_usd;
     // Keeps the precise threshold so a $1.014 floor reads as $1.014, not $1.01.
     // Spot is a market quote where 2 decimals is plenty.
-    const rows = [['Required floor', fmtUsdEq(floorUsd) + ' / XRP']];
+    // Unmeasured headline reads as a clean dash (plus the cause when the
+    // payload gives one). Appending the unit to the dash produced "- / XRP",
+    // which reads like a measured quantity whose number went missing.
+    const rows = [['Required floor', isNum(floorUsd)
+      ? fmtUsdEq(floorUsd) + ' / XRP'
+      : unmeasuredCell(uf.algebraic_p_unavailable_reason)]];
     if (hasSpot) {
       // Build the spot row as a DOM node so the 24h arrow + change % can
       // carry its own color (green up, red down, muted on zero), matching
@@ -712,9 +742,16 @@
         rows.push(['Premium', (uf.current_price_usd / floorUsd).toFixed(2) + '×']);
       }
     }
-    rows.push(['Active Float (M)', fmtXrpAmount(uf.available_liquid_supply_xrp)]);
+    // M is nulled by the same upstream read failure that nulls the floor, and
+    // Telemetry reports that cause on the active_float model rather than on
+    // utility_floor, so pull it from there.
+    const afReason = (((payload || {}).derived_models || {}).active_float || {})
+      .value_unavailable_reason;
+    rows.push(['Active Float (M)', isNum(uf.available_liquid_supply_xrp)
+      ? fmtXrpAmount(uf.available_liquid_supply_xrp)
+      : unmeasuredCell(afReason)]);
     rows.push(['Volume (Q)',        fmtUsd(uf.q_assumed_usd, 0)]);
-    rows.push(['Velocity (V)',      Number(uf.v_assumed).toFixed(2)]);
+    rows.push(['Velocity (V)',      fmtNum2(uf.v_assumed)]);
     card.appendChild(kvGrid(rows, hasSpot ? 3 : 4));
     card.appendChild(el('div', 'text-xs text-muted mt-3 leading-relaxed',
       'P = Q ÷ (V × M) - the equilibrium USD-per-XRP price the math requires under the assumed Q, V, and modeled Active Float. Not a price prediction.'));
@@ -756,7 +793,7 @@
     }
     if (payload.liquidity)     stack.appendChild(renderLiquidityCard(payload.liquidity));
     if (payload.amm)           stack.appendChild(renderAmmCard(payload.amm));
-    if (payload.utility_floor) stack.appendChild(renderUtilityFloorCard(payload.utility_floor));
+    if (payload.utility_floor) stack.appendChild(renderUtilityFloorCard(payload.utility_floor, payload));
     target.appendChild(stack);
 
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });

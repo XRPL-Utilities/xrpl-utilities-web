@@ -1,0 +1,28 @@
+name: CI
+
+# Runs on every push + PR to main.
+#
+# This repo had NO workflow running its tests. The suite existed and was green
+# locally, so nothing looked wrong, but nothing would have told us if it stopped
+# being green. A test that is never run in CI is documentation, not a guard.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run tests
+        # Hermetic: no network, no install step needed.
+        run: bash tests/run.sh
