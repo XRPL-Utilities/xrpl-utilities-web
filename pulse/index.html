@@ -1887,9 +1887,34 @@ feed = session.post(
       // Escrows on non-curated issuers: memecoin and community-token noise.
       if (au.signal === 'token_escrow_event' && au.issuer
           && !TRACKED_RWA_ISSUERS.has(au.issuer)) return false;
-      // Sub-$1M anonymous whales. sentinel_signal and
-      // permissioned_domain_lifecycle events pass through untouched.
+      // Sub-$1M anonymous whales.
       if (srcs.includes('whale_xrpl') && inferWhaleTier(e) === 'NORMAL_ACTIVITY') return false;
+      // XLS-81 quote refreshes: a domain-scoped market maker replacing its
+      // own resting offer, filling nothing. That is one offer at successive
+      // prices, not a stream of events, and it out-emits every other source
+      // in this column by an order of magnitude - on 2026-08-29 the sole
+      // EUROP maker ran ~2,900/day against ~330 whale events/day and the
+      // column rendered nothing but "Permissioned offer placed by
+      // rURtT5MM...". Pulse 1.106.0 drops these server-side; this is the
+      // defensive re-check, and it also covers a stale-cached response.
+      //
+      // Every leg must match POSITIVELY, so a row we cannot read stays
+      // visible: null execution keeps the card (unreadable is not zero), a
+      // first quote keeps it (replaced_own_count 0), any fill keeps it, and
+      // XLS-70/80 lifecycle rows never reach this branch at all.
+      //
+      // Deliberately NOT a per-emitter cap. A blanket cap would also hide a
+      // genuine burst of fills from one venue, which is the signal we most
+      // want; the server-side per-source allocation already bounds how much
+      // of the column any one source can hold.
+      if (au.signal === 'permissioned_dex_event' && au.tx_type === 'OfferCreate') {
+        const x = au.execution;
+        if (x && typeof x === 'object'
+            && (x.replaced_own_count || 0) >= 1
+            && x.consumed_offers_count === 0
+            && x.executed_taker_gets_value === 0
+            && x.executed_taker_pays_value === 0) return false;
+      }
       return true;
     }
 
