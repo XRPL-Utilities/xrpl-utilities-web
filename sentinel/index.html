@@ -231,6 +231,38 @@
         </p>
       </div>
 
+      <div class="mt-4 bg-panel border border-accent/30 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold">Verify an origin</div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full font-mono" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.35);color:#4ade80">free</span>
+        </div>
+        <p class="text-sm text-muted leading-relaxed mb-5">
+          Before an agent pays an unfamiliar x402 seller, it reads a catalog from that seller&rsquo;s own web server, and the catalog names the payout address. Nothing in the protocol binds the two. This checks the bindings that do exist on the ledger. Paste a domain, or an XRPL address to ask what its claimed identity rests on.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            id="origin-input"
+            type="text"
+            placeholder="example.com  or  r..."
+            spellcheck="false"
+            class="flex-grow bg-ink border border-border rounded-lg px-4 py-3 font-mono text-sm focus:outline-none focus:border-accent transition"
+          />
+          <button id="verify-btn" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition whitespace-nowrap">Verify</button>
+        </div>
+        <div class="mt-5">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Try one</div>
+          <div class="flex flex-wrap gap-2">
+            <button class="vsample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-v="agentic-swarm-marketplace.com">A bound x402 seller</button>
+            <button class="vsample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-v="ripple.com">ripple.com</button>
+            <button class="vsample-btn bg-ink border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" data-v="rwA8orrVtNPuBykRvQdDJzRDQbe7CuxCiR">A brand claimed in MPT metadata</button>
+          </div>
+        </div>
+        <div id="verify-result" class="hidden mt-6"></div>
+        <p class="text-xs text-muted/70 mt-5 leading-relaxed">
+          Verifies published identity bindings only. A verified origin means the domain and the account name each other. It is not an endorsement of the operator, the product, or its solvency.
+        </p>
+      </div>
+
       <details id="showcase-gallery" class="mt-4 bg-panel/40 border border-border rounded-2xl">
         <summary class="cursor-pointer px-6 py-4 select-none flex items-center justify-between gap-4 hover:bg-panel/60 rounded-2xl transition">
           <div>
@@ -1193,6 +1225,89 @@ report = session.post(
         btn.textContent = "Scan";
       });
     });
+
+    // --- Verify an origin -------------------------------------------------
+    // GET /verify-origin is free and unauthenticated, so unlike the scan
+    // widget above this needs no Turnstile preview token. CORS on the
+    // service and connect-src in _headers already allow this origin.
+    (function () {
+      const input = document.getElementById("origin-input");
+      const btn = document.getElementById("verify-btn");
+      const out = document.getElementById("verify-result");
+      if (!input || !btn || !out) return;
+
+      const VERDICT = {
+        verified:   { c: "#4ade80", t: "Verified" },
+        partial:    { c: "#fbbf24", t: "Partial" },
+        unverified: { c: "#f87171", t: "Unverified" },
+        mismatch:   { c: "#f87171", t: "Mismatch" },
+        unreadable: { c: "#94a3b8", t: "Unreadable" }
+      };
+      const MARK = { pass: "&#10003;", fail: "&#10007;", warn: "!", unreadable: "?", "n/a": "&ndash;" };
+      const COLOR = { pass: "#4ade80", fail: "#f87171", warn: "#fbbf24", unreadable: "#94a3b8", "n/a": "#64748b" };
+      const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g,
+        (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+      function render(d) {
+        const v = VERDICT[d.verdict] || { c: "#94a3b8", t: esc(d.verdict) };
+        const rows = (d.checks || []).map((c) =>
+          '<li class="flex gap-3 py-2 border-b border-border/40 last:border-0">' +
+            '<span class="font-mono text-sm shrink-0 w-4" style="color:' + (COLOR[c.status] || "#94a3b8") + '">' +
+              (MARK[c.status] || "&middot;") + '</span>' +
+            '<span class="min-w-0">' +
+              '<span class="font-mono text-xs text-white">' + esc(c.id) + '</span>' +
+              '<span class="block text-xs text-muted leading-relaxed mt-0.5">' + esc(c.detail) + '</span>' +
+            '</span>' +
+          '</li>').join("");
+        out.innerHTML =
+          '<div class="bg-ink border border-border rounded-xl p-5">' +
+            '<div class="flex items-baseline gap-3 flex-wrap">' +
+              '<span class="text-lg font-bold" style="color:' + v.c + '">' + v.t + '</span>' +
+              '<span class="text-xs font-mono text-muted">evidence tier: ' + esc(d.evidence_tier) + '</span>' +
+            '</div>' +
+            '<p class="text-sm text-muted leading-relaxed mt-2">' + esc(d.verdict_reason) + '</p>' +
+            '<ul class="mt-4">' + rows + '</ul>' +
+          '</div>';
+        out.classList.remove("hidden");
+      }
+
+      function renderMsg(msg, color) {
+        out.innerHTML = '<div class="bg-ink border border-border rounded-xl p-5 text-sm" style="color:' +
+          (color || "#94a3b8") + '">' + esc(msg) + '</div>';
+        out.classList.remove("hidden");
+      }
+
+      async function run() {
+        const raw = (input.value || "").trim();
+        if (!raw) { renderMsg("Enter a domain or an XRPL address.", "#f87171"); return; }
+        // An r-address goes to address= (what does this account's claim rest
+        // on); anything else is treated as a web origin.
+        const isAddr = /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(raw);
+        const qs = isAddr ? "address=" + encodeURIComponent(raw)
+                          : "url=" + encodeURIComponent(raw);
+        btn.disabled = true; btn.textContent = "Checking\u2026";
+        renderMsg("Fetching the origin's published documents and reading the ledger\u2026");
+        try {
+          const r = await fetch("https://sentinel.xrpl-utilities.io/verify-origin?" + qs);
+          const d = await r.json().catch(() => null);
+          if (!r.ok) {
+            renderMsg((d && d.detail) ? d.detail : ("Request failed (HTTP " + r.status + ")."), "#f87171");
+          } else {
+            render(d);
+          }
+        } catch (e) {
+          renderMsg("Could not reach the service. That is a failure to look, not a finding about the target.", "#94a3b8");
+        } finally {
+          btn.disabled = false; btn.textContent = "Verify";
+        }
+      }
+
+      btn.addEventListener("click", run);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });
+      document.querySelectorAll(".vsample-btn").forEach((b) => {
+        b.addEventListener("click", () => { input.value = b.dataset.v; run(); });
+      });
+    })();
 
     // URL prefill: deep links from Pulse cross-ref (Sender/Receiver
     // clickthrough) and from any other surface that wants to open
