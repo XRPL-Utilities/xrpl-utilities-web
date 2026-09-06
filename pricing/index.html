@@ -355,7 +355,7 @@ r = session.post(
 # or use the hosted endpoint:
 # mcp.xrpl-utilities.io/mcp
 
-# Tools published: 40 across all six services (25 free, 15 paid).
+# Tools published: 41 across all six services (26 free, 15 paid).
 # Full, always-current list:
 #   GET mcp.xrpl-utilities.io/llms.txt   (or call tools/list)</pre>
         </div>
@@ -372,6 +372,18 @@ r = session.post(
         Aggregate stats, manifests, and health probes are free and unauthenticated. The paid endpoints are the per-call deep dives; the free ones are the rolled-up views. Both are served from the same backends.
       </p>
       <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-bold text-white">XR-Sentinel</span>
+            <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
+          </div>
+          <ul class="space-y-2 text-sm text-muted">
+            <li><code class="font-mono text-white">/verify-origin?url=</code> &middot; does a web origin actually control the XRPL account it advertises? Checks the domain&rsquo;s <code class="font-mono text-white">xrp-ledger.toml</code> against each account&rsquo;s own Domain field, the XLS-40 DID, and whether every payout address in the served x402 catalog is one the domain itself declares</li>
+            <li><code class="font-mono text-white">/verify-origin?address=</code> &middot; the same question from the other end: what does this account&rsquo;s claimed identity rest on? The only way to test a brand asserted in MPT metadata, which nothing validates</li>
+            <li><code class="font-mono text-white">/schema</code> &middot; full signal catalog and feature descriptors</li>
+            <li><code class="font-mono text-white">/registry/rwa-issuers</code> &middot; curated institutional and RWA issuer wallets</li>
+          </ul>
+        </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <div class="flex items-center gap-3 mb-3">
             <span class="font-bold text-white">XR-Pulse</span>

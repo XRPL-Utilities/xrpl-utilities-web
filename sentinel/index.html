@@ -321,6 +321,21 @@
               <span>Server verifies, runs the classification, then settles. Returns <code class="font-mono text-white">200</code> with the report and a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
             </li>
           </ol>
+          <div class="mt-6 border border-accent/30 bg-accent/5 rounded-xl p-5">
+            <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Free &middot; call this before you pay anyone</div>
+            <p class="text-sm text-muted leading-relaxed">
+              <code class="font-mono text-white">GET /verify-origin?url=</code> answers one question: does this web origin actually control the XRPL account it advertises? In x402 an agent reads a catalog from the same server it is about to pay, and that catalog names the payout address. Nothing in the protocol binds the two.
+            </p>
+            <p class="text-sm text-muted leading-relaxed mt-3">
+              It cross-checks four published bindings: the domain&rsquo;s <code class="font-mono text-white">xrp-ledger.toml</code>, each account&rsquo;s own on-chain Domain field (two-way, because either half alone is one party vouching for itself), the XLS-40 DID and whether it carries a real key or is a placeholder, and whether every payout address in the served catalog is one the domain itself declares. That last check is the one a swapped catalog fails, because an attacker cannot edit the toml without already owning the domain.
+            </p>
+            <p class="text-sm text-muted leading-relaxed mt-3">
+              Pass <code class="font-mono text-white">?address=</code> instead to ask it from the other end: what does this account&rsquo;s claimed identity rest on? That is the only way to test a brand asserted inside MPT metadata, which nothing validates today. A document that cannot be fetched returns <code class="font-mono text-white">unreadable</code>, never a negative finding. Verdicts are <code class="font-mono text-white">verified</code>, <code class="font-mono text-white">partial</code>, <code class="font-mono text-white">unverified</code>, <code class="font-mono text-white">unreadable</code> or <code class="font-mono text-white">mismatch</code>.
+            </p>
+            <p class="text-xs text-muted/70 leading-relaxed mt-3">
+              Verifies published identity bindings only. A verified origin means the domain and the account name each other. It is not an endorsement of the operator, the product, or its solvency.
+            </p>
+          </div>
           <p class="text-sm text-muted leading-relaxed mt-6">
             <code class="font-mono text-white">POST /scan/history</code> uses the same x402 flow and price. It returns up to 25 prior recorded scans for an address so agents can read trajectory without scanning the wallet N times themselves. Recording began with schema 2.1.0; older paid scans were not persisted.
           </p>
@@ -331,10 +346,11 @@
           </div>
           <div class="mt-6">
             <div class="bg-ink border border-border rounded-lg p-4 max-w-md">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Paid MCP tools (2)</div>
+              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">MCP tools (2 paid, 1 free)</div>
               <ul class="text-xs text-muted leading-relaxed space-y-1">
                 <li><code class="font-mono text-white">xrpl_sentinel_scan</code> &middot; $0.10</li>
                 <li><code class="font-mono text-white">xrpl_sentinel_scan_history</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_sentinel_verify_origin</code> &middot; free</li>
               </ul>
             </div>
           </div>
