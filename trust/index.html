@@ -259,6 +259,36 @@
     </div>
   </section>
 
+  <!-- LEDGER ACTIVITY FEED - moved here from Pulse 2026-09-06 -->
+  <section id="activity">
+    <div class="max-w-4xl mx-auto px-6 pb-10">
+      <div class="stat-tile p-5 sm:p-6">
+        <div class="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
+          <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Permissioned ledger activity</h3>
+          <span id="activity-rollup" class="stat-tile-sub text-[11px]">&hellip;</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-4">
+          Every domain change, credential, permissioned offer and in-domain payment on XRPL, newest first. Most of the raw volume is a domain-scoped market maker replacing its own quotes: a resting offer is a standing promise at a fixed price, so it has to be replaced as the reference moves or it gets picked off. That is normal market making, so consecutive runs from one account are folded into a single row with a count rather than dropped. Switch to <span class="text-white">Lifecycle</span> for domain and credential changes alone, which is the rare part.
+        </p>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button class="act-filter bg-accent text-ink text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-cat="">All</button>
+          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="lifecycle">Lifecycle</button>
+          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="dex">Permissioned DEX</button>
+          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="settlement">Settlement</button>
+        </div>
+        <div id="activity-list" class="space-y-2">
+          <div class="skeleton-bar h-12"></div>
+          <div class="skeleton-bar h-12"></div>
+          <div class="skeleton-bar h-12"></div>
+        </div>
+        <div class="mt-4 flex items-center gap-3">
+          <button id="activity-more" class="bg-ink border border-border hover:border-accent text-xs px-4 py-2 rounded-lg transition hidden">Older</button>
+          <span id="activity-note" class="text-[11px] text-muted italic"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- LIVE DIRECTORY -->
   <section id="directory">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
@@ -1478,6 +1508,110 @@ record = session.post(
         narr.textContent = '';
       }
     }
+
+    // -- PERMISSIONED LEDGER ACTIVITY FEED ---------------------------
+    // Moved here from the Pulse feed on 2026-09-06. It was 15% of every
+    // Pulse response and 100% of that share was one domain-scoped market
+    // maker requoting at ~1,800 tx/hour. Trust owns this data (Pulse only
+    // mirrored it) and /activity collapses consecutive same-account runs
+    // into one row, so the churn is summarised rather than dropped.
+    (function () {
+      const list = document.getElementById('activity-list');
+      const roll = document.getElementById('activity-rollup');
+      const more = document.getElementById('activity-more');
+      const note = document.getElementById('activity-note');
+      if (!list) return;
+
+      let category = '';
+      let beforeId = null;
+
+      const CAT = {
+        lifecycle:  { c: '#4ade80', t: 'lifecycle'  },
+        dex:        { c: '#60a5fa', t: 'dex'        },
+        settlement: { c: '#fbbf24', t: 'settlement' }
+      };
+      const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g,
+        (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const ago = (unix) => {
+        if (!unix) return '';
+        const s = Math.max(0, Math.floor(Date.now() / 1000 - unix));
+        if (s < 60) return s + 's ago';
+        if (s < 3600) return Math.floor(s / 60) + 'm ago';
+        if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+        return Math.floor(s / 86400) + 'd ago';
+      };
+
+      function row(e) {
+        const meta = CAT[e.category] || { c: '#94a3b8', t: e.category };
+        const badge = e.count > 1
+          ? '<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-ink border border-border text-muted">x' + e.count + '</span>'
+          : '';
+        return '<div class="bg-ink border border-border rounded-lg px-4 py-3">' +
+          '<div class="flex items-start justify-between gap-3 flex-wrap">' +
+            '<div class="min-w-0">' +
+              '<div class="flex items-center gap-2 flex-wrap">' +
+                '<span class="text-[10px] uppercase tracking-wider font-semibold" style="color:' + meta.c + '">' + esc(meta.t) + '</span>' +
+                badge +
+                '<span class="text-sm text-white">' + esc(e.title) + '</span>' +
+              '</div>' +
+              '<div class="text-xs text-muted leading-relaxed mt-1">' + esc(e.brief) + '</div>' +
+            '</div>' +
+            '<a href="https://xrpscan.com/tx/' + esc(e.tx_hash) + '" target="_blank" rel="noopener noreferrer" ' +
+              'class="text-[11px] text-muted hover:text-accent whitespace-nowrap shrink-0">' + esc(ago(e.date_unix)) + ' &rarr;</a>' +
+          '</div>' +
+        '</div>';
+      }
+
+      async function load(append) {
+        if (!append) { list.innerHTML = '<div class="skeleton-bar h-12"></div>'; beforeId = null; }
+        try {
+          let url = API_BASE + '/activity?limit=25';
+          if (category) url += '&category=' + encodeURIComponent(category);
+          if (append && beforeId) url += '&before_id=' + encodeURIComponent(beforeId);
+          const r = await fetch(url);
+          if (!r.ok) throw new Error('http ' + r.status);
+          const body = await r.json();
+          const events = body.events || [];
+          const html = events.map(row).join('');
+          if (append) { list.insertAdjacentHTML('beforeend', html); }
+          else { list.innerHTML = html || '<div class="text-xs text-muted">No activity in this category yet.</div>'; }
+          beforeId = body.next_before_id;
+          more.classList.toggle('hidden', !beforeId || events.length === 0);
+
+          const by = ((body.rollup || {}).by_tx_type) || [];
+          const total = by.reduce((a, b) => a + (b.events || 0), 0);
+          const busiest = ((body.rollup || {}).busiest_accounts || [])[0];
+          roll.textContent = total
+            ? total.toLocaleString() + ' events / ' + (body.window_hours || 24) + 'h'
+            : '';
+          note.textContent = (busiest && total)
+            ? Math.round(100 * busiest.events / total) + '% of the last ' +
+              (body.window_hours || 24) + 'h is one account (' + busiest.account.slice(0, 10) + '\u2026) requoting.'
+            : '';
+        } catch (e) {
+          // A failure to reach the service is not a statement about the
+          // ledger; say which it was.
+          if (!append) list.innerHTML = '<div class="text-xs text-muted">Could not load activity (' +
+            esc(e && e.message ? e.message : 'fetch error') + '). That is a failure to reach the service, not an absence of activity.</div>';
+          more.classList.add('hidden');
+        }
+      }
+
+      document.querySelectorAll('.act-filter').forEach((b) => {
+        b.addEventListener('click', () => {
+          category = b.dataset.cat || '';
+          document.querySelectorAll('.act-filter').forEach((o) => {
+            const on = o === b;
+            o.className = on
+              ? 'act-filter bg-accent text-ink text-xs font-semibold px-3 py-1.5 rounded-lg transition'
+              : 'act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition';
+          });
+          load(false);
+        });
+      });
+      more.addEventListener('click', () => load(true));
+      load(false);
+    })();
 
     // -- PER-OPERATOR ATTRIBUTION CACHE -----------------------------
     // Lazily fetches /permissioned-domains/operators/{addr}/attribution
