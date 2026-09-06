@@ -645,7 +645,7 @@ report = session.post(
       // across orders of magnitude. Below $1M we still show full digits
       // because the run-rate would be a soft signal at that scale.
       function fmtUsd(n) {
-        if (typeof n !== 'number' || !isFinite(n)) return '; ';
+        if (typeof n !== 'number' || !isFinite(n)) return '–';
         const sign = n < 0 ? '-' : '';
         const abs = Math.abs(n);
         if (abs >= 1e12) return sign + '$' + (abs / 1e12).toFixed(2) + 'T';
@@ -655,7 +655,7 @@ report = session.post(
         return sign + '$' + Math.round(abs).toString();
       }
       function fmtCount(n) {
-        if (typeof n !== 'number' || !isFinite(n)) return '; ';
+        if (typeof n !== 'number' || !isFinite(n)) return '–';
         return n.toLocaleString('en-US');
       }
       function setText(el, txt) { if (el) el.textContent = txt; }

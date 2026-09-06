@@ -1239,7 +1239,7 @@
         const exp = etf.expense_ratio != null
           ? (etf.expense_ratio * 100).toFixed(2).replace(/\.?0+$/, '') + '%'
           : 'not disclosed';
-        const launched = escapeHtml(etf.launch_date || '; ');
+        const launched = escapeHtml(etf.launch_date || '–');
         const href = escapeHtml(safeUrl(etf.source_url));
         const issuer = escapeHtml(etf.issuer || '');
         const ticker = escapeHtml(etf.ticker || '');

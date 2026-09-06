@@ -1178,7 +1178,7 @@ payload = requests.get(
           _lastRealizedV = vReal;
           if (bmVUseRealizedBtn) bmVUseRealizedBtn.disabled = false;
         } else {
-          bmVRealized.textContent = '; ';
+          bmVRealized.textContent = '–';
           _lastRealizedV = null;
           if (bmVUseRealizedBtn) bmVUseRealizedBtn.disabled = true;
         }
@@ -1352,7 +1352,7 @@ payload = requests.get(
           elPermPct.textContent = permPct.toFixed(2) + '%';
           if (permPct < 0.01) elPermCaveat?.classList.remove('hidden');
         } else if (elPermPct) {
-          elPermPct.textContent = '; ';
+          elPermPct.textContent = '–';
         }
         if (typeof permUsd === 'number' && elPermUsd) {
           elPermUsd.textContent = fmtUsdShort(permUsd);

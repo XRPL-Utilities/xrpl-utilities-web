@@ -259,36 +259,6 @@
     </div>
   </section>
 
-  <!-- LEDGER ACTIVITY FEED - moved here from Pulse 2026-09-06 -->
-  <section id="activity">
-    <div class="max-w-4xl mx-auto px-6 pb-10">
-      <div class="stat-tile p-5 sm:p-6">
-        <div class="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
-          <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Permissioned ledger activity</h3>
-          <span id="activity-rollup" class="stat-tile-sub text-[11px]">&hellip;</span>
-        </div>
-        <p class="text-xs text-muted leading-relaxed mb-4">
-          Every domain change, credential, permissioned offer and in-domain payment on XRPL, newest first. Most of the raw volume is a domain-scoped market maker replacing its own quotes: a resting offer is a standing promise at a fixed price, so it has to be replaced as the reference moves or it gets picked off. That is normal market making, so consecutive runs from one account are folded into a single row with a count rather than dropped. Switch to <span class="text-white">Lifecycle</span> for domain and credential changes alone, which is the rare part.
-        </p>
-        <div class="flex flex-wrap gap-2 mb-4">
-          <button class="act-filter bg-accent text-ink text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-cat="">All</button>
-          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="lifecycle">Lifecycle</button>
-          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="dex">Permissioned DEX</button>
-          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="settlement">Settlement</button>
-        </div>
-        <div id="activity-list" class="space-y-2">
-          <div class="skeleton-bar h-12"></div>
-          <div class="skeleton-bar h-12"></div>
-          <div class="skeleton-bar h-12"></div>
-        </div>
-        <div class="mt-4 flex items-center gap-3">
-          <button id="activity-more" class="bg-ink border border-border hover:border-accent text-xs px-4 py-2 rounded-lg transition hidden">Older</button>
-          <span id="activity-note" class="text-[11px] text-muted italic"></span>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- LIVE DIRECTORY -->
   <section id="directory">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
@@ -327,6 +297,37 @@
       </div>
     </div>
   </section>
+
+  <!-- LEDGER ACTIVITY FEED - moved here from Pulse 2026-09-06 -->
+  <section id="activity">
+    <div class="max-w-4xl mx-auto px-6 pb-10">
+      <div class="stat-tile p-5 sm:p-6">
+        <div class="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
+          <h3 class="text-sm uppercase tracking-widest text-accent font-semibold">Permissioned ledger activity</h3>
+          <span id="activity-rollup" class="stat-tile-sub text-[11px]">&hellip;</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-4">
+          Every domain change, credential, permissioned offer and in-domain payment on XRPL, newest first. Most of the raw volume is a domain-scoped market maker replacing its own quotes: a resting offer is a standing promise at a fixed price, so it has to be replaced as the reference moves or it gets picked off. That is normal market making, so consecutive runs from one account are folded into a single row with a count rather than dropped. Switch to <span class="text-white">Lifecycle</span> for domain and credential changes alone, which is the rare part.
+        </p>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button class="act-filter bg-accent text-ink text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-cat="">All</button>
+          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="lifecycle">Lifecycle</button>
+          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="dex">Permissioned DEX</button>
+          <button class="act-filter bg-ink border border-border hover:border-accent text-xs px-3 py-1.5 rounded-lg transition" data-cat="settlement">Settlement</button>
+        </div>
+        <div id="activity-list" class="space-y-2">
+          <div class="skeleton-bar h-12"></div>
+          <div class="skeleton-bar h-12"></div>
+          <div class="skeleton-bar h-12"></div>
+        </div>
+        <div class="mt-4 flex items-center gap-3">
+          <button id="activity-more" class="bg-ink border border-border hover:border-accent text-xs px-4 py-2 rounded-lg transition hidden">Older</button>
+          <span id="activity-note" class="text-[11px] text-muted italic"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
 
   <!-- WHAT IS A PERMISSIONED DOMAIN -->
   <section id="what-is" class="border-t border-border">
@@ -695,6 +696,46 @@ record = session.post(
       const s = String(u || '').trim();
       return /^(?:https?|xrpl|mailto):/i.test(s) ? s : '#';
     }
+    // IPFS gateways and CIDs are hosting, not identity. A DID document
+    // served from gateway.pinata.cloud says the operator used Pinata; it says
+    // nothing about who the operator is, and rendering it as a name would be
+    // a worse lie than showing the address.
+    const NON_IDENTITY_HOSTS = /(^|\.)(ipfs\.io|gateway\.pinata\.cloud|cloudflare-ipfs\.com|dweb\.link|w3s\.link|nftstorage\.link)$/i;
+
+    function claimedName(d) {
+      const did = d.owner_did || {};
+      if (did.org_name) return { name: did.org_name, via: 'DID org_name' };
+      const uri = did.did_uri || did.ipfs_did_uri || '';
+      if (!uri || /^ipfs:\/\//i.test(uri)) return null;
+      let host = '';
+      try { host = new URL(uri).hostname || ''; } catch (_) { return null; }
+      if (!host || NON_IDENTITY_HOSTS.test(host)) return null;
+      return { name: host.replace(/^www\./, ''), via: 'domain in its on-chain DID' };
+    }
+
+    // Same collapse the server applies to the narrative: a run of
+    // `PREFIX:<uuid>` types is one product line, not N facts. Types with no
+    // prefix (KYC, AIFM, SCPO_BASIC) ARE the meaning and stay verbatim.
+    function credentialSummary(creds) {
+      const names = [];
+      creds.forEach(c => {
+        const t = c.credential_type_decoded || c.credential_type;
+        if (t && names.indexOf(t) === -1) names.push(t);
+      });
+      if (!names.length) return '';
+      const fam = new Map();
+      names.forEach(t => {
+        const key = t.indexOf(':') > -1 ? t.split(':')[0] : t;
+        if (!fam.has(key)) fam.set(key, []);
+        fam.get(key).push(t);
+      });
+      const chunks = [];
+      fam.forEach((members, key) => {
+        chunks.push(members.length === 1 ? members[0] : members.length + ' \u00d7 ' + key + ':\u2026');
+      });
+      return chunks.slice(0, 3).join(' \u00b7 ') + (chunks.length > 3 ? ' \u00b7 +' + (chunks.length - 3) : '');
+    }
+
     function shorten(addr) {
       if (!addr) return '';
       if (addr.length <= 14) return addr;
@@ -775,8 +816,26 @@ record = session.post(
         // can append the auto-walked institutional one-liner after fetch
         // completes (Trust 2026-37).
         if (d.owner_address) ownerCell.setAttribute('data-owner', d.owner_address);
+        // Name resolution ladder. The row used to show a truncated address and
+        // the badge ANONYMOUS for operators whose OWN record names their site:
+        // hvi3.com sits in owner_did.did_uri on three of these rows. An
+        // unreadable row is not more honest than a readable one, it is just
+        // less useful -- so the name is shown and its STRENGTH is what the
+        // tier badge and the title carry.
         const ownerLabel = (d.owner_label && d.owner_label.name) ? d.owner_label.name : null;
-        ownerCell.appendChild(el('div', 'font-semibold text-white text-sm break-words', ownerLabel || shorten(d.owner_address)));
+        const claimed = ownerLabel ? null : claimedName(d);
+        const shown = ownerLabel || (claimed && claimed.name) || shorten(d.owner_address);
+        const nameEl = el('div', 'font-semibold text-white text-sm break-words', shown);
+        if (!ownerLabel && claimed) {
+          // Self-asserted: the operator published this, nobody verified it.
+          nameEl.title = 'Self-asserted by the operator (' + claimed.via + '). Not independently verified.';
+          const sa = el('span', 'ml-2 text-[10px] uppercase tracking-wider text-muted font-normal', 'self-asserted');
+          nameEl.appendChild(sa);
+        }
+        ownerCell.appendChild(nameEl);
+        if (!ownerLabel && claimed) {
+          ownerCell.appendChild(el('div', 'text-xs text-muted font-mono', shorten(d.owner_address)));
+        }
         if (d.owner_label && d.owner_label.domain) {
           ownerCell.appendChild(el('div', 'text-xs text-muted font-mono break-all', d.owner_label.domain));
         }
@@ -870,8 +929,18 @@ record = session.post(
         const credCell = el('td', 'px-3 sm:px-6 py-4 align-top');
         credCell.appendChild(el('div', 'text-sm font-semibold', String(credCount) + (credCount === 1 ? ' credential' : ' credentials')));
         if (credCount > 0) {
-          const issuers = Array.from(new Set((d.accepted_credentials || []).map(c => c.issuer))).slice(0, 3);
-          credCell.appendChild(el('div', 'text-xs text-muted font-mono mt-1 break-all', issuers.map(shorten).join(', ') + (credCount > 3 ? ', …' : '')));
+          // Was a list of issuer ADDRESSES, which answers "who signed" -- a
+          // question nobody reading a directory has. What the domain ACCEPTS
+          // is the thing that says what it is, so show the decoded type names
+          // (collapsed the same way the server collapses UUID families).
+          credCell.appendChild(el('div', 'text-xs text-muted mt-1 break-words',
+            credentialSummary(d.accepted_credentials || [])));
+          const selfOnly = (d.accepted_credentials || []).every(c => c.issuer === d.owner_address);
+          if (selfOnly) {
+            const loop = el('div', 'text-[10px] uppercase tracking-wider text-muted/70 mt-1', 'self-issued only');
+            loop.title = 'Every accepted credential is issued by the domain owner itself: a closed loop, so the gate admits nobody the operator has not credentialed directly.';
+            credCell.appendChild(loop);
+          }
         }
         // Institutional-issuer badge: surfaces when the warmer found one or
         // more XRPScan-labeled credential issuers on this domain. Cheap
@@ -890,15 +959,20 @@ record = session.post(
 
         // First-seen column: earliest PermissionedDomainSet event for the
         // domain captured by Trust's subscribe loop. Renders as a human
-        // date when known; '; ' when the domain predates Trust subscribe
-        // (inline-seeded via /admin/seed or pre-existing on startup).
+        // date when known; 'unknown' when the domain predates Trust's
+        // subscribe loop (inline-seeded via /admin/seed or pre-existing on
+        // startup). It used to render a literal '\u2013', a corrupted placeholder
+        // that appeared in the column as a stray semicolon.
         const fsCell = el('td', 'px-3 sm:px-6 py-4 text-xs text-muted hidden md:table-cell');
         if (d.first_seen_unix) {
           const dt = new Date(d.first_seen_unix * 1000);
           fsCell.textContent = dt.toISOString().slice(0, 10);
           fsCell.title = dt.toUTCString() + (d.first_seen_ledger ? ' · ledger ' + d.first_seen_ledger : '');
         } else {
-          fsCell.textContent = '; ';
+          // Was a literal '\u2013', which rendered as a stray semicolon in the
+          // column and read like a bug rather than a missing value.
+          fsCell.textContent = 'unknown';
+          fsCell.className += ' italic opacity-60';
           fsCell.title = 'Predates Trust subscribe loop; first-seen unknown.';
         }
         tr.appendChild(fsCell);
@@ -951,11 +1025,41 @@ record = session.post(
       wrap.appendChild(back);
 
       const ownerLabel = (d.owner_label && d.owner_label.name) ? d.owner_label.name : null;
+      const claimed = ownerLabel ? null : claimedName(d);
+      const displayName = ownerLabel || (claimed && claimed.name) || null;
+
+      // Lead with a sentence, not a hex string. The panel used to open on the
+      // 64-character domain id and then five raw ledger fields -- Sequence,
+      // Owner node, Flags -- which answer questions nobody arrived with. Say
+      // what the thing IS first; the ledger record is still here, one click
+      // down, for whoever actually wants it.
       const head = el('div', 'mb-6 pb-4 border-b border-border');
-      head.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-1', 'Domain'));
-      head.appendChild(el('div', 'font-mono text-sm text-white break-all', d.domain_id));
+      head.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-1', 'Permissioned domain'));
+      head.appendChild(el('div', 'text-lg font-bold text-white break-words',
+        displayName || shorten(d.owner_address)));
+
+      const creds = d.accepted_credentials || [];
+      const selfOnly = creds.length > 0 && creds.every(c => c.issuer === d.owner_address);
+      const sentence = [];
+      sentence.push(displayName
+        ? ('Operated by ' + displayName + (claimed ? ' (self-asserted)' : '') + '.')
+        : 'Operator has published no name.');
+      if (creds.length) {
+        sentence.push('Admits ' + credentialSummary(creds) +
+          (selfOnly
+            ? ', all issued by the operator itself \u2014 a closed loop, so the gate admits nobody it has not credentialed directly.'
+            : ', including credentials it does not issue itself.'));
+      } else {
+        sentence.push('Admits no credential type, so it currently gates nothing.');
+      }
+      head.appendChild(el('p', 'text-sm text-muted leading-relaxed mt-2 max-w-3xl', sentence.join(' ')));
+
+      const idLine = el('div', 'text-[11px] text-muted font-mono break-all mt-3');
+      idLine.textContent = d.domain_id;
+      idLine.title = 'PermissionedDomain ledger object id';
+      head.appendChild(idLine);
       if (!enriched) {
-        head.appendChild(el('div', 'text-xs text-muted mt-2', 'Loading lifecycle and issuer labels…'));
+        head.appendChild(el('div', 'text-xs text-muted mt-2 italic', 'Loading lifecycle and issuer labels\u2026'));
       }
       wrap.appendChild(head);
 
@@ -963,7 +1067,7 @@ record = session.post(
       function row(k, v) {
         grid.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted sm:text-right', k));
         const dd = el('div', 'sm:col-span-2 text-white text-sm break-all');
-        dd.textContent = v == null ? '; ' : String(v);
+        dd.textContent = v == null ? 'unknown' : String(v);
         grid.appendChild(dd);
       }
       row('Owner', ownerLabel ? (ownerLabel + ' (' + d.owner_address + ')') : d.owner_address);
@@ -973,12 +1077,68 @@ record = session.post(
         const dt = new Date(d.first_seen_unix * 1000);
         row('First seen', dt.toISOString().slice(0,10) + ' UTC' + (d.first_seen_ledger ? ' · ledger ' + d.first_seen_ledger : ''));
       }
-      row('Sequence', d.sequence);
-      row('Owner node', d.owner_node);
-      row('Last txn', d.previous_txn_id);
-      row('Last txn ledger', d.previous_txn_lgr_seq);
-      row('Flags', d.flags);
       wrap.appendChild(grid);
+
+      // The raw ledger entry. Real, and worth keeping, but Sequence / Owner
+      // node / Flags are XRPL bookkeeping -- they were being presented at the
+      // same weight as who runs the domain, which is what made the panel read
+      // as a data dump.
+      const raw = document.createElement('details');
+      raw.className = 'mb-8 border border-border rounded-lg';
+      const rawSum = document.createElement('summary');
+      rawSum.className = 'cursor-pointer select-none px-4 py-3 text-xs uppercase tracking-wider text-muted hover:text-white transition';
+      rawSum.textContent = 'Ledger record';
+      raw.appendChild(rawSum);
+      const rawGrid = el('div', 'grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-3 px-4 pb-4');
+      function rawRow(k, v, hint) {
+        const kEl = el('div', 'text-xs uppercase tracking-wider text-muted sm:text-right', k);
+        if (hint) kEl.title = hint;
+        rawGrid.appendChild(kEl);
+        const dd = el('div', 'sm:col-span-2 text-white text-sm break-all font-mono');
+        dd.textContent = (v === null || v === undefined) ? 'unknown' : String(v);
+        rawGrid.appendChild(dd);
+      }
+      rawRow('Sequence', d.sequence, 'Owner account sequence when the object was created');
+      rawRow('Owner node', d.owner_node, 'Directory page holding this object on the owner account');
+      rawRow('Last txn', d.previous_txn_id, 'Hash of the transaction that last modified this object');
+      rawRow('Last txn ledger', d.previous_txn_lgr_seq);
+      rawRow('Flags', d.flags, 'PermissionedDomain defines no flags today; 0 is expected');
+      raw.appendChild(rawGrid);
+      wrap.appendChild(raw);
+
+      // The domain's own ledger activity, from the feed that moved here from
+      // Pulse. "Is this domain actually used?" is the question the panel could
+      // not answer before.
+      const act = el('div', 'mb-8');
+      act.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-3', 'Recent activity on this domain'));
+      const actBody = el('div', 'text-xs text-muted', 'Loading\u2026');
+      act.appendChild(actBody);
+      wrap.appendChild(act);
+      if (d.domain_id) {
+        fetch(API_BASE + '/activity?limit=6&domain_id=' + encodeURIComponent(d.domain_id))
+          .then(r => r.ok ? r.json() : null)
+          .then(body => {
+            const evs = (body && body.events) || [];
+            if (!evs.length) {
+              actBody.textContent = 'No ledger activity recorded against this domain yet. The gate exists; nothing has traded through it.';
+              return;
+            }
+            actBody.innerHTML = '';
+            evs.forEach(e => {
+              const r = el('div', 'bg-ink border border-border rounded-lg px-3 py-2 mb-2');
+              const t = el('div', 'text-white text-xs');
+              t.textContent = (e.count > 1 ? ('\u00d7' + e.count + '  ') : '') + e.title;
+              const b = el('div', 'text-[11px] text-muted mt-0.5 leading-relaxed');
+              b.textContent = e.brief;
+              r.appendChild(t); r.appendChild(b);
+              actBody.appendChild(r);
+            });
+          })
+          .catch(() => {
+            // Distinguish "we could not look" from "nothing happened".
+            actBody.textContent = 'Could not reach the activity feed. That is a failure to look, not an absence of activity.';
+          });
+      }
 
       // Lifecycle block (drill-down only). Surfaces creation date,
       // last-modified date, and modification count when available.
@@ -990,7 +1150,7 @@ record = session.post(
         function lcRow(k, v, sub) {
           lcGrid.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted sm:text-right', k));
           const dd = el('div', 'sm:col-span-2 text-white text-sm');
-          dd.textContent = v == null ? '; ' : String(v);
+          dd.textContent = v == null ? 'unknown' : String(v);
           if (sub) {
             const s = el('div', 'text-xs text-muted font-mono mt-1 break-all');
             s.textContent = sub;
@@ -1000,7 +1160,7 @@ record = session.post(
         }
         lcRow('Created', formatTimeAgo(lc.created_at_unix, lc.created_at_iso), lc.created_tx_id);
         lcRow('Last modified', formatTimeAgo(lc.last_modified_at_unix, lc.last_modified_at_iso), lc.last_modified_tx_id);
-        lcRow('Modifications', (lc.modification_count != null ? lc.modification_count : '; '),
+        lcRow('Modifications', (lc.modification_count != null ? lc.modification_count : '\u2013'),
               'lifecycle_status: ' + lc.lifecycle_status);
         lcWrap.appendChild(lcGrid);
         wrap.appendChild(lcWrap);
@@ -1148,7 +1308,7 @@ record = session.post(
     }
 
     function formatTimeAgo(unix, iso) {
-      if (unix == null) return iso || '; ';
+      if (unix == null) return iso || '\u2013';
       const now = Math.floor(Date.now() / 1000);
       const delta = now - unix;
       if (delta < 0) return iso;
@@ -1165,7 +1325,7 @@ record = session.post(
     // Format an XRPL Amount field for compact display. String -> drops -> XRP;
     // {currency, value, issuer} -> 'value CURRENCY' with hex-decoded currency.
     function _formatXrplAmount(amt) {
-      if (amt == null) return '; ';
+      if (amt == null) return '\u2013';
       if (typeof amt === 'string') {
         const drops = parseInt(amt, 10);
         if (!isNaN(drops)) return (drops / 1_000_000) + ' XRP';
@@ -1249,8 +1409,8 @@ record = session.post(
         if (!r.ok) {
           renderError(target, 'The directory is temporarily unreachable. Try refreshing in a moment. (HTTP ' + r.status + ')');
           status.textContent = 'Error.';
-          setStat('stat-domains', '; ');
-          setStat('stat-issuers', '; ');
+          setStat('stat-domains', '\u2013');
+          setStat('stat-issuers', '\u2013');
           return;
         }
         _lastResponse = await r.json();
@@ -1275,8 +1435,8 @@ record = session.post(
       } catch (e) {
         renderError(target, 'Couldn’t reach trust.xrpl-utilities.io. The service may be undergoing initial deployment. Try refreshing.');
         status.textContent = 'Error.';
-        setStat('stat-domains', '; ');
-        setStat('stat-issuers', '; ');
+        setStat('stat-domains', '\u2013');
+        setStat('stat-issuers', '\u2013');
       }
     }
 
@@ -1333,7 +1493,7 @@ record = session.post(
     };
 
     function fmtAmountShort(value, currency, issuer) {
-      if (value === undefined || value === null) return '; ';
+      if (value === undefined || value === null) return '\u2013';
       const n = typeof value === 'string' ? parseFloat(value) : value;
       if (!isFinite(n) || n === 0) return '0';
       let disp;
