@@ -716,6 +716,22 @@ record = session.post(
     // Same collapse the server applies to the narrative: a run of
     // `PREFIX:<uuid>` types is one product line, not N facts. Types with no
     // prefix (KYC, AIFM, SCPO_BASIC) ARE the meaning and stay verbatim.
+    const UUIDISH = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const HEXBLOB = /^[0-9A-F]{16,}$/;
+
+    // One credential type, rendered for a human.
+    //   HVIWS:068fde7c-d7e0-...  ->  HVIWS:…      the uuid is an instance id
+    //   BD7142283FDFEBB7...      ->  binary type  undecodable, so say so
+    //   KYC / EUROP_Approved     ->  verbatim     this IS the meaning
+    // The full value always survives in the title attribute.
+    function credentialLabel(t) {
+      if (!t) return null;
+      if (HEXBLOB.test(t)) return 'binary type';
+      const i = t.indexOf(':');
+      if (i > 0 && UUIDISH.test(t.slice(i + 1))) return t.slice(0, i) + ':\u2026';
+      return t;
+    }
+
     function credentialSummary(creds) {
       const names = [];
       creds.forEach(c => {
@@ -725,13 +741,13 @@ record = session.post(
       if (!names.length) return '';
       const fam = new Map();
       names.forEach(t => {
-        const key = t.indexOf(':') > -1 ? t.split(':')[0] : t;
+        const key = credentialLabel(t);
         if (!fam.has(key)) fam.set(key, []);
         fam.get(key).push(t);
       });
       const chunks = [];
       fam.forEach((members, key) => {
-        chunks.push(members.length === 1 ? members[0] : members.length + ' \u00d7 ' + key + ':\u2026');
+        chunks.push(members.length === 1 ? key : members.length + ' \u00d7 ' + key);
       });
       return chunks.slice(0, 3).join(' \u00b7 ') + (chunks.length > 3 ? ' \u00b7 +' + (chunks.length - 3) : '');
     }
@@ -933,8 +949,11 @@ record = session.post(
           // question nobody reading a directory has. What the domain ACCEPTS
           // is the thing that says what it is, so show the decoded type names
           // (collapsed the same way the server collapses UUID families).
-          credCell.appendChild(el('div', 'text-xs text-muted mt-1 break-words',
-            credentialSummary(d.accepted_credentials || [])));
+          const credLine = el('div', 'text-xs text-muted mt-1 break-words',
+            credentialSummary(d.accepted_credentials || []));
+          credLine.title = (d.accepted_credentials || [])
+            .map(c => c.credential_type_decoded || c.credential_type).join('\n');
+          credCell.appendChild(credLine);
           const selfOnly = (d.accepted_credentials || []).every(c => c.issuer === d.owner_address);
           if (selfOnly) {
             const loop = el('div', 'text-[10px] uppercase tracking-wider text-muted/70 mt-1', 'self-issued only');
