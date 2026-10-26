@@ -106,3 +106,11 @@ serves the agent-facing API:
 - `xrpl-utilities-mcp` — Model Context Protocol server exposing all six
   services as MCP tools (`mcp.xrpl-utilities.io`, also published to npm
   as `@xrpl-utilities/mcp`)
+
+## Pushing
+
+Cloudflare deploys `main` on every push, before CI reports. Enable the pre-push hook once per clone so a failing test blocks the push instead of shipping:
+
+    git config core.hooksPath .githooks
+
+The hook runs `tests/run.sh` (hermetic, no network).
