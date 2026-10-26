@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>XRPL-Utilities | XRPL data services for institutions, developers, and AI agents</title>
-  <meta name="description" content="Six on-chain data services covering XRPL: wallet behavior, network state, signal feed, permissioned domains, real-world assets, ETF flow. Free on the web. Agent-payable via x402: XRP/RLUSD on XRPL or USDC on Base. No accounts, no API keys." />
+  <meta name="description" content="Six agent-payable XRPL data APIs plus the free Lineage view, covering wallet behavior, network state, signal feed, permissioned domains, real-world assets, ETF flow. Free on the web. Agent-payable via x402: XRP/RLUSD on XRPL or USDC on Base. No accounts, no API keys." />
   <meta property="og:title" content="XRPL-Utilities" />
   <meta property="og:description" content="XRPL data services for institutions, developers, and AI agents. Six on-chain APIs. Free on the web, agent-payable via x402: XRP/RLUSD on XRPL or USDC on Base." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
@@ -229,7 +229,7 @@
         XRPL <span class="accent-gradient">Data Infrastructure</span>
       </h1>
       <p class="text-lg sm:text-xl text-muted max-w-2xl mx-auto leading-relaxed">
-        Six on-chain services for institutions, developers, and AI agents. Free from this site. Agent-payable via <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402</a>: XRP/RLUSD on XRPL or USDC on Base. No accounts, no API keys, no onboarding calls.
+        Six agent-payable XRPL data APIs and the free Lineage view, for institutions, developers, and AI agents. Free from this site. Agent-payable via <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402</a>: XRP/RLUSD on XRPL or USDC on Base. No accounts, no API keys, no onboarding calls.
       </p>
       <div class="mt-10 flex flex-wrap gap-3 justify-center">
         <a href="#tools" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
@@ -519,16 +519,22 @@
           <div class="text-muted mb-3"># Pay-per-call from any x402 v2 client</div>
           <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
 
+<span class="text-accent">def</span> pay_in_xrp(accepts, *_):
+    <span class="text-accent">return</span> next(a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
+                <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span> <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>)
+
 session = X402RequestsSession(
     wallet=wallet,
     rpc_url=<span class="text-green-400">"https://YOUR_XRPL_RPC"</span>,
-    payment_requirements_selector=<span class="text-green-400">"XRP"</span>,
+    payment_requirements_selector=pay_in_xrp,
 )
 
-report = session.post(
+resp = session.post(
     <span class="text-green-400">"https://sentinel.xrpl-utilities.io/scan"</span>,
     json={<span class="text-green-400">"address"</span>: target},
-).json()</pre>
+)
+resp.raise_for_status()  <span class="text-accent"># a 402 here means the payment did not go through</span>
+report = resp.json()</pre>
         </div>
       </div>
     </div>
@@ -582,7 +588,7 @@ report = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>

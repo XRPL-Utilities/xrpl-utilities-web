@@ -1,0 +1,25 @@
+{
+ "_http_status": 200,
+ "status": "ok",
+ "service": "XR-Trust",
+ "schema_version": "2026-43",
+ "checks": {
+  "xrpl_node": {
+   "ok": true,
+   "http_status": 200,
+   "node_kind": "rippled",
+   "clio_version": null,
+   "build_version": "3.4.1",
+   "complete_ledgers": "32570-107920759"
+  },
+  "facilitator": {
+   "ok": true,
+   "http_status": 200
+  },
+  "xrp_price": {
+   "ok": true,
+   "last_good_age_s": 92,
+   "last_good_usd": 1.2974
+  }
+ }
+}

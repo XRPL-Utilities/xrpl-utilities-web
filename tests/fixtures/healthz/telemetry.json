@@ -1,0 +1,176 @@
+{
+ "_http_status": 200,
+ "status": "active",
+ "service": "XR-Telemetry",
+ "schema_version": "1.28.0",
+ "checks": {
+  "quicknode": {
+   "ok": true,
+   "latency_ms": 361,
+   "server_state": "full",
+   "validated_ledger_age": 0
+  },
+  "facilitator": {
+   "ok": true,
+   "latency_ms": 69,
+   "networks": [
+    "xrpl:0"
+   ]
+  },
+  "xrp_price": {
+   "ok": true,
+   "last_good_age_seconds": 54,
+   "last_good_usd": 1.2971,
+   "usd_24h_change_pct": null
+  },
+  "flows_upstream": {
+   "base_url": "https://flows.xrpl-utilities.io",
+   "cache_age_seconds": 137.15262651443481,
+   "max_stale_seconds": 86400.0,
+   "last_error": null,
+   "correlation_cache_age_seconds": 745.9712262153625,
+   "correlation_last_error": null
+  },
+  "vault_upstream": {
+   "base_url": "https://vault.xrpl-utilities.io",
+   "cache_age_seconds": 2937.343216896057,
+   "max_stale_seconds": 86400.0,
+   "last_error": null
+  },
+  "snapshot_age_seconds": 136.60919952392578,
+  "slow_tasks": [
+   {
+    "name": "escrow_scan",
+    "cache_key": "escrowed_xrp",
+    "ok": true,
+    "age_seconds": 3470.6017174720764,
+    "fresh_max_age_seconds": 129600
+   },
+   {
+    "name": "amm_apr",
+    "cache_key": "amm_apr_xrp_rlusd_pct",
+    "ok": true,
+    "age_seconds": 3409.970867395401,
+    "fresh_max_age_seconds": 28800
+   },
+   {
+    "name": "dormant_scan",
+    "cache_key": "dormant_xrp",
+    "ok": true,
+    "age_seconds": 2976.4655809402466,
+    "fresh_max_age_seconds": 129600,
+    "probe_coverage": {
+     "probed": 4927,
+     "expected": 5000,
+     "fraction": 0.9854,
+     "at": 1793037104.206785
+    },
+    "gate_status": {
+     "gate": null,
+     "passed": true,
+     "detail": {
+      "value_xrp": 19954769461.91896,
+      "dormant_accounts": 3314,
+      "probed": 4927,
+      "expected": 5000,
+      "basis": "last_outgoing_ledger",
+      "resolved_untouched": 6,
+      "resolved_from_cache": 4869,
+      "resolved_by_tx_walk": 52
+     },
+     "at": 1793037104.2111661
+    }
+   },
+   {
+    "name": "exchange_flows",
+    "cache_key": "regional_liquidity",
+    "ok": true,
+    "age_seconds": 2558.9819781780243,
+    "fresh_max_age_seconds": 28800
+   },
+   {
+    "name": "bridge_flows",
+    "cache_key": "bridge_outflow_24h_xrp",
+    "ok": true,
+    "age_seconds": 3217.0392854213715,
+    "fresh_max_age_seconds": 28800
+   },
+   {
+    "name": "escrow_event_ratio",
+    "cache_key": "escrow_release_vs_relock_ratio",
+    "ok": true,
+    "age_seconds": 3161.13827252388,
+    "fresh_max_age_seconds": 129600
+   },
+   {
+    "name": "exchange_balances_scan",
+    "cache_key": "exchange_balances_payload",
+    "ok": true,
+    "age_seconds": 3116.407119512558,
+    "fresh_max_age_seconds": 129600
+   },
+   {
+    "name": "dex_orderbook_scan",
+    "cache_key": "dex_orderbook_payload",
+    "ok": true,
+    "age_seconds": 3048.2544729709625,
+    "fresh_max_age_seconds": 28800
+   },
+   {
+    "name": "active_float_snapshot",
+    "cache_key": "active_float_snapshot_last_value",
+    "ok": true,
+    "age_seconds": 2997.3417224884033,
+    "fresh_max_age_seconds": 129600
+   },
+   {
+    "name": "rwa_dormant_correlation",
+    "cache_key": "rwa_dormant_correlation_last_run",
+    "ok": true,
+    "age_seconds": 2936.9266324043274,
+    "fresh_max_age_seconds": 129600
+   }
+  ],
+  "settlement_walker": {
+   "mode": "live",
+   "last_walked_ledger": 107920692,
+   "last_known_head": 107920759,
+   "lag_ledgers": 68,
+   "ledgers_walked_session": 821,
+   "payments_recorded_session": 6634,
+   "errors_session": 0,
+   "last_error": null,
+   "last_step_at": 1793040079.5660481,
+   "started_at": 1793036603.3361194,
+   "concurrency": 200,
+   "historical_price_points": 4401,
+   "ws_pool": [
+    {
+     "url": "wss://xrplcluster.com",
+     "connected": true,
+     "connect_count": 6,
+     "error_count": 5,
+     "pending": 0
+    },
+    {
+     "url": "wss://s1.ripple.com:51233",
+     "connected": true,
+     "connect_count": 1,
+     "error_count": 0,
+     "pending": 0
+    },
+    {
+     "url": "wss://s2.ripple.com:51233",
+     "connected": true,
+     "connect_count": 1,
+     "error_count": 0,
+     "pending": 0
+    }
+   ],
+   "lag_status": "ok",
+   "lag_warn_threshold": 500,
+   "lag_crit_threshold": 5000
+  },
+  "db_path": "/data/telemetry.db"
+ }
+}

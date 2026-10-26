@@ -16,6 +16,11 @@ node tests/trust_xss_test.mjs
 node tests/worker_proxy_test.mjs
 node tests/qr_render_test.mjs
 node tests/telemetry_null_test.mjs
+python3 tests/python_sample_test.py
+node tests/inline_script_syntax_test.mjs
+node tests/content_rules_test.mjs
+node tests/status_model_test.mjs
+node --check assets/status-model.js
 python3 tests/qr_matrix_crosscheck.py
 
 echo "all checks passed"

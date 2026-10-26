@@ -1,0 +1,255 @@
+{
+ "_http_status": 200,
+ "status": "active",
+ "service": "XR-Pulse",
+ "schema_version": "1.110.0",
+ "checks": {
+  "db": {
+   "ok": true,
+   "event_count": 444040
+  },
+  "rpc": {
+   "ok": true
+  },
+  "facilitator": {
+   "ok": true,
+   "latency_ms": 83,
+   "networks": [
+    "xrpl:0"
+   ]
+  },
+  "whale_watcher": {
+   "last_ledger_index": 107920754,
+   "total_passes": 236,
+   "total_ledgers_scanned": 614,
+   "total_emitted": 16,
+   "last_pass_at": 1793040076.279294,
+   "last_pass_status": "ok",
+   "last_error": null
+  },
+  "permissioned_domain_watcher": {
+   "source": "permissioned_domain_lifecycle",
+   "passes": 0,
+   "events_emitted_total": 0,
+   "events_filtered_total": 0,
+   "last_poll_at": null,
+   "last_poll_returned": 0,
+   "last_emit_at": null,
+   "last_emit_tx_type": null,
+   "last_error": null,
+   "trust_subscribe_connected": null,
+   "exec_walker_attempts": 0,
+   "exec_walker_missed": 0,
+   "exec_walker_retry_saves": 0,
+   "exec_walker_last_miss_reason": null,
+   "exec_walker_last_miss_at": null,
+   "exec_repair_attempted_total": 0,
+   "exec_repair_repaired_total": 0,
+   "exec_repair_unresolved_total": 0,
+   "exec_repair_last_run_at": null,
+   "exec_walker_miss_pct": null
+  },
+  "rwa_issuer_watcher": {
+   "tracked_issuers": 54,
+   "live_issuers": 52,
+   "account_tx_limit": 100,
+   "obligations_delta_threshold": "1000000"
+  },
+  "rwa_daily_snapshot": {
+   "live_issuers": 52,
+   "dormant_issuers": 1,
+   "last_snapshot_date": "2026-10-26",
+   "trustline_page_cap": 5
+  },
+  "rwa_amm_watcher": {
+   "live_issuers_probed": 53,
+   "counterparties": [
+    "XRP",
+    "RLUSD"
+   ],
+   "last_snapshot_date": "2026-10-26"
+  },
+  "cross_chain_supply": {
+   "assets_tracked": [
+    "RLUSD"
+   ],
+   "endpoints_configured": 3,
+   "last_pass": {
+    "ran_at": 1793039916.683244,
+    "ok": 1,
+    "failed": 0
+   }
+  },
+  "rwa_issuer_discovery": {
+   "last_run_date": "2026-10-26",
+   "last_run_stats": {
+    "ran_at": 1792975152.476436,
+    "run_date": "2026-10-26",
+    "well_known_count": 3521,
+    "candidates_probed": 3490,
+    "candidates_matched": 0,
+    "candidates_new": 0,
+    "candidates_refreshed": 0,
+    "errors": 0
+   }
+  },
+  "network_size_watcher": {
+   "last_sample_date": "2026-10-26",
+   "last_sample": {
+    "sample_date": "2026-10-26",
+    "captured_at": 1793037135.1736336,
+    "total_addresses": 8561992,
+    "total_offers": 185973,
+    "total_trustlines": 6883054,
+    "active_addresses_24h": 32009,
+    "transactions_24h": 136232
+   }
+  },
+  "primitive_adoption_watcher": {
+   "last_sample_date": "2026-10-26",
+   "captured_at": 1793037255.1730917,
+   "source": "https://api.xrpscan.com/api/v1/fact",
+   "tracked_object_types": 18,
+   "headline": {
+    "PermissionedDomain": 20,
+    "Credential": 460,
+    "DID": 110,
+    "Oracle": 62,
+    "MPTokenIssuance": 385,
+    "AMM": 31840
+   }
+  },
+  "ripple_counterparty_discovery": {
+   "last_pass_at": 1793039484.3101187,
+   "stats": {
+    "started_at": 1793039451.422538,
+    "sources_polled": 24,
+    "new_candidates": 0,
+    "refreshed_candidates": 0,
+    "auto_promoted": 23,
+    "errors": 0,
+    "declared_roster_members": 36,
+    "declared_roster_promoted": 23,
+    "completed_at": 1793039484.3101187,
+    "elapsed_s": 32.89
+   }
+  },
+  "ripple_counterparty_second_hop": {
+   "last_pass_at": 1793036955.6620667,
+   "stats": {
+    "started_at": 1793036835.1731017,
+    "first_hops_walked": 63,
+    "edges_upserted": 1181,
+    "attributed_edges": 0,
+    "unattributed_edges": 0,
+    "errors": 0,
+    "refreshed_only": 1181,
+    "completed_at": 1793036955.6620667,
+    "elapsed_s": 120.49
+   }
+  },
+  "ripple_source_discovery": {
+   "last_pass_at": 1793036715.9574301,
+   "last_pass_stats": {
+    "started_at": 1793036715.1732879,
+    "toml_accounts_seen": 20,
+    "xrpscan_ripple_names_seen": 94,
+    "new_candidates": 0,
+    "refreshed_candidates": 70,
+    "errors": 0,
+    "completed_at": 1793036715.9574301,
+    "elapsed_s": 0.78
+   },
+   "hardcoded_sources_count": 24
+  },
+  "focus_watcher": {
+   "focus_list_size": 16,
+   "malformed_entries": [],
+   "last_pass_at": 1793040048.4016998,
+   "last_pass_stats": {
+    "started_at": 1793040035.462889,
+    "wallets_polled": 16,
+    "events_emitted": 0,
+    "errors": 0,
+    "completed_at": 1793040048.4016998,
+    "elapsed_s": 12.94
+   },
+   "total_events_emitted": 0,
+   "last_seen_ledgers": {
+    "rp1edBgyjbAsjXXHrhGtGUK2v6D6XhMTwc": 107351890,
+    "r4vFWRRZBXsWipgCLJBs6EqnMh7MRHbhyp": 106633402,
+    "rBNCyNEwpaEbGP9nqkQeYcvwYAwwKkRzTR": 107919066,
+    "rf4ZFGjq2pAbgr55nL6EH9w8XjSp9XvFgB": 104875310,
+    "rpprg47cqNU2rdmUDd8vjJfh9aWW4mYmhg": 107916564,
+    "rPKhykD72gzndvTT5oAB3REiyJk6dtn8oW": 107209035,
+    "rQUp2PKzH3vCtKs5H9tsPPE1rTsN6fhjqn": 107917571,
+    "rfxRtJ3apsuJs5TauCHCZB7ab4C1WvoBs": 106321825,
+    "rDnkcDHdMqUuD8WXgjGXPoSECWndiopzCA": 107518805,
+    "rJqiMb94hyz41SBTNr2AyPNW8AzELa8nE": 107910234,
+    "rhWt2bhRq3wiK9sQnYVmhhKb5Dr2SE32hk": 107853747,
+    "rJc9UiWRn3sCseQNkbz9o2wRwvZCvDacmb": 107049420,
+    "rpXzLHyzzYFm8hMxwxsEmvwo18C5JExJrb": 107049417,
+    "rwUVTve5HBJc6n9zFpwjiV7TeyQGCNSqm6": 107049409,
+    "rMy2wJbmynqvKKCdnZ16ZqEhPbc9dk9aKp": 107049176,
+    "rN1Jb15GyGbqyHqjvnEKAMezxgyAVJV2bV": 107854925
+   }
+  },
+  "choreography_watcher": {
+   "total_passes": 12,
+   "last_pass_at": 1793039940.4198034,
+   "last_pass_stats": {
+    "started_at": 1793039940.4188817,
+    "events_scanned": 22,
+    "wallets_bucketed": 32,
+    "candidates_checked": 0,
+    "events_emitted": 0,
+    "completed_at": 1793039940.4198034,
+    "elapsed_s": 0.001
+   },
+   "total_emitted": 1,
+   "last_emit_at": 1793036640.195677
+  },
+  "institutional_dispersion_watcher": {
+   "total_passes": 12,
+   "last_pass_at": 1793039955.2302058,
+   "last_pass_stats": {
+    "started_at": 1793039955.229628,
+    "events_scanned": 16,
+    "pairs_bucketed": 15,
+    "candidates_checked": 0,
+    "events_emitted": 0,
+    "completed_at": 1793039955.2302058,
+    "elapsed_s": 0.001
+   },
+   "total_emitted": 0,
+   "last_emit_at": 0.0
+  },
+  "relay_burst_detector": {
+   "in_flight_tails": 3,
+   "in_flight_chains": 4,
+   "total_hook_invocations": 11483,
+   "total_chains_fired": 13,
+   "last_hook_at": 1793039835.0788248
+  },
+  "cex_attribution_walker": {
+   "total_hook_invocations": 16,
+   "total_qualifying_terminals": 2,
+   "total_chains_walked": 2,
+   "total_candidates_queued": 0,
+   "last_hook_at": 1793039835.0788374
+  },
+  "xls85_backfill": {
+   "status": "completed",
+   "last_processed_ledger": 106322622,
+   "started_at": 1786843019,
+   "completed_at": 1786873985,
+   "events_emitted_total": 305058,
+   "ledgers_processed_total": 10660088,
+   "this_run_events_emitted": 0,
+   "this_run_ledgers_processed": 0,
+   "last_progress_at": null,
+   "last_error": null
+  }
+ },
+ "legal_notice": "Deterministic heuristic data only. Not an endorsement of news legitimacy. Source presence is reported as a property of an event, not a verdict on the source. Correlation against XR-Telemetry is a measurement, not a causal claim. DYOR. Not investment, legal, or regulatory advice."
+}

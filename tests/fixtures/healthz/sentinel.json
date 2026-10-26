@@ -1,0 +1,37 @@
+{
+ "_http_status": 503,
+ "status": "degraded",
+ "service": "XR-Sentinel",
+ "schema_version": "2.36.0",
+ "checks": {
+  "quicknode": {
+   "ok": true,
+   "latency_ms": 352,
+   "server_state": "full",
+   "validated_ledger_age": 0
+  },
+  "facilitator": {
+   "ok": true,
+   "latency_ms": 67,
+   "networks": [
+    "xrpl:0"
+   ]
+  },
+  "xrp_price": {
+   "ok": true,
+   "last_good_age_seconds": 51,
+   "last_good_usd": 1.29695
+  },
+  "ai": {
+   "ok": false,
+   "last_ok_age_seconds": null,
+   "consecutive_failures": 12,
+   "ok_count": 0,
+   "failure_count": 12,
+   "fallback_configured": false,
+   "fallback_used_count": 0,
+   "last_error": "AuthenticationError(\"Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****62f6 is invalid (request_id: 40a9d475-8b9b-439d-8ed5-3e2abd3eadd1)', 'type': 'authentication_error",
+   "last_error_age_seconds": 245
+  }
+ }
+}

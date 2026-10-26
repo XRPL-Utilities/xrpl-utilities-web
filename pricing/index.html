@@ -307,7 +307,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">1. Get a quote</div>
           <p class="text-sm text-muted leading-relaxed">
-            Call the endpoint. The server returns HTTP 402 with two payment options: an XRP amount and an equivalent RLUSD amount. Each carries the exact drops/units, the destination address, an invoice ID, and the t54 facilitator URL. Quotes are good for 10 minutes.
+            Call the endpoint. The server returns HTTP 402 with three payment options: RLUSD, USDC on Base, or an equivalent XRP amount at spot. Each carries the exact drops/units, the destination address, an invoice ID, and the t54 facilitator URL. Quotes are good for 10 minutes.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -319,7 +319,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">3. Receive + settle</div>
           <p class="text-sm text-muted leading-relaxed">
-            On verified payment the server builds the response, then settles via the t54 facilitator and attaches a <code class="font-mono text-white text-xs">PAYMENT-RESPONSE</code> header containing the on-chain transaction hash. No charge if the work fails; no work if the payment is invalid.
+            On verified payment the server builds the response, then settles via the t54 facilitator (XRPL) or the Coinbase facilitator (Base) and attaches a <code class="font-mono text-white text-xs">PAYMENT-RESPONSE</code> header containing the on-chain transaction hash. No charge if the work fails; no work if the payment is invalid.
           </p>
         </div>
       </div>
@@ -334,16 +334,22 @@
 from x402_xrpl import X402RequestsSession
 from xrpl.wallet import Wallet
 
+def pay_in_xrp(accepts, *_):
+    return next(a for a in accepts
+                if a["network"] == "xrpl:0" and a["asset"] == "XRP")
+
 session = X402RequestsSession(
     wallet=Wallet.from_seed(seed),
     rpc_url="https://YOUR_XRPL_RPC",
-    payment_requirements_selector="XRP",
+    payment_requirements_selector=pay_in_xrp,
 )
 
-r = session.post(
+resp = session.post(
     "https://sentinel.xrpl-utilities.io/scan",
     json={"address": "rExample..."},
-).json()</pre>
+)
+resp.raise_for_status()  # a 402 here means the payment did not go through
+r = resp.json()</pre>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">MCP for AI agents</div>
@@ -450,7 +456,7 @@ r = session.post(
   <section class="border-t border-border">
     <div class="max-w-4xl mx-auto px-6 py-12 text-center">
       <p class="text-sm text-muted leading-relaxed">
-        On-chain data passthrough only. No editorial scoring, no compliance verdicts, no investment advice. Per-call price is pinned in XRP drops and refreshed when spot moves substantially; the 402 response always advertises the exact required amount for that call. See <a href="/terms/" class="underline hover:text-white">Terms</a> for the full disclaimer.
+        Mostly on-chain data passthrough. XR-Sentinel&trade; returns heuristic scores and an AI-generated narrative. No compliance verdicts, no investment advice. Per-call price is pinned in XRP drops and refreshed when spot moves substantially; the 402 response always advertises the exact required amount for that call. See <a href="/terms/" class="underline hover:text-white">Terms</a> for the full disclaimer.
       </p>
     </div>
   </section>
@@ -496,7 +502,7 @@ r = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>

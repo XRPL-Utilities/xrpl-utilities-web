@@ -1,0 +1,25 @@
+{
+ "_http_status": 200,
+ "status": "active",
+ "service": "XR-Vault",
+ "schema_version": "1.16.0",
+ "checks": {
+  "db": {
+   "ok": true
+  },
+  "facilitator": {
+   "ok": true,
+   "latency_ms": 79,
+   "networks": [
+    "xrpl:0"
+   ]
+  },
+  "pulse_upstream": {
+   "state": "ok",
+   "cache_age_seconds": 224.97183299064636,
+   "last_error": null,
+   "error_age_seconds": null
+  }
+ },
+ "legal_notice": "Deterministic on-chain measurement. Native unit-of-account only; no USD valuation is applied to RWA tokens by this service. Issuer-stated metrics (e.g., marketed AUM) are not on-chain attested and may differ from on-chain figures. DYOR. Not investment, legal, or regulatory advice. Service is offered void where prohibited; use is not authorized in California or Colorado."
+}

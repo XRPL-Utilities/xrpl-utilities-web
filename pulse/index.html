@@ -699,16 +699,22 @@
             <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
 <span class="text-accent">from</span> xrpl.wallet <span class="text-accent">import</span> Wallet
 
+<span class="text-accent">def</span> pay_in_xrp(accepts, *_):
+    <span class="text-accent">return</span> next(a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
+                <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span> <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>)
+
 session = X402RequestsSession(
     wallet=Wallet.from_seed(seed),
     rpc_url=<span class="text-green-400">"https://YOUR_XRPL_RPC"</span>,
-    payment_requirements_selector=<span class="text-green-400">"XRP"</span>,
+    payment_requirements_selector=pay_in_xrp,
 )
 
-feed = session.post(
+resp = session.post(
     <span class="text-green-400">"https://pulse.xrpl-utilities.io/events/recent"</span>,
     json={<span class="text-green-400">"limit"</span>: 50},
-).json()
+)
+resp.raise_for_status()  <span class="text-accent"># a 402 here means the payment did not go through</span>
+feed = resp.json()
 
 <span class="text-accent">for</span> e <span class="text-accent">in</span> feed[<span class="text-green-400">"events"</span>]:
     <span class="text-accent">print</span>(e[<span class="text-green-400">"title"</span>], e[<span class="text-green-400">"source_appearances"</span>])</pre>
@@ -917,7 +923,7 @@ feed = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. On-chain and public-RSS data passthrough only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>

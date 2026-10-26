@@ -335,14 +335,15 @@
           <h3 class="text-3xl font-bold mb-6">Pay $0.10 per scan, no API key</h3>
           <p class="text-muted leading-relaxed mb-6">
             XR-Sentinel implements <strong class="text-white">x402 v2</strong> with the
-            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
+            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet and USDC on Base.
             Verification and settlement are delegated to the
-            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator.
+            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator
+            or the Coinbase facilitator (Base).
           </p>
           <ol class="space-y-4 text-sm text-muted">
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">1.</span>
-              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with two options: XRP (dynamic, ≈ $0.10 spot) or RLUSD (flat 0.10).</span>
+              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with three options: RLUSD (flat 0.10), USDC on Base (flat 0.10), or XRP (dynamic, ≈ $0.10 at spot).</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">2.</span>
@@ -399,16 +400,22 @@
             <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
 <span class="text-accent">from</span> xrpl.wallet <span class="text-accent">import</span> Wallet
 
+<span class="text-accent">def</span> pay_in_xrp(accepts, *_):
+    <span class="text-accent">return</span> next(a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
+                <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span> <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>)
+
 session = X402RequestsSession(
     wallet=Wallet.from_seed(seed),
     rpc_url=<span class="text-green-400">"https://YOUR_XRPL_RPC"</span>,
-    payment_requirements_selector=<span class="text-green-400">"XRP"</span>,
+    payment_requirements_selector=pay_in_xrp,
 )
 
-report = session.post(
+resp = session.post(
     <span class="text-green-400">"https://sentinel.xrpl-utilities.io/scan"</span>,
     json={<span class="text-green-400">"address"</span>: <span class="text-green-400">"r..."</span>},
-).json()
+)
+resp.raise_for_status()  <span class="text-accent"># a 402 here means the payment did not go through</span>
+report = resp.json()
 
 <span class="text-accent">print</span>(report[<span class="text-green-400">"activity_level"</span>])
 <span class="text-accent">print</span>(report[<span class="text-green-400">"signals"</span>])
@@ -1043,7 +1050,7 @@ report = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>
@@ -1114,7 +1121,7 @@ report = session.post(
         label: "XLS-80 permissioned-domain operators",
         blurb: "Wallets operating PermissionedDomain ledger objects under the XLS-80 amendment. These are the on-chain hooks that gate XLS-81 permissioned-DEX execution to credentialed subjects.",
         wallets: [
-          { address: "rGKMDUdmquUCvoXxhcJSttnVnr2NYc9fYi", name: "xrp-liquid.com",                              blurb: "First named institutional liquidity venue. Founder Evan Wyn Evans. Live XRPL DID + active XLS-81 offers selling XRP for USDC / RLUSD / EURQ." },
+          { address: "rGKMDUdmquUCvoXxhcJSttnVnr2NYc9fYi", name: "xrp-liquid",                                  blurb: "Early XLS-81 venue operator. On-chain DID, a permissioned domain and resting domain offers for XRP against USDC / RLUSD / EURQ. No activity since June 2026; its website no longer resolves." },
           { address: "rtaXvxk6mqixCgMETaA5jxgm3ZKB5n3FP", name: "Anonymous operator",                          blurb: "Unlabeled second-mover. 2 domains, 8 credentials issued. No self-identification on chain." },
         ],
       },

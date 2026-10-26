@@ -232,7 +232,7 @@
         <div id="operators-grid" class="space-y-3">
           <span class="text-xs text-muted">Loading&hellip;</span>
         </div>
-        <p id="operators-empty" class="text-[11px] text-muted mt-3 hidden">No 24h activity captured yet. xrp-liquid was the first named XLS-81 venue; as more operators publish offers inside their domains, they'll show up here.</p>
+        <p id="operators-empty" class="text-[11px] text-muted mt-3 hidden">No 24h activity captured yet. As operators publish offers inside their domains, they'll show up here.</p>
       </div>
     </div>
   </section>
@@ -343,7 +343,7 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Who uses them</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Institutional liquidity venues, tokenized real-world-asset issuers, KYC'd OTC desks, and regulated security tokens. The first named live example on XRPL mainnet is <a href="https://xrp-liquid.com" target="_blank" rel="noopener" class="text-accent hover:underline">xrp-liquid.com</a>, with on-chain identity (XLS-40 DID) and active offers selling XRP for USDC, RLUSD, and EURQ.
+            Institutional liquidity venues, tokenized real-world-asset issuers, KYC'd OTC desks, and regulated security tokens. The earliest named example on XRPL mainnet, xrp-liquid, published an on-chain identity (XLS-40 DID) and domain offers for XRP against USDC, RLUSD and EURQ. It has been inactive since mid-2026.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -429,17 +429,23 @@
             <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
 <span class="text-accent">from</span> xrpl.wallet <span class="text-accent">import</span> Wallet
 
+<span class="text-accent">def</span> pay_in_xrp(accepts, *_):
+    <span class="text-accent">return</span> next(a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
+                <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span> <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>)
+
 session = X402RequestsSession(
     wallet=Wallet.from_seed(seed),
     rpc_url=<span class="text-green-400">"https://YOUR_XRPL_RPC"</span>,
-    payment_requirements_selector=<span class="text-green-400">"XRP"</span>,
+    payment_requirements_selector=pay_in_xrp,
 )
 
 # look up a single domain by its 64-hex LedgerIndex
-record = session.post(
+resp = session.post(
     <span class="text-green-400">"https://trust.xrpl-utilities.io/scan"</span>,
     json={<span class="text-green-400">"domain_id"</span>: <span class="text-green-400">"AB12&hellip;"</span>},
-).json()
+)
+resp.raise_for_status()  <span class="text-accent"># a 402 here means the payment did not go through</span>
+record = resp.json()
 
 <span class="text-accent">for</span> match <span class="text-accent">in</span> record[<span class="text-green-400">"matches"</span>]:
     <span class="text-accent">print</span>(match[<span class="text-green-400">"owner_address"</span>],
@@ -461,7 +467,7 @@ record = session.post(
         <li><code class="font-mono text-white">owner_label</code>: external label when available (<code class="font-mono text-white">{name, desc, domain, verified, twitter}</code>), else <code class="font-mono text-white">null</code></li>
         <li><code class="font-mono text-white">accepted_credentials[]</code>: each entry carries <code class="font-mono text-white">{issuer, credential_type, credential_type_decoded, issuer_label}</code>. Hex types are decoded to ASCII when printable (e.g. <code class="font-mono text-white">4B5943</code> → <code class="font-mono text-white">KYC</code>).</li>
         <li><code class="font-mono text-white">institutional_issuer_count</code> + <code class="font-mono text-white">institutional_issuers[]</code>: count and display names of distinct externally-labeled, non-self credential issuers accepted by the domain</li>
-        <li><code class="font-mono text-white">identity_tier</code>: one of <code class="font-mono text-white">institutional</code> (verified TOML + DID), <code class="font-mono text-white">named_entity</code> (TOML or DID only), <code class="font-mono text-white">funder_attributed</code> (no TOML/DID, but parent funder is a labeled entity), <code class="font-mono text-white">credential_attributed</code> (subject linked to a labeled issuer via accepted credential), <code class="font-mono text-white">did_only</code> (XLS-40 DID present), or <code class="font-mono text-white">anonymous</code>. Six-tier ladder, populated on every directory row.</li>
+        <li><code class="font-mono text-white">identity_tier</code>: one of <code class="font-mono text-white">institutional</code> (TOML + DID published), <code class="font-mono text-white">named_entity</code> (TOML or DID only), <code class="font-mono text-white">funder_attributed</code> (no TOML/DID, but parent funder is a labeled entity), <code class="font-mono text-white">credential_attributed</code> (subject linked to a labeled issuer via accepted credential), <code class="font-mono text-white">did_only</code> (XLS-40 DID present), or <code class="font-mono text-white">anonymous</code>. Six-tier ladder, populated on every directory row.</li>
         <li><strong class="text-white">Drill-down only</strong> (single-domain lookup): <code class="font-mono text-white">lifecycle</code> (creation + last-modified meta walked from <code class="font-mono text-white">PreviousTxnID</code>), <code class="font-mono text-white">permissioned_market</code> (XLS-81 owner-side offers + AMMs), and <code class="font-mono text-white">identity</code> (XLS-40 DID + parsed <code class="font-mono text-white">.well-known/xrp-ledger.toml</code> when published)</li>
         <li><strong class="text-white">Operator attribution</strong> (free <code class="font-mono text-white">GET /permissioned-domains/operators/{addr}/attribution</code>): the auto-walker output. <code class="font-mono text-white">funder</code> (parent + well-known label), <code class="font-mono text-white">domains[]</code> with decoded credential types, <code class="font-mono text-white">credentialed_subjects[]</code> with trustline-implied asset gating, <code class="font-mono text-white">retail_signals</code> (self-issued-only, minimal DID, NFT objects on operator wallet, etc.), <code class="font-mono text-white">likely_retail</code> boolean, <code class="font-mono text-white">attribution_confidence</code> (<code class="font-mono text-white">high</code>/<code class="font-mono text-white">medium</code>/<code class="font-mono text-white">low</code>), and a <code class="font-mono text-white">summary_one_line</code> server-generated narrative. Backfilled on every walker revision bump.</li>
         <li><strong class="text-white">Ecosystem usage</strong> (free <code class="font-mono text-white">GET /permissioned-domains/usage-summary</code>): rolled-up onboarding activity over a configurable window: new operators, new credentials, new credentialed subjects, deletes. Right for tracking institutional adoption pace without paying per row.</li>
@@ -654,7 +660,7 @@ record = session.post(
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. On-chain data passthrough only. Not investment, legal, or compliance advice. XR-Trust does not certify, endorse, or assess the legitimacy of any permissioned domain, owner, credential issuer, or member. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. XR-Trust does not certify, endorse, or assess the legitimacy of any permissioned domain, owner, credential issuer, or member. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>
@@ -877,10 +883,10 @@ record = session.post(
         const did = d.owner_did;
         const tier = d.identity_tier || 'anonymous';
         const TIER_BADGES = {
-          institutional:         { label: 'INSTITUTIONAL',         cls: 'border-emerald-500/60 text-emerald-300' },
+          institutional:         { label: 'SELF-DECLARED ORG',     cls: 'border-emerald-500/60 text-emerald-300' },
           named_entity:          { label: 'NAMED ENTITY',           cls: 'border-accent/40 text-accent' },
-          funder_attributed:     { label: 'FUNDER ATTRIBUTED',      cls: 'border-sky-500/50 text-sky-300' },
-          credential_attributed: { label: 'CREDENTIAL ATTRIBUTED',  cls: 'border-teal-500/50 text-teal-300' },
+          funder_attributed:     { label: 'FUNDER-LINKED',          cls: 'border-sky-500/50 text-sky-300' },
+          credential_attributed: { label: 'CREDENTIAL-LINKED',      cls: 'border-teal-500/50 text-teal-300' },
           did_only:              { label: 'DID-ONLY',               cls: 'border-amber-500/40 text-amber-300' },
           anonymous:             { label: 'ANONYMOUS',              cls: 'border-border text-muted' },
         };
@@ -888,10 +894,10 @@ record = session.post(
         const tierBadge = el('div', 'inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded border ' + tierMeta.cls + ' text-[10px] uppercase tracking-wider font-semibold');
         tierBadge.textContent = tierMeta.label;
         const tierTooltip = [];
-        if (tier === 'institutional') tierTooltip.push('TOML resolved · org_name + principals + org_url present');
-        else if (tier === 'funder_attributed') tierTooltip.push('No TOML/DID, but auto-walker attributed via parent funder XRPScan well-known label');
-        else if (tier === 'credential_attributed') tierTooltip.push('No TOML/DID/funder label, but accepted_credentials nominates a verified XRPScan well-known issuer');
-        else if (tier === 'named_entity') tierTooltip.push('TOML resolved · self-attested org_name only');
+        if (tier === 'institutional') tierTooltip.push('Self-published TOML names an org, principals and URL; not independently verified');
+        else if (tier === 'funder_attributed') tierTooltip.push('No TOML/DID. Funded by a publicly labelled wallet; funding does not establish ownership');
+        else if (tier === 'credential_attributed') tierTooltip.push('No TOML/DID/funder label. The domain names a labelled credential issuer; this is set unilaterally and does not show that issuer\'s involvement');
+        else if (tier === 'named_entity') tierTooltip.push('Self-published TOML with an org name only; not independently verified');
         else if (tier === 'did_only') tierTooltip.push('On-chain DID record; no parseable TOML (e.g. IPFS DID Document)');
         else tierTooltip.push('No on-chain DID record');
         tierBadge.title = tierTooltip.join(' · ');
@@ -1204,7 +1210,7 @@ record = session.post(
       const ident = d.identity;
       if (ident && (ident.toml_org_name || ident.uri)) {
         const idBox = el('div', 'mb-6 p-4 bg-ink border border-accent/60 rounded-lg');
-        idBox.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent mb-2', 'Verified identity (XLS-40 DID + .well-known TOML)'));
+        idBox.appendChild(el('div', 'text-xs uppercase tracking-wider text-accent mb-2', 'Self-published identity (XLS-40 DID + .well-known TOML), not independently verified'));
         if (ident.toml_org_name) {
           const head = el('div', 'flex items-baseline gap-2 mb-1');
           head.appendChild(el('div', 'text-base font-semibold text-white', ident.toml_org_name));

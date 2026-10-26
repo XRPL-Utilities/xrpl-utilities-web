@@ -286,11 +286,12 @@
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
         <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
-        <div>Independent project not affiliated with Ripple Labs. Deterministic heuristic data only. Not investment or legal advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
   </footer>
 
+  <script src="/assets/status-model.js"></script>
   <script>
     // Mobile nav overlay. Opens on hamburger, closes on Escape, link tap,
      // close-X tap, OR resize past the md breakpoint (so a desktop user who
@@ -372,18 +373,18 @@
       t.appendChild(el("div", "text-muted", sub));
     }
 
-    function renderCheck(key, payload) {
+    function renderCheck(check) {
+      const key = check.key, payload = check.value;
       const meta = SUBSYSTEM_LABELS[key] || { name: key, desc: "" };
-      const ok = payload && payload.ok === true;
       const card = el("div", "bg-panel border border-border rounded-2xl p-6 flex items-center gap-4");
-      card.appendChild(dot(ok ? "good" : (payload && payload.ok === false ? "bad" : "warn")));
+      card.appendChild(dot(check.state));
       const left = el("div", "flex-grow");
       left.appendChild(el("div", "font-semibold", meta.name));
       left.appendChild(el("div", "text-xs text-muted mt-0.5", meta.desc));
       card.appendChild(left);
       const right = el("div", "text-right");
-      const stateLabel = ok ? "Operational" : (payload && payload.ok === false ? "Degraded" : "Unknown");
-      right.appendChild(el("div", "text-sm font-medium " + (ok ? "text-good" : "text-bad"), stateLabel));
+      const tone = { good: "text-good", bad: "text-bad", warn: "text-warn" }[check.state] || "text-muted";
+      right.appendChild(el("div", "text-sm font-medium " + tone, check.label));
       if (payload && payload.latency_ms != null) {
         right.appendChild(el("div", "text-xs text-muted mt-1", payload.latency_ms.toFixed(0) + " ms"));
       } else if (payload && payload.last_good_age_seconds != null) {
@@ -397,18 +398,20 @@
 
     async function refreshOne(url, overallId, checksId, lastCheckedId, productName) {
       try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        renderOverall(overallId, data.status, productName);
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 15000);
+        let res;
+        try { res = await fetch(url, { signal: ctrl.signal }); } finally { clearTimeout(timer); }
+        // Read the body whatever the HTTP code: a degraded service answers 503
+        // with a JSON body that says which subsystem is down.
+        let data = null;
+        try { data = await res.json(); } catch (_) { data = null; }
+        const summary = StatusModel.summarize(res.status, data);
+        if (summary.overall === "unknown") throw new Error("HTTP " + res.status);
+        renderOverall(overallId, summary.overall, productName);
         const list = document.getElementById(checksId);
         list.innerHTML = "";
-        Object.entries(data.checks || {}).forEach(([k, v]) => {
-          // Skip non-subsystem scalar/list values that aren't pingable
-          // checks (snapshot_age_seconds, db_path, slow_tasks list).
-          if (k === "snapshot_age_seconds" || k === "db_path" || k === "slow_tasks") return;
-          list.appendChild(renderCheck(k, v));
-        });
+        summary.checks.forEach(c => list.appendChild(renderCheck(c)));
         document.getElementById(lastCheckedId).textContent = "Last checked " + new Date().toLocaleTimeString();
       } catch (e) {
         renderOverall(overallId, "unknown", productName);
@@ -433,7 +436,8 @@
     }
 
     refresh();
-    setInterval(refresh, 30000);
+    setInterval(() => { if (!document.hidden) refresh(); }, 60000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
   </script>
 
 </body>
