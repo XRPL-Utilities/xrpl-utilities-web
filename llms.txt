@@ -1,0 +1,32 @@
+# XRPL-Utilities
+
+> XRP Ledger data services for AI agents and people. Six APIs, each payable per call over x402 (RLUSD or XRP on the XRP Ledger, or USDC on Base), plus free endpoints and free dashboards on this site. No account or API key.
+
+Provider: XRPL-Utilities LLC. Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel narratives are AI-generated. Not investment, legal or compliance advice.
+
+## Start here
+
+- [Pricing and first call](https://xrpl-utilities.com/pricing/): every paid route, free endpoints, a copy-paste curl call, Python and Node.js payment samples, Claude Desktop setup
+- [Payment catalog](https://xrpl-utilities.com/.well-known/x402): x402 resources across all six services in one document
+- [Service status](https://xrpl-utilities.com/status/)
+
+## Services
+
+Each service publishes its own llms.txt, x402 catalog, OpenAPI document and agents.json manifest on its host.
+
+- [XR-Sentinel](https://sentinel.xrpl-utilities.io/llms.txt): behavioral pattern classifier for XRP Ledger wallets
+- [XR-Pulse](https://pulse.xrpl-utilities.io/llms.txt): normalized XRPL event feed (news, whale moves, RWA mint and burn, Sentinel signals) and the RWA issuer registry
+- [XR-Telemetry](https://telemetry.xrpl-utilities.io/llms.txt): network macro telemetry (liquidity, escrow, exchange and bridge flows)
+- [XR-Trust](https://trust.xrpl-utilities.io/llms.txt): Permissioned Domains (XLS-80), credentials (XLS-70) and permissioned DEX activity (XLS-81)
+- [XR-Vault](https://vault.xrpl-utilities.io/llms.txt): real-world-asset tracker for the XRP Ledger
+- [XR-Flows](https://flows.xrpl-utilities.io/llms.txt): XRP ETF assets against on-chain flow correlation
+
+## MCP
+
+- [MCP server](https://mcp.xrpl-utilities.io/llms.txt): every service as MCP tools; npm package `@xrpl-utilities/mcp`, hosted at https://mcp.xrpl-utilities.io/mcp
+
+## Optional
+
+- [Getting started with XRPL](https://xrpl-utilities.com/start/)
+- [Terms](https://xrpl-utilities.com/terms/)
+- [Contact](https://xrpl-utilities.com/contact/)

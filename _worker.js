@@ -10,6 +10,7 @@
  * the functions/ directory is not auto-detected.
  *
  * Routes:
+ *   GET  /.well-known/x402   - merged x402 catalog of all six API hosts.
  *   POST /api/preview-token  - mint a Turnstile-gated short-TTL JWT for
  *                              the marketing site to attach to API calls
  *                              against XR-* services.
@@ -316,6 +317,88 @@ async function handleApiProxy(request, url) {
   return new Response(upstream.body, { status: upstream.status, headers: out });
 }
 
+// ---- /.well-known/x402: one catalog for the whole site ---------------------
+//
+// Agent directories crawl a domain's /.well-known/x402 to find what it sells.
+// Each API host already publishes its own; this merges the six into one
+// document so a crawler that starts at xrpl-utilities.com finds every paid
+// route. Built live from the services so it can never drift from them, and
+// cached in the isolate so a crawler burst is one upstream round per service.
+const CATALOG_TTL_MS = 10 * 60 * 1000;
+const CATALOG_UPSTREAM_TIMEOUT_MS = 5000;
+let catalogCache = null; // { at, body }
+
+async function fetchServiceCatalog(service, origin) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), CATALOG_UPSTREAM_TIMEOUT_MS);
+  try {
+    const r = await fetch(origin + "/.well-known/x402", {
+      headers: { accept: "application/json" },
+      signal: ctrl.signal,
+    });
+    if (!r.ok) return null;
+    const doc = await r.json();
+    if (!doc || !Array.isArray(doc.resources)) return null;
+    // Keep only resources that live on the service's own host, so one
+    // service's document can't list routes on some other domain under
+    // this site's name.
+    const resources = doc.resources.filter(
+      (res) => res && typeof res.url === "string" && res.url.startsWith(origin + "/"),
+    );
+    return {
+      service,
+      name: typeof doc.name === "string" ? doc.name : service,
+      website: origin,
+      catalog: origin + "/.well-known/x402",
+      resources,
+    };
+  } catch (_) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function handleX402Catalog() {
+  const now = Date.now();
+  if (catalogCache && now - catalogCache.at < CATALOG_TTL_MS) {
+    return catalogResponse(catalogCache.body);
+  }
+  const entries = Object.entries(PROXY_TARGETS);
+  const results = await Promise.all(entries.map(([svc, origin]) => fetchServiceCatalog(svc, origin)));
+  const services = results.filter(Boolean);
+  if (!services.length) {
+    // Serve the last good copy rather than nothing.
+    if (catalogCache) return catalogResponse(catalogCache.body);
+    return jsonResponse(503, { error: "catalog_unavailable" });
+  }
+  const body = {
+    x402Version: 2,
+    name: "XRPL-Utilities",
+    description:
+      "XRP Ledger data services, each payable per call over x402: RLUSD or XRP on the XRP Ledger, or USDC on Base. No account or API key.",
+    website: "https://xrpl-utilities.com",
+    services: services.map(({ resources, ...rest }) => ({ ...rest, resource_count: resources.length })),
+    resources: services.flatMap((s) => s.resources),
+    unavailable: entries.map(([svc]) => svc).filter((svc) => !services.some((s) => s.service === svc)),
+  };
+  // Only a complete catalog is cached; a partial one is retried next time.
+  if (!body.unavailable.length) catalogCache = { at: now, body };
+  return catalogResponse(body);
+}
+
+function catalogResponse(body) {
+  return new Response(JSON.stringify(body, null, 2), {
+    status: 200,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "public, max-age=600",
+      "access-control-allow-origin": "*",
+      "x-content-type-options": "nosniff",
+    },
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -351,6 +434,13 @@ export default {
 
     if (url.pathname.startsWith("/api/x/")) {
       return handleApiProxy(request, url);
+    }
+
+    if (url.pathname === "/.well-known/x402") {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return new Response("Method Not Allowed", { status: 405, headers: { allow: "GET, HEAD" } });
+      }
+      return handleX402Catalog();
     }
 
     // Everything else: static assets bound at env.ASSETS via wrangler.jsonc
