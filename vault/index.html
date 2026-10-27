@@ -74,8 +74,9 @@
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
-    .hero-logo { width: 96px; height: 96px; }
-    @media (min-width: 768px) { .hero-logo { width: 128px; height: 128px; } }
+    .hero-logo { width: 112px; height: 112px; }
+    @media (min-width: 768px) { .hero-logo { width: 144px; height: 144px; } }
+    @media (min-width: 1024px) { .hero-logo { width: 176px; height: 176px; } .hero-title { font-size: 3.75rem; line-height: 1; } .hero-tag { font-size: 1.25rem; } }
     .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
     .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
     .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
@@ -199,10 +200,10 @@
   <section>
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-8">
       <div class="flex items-center gap-5 sm:gap-6">
-        <img src="/assets/img/xr-vault-512.webp" width="128" height="128" loading="eager" decoding="async" alt="XR-Vault" class="hero-logo rounded-2xl glow shrink-0" />
+        <img src="/assets/img/xr-vault-512.webp" width="176" height="176" loading="eager" decoding="async" alt="XR-Vault" class="hero-logo rounded-2xl glow shrink-0" />
         <div>
-          <h1 class="text-4xl md:text-5xl font-bold tracking-tight">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-          <p class="text-lg text-muted mt-2">Every tracked <span class="gloss" data-term="rwa">real-world asset</span> on the XRP Ledger, live.</p>
+          <h1 class="hero-title text-4xl md:text-5xl font-bold tracking-tight">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+          <p class="hero-tag text-lg text-muted mt-2">Every tracked <span class="gloss" data-term="rwa">real-world asset</span> on the XRP Ledger, live.</p>
         </div>
       </div>
     </div>
