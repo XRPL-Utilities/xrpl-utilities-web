@@ -77,6 +77,11 @@
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .hero-logo { width: 112px; height: 112px; }
+    @media (max-width: 767px) { .hero-title { font-size: clamp(1.75rem, 8vw, 2.25rem); white-space: nowrap; } }
+    @media (max-width: 359px) { .hero-logo { width: 88px; height: 88px; } }
+    @media (min-width: 768px) { .hero-logo { width: 144px; height: 144px; } }
+    @media (min-width: 1024px) { .hero-logo { width: 176px; height: 176px; } .hero-title { font-size: 3.75rem; line-height: 1; } .hero-tag { font-size: 1.25rem; } }
     .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
     .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
     .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
@@ -150,18 +155,14 @@
   <main id="main">
 
   <section>
-    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
-      <img src="/assets/img/xr-telemetry-512.webp" width="256" height="256" loading="eager" decoding="async" alt="XR-Telemetry" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
-      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted">Live <span class="gloss" data-term="xrpl">XRPL</span> macro telemetry</p>
-      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        Supply, regional flows, <span class="gloss" data-term="amm">AMM</span> depth, and a modeled
-        <span class="gloss" data-term="active-float">Active Float</span>
-        showing how much XRP can clear inside a single
-        <span class="gloss" data-term="ledger-close">ledger close</span>,
-        all from on-chain data. No price predictions. No investment
-        advice. No black-box math.
-      </p>
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-8">
+      <div class="flex items-center gap-5 sm:gap-6">
+        <img src="/assets/img/xr-telemetry-512.webp" width="176" height="176" loading="eager" decoding="async" alt="XR-Telemetry" class="hero-logo rounded-2xl glow shrink-0" />
+        <div>
+          <h1 class="hero-title text-4xl md:text-5xl font-bold tracking-tight">XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+          <p class="hero-tag text-lg text-muted mt-2">Supply, flows and liquidity on the XRP Ledger, measured live from on-chain data.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -619,10 +620,26 @@
     </div>
   </section>
 
-
-  <section id="for-agents" class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+  <section id="developers" class="border-t border-border">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-panel border border-border rounded-2xl p-5 sm:p-6">
+        <div>
+          <div class="text-sm font-semibold text-white">For developers and AI agents</div>
+          <p class="text-sm text-muted mt-1">The same data is available as an API and as MCP tools. Some calls are free; paid calls cost $0.10.</p>
+        </div>
+        <div class="flex flex-wrap gap-3 text-sm shrink-0">
+          <a href="/pricing/" class="bg-accent text-ink font-semibold px-4 py-2 rounded-lg hover:bg-accent-dim transition">Pricing and API</a>
+          <a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Telemetry Swagger</a>
+        </div>
+      </div>
+      <details class="group mt-4 bg-panel border border-border rounded-2xl">
+        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
+          <span class="text-sm uppercase tracking-widest text-accent font-semibold">API details</span>
+          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="px-5 sm:px-6 pb-6 space-y-7">
+<div id="for-agents">
+<div class="grid md:grid-cols-2 gap-8 md:gap-12">
         <div class="min-w-0">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
           <h3 class="text-3xl font-bold mb-6">Pay $0.10 per snapshot, no API key</h3>
@@ -702,12 +719,9 @@ payload = requests.get(
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section id="output-shape" class="border-t border-border">
-    <div class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
+</div>
+<div id="output-shape">
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-3 text-muted leading-relaxed">
         <li><code class="font-mono text-white">supply</code>: total / circulating / escrowed / dormant XRP, AMM-locked, exchange omnibus + venue/address counts, DEX orderbook depth, HODL wave %, 24h exchange outflow, escrow release&divide;relock ratio</li>
@@ -720,6 +734,48 @@ payload = requests.get(
       <p class="text-xs text-muted mt-6 leading-relaxed">
         Full field-level details at <a href="https://telemetry.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
       </p>
+</div>
+<div id="sla">
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Operational SLA</h2>
+      <h3 class="text-3xl font-bold mb-2">30-day uptime, measured</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
+        Live aggregate from <code class="font-mono text-white">/sla?days=30</code>. The recorder probes our upstream dependencies on a recurring cadence and counts each sample as healthy only if all succeed. Same liveness assertion <code class="font-mono text-white">/healthz</code> returns. No external monitoring; data is what we see from inside the service.
+      </p>
+
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">30-day uptime</div>
+          <div id="sla-30d-pct" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div id="sla-30d-meta" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">24-hour uptime</div>
+          <div id="sla-24h-pct" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div id="sla-24h-meta" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="text-xs uppercase tracking-wider text-muted mb-2">Target</div>
+          <div id="sla-target" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
+          <div class="text-xs text-muted mt-3 font-mono">5-min sample interval</div>
+        </div>
+      </div>
+
+      <div id="sla-bootstrap" class="hidden mt-4 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed">
+        Recording started recently. <span id="sla-days-observed"></span> days of samples so far; the 30-day figure is bootstrapping. Read <em>days observed</em> alongside the headline.
+      </div>
+
+      <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
+        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What this number covers</div>
+        <p class="mb-3">
+          <strong class="text-white">Covered:</strong> backend liveness of the XRPL RPC dependency and the x402 facilitator. If either probe fails at sample time, that sample counts as unhealthy and is attributed to its component.
+        </p>
+        <p>
+          <strong class="text-white">Not covered:</strong> external network latency between you and the service, individual endpoint correctness (only liveness), and data freshness inside the snapshot cache. For data freshness, see <code class="font-mono text-white">/healthz</code> <code class="font-mono text-white">checks.slow_tasks</code>.
+        </p>
+      </div>
+</div>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -826,48 +882,6 @@ payload = requests.get(
       <p class="text-muted leading-relaxed text-sm mt-4">
         Users are responsible for complying with local digital asset and AI regulations, including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
       </p>
-    </div>
-  </section>
-
-  <section id="sla" class="border-t border-border">
-    <div class="max-w-5xl mx-auto px-6 py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Operational SLA</h2>
-      <h3 class="text-3xl font-bold mb-2">30-day uptime, measured</h3>
-      <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        Live aggregate from <code class="font-mono text-white">/sla?days=30</code>. The recorder probes our upstream dependencies on a recurring cadence and counts each sample as healthy only if all succeed. Same liveness assertion <code class="font-mono text-white">/healthz</code> returns. No external monitoring; data is what we see from inside the service.
-      </p>
-
-      <div class="grid sm:grid-cols-3 gap-4">
-        <div class="bg-panel border-2 border-accent rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-2">30-day uptime</div>
-          <div id="sla-30d-pct" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
-          <div id="sla-30d-meta" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-muted mb-2">24-hour uptime</div>
-          <div id="sla-24h-pct" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
-          <div id="sla-24h-meta" class="text-xs text-muted mt-3 font-mono">&nbsp;</div>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <div class="text-xs uppercase tracking-wider text-muted mb-2">Target</div>
-          <div id="sla-target" class="text-4xl sm:text-5xl font-bold tracking-tight font-mono">-</div>
-          <div class="text-xs text-muted mt-3 font-mono">5-min sample interval</div>
-        </div>
-      </div>
-
-      <div id="sla-bootstrap" class="hidden mt-4 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed">
-        Recording started recently. <span id="sla-days-observed"></span> days of samples so far; the 30-day figure is bootstrapping. Read <em>days observed</em> alongside the headline.
-      </div>
-
-      <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
-        <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What this number covers</div>
-        <p class="mb-3">
-          <strong class="text-white">Covered:</strong> backend liveness of the XRPL RPC dependency and the x402 facilitator. If either probe fails at sample time, that sample counts as unhealthy and is attributed to its component.
-        </p>
-        <p>
-          <strong class="text-white">Not covered:</strong> external network latency between you and the service, individual endpoint correctness (only liveness), and data freshness inside the snapshot cache. For data freshness, see <code class="font-mono text-white">/healthz</code> <code class="font-mono text-white">checks.slow_tasks</code>.
-        </p>
-      </div>
     </div>
   </section>
 

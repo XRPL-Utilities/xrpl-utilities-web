@@ -87,6 +87,11 @@
     .nav-link-active { color: #00b8ff; }
     .hero-glow { box-shadow: 0 0 60px rgba(0, 184, 255, 0.22); }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .hero-logo { width: 112px; height: 112px; }
+    @media (max-width: 767px) { .hero-title { font-size: clamp(1.75rem, 8vw, 2.25rem); white-space: nowrap; } }
+    @media (max-width: 359px) { .hero-logo { width: 88px; height: 88px; } }
+    @media (min-width: 768px) { .hero-logo { width: 144px; height: 144px; } }
+    @media (min-width: 1024px) { .hero-logo { width: 176px; height: 176px; } .hero-title { font-size: 3.75rem; line-height: 1; } .hero-tag { font-size: 1.25rem; } }
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
     .skeleton-bar {
       background: linear-gradient(90deg, rgba(38,38,38,0.6) 0%, rgba(64,64,64,0.9) 50%, rgba(38,38,38,0.6) 100%);
@@ -157,42 +162,12 @@
   <main id="main">
 
   <section>
-    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
-      <img src="/assets/img/xr-flows-512.webp" width="256" height="256" loading="eager" decoding="async" alt="XR-Flows" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
-      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted">ETF flow meets the ledger</p>
-      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        Daily <span class="gloss" data-term="etf-aum">AUM</span> across the tracked XRP-exposure funds, US spot and indirect baskets plus European spot products, plotted side by side with the <span class="gloss" data-term="xrpl">XRPL</span> exchange-flow delta. The off-chain side of institutional capital and the on-chain side of XRP movement, on one date axis.
-      </p>
-      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
-        <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        <span id="hero-pill-count">Tracked ETFs</span> &middot; correlation only &middot; never causation
-      </div>
-    </div>
-  </section>
-
-  <!-- WHAT IS AN XRP ETF -->
-  <section id="what-is" class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding XRP ETFs</h2>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What an XRP ETF is</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            A spot XRP ETF holds XRP off-chain in institutional custody and issues exchange-traded shares against it. Buying a share is buying a claim on a slice of that custodied XRP, without ever touching a wallet or a private key. The custody is pooled across all investors in the fund, so individual holders cannot be attributed to specific on-chain wallets.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Who issues them on US exchanges</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Names you know: Bitwise, Franklin Templeton, Grayscale, 21Shares. Names you might not: Canary Capital, REX-Osprey, Hashdex. Plus indirect-basket exposure via funds that hold XRP alongside other large-cap crypto assets. New US-listed products are discovered from SEC's ticker index and promoted once they pass operator review. European listings are added by hand, since SEC's index does not cover them.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Why correlation, not causation</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            ETFs hold XRP through pooled custody. That custody serves every share holder in the fund collectively, not any single buyer. So when ETF AUM and XRPL exchange-flow move in the same direction on the same day, that's a useful institutional-capital signal, but it isn't proof that the ETF caused the flow. We measure both sides honestly and let the consumer draw their own inference.
-          </p>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-8">
+      <div class="flex items-center gap-5 sm:gap-6">
+        <img src="/assets/img/xr-flows-512.webp" width="176" height="176" loading="eager" decoding="async" alt="XR-Flows" class="hero-logo rounded-2xl glow shrink-0" />
+        <div>
+          <h1 class="hero-title text-4xl md:text-5xl font-bold tracking-tight">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+          <p class="hero-tag text-lg text-muted mt-2">XRP ETF assets beside on-chain exchange flows. Correlation only, never causation.</p>
         </div>
       </div>
     </div>
@@ -367,13 +342,39 @@
     </div>
   </section>
 
-  <!-- METHODOLOGY (merged from prior "How XR-Flows reads the data"
-       + "What this tracks" sections; consolidates ETF tier handling,
-       data sources, correlation framing, and launch-window analysis
-       into one source of truth). -->
-  <section class="border-t border-border bg-panel/30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Methodology</h2>
+  <section id="how-it-works" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      <details class="group bg-panel border border-border rounded-2xl">
+        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
+          <span class="text-sm uppercase tracking-widest text-accent font-semibold">How this works</span>
+          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="px-5 sm:px-6 pb-6 space-y-7">
+<div id="what-is">
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding XRP ETFs</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What an XRP ETF is</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            A spot XRP ETF holds XRP off-chain in institutional custody and issues exchange-traded shares against it. Buying a share is buying a claim on a slice of that custodied XRP, without ever touching a wallet or a private key. The custody is pooled across all investors in the fund, so individual holders cannot be attributed to specific on-chain wallets.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Who issues them on US exchanges</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Names you know: Bitwise, Franklin Templeton, Grayscale, 21Shares. Names you might not: Canary Capital, REX-Osprey, Hashdex. Plus indirect-basket exposure via funds that hold XRP alongside other large-cap crypto assets. New US-listed products are discovered from SEC's ticker index and promoted once they pass operator review. European listings are added by hand, since SEC's index does not cover them.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Why correlation, not causation</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            ETFs hold XRP through pooled custody. That custody serves every share holder in the fund collectively, not any single buyer. So when ETF AUM and XRPL exchange-flow move in the same direction on the same day, that's a useful institutional-capital signal, but it isn't proof that the ETF caused the flow. We measure both sides honestly and let the consumer draw their own inference.
+          </p>
+        </div>
+      </div>
+</div>
+<div>
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Methodology</h2>
       <h3 class="text-3xl font-bold mb-8">Two independent measurements, one date axis</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -420,29 +421,32 @@
         </div>
 
       </div>
+</div>
+        </div>
+      </details>
     </div>
   </section>
 
-  <!-- ENDPOINT QUICK-LINKS -->
-  <section class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-      <a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
-        <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Manifest</div>
-        <div class="text-white font-mono text-sm">/agents.json</div>
-        <p class="text-muted text-xs mt-2">Full registry, payment terms, methodology.</p>
-      </a>
-      <a href="https://flows.xrpl-utilities.io/healthz" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
-        <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Liveness</div>
-        <div class="text-white font-mono text-sm">/healthz</div>
-        <p class="text-muted text-xs mt-2">Per-scraper freshness, DB state, upstream Pulse.</p>
-      </a>
-    </div>
-  </section>
-
-  <!-- FOR DEVELOPERS & AI AGENTS -->
-  <section class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
+  <section id="developers" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-panel border border-border rounded-2xl p-5 sm:p-6">
+        <div>
+          <div class="text-sm font-semibold text-white">For developers and AI agents</div>
+          <p class="text-sm text-muted mt-1">The same data is available as an API and as MCP tools. Some calls are free; paid calls cost $0.10.</p>
+        </div>
+        <div class="flex flex-wrap gap-3 text-sm shrink-0">
+          <a href="/pricing/" class="bg-accent text-ink font-semibold px-4 py-2 rounded-lg hover:bg-accent-dim transition">Pricing and API</a>
+          <a href="https://flows.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Flows Swagger</a>
+        </div>
+      </div>
+      <details class="group mt-4 bg-panel border border-border rounded-2xl">
+        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
+          <span class="text-sm uppercase tracking-widest text-accent font-semibold">API details</span>
+          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="px-5 sm:px-6 pb-6 space-y-7">
+<div>
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
       <h3 class="text-3xl font-bold mb-6">Agents read the same data via x402</h3>
       <p class="text-muted leading-relaxed mb-6 max-w-3xl">
         XR-Flows renders this dashboard over the same endpoints agents call. Three free public reads:
@@ -481,6 +485,23 @@
         <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
         or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Free tools work without a payment header; paid tools use the same x402 model wrapped as MCP arguments.
       </p>
+</div>
+<div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
+        <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Manifest</div>
+        <div class="text-white font-mono text-sm">/agents.json</div>
+        <p class="text-muted text-xs mt-2">Full registry, payment terms, methodology.</p>
+      </a>
+      <a href="https://flows.xrpl-utilities.io/healthz" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
+        <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Liveness</div>
+        <div class="text-white font-mono text-sm">/healthz</div>
+        <p class="text-muted text-xs mt-2">Per-scraper freshness, DB state, upstream Pulse.</p>
+      </a>
+</div>
+</div>
+        </div>
+      </details>
     </div>
   </section>
 

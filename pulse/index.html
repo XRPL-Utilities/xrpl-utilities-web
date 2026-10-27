@@ -81,6 +81,11 @@
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .hero-logo { width: 112px; height: 112px; }
+    @media (max-width: 767px) { .hero-title { font-size: clamp(1.75rem, 8vw, 2.25rem); white-space: nowrap; } }
+    @media (max-width: 359px) { .hero-logo { width: 88px; height: 88px; } }
+    @media (min-width: 768px) { .hero-logo { width: 144px; height: 144px; } }
+    @media (min-width: 1024px) { .hero-logo { width: 176px; height: 176px; } .hero-title { font-size: 3.75rem; line-height: 1; } .hero-tag { font-size: 1.25rem; } }
     .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
     .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
     .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
@@ -209,19 +214,13 @@
   <main id="main">
 
   <section>
-    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
-      <img src="/assets/img/xr-pulse-512.webp" width="256" height="256" loading="eager" decoding="async" alt="XR-Pulse" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
-      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted">Live <span class="gloss" data-term="xrpl">XRPL</span> signal feed</p>
-      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        News, on-chain <span class="gloss" data-term="whale-tier">whale</span> moves,
-        real-world-asset mints and burns, and Sentinel signals on
-        XRPL, combined into one time-ordered feed with the context behind
-        each entry. No editorial scoring. No source ranking. No social scraping.
-      </p>
-      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
-        <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        News from official sources only &middot; on-chain straight from XRPL
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-8">
+      <div class="flex items-center gap-5 sm:gap-6">
+        <img src="/assets/img/xr-pulse-512.webp" width="176" height="176" loading="eager" decoding="async" alt="XR-Pulse" class="hero-logo rounded-2xl glow shrink-0" />
+        <div>
+          <h1 class="hero-title text-4xl md:text-5xl font-bold tracking-tight">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+          <p class="hero-tag text-lg text-muted mt-2">News, <span class="gloss" data-term="whale-tier">whale</span> moves and real-world-asset mints on the XRP Ledger, in one live feed.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -358,84 +357,6 @@
             <div id="rlusd-dist-venues" class="mt-3 space-y-1 text-sm"></div>
             <p class="stat-tile-sub mt-3">RLUSD routed to a named exchange is institutional stablecoin provisioning, not XRP sell-side. Amounts are face value (RLUSD is USD-pegged). <a href="https://pulse.xrpl-utilities.io/stats/rlusd-distribution?days=7" class="text-accent hover:underline" target="_blank" rel="noopener">view JSON</a></p>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WHY THIS MATTERS -->
-  <!-- Ledger-wide primitive adoption. Every XRPL adoption claim is made against
-       a denominator nobody publishes; this is that denominator. Counts are of
-       ledger OBJECTS, not of distinct operators or issuers -- the copy says so
-       explicitly because "18 PermissionedDomains" reads as "18 operators" and
-       there are fewer. Source: Pulse /stats/xrpl-primitives (free). -->
-  <section id="primitives" class="border-t border-border bg-panel/20">
-    <div class="mx-auto max-w-6xl px-6 py-14">
-      <div class="flex items-baseline justify-between flex-wrap gap-3">
-        <h2 class="text-xl font-semibold tracking-tight">What the ledger is actually used for</h2>
-        <span id="primitives-meta" class="text-[10px] uppercase tracking-[0.2em] text-muted font-mono">loading...</span>
-      </div>
-      <p class="mt-2 text-sm text-muted max-w-3xl">
-        Ledger-wide counts of every XRPL object type, sampled daily. These are the
-        denominators behind adoption claims. They count <em>objects on the ledger</em>,
-        not distinct operators or issuers; one operator can hold several.
-      </p>
-      <div id="primitives-grid" class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"></div>
-      <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div class="stat-tile p-5">
-          <h3 class="stat-tile-label mb-3">Circulating XRP</h3>
-          <span id="primitives-circulating" class="stat-tile-value">--</span>
-          <p class="stat-tile-sub mt-3"><span id="primitives-escrowed">--</span> still in escrow</p>
-        </div>
-        <div class="stat-tile p-5">
-          <h3 class="stat-tile-label mb-3">Burned to date</h3>
-          <span id="primitives-burned" class="stat-tile-value">--</span>
-          <p class="stat-tile-sub mt-3">destroyed as transaction fees</p>
-        </div>
-        <div class="stat-tile p-5">
-          <h3 class="stat-tile-label mb-3">AMM pools</h3>
-          <span id="primitives-amm" class="stat-tile-value">--</span>
-          <p class="stat-tile-sub mt-3"><span id="primitives-amm-locked">--</span> XRP locked</p>
-        </div>
-      </div>
-      <p class="mt-4 text-[11px] text-muted font-mono">
-        source: <a class="underline hover:text-fg" href="https://pulse.xrpl-utilities.io/stats/xrpl-primitives">/stats/xrpl-primitives</a> &middot; free, no key
-      </p>
-    </div>
-  </section>
-
-  <section id="why" class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">What's on the feed and why</h2>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">News, but only the real ones</h3>
-          <p class="text-sm text-muted leading-relaxed mb-3">
-            Three buckets, no social-media noise:
-          </p>
-          <ul class="text-sm text-muted leading-relaxed space-y-1.5 mb-3">
-            <li><span class="text-white">Regulators</span> &middot; SEC, FCA, ESMA</li>
-            <li><span class="text-white">Central banks</span> &middot; Fed, ECB, BoE, BoJ, BoC, RBA, BIS</li>
-            <li><span class="text-white">Crypto press</span> &middot; XRP / RLUSD / XRPL / Ripple coverage only</li>
-          </ul>
-          <p class="text-sm text-muted leading-relaxed">
-            No Twitter, no influencer feeds, no paid placements. Items that hit multiple sources within 48 hours get marked cross-verified.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">On-chain, in real time</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Every successful XRPL Payment over $50k lands as a whale event with both addresses, USD value at ledger close, and labels when either side is a known exchange, market maker, treasury, or bridge.
-          </p>
-          <p class="text-sm text-muted leading-relaxed mt-3">
-            Real-world-asset mints and burns land as a second stream, all time-ordered. Permissioned-domain activity lives on <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Who reads it</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Traders watching for a news catalyst that just moved on-chain flow. Researchers correlating a regulatory announcement to actual settlement activity. Agents that need both market context and raw on-chain signal in one paid call. Not editorial; sources are reported as a property of an event, not as a verdict on whether the source is credible.
-          </p>
         </div>
       </div>
     </div>
@@ -594,9 +515,138 @@
     </div>
   </section>
 
-  <section id="for-agents" class="border-t border-border bg-panel/30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+  <!-- WHY THIS MATTERS -->
+  <!-- Ledger-wide primitive adoption. Every XRPL adoption claim is made against
+       a denominator nobody publishes; this is that denominator. Counts are of
+       ledger OBJECTS, not of distinct operators or issuers -- the copy says so
+       explicitly because "18 PermissionedDomains" reads as "18 operators" and
+       there are fewer. Source: Pulse /stats/xrpl-primitives (free). -->
+  <section id="primitives" class="border-t border-border bg-panel/20">
+    <div class="mx-auto max-w-6xl px-6 py-14">
+      <div class="flex items-baseline justify-between flex-wrap gap-3">
+        <h2 class="text-xl font-semibold tracking-tight">What the ledger is actually used for</h2>
+        <span id="primitives-meta" class="text-[10px] uppercase tracking-[0.2em] text-muted font-mono">loading...</span>
+      </div>
+      <p class="mt-2 text-sm text-muted max-w-3xl">
+        Ledger-wide counts of every XRPL object type, sampled daily. These are the
+        denominators behind adoption claims. They count <em>objects on the ledger</em>,
+        not distinct operators or issuers; one operator can hold several.
+      </p>
+      <div id="primitives-grid" class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="stat-tile p-5">
+          <h3 class="stat-tile-label mb-3">Circulating XRP</h3>
+          <span id="primitives-circulating" class="stat-tile-value">--</span>
+          <p class="stat-tile-sub mt-3"><span id="primitives-escrowed">--</span> still in escrow</p>
+        </div>
+        <div class="stat-tile p-5">
+          <h3 class="stat-tile-label mb-3">Burned to date</h3>
+          <span id="primitives-burned" class="stat-tile-value">--</span>
+          <p class="stat-tile-sub mt-3">destroyed as transaction fees</p>
+        </div>
+        <div class="stat-tile p-5">
+          <h3 class="stat-tile-label mb-3">AMM pools</h3>
+          <span id="primitives-amm" class="stat-tile-value">--</span>
+          <p class="stat-tile-sub mt-3"><span id="primitives-amm-locked">--</span> XRP locked</p>
+        </div>
+      </div>
+      <p class="mt-4 text-[11px] text-muted font-mono">
+        source: <a class="underline hover:text-fg" href="https://pulse.xrpl-utilities.io/stats/xrpl-primitives">/stats/xrpl-primitives</a> &middot; free, no key
+      </p>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      <details class="group bg-panel border border-border rounded-2xl">
+        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
+          <span class="text-sm uppercase tracking-widest text-accent font-semibold">How this works</span>
+          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="px-5 sm:px-6 pb-6 space-y-7">
+<div id="why">
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">What's on the feed and why</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">News, but only the real ones</h3>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Three buckets, no social-media noise:
+          </p>
+          <ul class="text-sm text-muted leading-relaxed space-y-1.5 mb-3">
+            <li><span class="text-white">Regulators</span> &middot; SEC, FCA, ESMA</li>
+            <li><span class="text-white">Central banks</span> &middot; Fed, ECB, BoE, BoJ, BoC, RBA, BIS</li>
+            <li><span class="text-white">Crypto press</span> &middot; XRP / RLUSD / XRPL / Ripple coverage only</li>
+          </ul>
+          <p class="text-sm text-muted leading-relaxed">
+            No Twitter, no influencer feeds, no paid placements. Items that hit multiple sources within 48 hours get marked cross-verified.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">On-chain, in real time</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Every successful XRPL Payment over $50k lands as a whale event with both addresses, USD value at ledger close, and labels when either side is a known exchange, market maker, treasury, or bridge.
+          </p>
+          <p class="text-sm text-muted leading-relaxed mt-3">
+            Real-world-asset mints and burns land as a second stream, all time-ordered. Permissioned-domain activity lives on <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Who reads it</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Traders watching for a news catalyst that just moved on-chain flow. Researchers correlating a regulatory announcement to actual settlement activity. Agents that need both market context and raw on-chain signal in one paid call. Not editorial; sources are reported as a property of an event, not as a verdict on whether the source is credible.
+          </p>
+        </div>
+      </div>
+</div>
+<div>
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
+      <h3 class="text-3xl font-bold mb-6">Two streams, one feed: curated news + on-chain whale activity</h3>
+      <div id="source-carousel" class="relative overflow-hidden mb-8" tabindex="0" role="group" aria-label="Source feeds carousel - auto-rotates; hover or focus to pause">
+        <div id="source-grid" class="flex transition-transform duration-500 ease-in-out">
+          <!-- populated from /stats by the script below; sources with errors are auto-suppressed -->
+        </div>
+      </div>
+      <p class="text-sm text-muted leading-relaxed mb-4">
+        <span class="text-white">News stream.</span> Every entry must mention Ripple, XRP, RLUSD, or XRPL. The institutional sources rarely name Ripple, so they fire infrequently but high-signal when they do. The crypto-press sources are tagged for XRP at the source and carry most of the volume.
+      </p>
+      <p class="text-sm text-muted leading-relaxed mb-4">
+        When two news sources publish the same story (titles overlap within a 48-hour window), we collapse them into one record with a <span class="text-white">cross-verified</span> flag and the secondary URLs listed alongside.
+      </p>
+      <p class="text-sm text-muted leading-relaxed mb-4">
+        At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim.
+      </p>
+      <p class="text-sm text-muted leading-relaxed">
+        <span class="text-white">On-chain stream.</span> The watcher reads validated XRPL ledgers continuously. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger position, currency (XRP or RLUSD), and full sender + receiver addresses. Where either address resolves to a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
+      </p>
+      <p class="text-sm text-muted leading-relaxed mt-4">
+        <span class="text-white">RWA supply stream.</span> Each tracked issuer gets an event when it mints or redeems tokens, or when its outstanding supply moves by more than a set amount between reads. Supply-change events catch mints that happen through the XRPL DEX rather than a direct payment, and they are labeled so you can tell them apart.
+      </p>
+</div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section id="developers" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-panel border border-border rounded-2xl p-5 sm:p-6">
+        <div>
+          <div class="text-sm font-semibold text-white">For developers and AI agents</div>
+          <p class="text-sm text-muted mt-1">The same data is available as an API and as MCP tools. Some calls are free; paid calls cost $0.10.</p>
+        </div>
+        <div class="flex flex-wrap gap-3 text-sm shrink-0">
+          <a href="/pricing/" class="bg-accent text-ink font-semibold px-4 py-2 rounded-lg hover:bg-accent-dim transition">Pricing and API</a>
+          <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse Swagger</a>
+        </div>
+      </div>
+      <details class="group mt-4 bg-panel border border-border rounded-2xl">
+        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
+          <span class="text-sm uppercase tracking-widest text-accent font-semibold">API details</span>
+          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="px-5 sm:px-6 pb-6 space-y-7">
+<div id="for-agents">
+<div class="grid md:grid-cols-2 gap-8 md:gap-12">
         <div class="min-w-0">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
           <h3 class="text-3xl font-bold mb-6">Pay per query or stream live, no API key</h3>
@@ -706,12 +756,9 @@ feed = resp.json()
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section id="output-shape" class="border-t border-border">
-    <div class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
+</div>
+<div id="output-shape">
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-2 text-muted leading-relaxed">
         <li><code class="font-mono text-white">events[]</code>: normalized records, newest-first; mixes news + on-chain activity (whale, focus-watch, relay-burst, RWA obligations, cross-signal choreographies, institutional dispersion) in one stream</li>
@@ -727,33 +774,9 @@ feed = resp.json()
       <p class="text-xs text-muted mt-6 leading-relaxed">
         Full field-level details at <a href="https://pulse.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
       </p>
-    </div>
-  </section>
-
-  <section id="how-it-works" class="border-t border-border">
-    <div class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
-      <h3 class="text-3xl font-bold mb-6">Two streams, one feed: curated news + on-chain whale activity</h3>
-      <div id="source-carousel" class="relative overflow-hidden mb-8" tabindex="0" role="group" aria-label="Source feeds carousel - auto-rotates; hover or focus to pause">
-        <div id="source-grid" class="flex transition-transform duration-500 ease-in-out">
-          <!-- populated from /stats by the script below; sources with errors are auto-suppressed -->
+</div>
         </div>
-      </div>
-      <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">News stream.</span> Every entry must mention Ripple, XRP, RLUSD, or XRPL. The institutional sources rarely name Ripple, so they fire infrequently but high-signal when they do. The crypto-press sources are tagged for XRP at the source and carry most of the volume.
-      </p>
-      <p class="text-sm text-muted leading-relaxed mb-4">
-        When two news sources publish the same story (titles overlap within a 48-hour window), we collapse them into one record with a <span class="text-white">cross-verified</span> flag and the secondary URLs listed alongside.
-      </p>
-      <p class="text-sm text-muted leading-relaxed mb-4">
-        At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim.
-      </p>
-      <p class="text-sm text-muted leading-relaxed">
-        <span class="text-white">On-chain stream.</span> The watcher reads validated XRPL ledgers continuously. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger position, currency (XRP or RLUSD), and full sender + receiver addresses. Where either address resolves to a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
-      </p>
-      <p class="text-sm text-muted leading-relaxed mt-4">
-        <span class="text-white">RWA supply stream.</span> Each tracked issuer gets an event when it mints or redeems tokens, or when its outstanding supply moves by more than a set amount between reads. Supply-change events catch mints that happen through the XRPL DEX rather than a direct payment, and they are labeled so you can tell them apart.
-      </p>
+      </details>
     </div>
   </section>
 
