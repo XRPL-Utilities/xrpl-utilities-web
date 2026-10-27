@@ -356,7 +356,11 @@ function renderIssuerTiles(issuers) {
     // snapshot doesn't enumerate holders, so show n/a rather than a
     // misleading "0".
     const trustlines = isMpt ? 'n/a'
-      : ((i.trustline_count !== null && i.trustline_count !== undefined) ? String(i.trustline_count) : '…');
+      : ((i.trustline_count !== null && i.trustline_count !== undefined)
+        // A truncated walk stopped at Pulse's page cap: the count is a floor
+        // (RLUSD reads 2000 against ~93k), so it must not read as exact.
+        ? Number(i.trustline_count).toLocaleString('en-US') + (i.trustline_count_truncated ? '+' : '')
+        : '…');
     const mptBadge = isMpt ? '<span class="badge-mpt text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">MPT</span>' : '';
     // Holder spread. An issuance parked in one or two wallets is not a
     // float, and the circulating figure above reads the same either way.

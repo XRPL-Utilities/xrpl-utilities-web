@@ -44,6 +44,10 @@
     // A service that says "active" while one of its own checks is down is
     // degraded; the headline must not contradict the cards beneath it.
     if (overall === 'active' && checks.some(c => c.state === 'bad')) overall = 'degraded';
+    // A warning (a background job whose last run failed) does not stop the
+    // service answering, but "All systems operational" above a yellow card
+    // is the same contradiction in a milder form (Pulse, 2026-10-27).
+    else if (overall === 'active' && checks.some(c => c.state === 'warn')) overall = 'attention';
     return { overall, checks };
   }
 

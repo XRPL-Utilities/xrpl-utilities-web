@@ -37,7 +37,15 @@ const SUBSYSTEM_LABELS = {
   slow_tasks: { name: "Slow-task cache",          desc: "Background metric refreshers (Telemetry)" },
   db_path:    { name: "SQLite cache path",        desc: "Persistent metric cache (Telemetry)" },
   snapshot_age_seconds: { name: "Snapshot age",   desc: "Seconds since last full payload rebuild (Telemetry)" },
-  db:         { name: "SQLite event store",       desc: "Persistent news + on-chain event cache (Pulse)" },
+  db:         { name: "Database",                 desc: "Stored data for this service" },
+  ai:         { name: "AI summaries",             desc: "Writes the plain-English scan summary" },
+  rpc:        { name: "XRPL RPC node",            desc: "Ledger data source" },
+  xrpl_node:  { name: "XRPL RPC node",            desc: "Ledger data source" },
+  whale_watcher:  { name: "Large-payment watcher", desc: "Scans each new ledger for big transfers" },
+  xls85_backfill: { name: "Token escrow history",  desc: "One-time load of past token escrows" },
+  pulse_upstream: { name: "XR-Pulse feed",         desc: "Source of this service's asset data" },
+  flows_upstream: { name: "XR-Flows feed",         desc: "ETF data used by this service" },
+  vault_upstream: { name: "XR-Vault feed",         desc: "Asset data used by this service" },
 };
 
 function el(tag, cls, text) {
@@ -67,6 +75,8 @@ function renderOverall(targetId, status, productName) {
     // XR-Vault answers 'starting' for ~4min after a redeploy, while its
     // upstream cache is still cold. HTTP 200, service reachable.
     label = "Starting up"; color = "text-warn"; sub = productName + " is up; upstream data is still warming.";
+  } else if (status === "attention") {
+    label = "Running, with a warning"; color = "text-warn"; sub = productName + " is serving live traffic. A background job reported a problem; details below.";
   } else if (status === "degraded") {
     label = "Partially degraded"; color = "text-warn"; sub = "One or more upstream subsystems are reporting issues. Requests may fail.";
   } else if (status === "down") {
