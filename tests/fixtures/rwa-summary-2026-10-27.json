@@ -1,0 +1,327 @@
+{
+ "available": true,
+ "totals": {
+  "tracked_issuers": 54,
+  "live_issuers": 52,
+  "dormant_issuers": 1,
+  "rails_only_issuers": 1,
+  "candidates_pending": 0,
+  "mints_24h_total": 83,
+  "burns_24h_total": 10,
+  "events_24h_total": 93,
+  "amm_pools_tracked": 21,
+  "amm_pools_on_ledger": 536,
+  "amm_pools_on_ledger_stale": false
+ },
+ "usd_pegged_aggregate": {
+  "total_usd": 4049099918.122789,
+  "issuer_count_included": 20,
+  "issuer_count_excluded": 28,
+  "included": [
+   {
+    "logical_label": "Justoken JMWH",
+    "currency": "JMWH",
+    "asset_class": "commodity_energy",
+    "native_amount": 37152280.0,
+    "peg_usd_per_unit": 60.0,
+    "usd_equivalent": 2229136800.0
+   },
+   {
+    "logical_label": "Ripple RLUSD",
+    "currency": "RLUSD",
+    "asset_class": "fiat_stable_usd",
+    "native_amount": 999474445.9915317,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 999474445.9915317
+   },
+   {
+    "logical_label": "Franklin sgBENJI MMF",
+    "currency": "sgBENJI",
+    "asset_class": "money_market",
+    "native_amount": 192698409.6219078,
+    "peg_usd_per_unit": 1.039,
+    "usd_equivalent": 200213647.5971622
+   },
+   {
+    "logical_label": "Ondo OUSG",
+    "currency": "OUSG",
+    "asset_class": "treasuries",
+    "native_amount": 1584220.172977341,
+    "peg_usd_per_unit": 108.0,
+    "usd_equivalent": 171095778.68155283
+   },
+   {
+    "logical_label": "Circle USDCAllow",
+    "currency": "USDCAllow",
+    "asset_class": "fiat_stable_usd",
+    "native_amount": 127011395.6310972,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 127011395.6310972
+   },
+   {
+    "logical_label": "Ondo OUSG",
+    "currency": "OUSG",
+    "asset_class": "treasuries",
+    "native_amount": 999997.4630116214,
+    "peg_usd_per_unit": 108.0,
+    "usd_equivalent": 107999726.0052551
+   },
+   {
+    "logical_label": "Aviva Sterling Liquidity MMF",
+    "currency": "AGB",
+    "asset_class": "money_market",
+    "native_amount": 50050000.0,
+    "peg_usd_per_unit": 1.334,
+    "usd_equivalent": 66766700.00000001
+   },
+   {
+    "logical_label": "Aviva USD Liquidity MMF",
+    "currency": "AUS",
+    "asset_class": "money_market",
+    "native_amount": 50050000.0,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 50050000.0
+   },
+   {
+    "logical_label": "Guggenheim DCP",
+    "currency": "DCP",
+    "asset_class": "commercial_paper",
+    "native_amount": 25265427.0,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 25265427.0
+   },
+   {
+    "logical_label": "OpenEden TBL",
+    "currency": "TBL",
+    "asset_class": "treasuries",
+    "native_amount": 18899568.615524,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 18899568.615524
+   },
+   {
+    "logical_label": "Braza BBRL",
+    "currency": "BBRL",
+    "asset_class": "fiat_stable_brl",
+    "native_amount": 71918683.40639077,
+    "peg_usd_per_unit": 0.2,
+    "usd_equivalent": 14383736.681278154
+   },
+   {
+    "logical_label": "SG-FORGE EURCV",
+    "currency": "EURCV",
+    "asset_class": "fiat_stable_eur",
+    "native_amount": 10000000.0,
+    "peg_usd_per_unit": 1.1,
+    "usd_equivalent": 11000000.0
+   },
+   {
+    "logical_label": "Stably USD",
+    "currency": "USD",
+    "asset_class": "fiat_stable_usd",
+    "native_amount": 9999998.650949951,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 9999998.650949951
+   },
+   {
+    "logical_label": "Bitstamp USD",
+    "currency": "USD",
+    "asset_class": "gateway_iou",
+    "native_amount": 7879883.025390705,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 7879883.025390705
+   },
+   {
+    "logical_label": "GateHub USD",
+    "currency": "USD",
+    "asset_class": "gateway_iou",
+    "native_amount": 4936268.783352185,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 4936268.783352185
+   },
+   {
+    "logical_label": "Braza USDB",
+    "currency": "USDB",
+    "asset_class": "fiat_stable_usd",
+    "native_amount": 2713783.557823754,
+    "peg_usd_per_unit": 1.0,
+    "usd_equivalent": 2713783.557823754
+   },
+   {
+    "logical_label": "GateHub EUR",
+    "currency": "EUR",
+    "asset_class": "gateway_iou",
+    "native_amount": 1538086.720923705,
+    "peg_usd_per_unit": 1.1,
+    "usd_equivalent": 1691895.3930160757
+   },
+   {
+    "logical_label": "Schuman EUROP",
+    "currency": "EUROP",
+    "asset_class": "fiat_stable_eur",
+    "native_amount": 338836.9356153817,
+    "peg_usd_per_unit": 1.1,
+    "usd_equivalent": 372720.6291769199
+   },
+   {
+    "logical_label": "AUDD",
+    "currency": "AUDD",
+    "asset_class": "fiat_stable_aud",
+    "native_amount": 315328.9843606886,
+    "peg_usd_per_unit": 0.66,
+    "usd_equivalent": 208117.12967805448
+   },
+   {
+    "logical_label": "Quantoz EURQ",
+    "currency": "EURQ",
+    "asset_class": "fiat_stable_eur",
+    "native_amount": 22.5,
+    "peg_usd_per_unit": 1.1,
+    "usd_equivalent": 24.750000000000004
+   }
+  ],
+  "non_usd_pegged_natives": [
+   {
+    "currency": "VTK",
+    "native_amount": 837468216.98,
+    "issuer_labels": [
+     "VERT Agri Receivables"
+    ]
+   },
+   {
+    "currency": "ZUVIA",
+    "native_amount": 66212756.93999997,
+    "issuer_labels": [
+     "Zuvia"
+    ]
+   },
+   {
+    "currency": "DLD units",
+    "native_amount": 11860500.0,
+    "issuer_labels": [
+     "Ctrl Alt Dubai Land Dept"
+    ]
+   },
+   {
+    "currency": "DIA series",
+    "native_amount": 5685693.0,
+    "issuer_labels": [
+     "Ctrl Alt DIA"
+    ]
+   },
+   {
+    "currency": "SVXV1",
+    "native_amount": 1206974.656185,
+    "issuer_labels": [
+     "SIVAX Vault"
+    ]
+   },
+   {
+    "currency": "tBRL",
+    "native_amount": 1043034.7700000001,
+    "issuer_labels": [
+     "Tokeniza"
+    ]
+   },
+   {
+    "currency": "BRL",
+    "native_amount": 773957.52,
+    "issuer_labels": [
+     "Axia Crowdfunding"
+    ]
+   },
+   {
+    "currency": "VERT",
+    "native_amount": 542050.006,
+    "issuer_labels": [
+     "VERT"
+    ]
+   },
+   {
+    "currency": "VERT FIDC",
+    "native_amount": 207095.0030000001,
+    "issuer_labels": [
+     "VERT FIDC"
+    ]
+   },
+   {
+    "currency": "BUTE04",
+    "native_amount": 100691.67,
+    "issuer_labels": [
+     "b.U Tech"
+    ]
+   },
+   {
+    "currency": "WFWD",
+    "native_amount": 24500.0,
+    "issuer_labels": [
+     "Weia Forward Contract"
+    ]
+   },
+   {
+    "currency": "AoFEO",
+    "native_amount": 18490.2238,
+    "issuer_labels": [
+     "Asseto"
+    ]
+   },
+   {
+    "currency": "PSC",
+    "native_amount": 14588.0,
+    "issuer_labels": [
+     "Palau Stablecoin"
+    ]
+   },
+   {
+    "currency": "XSGD",
+    "native_amount": 9999.999999999998,
+    "issuer_labels": [
+     "StraitsX XSGD"
+    ]
+   },
+   {
+    "currency": "ETH",
+    "native_amount": 4931.642723453097,
+    "issuer_labels": [
+     "GateHub ETH"
+    ]
+   },
+   {
+    "currency": "GIA series",
+    "native_amount": 4371.0,
+    "issuer_labels": [
+     "Ctrl Alt GIA"
+    ]
+   },
+   {
+    "currency": "AoFEOb",
+    "native_amount": 2100.0,
+    "issuer_labels": [
+     "Asseto"
+    ]
+   },
+   {
+    "currency": "AIRESA",
+    "native_amount": 400.0,
+    "issuer_labels": [
+     "ONCHAIN Bolivia"
+    ]
+   },
+   {
+    "currency": "BTC",
+    "native_amount": 349.0333071848484,
+    "issuer_labels": [
+     "GateHub BTC"
+    ]
+   },
+   {
+    "currency": "RGOLD",
+    "native_amount": 0.039997,
+    "issuer_labels": [
+     "Regolda Gold"
+    ]
+   }
+  ]
+ },
+ "amm_pools": [],
+ "issuers": []
+}

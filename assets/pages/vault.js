@@ -169,20 +169,29 @@ function renderSummary(body) {
   // the no-fabricated-USD brand stance is preserved.
   const usdAgg = body.usd_pegged_aggregate || {};
   const usdTotalEl  = document.getElementById('stat-usd-pegged-total');
+  const usdInclEl   = document.getElementById('stat-usd-pegged-incl');
   const usdDetailEl = document.getElementById('stat-usd-pegged-detail');
   const usdExclEl   = document.getElementById('stat-usd-pegged-excluded-summary');
-  if (usdTotalEl) {
-    const total = usdAgg.total_usd || 0;
-    // Format $1.23B / $456M / $7.8M as appropriate.
-    let formatted;
-    if (total >= 1e9) formatted = '$' + (total / 1e9).toFixed(2) + 'B';
-    else if (total >= 1e6) formatted = '$' + (total / 1e6).toFixed(1) + 'M';
-    else if (total >= 1e3) formatted = '$' + (total / 1e3).toFixed(0) + 'K';
-    else formatted = '$' + Math.round(total);
-    usdTotalEl.textContent = formatted;
+  // The headline leaves out issuers priced only by the issuer's own figure
+  // (see splitRwaAggregate); the all-in total sits on the line below it.
+  const split = splitRwaAggregate(usdAgg);
+  if (usdTotalEl) usdTotalEl.textContent = fmtUsdHeadline(split.headline);
+  if (usdInclEl) {
+    if (split.unattested.length) {
+      const names = split.unattested.map((r) => {
+        const unit = r.currency === 'JMWH' ? 'MWh' : (r.currency || '');
+        return `${r.currency} at an issuer-stated $${Number(r.peg_usd_per_unit).toFixed(2).replace(/\.00$/, '')}/${unit}`;
+      });
+      usdInclEl.textContent = `${fmtUsdHeadline(split.total)} including ${names.join(', ')}. `
+        + 'That price has no on-chain market behind it, so it is left out of the headline.';
+      usdInclEl.classList.remove('hidden');
+    } else {
+      usdInclEl.textContent = '';
+      usdInclEl.classList.add('hidden');
+    }
   }
   if (usdDetailEl) {
-    const inc = usdAgg.issuer_count_included || 0;
+    const inc = Math.max(0, (usdAgg.issuer_count_included || 0) - split.unattested.length);
     const exc = usdAgg.issuer_count_excluded || 0;
     usdDetailEl.textContent = `${inc} issuer${inc === 1 ? '' : 's'} converted into the total · ${exc} no-peg native issuer${exc === 1 ? '' : 's'} shown separately`;
   }
@@ -203,6 +212,29 @@ function renderSummary(body) {
       usdExclEl.textContent = '';
     }
   }
+}
+
+// Currencies whose USD figure rests only on a price the issuer publishes:
+// no DEX offers, no AMM pool and no reference price in the issuer's TOML.
+// Justoken JMWH (energy credits at an issuer-stated price per MWh) was 55%
+// of the all-in total on 2026-10-27, so the headline leaves these out and
+// shows the all-in figure beneath it.
+const UNATTESTED_PEG_CURRENCIES = new Set(['JMWH']);
+
+function splitRwaAggregate(agg) {
+  const total = Number(agg && agg.total_usd) || 0;
+  const included = (agg && Array.isArray(agg.included)) ? agg.included : [];
+  const unattested = included.filter((r) => r && UNATTESTED_PEG_CURRENCIES.has(r.currency));
+  const unattestedUsd = unattested.reduce((s, r) => s + (Number(r.usd_equivalent) || 0), 0);
+  return { total, headline: Math.max(0, total - unattestedUsd), unattested };
+}
+
+// $1.23B / $456.7M / $8K
+function fmtUsdHeadline(v) {
+  if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
+  if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+  if (v >= 1e3) return '$' + (v / 1e3).toFixed(0) + 'K';
+  return '$' + Math.round(v);
 }
 
 // Track current window so the toggle can re-render against the
