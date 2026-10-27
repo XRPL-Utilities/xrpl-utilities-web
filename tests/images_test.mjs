@@ -22,6 +22,17 @@ function check(name, cond, extra = '') {
 const MAX_IMAGE = 32 * 1024;      // any single image a page displays
 const MAX_PAGE_IMAGES = 160 * 1024; // all distinct images on one page
 
+// Pixel size of a WebP file, from its header (VP8X, VP8L or plain VP8).
+function webpSize(file) {
+  const b = fs.readFileSync(file);
+  if (b.toString('ascii', 0, 4) !== 'RIFF' || b.toString('ascii', 8, 12) !== 'WEBP') return null;
+  const kind = b.toString('ascii', 12, 16);
+  if (kind === 'VP8X') return { w: 1 + b.readUIntLE(24, 3), h: 1 + b.readUIntLE(27, 3) };
+  if (kind === 'VP8L') { const v = b.readUInt32LE(21); return { w: 1 + (v & 0x3fff), h: 1 + ((v >> 14) & 0x3fff) }; }
+  if (kind === 'VP8 ') return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff };
+  return null;
+}
+
 const pages = execFileSync('git', ['ls-files', '*.html'], { cwd: repo, encoding: 'utf8' })
   .split('\n').filter((f) => f && !f.startsWith('tools/'));
 
@@ -38,6 +49,11 @@ for (const f of pages) {
     const size = fs.existsSync(file) ? fs.statSync(file).size : Infinity;
     check(`${f}: ${src} exists and is under ${MAX_IMAGE / 1024} KB`, size <= MAX_IMAGE, `got ${size}`);
     check(`${f}: ${src} has width and height`, /\swidth="\d+"/.test(tag) && /\sheight="\d+"/.test(tag));
+    // 2026-10-27: the home hero showed the 96 px logo at 256 px and looked
+    // blurry. Every image needs at least twice its display size in pixels.
+    const shown = Number((tag.match(/\swidth="(\d+)"/) || [])[1] || 0);
+    const px = src.endsWith('.webp') && fs.existsSync(file) ? webpSize(file) : null;
+    if (px) check(`${f}: ${src} is sharp at ${shown}px (file is ${px.w}px)`, px.w >= 2 * shown, `needs ${2 * shown}px`);
     const loading = (tag.match(/\sloading="(\w+)"/) || [])[1];
     check(`${f}: ${src} sets loading`, loading === 'lazy' || loading === 'eager');
     if (loading === 'eager') eager++;
