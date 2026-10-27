@@ -64,7 +64,7 @@
   <script src="/assets/vendor/qrcode-generator.min.js?v=2.0.4"></script>
   <script src="/assets/qr-code.js?v=v1"></script>
   <script src="/assets/pay-pin.js?v=1"></script>
-  <script src="/assets/scan-flow.js?v=resilient"></script>
+  <script src="/assets/scan-flow.js?v=a11y"></script>
   <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
@@ -111,6 +111,7 @@
   </style>
 </head>
 <body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
 
   <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -166,6 +167,8 @@
     </div>
   </div>
 
+  <main id="main">
+
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <img src="/assets/xr-sentinel.png" alt="XR-Sentinel" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
@@ -187,6 +190,10 @@
             type="text"
             placeholder="r..."
             spellcheck="false"
+            autocapitalize="off"
+            autocorrect="off"
+            autocomplete="off"
+            enterkeyhint="go"
             class="flex-grow bg-ink border border-border rounded-lg px-4 py-3 font-mono text-sm focus:outline-none focus:border-accent transition"
           />
           <button
@@ -222,8 +229,11 @@
           <input
             id="origin-input"
             type="text"
+            aria-label="Domain or XRPL address to verify"
             placeholder="example.com  or  r..."
             spellcheck="false"
+            autocapitalize="off"
+            autocorrect="off"
             class="flex-grow bg-ink border border-border rounded-lg px-4 py-3 font-mono text-sm focus:outline-none focus:border-accent transition"
           />
           <button id="verify-btn" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition whitespace-nowrap">Verify</button>
@@ -237,7 +247,7 @@
           </div>
         </div>
         <div id="verify-result" class="hidden mt-6"></div>
-        <p class="text-xs text-muted/70 mt-5 leading-relaxed">
+        <p class="text-xs text-muted mt-5 leading-relaxed">
           Verifies published identity bindings only. A verified origin means the domain and the account name each other. It is not an endorsement of the operator, the product, or its solvency.
         </p>
       </div>
@@ -269,7 +279,7 @@
         </div>
       </a>
 
-      <div id="result" class="mt-6 hidden"></div>
+      <div id="result" class="mt-6 hidden" aria-live="polite"></div>
     </div>
   </section>
 
@@ -344,7 +354,7 @@
             <p class="text-sm text-muted leading-relaxed mt-3">
               Pass <code class="font-mono text-white">?address=</code> instead to ask it from the other end: what does this account&rsquo;s claimed identity rest on? That is the only way to test a brand asserted inside MPT metadata, which nothing validates today. A document that cannot be fetched returns <code class="font-mono text-white">unreadable</code>, never a negative finding. Verdicts are <code class="font-mono text-white">verified</code>, <code class="font-mono text-white">partial</code>, <code class="font-mono text-white">unverified</code>, <code class="font-mono text-white">unreadable</code> or <code class="font-mono text-white">mismatch</code>.
             </p>
-            <p class="text-xs text-muted/70 leading-relaxed mt-3">
+            <p class="text-xs text-muted leading-relaxed mt-3">
               Verifies published identity bindings only. A verified origin means the domain and the account name each other. It is not an endorsement of the operator, the product, or its solvency.
             </p>
           </div>
@@ -982,6 +992,8 @@ report = resp.json()
     </div>
   </section>
 
+  </main>
+
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
       <div class="grid gap-10 md:grid-cols-4 mb-10">
@@ -1034,7 +1046,8 @@ report = resp.json()
     </div>
   </footer>
 
-  <script src="/assets/pages/sentinel.js?v=1"></script>
+  <script src="/assets/pages/sentinel.js?v=2"></script>
 
+  <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

@@ -99,6 +99,7 @@
   </style>
 </head>
 <body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
 
   <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -150,6 +151,8 @@
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
     </div>
   </div>
+
+  <main id="main">
 
   <!-- HERO -->
   <section>
@@ -261,10 +264,10 @@
         </div>
 
         <div class="mb-4">
-          <input id="q-search" type="text" placeholder="Search by domain_id, owner, owner label, or credential issuer" class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-accent" />
+          <input id="q-search" type="text" aria-label="Search the domain directory" placeholder="Search by domain_id, owner, owner label, or credential issuer" class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-accent" />
         </div>
         <div class="flex items-center justify-between gap-3 text-xs text-muted mb-4">
-          <div id="q-status">Loading directory&hellip;</div>
+          <div id="q-status" role="status" aria-live="polite">Loading directory&hellip;</div>
           <div class="flex items-center gap-3">
             <label class="inline-flex items-center gap-2 text-xs text-muted cursor-pointer select-none">
               <input id="q-dedupe" type="checkbox" class="accent-accent" />
@@ -605,6 +608,8 @@ record = resp.json()
   </section>
 
 
+  </main>
+
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
       <div class="grid gap-10 md:grid-cols-4 mb-10">
@@ -661,7 +666,8 @@ record = resp.json()
   <script src="/assets/pages/trust-1.js?v=1"></script>
 
   <!-- Trust directory + stats client -->
-  <script src="/assets/pages/trust-2.js?v=1"></script>
+  <script src="/assets/pages/trust-2.js?v=2"></script>
 
+  <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

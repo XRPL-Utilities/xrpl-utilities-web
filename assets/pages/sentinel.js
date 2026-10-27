@@ -111,7 +111,7 @@ const GALLERY = [
       blurb.innerHTML = w.blurb;
       btn.appendChild(blurb);
       const addr = document.createElement("div");
-      addr.className = "font-mono text-[10px] text-muted/70 mt-2 truncate";
+      addr.className = "font-mono text-[10px] text-muted mt-2 truncate";
       addr.textContent = w.address;
       btn.appendChild(addr);
       grid.appendChild(btn);
@@ -161,8 +161,16 @@ document.querySelectorAll(".sample-btn").forEach(btn => {
 });
 
 const ADDR_RE = /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/;
+// Enter in the address box runs the scan, like the button.
+document.getElementById("address").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); document.getElementById("scan-btn").click(); }
+});
 document.getElementById("scan-btn").addEventListener("click", () => {
-  const address = document.getElementById("address").value.trim();
+  const input = document.getElementById("address");
+  // A classic address always starts with lowercase r. Phone keyboards that
+  // still capitalize the first letter would otherwise fail validation.
+  let address = input.value.trim();
+  if (address.charAt(0) === "R") { address = "r" + address.slice(1); input.value = address; }
   if (!ADDR_RE.test(address)) { renderError("Enter a valid XRPL address (starts with 'r', 25-35 base58 characters)."); return; }
   const btn = document.getElementById("scan-btn");
   btn.disabled = true;
@@ -331,7 +339,7 @@ document.getElementById("scan-btn").addEventListener("click", () => {
     summary.innerHTML =
       '<div class="flex items-baseline gap-3">' +
       '<span class="text-xs uppercase tracking-widest text-accent font-semibold">' + catName + '</span>' +
-      '<span class="text-[10px] text-muted/70 font-mono">' + flagCount + ' flag' + (flagCount === 1 ? '' : 's') + '</span>' +
+      '<span class="text-[10px] text-muted font-mono">' + flagCount + ' flag' + (flagCount === 1 ? '' : 's') + '</span>' +
       '</div>' +
       '<span class="text-xl text-accent shrink-0">▾</span>';
 
@@ -352,7 +360,7 @@ document.getElementById("scan-btn").addEventListener("click", () => {
     '<input id="glossary-search" type="search" placeholder="Search flags or descriptions…" ' +
     'class="w-full bg-ink border border-border rounded-lg px-4 py-2.5 text-sm text-white ' +
     'placeholder:text-muted focus:border-accent focus:outline-none transition" />' +
-    '<p id="glossary-search-status" class="text-[10px] text-muted/60 mt-1.5 font-mono hidden"></p>';
+    '<p id="glossary-search-status" class="text-[10px] text-muted mt-1.5 font-mono hidden"></p>';
   intro.insertAdjacentElement('afterend', searchWrap);
 
   const input    = document.getElementById('glossary-search');

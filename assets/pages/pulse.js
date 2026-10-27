@@ -598,7 +598,7 @@ function renderEvent(e) {
     ? e.active_utility.tldr
     : '';
   const tldrHtml = tldrText
-    ? `<p class="text-xs text-muted/70 italic leading-relaxed mb-2 break-words">${escapeHtml(tldrText)}</p>`
+    ? `<p class="text-xs text-muted italic leading-relaxed mb-2 break-words">${escapeHtml(tldrText)}</p>`
     : '';
   // NORMAL_ACTIVITY rows are suppressed entirely from the rendered
   // feed - they're sub-$1M anonymous transfers ("network noise" per
@@ -862,8 +862,8 @@ async function loadChoreographies() {
           <p class="text-xs text-muted leading-relaxed mb-3" title="${escapeHtml(narrativeFull)}">${escapeHtml(narrative)}</p>
           ${assets ? `<div class="flex flex-wrap gap-1.5 mb-2">${assets}</div>` : ''}
           <div class="flex flex-wrap gap-1.5 mb-3">${kinds}</div>
-          ${cps ? `<div class="border-t border-border pt-2 mb-2 space-y-1"><div class="text-[10px] uppercase tracking-wider text-muted/60 mb-1">Top counterparties</div>${cps}</div>` : ''}
-          <div class="text-[10px] text-muted/70 font-mono flex items-center justify-between">
+          ${cps ? `<div class="border-t border-border pt-2 mb-2 space-y-1"><div class="text-[10px] uppercase tracking-wider text-muted mb-1">Top counterparties</div>${cps}</div>` : ''}
+          <div class="text-[10px] text-muted font-mono flex items-center justify-between">
             <span>${escapeHtml(String(r.event_count || 0))} events &middot; ${escapeHtml(span)} span</span>
             ${xrpscanUrl ? `<a href="${xrpscanUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition">xrpscan &rarr;</a>` : ''}
           </div>
@@ -1154,7 +1154,7 @@ function renderColumn(key) {
   if (col.shown === 0 && !col.error) {
     nav.innerHTML = '';  // skeleton/empty state; no button needed
   } else if (!moreAvailable) {
-    nav.innerHTML = `<div class="text-center text-xs text-muted/60 py-3 border-t border-border">End of feed</div>`;
+    nav.innerHTML = `<div class="text-center text-xs text-muted py-3 border-t border-border">End of feed</div>`;
   } else {
     nav.innerHTML = `<button data-nav="more" data-col="${key}"
       class="w-full bg-ink border border-border hover:border-accent text-sm text-muted hover:text-white transition rounded-lg p-3"
@@ -1446,21 +1446,21 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
     const rcvr = partyLabel(au.receiver_label, au.receiver_address);
     const when = formatRel(ev.published_at || 0);
     const explorer = ev.primary_url
-      ? '<a href="' + escapeHtml(safeUrl(ev.primary_url)) + '" target="_blank" rel="noopener" class="text-muted/50 hover:text-accent transition">tx ↗</a>'
+      ? '<a href="' + escapeHtml(safeUrl(ev.primary_url)) + '" target="_blank" rel="noopener" class="text-muted hover:text-accent transition">tx ↗</a>'
       : '';
 
     return [
       '<div class="py-3 grid grid-cols-[auto_1fr_auto] items-baseline gap-3 text-sm">',
         '<div class="flex items-baseline gap-2 min-w-0">',
           '<span class="font-semibold text-white tabular-nums">', usd, '</span>',
-          cur ? '<span class="text-[10px] uppercase tracking-wider text-muted/70">' + escapeHtml(cur) + '</span>' : '',
+          cur ? '<span class="text-[10px] uppercase tracking-wider text-muted">' + escapeHtml(cur) + '</span>' : '',
           tierBadgeHtml(tier),
         '</div>',
         '<div class="text-muted truncate">',
-          sndr, ' <span class="text-muted/50">&rarr;</span> ', rcvr,
-          amt ? '<span class="text-[10px] text-muted/40 ml-2 font-mono">' + escapeHtml(amt) + '</span>' : '',
+          sndr, ' <span class="text-muted">&rarr;</span> ', rcvr,
+          amt ? '<span class="text-[10px] text-muted ml-2 font-mono">' + escapeHtml(amt) + '</span>' : '',
         '</div>',
-        '<div class="text-[10px] text-muted/60 font-mono whitespace-nowrap flex items-center gap-2">',
+        '<div class="text-[10px] text-muted font-mono whitespace-nowrap flex items-center gap-2">',
           when,
           explorer,
         '</div>',
@@ -1506,7 +1506,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
       );
 
       if (whales.length === 0) {
-        listEl.innerHTML = '<div class="py-8 text-center text-sm text-muted/70">No XRPL transfers above $1M in the last 24 hours.</div>';
+        listEl.innerHTML = '<div class="py-8 text-center text-sm text-muted">No XRPL transfers above $1M in the last 24 hours.</div>';
         metaEl.textContent = '0 whales';
         return;
       }

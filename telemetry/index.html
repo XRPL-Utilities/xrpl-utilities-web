@@ -90,6 +90,7 @@
   </style>
 </head>
 <body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
 
   <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -145,6 +146,8 @@
     </div>
   </div>
 
+  <main id="main">
+
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <img src="/assets/xr-telemetry.png" alt="XR-Telemetry" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
@@ -175,7 +178,7 @@
         </button>
       </div>
 
-      <div id="result" class="mt-6 hidden"></div>
+      <div id="result" class="mt-6 hidden" aria-live="polite"></div>
     </div>
   </section>
 
@@ -277,7 +280,7 @@
                       disabled
                       title="Load today's realized V into the input. Computed as Q / (M × spot); the velocity the identity requires for P to equal today's market price.">Use realized · <span id="bm-v-realized" class="font-mono">&hellip;</span></button>
             </div>
-            <input id="bm-v" type="number" min="0.1" step="0.1" class="num-input" />
+            <input id="bm-v" type="number" aria-label="Annual velocity (V)" min="0.1" step="0.1" class="num-input" />
             <p class="text-[10px] text-muted mt-1 leading-snug">
               Realized V is computed from your current Q and live M against current spot (Q &divide; (M &times; spot)). It's the velocity the identity would require to make P equal today's market. Default V = 6 is the long-run ODL-style assumption; today's realized V is much higher because most XRP is held, not transacted. Click the button to load it.
             </p>
@@ -481,7 +484,7 @@
           </div>
         </div>
         <div class="bg-ink border border-border rounded-lg p-4">
-          <canvas id="sv-chart" height="280"></canvas>
+          <canvas id="sv-chart" role="img" aria-label="Bar chart of XRPL settlement volume in US dollars, by day, week or month as selected above. The headline figures are listed in the cards on this page." height="280"></canvas>
         </div>
         <div class="text-xs text-muted mt-3 text-center">USD per bucket &middot; daily 30 / weekly 12 / monthly 12</div>
       </div>
@@ -546,7 +549,7 @@
       <div class="grid lg:grid-cols-3 gap-6">
         <div class="bg-panel border border-border rounded-2xl p-6 lg:col-span-2">
           <div class="bg-ink border border-border rounded-lg p-4">
-            <canvas id="floor-chart" height="300"></canvas>
+            <canvas id="floor-chart" role="img" aria-label="Line chart of the 24-month projected price floor under the stated volume and velocity assumptions. The values are listed in the matrix on this page." height="300"></canvas>
           </div>
           <div id="fm-warning" class="hidden mt-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed"></div>
           <div class="text-xs text-muted mt-3 text-center">
@@ -867,6 +870,8 @@ payload = requests.get(
     </div>
   </section>
 
+  </main>
+
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
       <div class="grid gap-10 md:grid-cols-4 mb-10">
@@ -921,5 +926,6 @@ payload = requests.get(
 
   <script src="/assets/pages/telemetry.js?v=1"></script>
 
+  <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

@@ -121,6 +121,7 @@
 </head>
 
 <body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
 
   <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -172,6 +173,8 @@
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
     </div>
   </div>
+
+  <main id="main">
 
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
@@ -370,7 +373,7 @@
             <span id="settlement-events-total" class="text-[10px] text-muted font-mono"></span>
           </div>
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 260px;">
-            <canvas id="chart-settlement-events"></canvas>
+            <canvas id="chart-settlement-events" role="img" aria-label="Stacked bar chart of real-world-asset settlement events per day, one color per tracked issuer. The period total is shown above the chart."></canvas>
           </div>
           <p id="offer-issuance-caveat" class="text-[10px] text-muted mt-2 hidden"></p>
         </div>
@@ -381,7 +384,7 @@
             <span id="usd-flow-coverage" class="text-[10px] text-muted font-mono"></span>
           </div>
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 220px;">
-            <canvas id="chart-usd-pegged-flow"></canvas>
+            <canvas id="chart-usd-pegged-flow" role="img" aria-label="Bar chart of the daily net mint or burn of US-dollar-pegged real-world-asset tokens, in US dollars."></canvas>
           </div>
           <p id="usd-flow-caveat" class="text-[10px] text-muted mt-2"></p>
         </div>
@@ -686,6 +689,8 @@
   </section>
 
 
+  </main>
+
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
       <div class="grid gap-10 md:grid-cols-4 mb-10">
@@ -740,5 +745,6 @@
 
   <script src="/assets/pages/vault.js?v=2"></script>
 
+  <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

@@ -35,6 +35,7 @@
   </style>
 </head>
 <body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
 
   <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -86,6 +87,8 @@
     </div>
   </div>
 
+  <main id="main">
+
   <section>
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Bulk scan</h1>
@@ -114,7 +117,7 @@
         <p id="validation" class="text-xs mt-4 text-muted leading-relaxed"></p>
       </div>
 
-      <div id="flow" class="mt-6"></div>
+      <div id="flow" class="mt-6" aria-live="polite"></div>
     </div>
   </section>
 
@@ -133,6 +136,8 @@
       </p>
     </div>
   </section>
+
+  </main>
 
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
@@ -186,8 +191,9 @@
   <script src="/assets/vendor/qrcode-generator.min.js?v=2.0.4"></script>
   <script src="/assets/qr-code.js?v=v1"></script>
   <script src="/assets/pay-pin.js?v=1"></script>
-  <script src="/assets/scan-flow.js?v=resilient"></script>
+  <script src="/assets/scan-flow.js?v=a11y"></script>
   <script src="/assets/pages/sentinel-bulk.js?v=1"></script>
 
+  <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

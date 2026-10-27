@@ -83,6 +83,7 @@
 </head>
 
 <body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
 
   <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -134,6 +135,8 @@
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
     </div>
   </div>
+
+  <main id="main">
 
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
@@ -227,7 +230,7 @@
             <span id="aum-total-headline" class="text-[10px] text-muted font-mono"></span>
           </div>
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 280px;">
-            <canvas id="chart-etf-aum"></canvas>
+            <canvas id="chart-etf-aum" role="img" aria-label="Stacked area chart of net assets in US dollars for each tracked XRP ETF, by day. The latest totals are shown in the figures above."></canvas>
           </div>
           <p id="aum-coverage-caveat" class="text-[10px] text-muted mt-2"></p>
         </div>
@@ -238,7 +241,7 @@
             <span id="aum-delta-headline" class="text-[10px] text-muted font-mono"></span>
           </div>
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 240px;">
-            <canvas id="chart-etf-aum-delta"></canvas>
+            <canvas id="chart-etf-aum-delta" role="img" aria-label="Bar chart of the daily change in net assets for each tracked XRP ETF, in US dollars."></canvas>
           </div>
           <p class="text-[10px] text-muted mt-2">Green = AUM rose that day, red = AUM fell. Computed from day-over-day delta of the per-ticker series; first day in the window has no prior reference and is omitted. Aggregator AUM freezes over weekends and US market holidays, so the move accrued across a closed period books on the next trading day. A bar following a closed period reflects multi-day change, not a single session.</p>
         </div>
@@ -249,7 +252,7 @@
             <span id="chain-flow-status" class="text-[10px] text-muted font-mono"></span>
           </div>
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 220px;">
-            <canvas id="chart-chain-flow"></canvas>
+            <canvas id="chart-chain-flow" role="img" aria-label="Bar chart of the daily net XRP moving into or out of exchange wallets on the XRP Ledger."></canvas>
           </div>
           <p id="chain-flow-caveat" class="text-[10px] text-muted mt-2"></p>
         </div>
@@ -260,7 +263,7 @@
             <div id="moex-index-snapshot" class="text-[10px] text-muted font-mono"></div>
           </div>
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 220px;">
-            <canvas id="chart-moex-index"></canvas>
+            <canvas id="chart-moex-index" role="img" aria-label="Line chart of the Moscow Exchange XRP index (MOEXXRP) in US dollars, by day."></canvas>
           </div>
           <p class="text-[10px] text-muted mt-2">USD-denominated XRP price benchmark published by the Moscow Exchange from four spot venues, weighted by trading volume. Launched 2026-05-13; the series grows one row per MOEX trading day. Trading is restricted to professional investors but the index itself is a public reference price.</p>
           <div id="moex-futures-strip" class="mt-3 text-[10px] font-mono text-muted"></div>
@@ -558,6 +561,8 @@
     </div>
   </section>
 
+  </main>
+
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
       <div class="grid gap-10 md:grid-cols-4 mb-10">
@@ -612,5 +617,6 @@
 
   <script src="/assets/pages/flows.js?v=2"></script>
 
+  <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>
