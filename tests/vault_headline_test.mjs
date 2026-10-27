@@ -70,5 +70,13 @@ vm.runInContext('renderSummary', ctx)(noJ);
 check('no JMWH: headline is the plain total', nodes['stat-usd-pegged-total'].textContent === '$1.82B', nodes['stat-usd-pegged-total'].textContent);
 check('no JMWH: the all-in line hides', incl.classList.contains('hidden') && incl.textContent === '');
 
+// Trustline counts that stopped at Pulse's page cap are a floor, not a count
+// (2026-10-27: RLUSD read "2000" against ~93k real trustlines).
+const tileIssuer = (extra) => Object.assign({ label: 'Ripple RLUSD', logical_label: 'Ripple RLUSD', wallet: 'rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De', currency: 'RLUSD', asset_class: 'fiat_stable_usd', mint_status: 'live', token_standard: 'iou', circulating: '1001880101.99', net_24h: '7206553', trustline_count: 2000 }, extra);
+vm.runInContext('renderIssuerTiles', ctx)([tileIssuer({ trustline_count_truncated: true })]);
+check('capped trustline count renders with a plus', nodes['issuer-tiles'].innerHTML.includes('2,000+'), nodes['issuer-tiles'].innerHTML.slice(0, 200));
+vm.runInContext('renderIssuerTiles', ctx)([tileIssuer({ trustline_count: 412, trustline_count_truncated: false })]);
+check('exact trustline count renders without a plus', nodes['issuer-tiles'].innerHTML.includes('>412<'), '');
+
 console.log(fails ? `${fails} FAILED` : 'vault headline: ok');
 process.exit(fails ? 1 : 0);

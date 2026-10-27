@@ -1768,11 +1768,11 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
         return;
       }
       if (deltaNum > 0) {
-        badgeEl.textContent = '↑ +' + formatBig(deltaNum) + ' minted today';
+        badgeEl.textContent = '↑ +' + formatBig(deltaNum) + ' net minted (24h)';
         badgeEl.className = 'text-xs px-2 py-1 rounded border font-semibold ml-2 '
           + 'text-green-400 border-green-500/50 bg-green-500/10';
       } else {
-        badgeEl.textContent = '↓ -' + formatBig(Math.abs(deltaNum)) + ' redeemed today';
+        badgeEl.textContent = '↓ -' + formatBig(Math.abs(deltaNum)) + ' net redeemed (24h)';
         badgeEl.className = 'text-xs px-2 py-1 rounded border font-semibold ml-2 '
           + 'text-red-400 border-red-500/50 bg-red-500/10';
       }

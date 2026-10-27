@@ -228,23 +228,23 @@
             <div class="stat-tile-sub mt-2">live circulating supply</div>
           </div>
           <div class="stat-tile p-4">
-            <div class="stat-tile-label mb-2">Net flow (24h)</div>
+            <div class="stat-tile-label mb-2">Supply change (24h)</div>
             <div id="rlusd-delta" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">mints minus burns</div>
+            <div class="stat-tile-sub mt-2">vs prior daily snapshot</div>
           </div>
           <div class="stat-tile p-4">
-            <div class="stat-tile-label mb-2">UTC day prior</div>
+            <div class="stat-tile-label mb-2">Prior snapshot</div>
             <div id="rlusd-prior" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">snapshot baseline</div>
+            <div class="stat-tile-sub mt-2">supply at the last daily read</div>
           </div>
           <div class="stat-tile p-4">
             <div class="stat-tile-label mb-2">Trustlines</div>
             <div id="rlusd-trustlines" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">live count</div>
+            <div class="stat-tile-sub mt-2">from the last daily read</div>
           </div>
         </div>
         <p class="text-[11px] text-muted leading-relaxed mt-5">
-          Daily settlement state for Ripple's stablecoin issuer. Outstanding is the live circulating-supply read from the validated XRPL ledger. Net flow over the last UTC day is the difference against the prior daily snapshot; positive means more was minted than burned, negative means net redemption to issuer. When the live number diverges sharply from the prior snapshot mid-day, that's the on-chain trace of an active mint or burn pipeline running.
+          Daily settlement state for Ripple's stablecoin issuer. Outstanding is the live circulating-supply read from the validated XRPL ledger. Supply change is the difference against the prior daily snapshot; positive means more was minted than burned, negative means net redemption to issuer. When the live number diverges sharply from the prior snapshot mid-day, that's the on-chain trace of an active mint or burn pipeline running.
         </p>
       </div>
     </div>
