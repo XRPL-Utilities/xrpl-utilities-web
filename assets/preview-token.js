@@ -24,7 +24,11 @@
   // Public Site Key. Safe to commit; meant for HTML embed.
   const TURNSTILE_SITE_KEY = '0x4AAAAAADKZRldTKu6Mcd7l';
   const MINT_ENDPOINT = '/api/preview-token';
-  const STORAGE_KEY = 'xru_preview_token_v1';
+  // v2: tokens now carry an address binding; an unbound v1 token in
+  // localStorage would be refused by the API hosts, so it is not reused.
+  const STORAGE_KEY = 'xru_preview_token_v2';
+  const ATTEST_ENDPOINT = 'https://sentinel.xrpl-utilities.io/edge/ip-attest';
+  const ATTEST_TIMEOUT_MS = 3000;
   // Refresh a few seconds before the server's exp so we don't race the
   // clock and ship an expired token.
   const REFRESH_BUFFER_SECONDS = 30;
@@ -116,12 +120,31 @@
     });
   }
 
+  // The token is bound to the visitor's address. The site is reachable over
+  // IPv6 but the API hosts only over IPv4, so a dual-stack browser shows up
+  // with a different address on each. This asks an API host for a signed
+  // note of the address it sees (a keyed hash, not the address) and hands it
+  // to the mint, which binds the token to both. Best effort: on a blocked or
+  // slow network it resolves to null and the token covers this site's view
+  // only, which is the one the /api/x fallback path uses anyway.
+  function fetchIpAttestation() {
+    const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(function () { ctrl.abort(); }, ATTEST_TIMEOUT_MS) : null;
+    return fetch(ATTEST_ENDPOINT, { method: 'GET', cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (b) { return b && typeof b.attestation === 'string' ? b.attestation : null; })
+      .catch(function () { return null; })
+      .finally(function () { if (timer) clearTimeout(timer); });
+  }
+
   async function mintFresh() {
-    const turnstileToken = await solveTurnstile();
+    const results = await Promise.all([solveTurnstile(), fetchIpAttestation()]);
+    const payload = { turnstile_token: results[0] };
+    if (results[1]) payload.ip_attestation = results[1];
     const r = await fetch(MINT_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ turnstile_token: turnstileToken }),
+      body: JSON.stringify(payload),
     });
     if (!r.ok) {
       let detail = '';
