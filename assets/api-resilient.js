@@ -1,8 +1,8 @@
 /* Same-origin fallback for API calls that a visitor's network blocks.
  *
  * Background: 2026-08-10, a visitor on a new Xfinity line saw every data
- * panel on the site empty. Pages rendered fine — they come from this
- * domain — but every request to *.xrpl-utilities.io failed with
+ * panel on the site empty. Pages rendered fine (they come from this
+ * domain), but every request to *.xrpl-utilities.io failed with
  * ERR_SSL_PROTOCOL_ERROR. The cause was xFi Advanced Security, which
  * ships enabled by default for the largest home ISP in the US, blocking
  * the API hosts. Nothing was wrong with the services: valid TLS 1.3,
@@ -12,14 +12,14 @@
  * confident-looking site with no numbers in it and no error they could
  * act on, so they conclude the product is broken. Ad blockers, DNS
  * filters, corporate proxies and antivirus TLS inspection all produce
- * the same silence — this is a class of failure, not one ISP.
+ * the same silence; this is a class of failure, not one ISP.
  *
  * The fix: the browser can obviously reach THIS origin, since it just
  * loaded the page from it. On a network-level failure, retry the same
  * request through /api/x/<service>/... on this domain, which the Worker
  * passes through to the API host server-side.
  *
- * Direct-first, on purpose. Unblocked visitors — nearly everyone — keep
+ * Direct-first, on purpose. Unblocked visitors (nearly everyone) keep
  * talking to the API hosts with no extra hop, no Worker request, and no
  * new single point of failure. The proxy only enters the picture for a
  * visitor who would otherwise have seen nothing at all.
@@ -50,7 +50,7 @@
   var proxyMode = false;
   try {
     proxyMode = sessionStorage.getItem(STICKY_KEY) === '1';
-  } catch (_) { /* private mode — degrade to per-request fallback */ }
+  } catch (_) { /* private mode: degrade to per-request fallback */ }
 
   var nativeFetch = global.fetch && global.fetch.bind(global);
   if (!nativeFetch) return;
@@ -113,7 +113,7 @@
       // network. Retrying it would ignore the cancel, and marking the session
       // blocked would send every later call through the proxy for no reason.
       if (isAbort(err, input, init)) throw err;
-      // Only network-level failures land here — DNS block, TLS reset,
+      // Only network-level failures land here: DNS block, TLS reset,
       // blocked-by-extension, offline. HTTP errors like 402 or 503 resolve
       // normally and must NOT be retried: a 402 is the x402 payment
       // challenge doing its job, and replaying it through the proxy would

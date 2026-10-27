@@ -3,7 +3,7 @@
 # JSON APIs scores badly on automated classifiers, and a published security
 # contact is one of the cheap signals that says a real operator runs this.
 
-Contact: mailto:xrpl-utilities@proton.me
+Contact: mailto:hello@xrpl-utilities.com
 Expires: 2027-08-10T00:00:00.000Z
 Preferred-Languages: en
 Canonical: https://xrpl-utilities.com/.well-known/security.txt
