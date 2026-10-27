@@ -47,9 +47,21 @@
   // dozen timeouts before anything renders.
   var STICKY_KEY = 'xru_api_proxy_mode_v1';
 
+  // The free-preview token is bound to the visitor's address as the site's
+  // Worker saw it at mint time (plus the address one API host saw). On some
+  // mobile networks and relays (carrier NAT pools, iCloud Private Relay) each
+  // new connection can leave from a different address, so a direct call to
+  // another API host arrives from an address the token does not list and
+  // gets a 402. The same call through /api/x rides this site's connection,
+  // the one the token was minted on, so it matches. After one such rescue
+  // the rest of the page-load sends preview calls through the proxy.
+  var PREVIEW_STICKY_KEY = 'xru_preview_via_proxy_v1';
+
   var proxyMode = false;
+  var previewViaProxy = false;
   try {
     proxyMode = sessionStorage.getItem(STICKY_KEY) === '1';
+    previewViaProxy = sessionStorage.getItem(PREVIEW_STICKY_KEY) === '1';
   } catch (_) { /* private mode: degrade to per-request fallback */ }
 
   var nativeFetch = global.fetch && global.fetch.bind(global);
@@ -93,6 +105,34 @@
     return !!(signal && signal.aborted);
   }
 
+  function headerValue(headers, name) {
+    if (!headers) return null;
+    if (typeof headers.get === 'function') return headers.get(name);
+    var want = name.toLowerCase();
+    for (var k in headers) {
+      if (Object.prototype.hasOwnProperty.call(headers, k) && k.toLowerCase() === want) return headers[k];
+    }
+    return null;
+  }
+
+  // A free-preview call: it carries the site's Bearer token and no x402
+  // payment. Only these are replayed after a 402. A paid call's 402 is the
+  // payment challenge doing its job and goes back to the caller untouched.
+  // Request objects are left alone too: their body may already be spent.
+  function isPreviewCall(input, init) {
+    if (input instanceof Request || !init) return false;
+    var auth = headerValue(init.headers, 'authorization');
+    if (!auth || !/^Bearer\s+\S+/.test(auth)) return false;
+    if (headerValue(init.headers, 'payment-signature') || headerValue(init.headers, 'x-payment')) return false;
+    var body = init.body;
+    return body == null || typeof body === 'string';
+  }
+
+  function markPreviewViaProxy() {
+    previewViaProxy = true;
+    try { sessionStorage.setItem(PREVIEW_STICKY_KEY, '1'); } catch (_) {}
+  }
+
   function markBlocked() {
     proxyMode = true;
     try { sessionStorage.setItem(STICKY_KEY, '1'); } catch (_) {}
@@ -107,17 +147,27 @@
     if (!proxied) return nativeFetch(input, init);
 
     if (proxyMode) return sendTo(proxied, input, init);
+    var preview = isPreviewCall(input, init);
+    if (preview && previewViaProxy) return sendTo(proxied, input, init);
 
-    return nativeFetch(input, init).catch(function (err) {
+    return nativeFetch(input, init).then(function (res) {
+      if (res.status !== 402 || !preview) return res;
+      if (isAbort(null, input, init)) return res;
+      if (global.console && console.warn) {
+        console.warn('[xru] preview call got 402 directly; retrying same-origin via ' + PROXY_PREFIX);
+      }
+      return sendTo(proxied, input, init).then(function (viaProxy) {
+        if (viaProxy.status !== 402) markPreviewViaProxy();
+        return viaProxy;
+      }, function () { return res; });
+    }, function (err) {
       // A caller's own abort (a timeout, a cancelled scan) is not a blocked
       // network. Retrying it would ignore the cancel, and marking the session
       // blocked would send every later call through the proxy for no reason.
       if (isAbort(err, input, init)) throw err;
       // Only network-level failures land here: DNS block, TLS reset,
-      // blocked-by-extension, offline. HTTP errors like 402 or 503 resolve
-      // normally and must NOT be retried: a 402 is the x402 payment
-      // challenge doing its job, and replaying it through the proxy would
-      // charge a second invoice for one user action.
+      // blocked-by-extension, offline. HTTP errors resolve above, and the
+      // only one ever replayed is a free-preview 402 (see isPreviewCall).
       markBlocked();
       if (global.console && console.warn) {
         console.warn(
@@ -133,9 +183,12 @@
   global.XRUApiResilient = {
     proxyUrlFor: proxyUrlFor,
     isProxyMode: function () { return proxyMode; },
+    isPreviewViaProxy: function () { return previewViaProxy; },
     _reset: function () {
       proxyMode = false;
+      previewViaProxy = false;
       try { sessionStorage.removeItem(STICKY_KEY); } catch (_) {}
+      try { sessionStorage.removeItem(PREVIEW_STICKY_KEY); } catch (_) {}
     },
   };
 })(window);
