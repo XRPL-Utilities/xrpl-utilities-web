@@ -62,7 +62,7 @@ for path in sorted(glob.glob(os.path.join(repo, "**", "*.html"), recursive=True)
             fail(f"selector {selector.group(1)} is not defined in the sample")
             continue
         ns = {}
-        exec(compile(ast.Module(body=defs, type_ignores=[]), rel, "exec"), ns)
+        exec(compile(ast.Module(body=defs, type_ignores=[]), rel, "exec"), ns)  # secscan-ok: test runs code samples from our own pages
         # Same positional call as x402_xrpl.clients.requests (accepts, network, scheme, max_value).
         picked = ns[selector.group(1)](LIVE_ACCEPTS, None, "exact", None)
         if picked.get("asset") != "XRP" or picked.get("network") != "xrpl:0":

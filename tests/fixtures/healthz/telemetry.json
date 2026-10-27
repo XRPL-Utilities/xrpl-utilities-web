@@ -171,6 +171,6 @@
    "lag_warn_threshold": 500,
    "lag_crit_threshold": 5000
   },
-  "db_path": "/data/telemetry.db"
+  "db_on_volume": true
  }
 }
