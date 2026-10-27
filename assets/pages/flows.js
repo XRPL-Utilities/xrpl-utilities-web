@@ -71,17 +71,25 @@ let aumChart = null;
 let chainChart = null;
 let currentRange = 30;
 
+// Report a loader's outcome to the stale-data notice (assets/stale-banner.js).
+function markStale(source, good) {
+  if (window.XRStale) good ? window.XRStale.ok(source) : window.XRStale.fail(source);
+}
+
 async function loadCorrelation(days) {
   const url = `${FLOWS_API}/stats/correlation?days=${encodeURIComponent(days)}`;
   let body;
+  // A failed fetch is not "no accrued data yet" (#flows-empty), so it only
+  // raises the stale notice and leaves whatever is on screen.
   try {
     const r = await fetch(url);
-    if (!r.ok) { document.getElementById('flows-empty')?.classList.remove('hidden'); return; }
+    if (!r.ok) { markStale('correlation', false); return; }
     body = await r.json();
   } catch {
-    document.getElementById('flows-empty')?.classList.remove('hidden');
+    markStale('correlation', false);
     return;
   }
+  markStale('correlation', true);
   const series = body.etf_aum_per_ticker_daily || {};
   const totals = body.etf_total_aum_daily || [];
   const chainFlow = body.chain_flow_daily || [];
@@ -223,6 +231,7 @@ async function renderSummaryTiles(series, totals, tracked, euTotals) {
 
   try {
     const r = await fetch(`${FLOWS_API}/stats/etf-aggregate-xrp-held`);
+    markStale('etf-xrp-held', r.ok);
     if (r.ok) {
       const body = await r.json();
       if (elXrp) {
@@ -232,7 +241,9 @@ async function renderSummaryTiles(series, totals, tracked, euTotals) {
           : '-';
       }
     }
-  } catch {}
+  } catch {
+    markStale('etf-xrp-held', false);
+  }
 
   if (elTickers && tracked) {
     elTickers.textContent = String(tracked.length);
@@ -584,8 +595,11 @@ async function loadTrackedEtfsGrid() {
     body = await r.json();
   } catch {
     empty?.classList.remove('hidden');
+    markStale('launch-impact', false);
     return;
   }
+  markStale('launch-impact', true);
+  empty?.classList.add('hidden');
   const launches = body.launches || [];
   if (!launches.length) { empty?.classList.remove('hidden'); return; }
   // Sync the hero-pill count to the live registry length so the
@@ -929,15 +943,20 @@ setInterval(loadTrackedEtfsGrid, 3600 * 1000);
     ]);
     if (!body) {
       if (elCorridors) elCorridors.innerHTML = '<div class="text-muted">Service unreachable.</div>';
+      markStale('cross-border', false);
       return;
     }
+    markStale('cross-border', true);
     setHeadline(body.coverage, currentWindow);
     renderCorridors(body.top_corridors || []);
     renderCoverage(body.coverage);
     if (elCaveat && body.methodology && body.methodology.coverage_caveat) {
       elCaveat.textContent = body.methodology.coverage_caveat;
     }
-    if (features) renderMap(body.per_country || [], body.top_corridors || []);
+    if (features) {
+      document.getElementById('xb-map-unavailable')?.remove();
+      renderMap(body.per_country || [], body.top_corridors || []);
+    }
   }
 
   // Range button wiring (matches the existing flow-range-btn UX)
@@ -957,12 +976,28 @@ setInterval(loadTrackedEtfsGrid, 3600 * 1000);
 
   // Defer first render until d3 + topojson are actually loaded.
   // Both are deferred CDN scripts so they may not be ready when this
-  // IIFE runs; poll briefly then fire.
+  // IIFE runs; poll briefly then fire. If the CDN is blocked they never
+  // arrive, so after MAP_WAIT_MS the corridor list and headline load
+  // anyway (they need no d3) and the map says why it is empty.
+  const MAP_WAIT_MS = 10000;
+  const mapLibsReady = () => typeof d3 !== 'undefined' && typeof topojson !== 'undefined';
+  function start() {
+    refresh(currentWindow);
+    setInterval(() => refresh(currentWindow), 5 * 60 * 1000);
+  }
+  const waitStarted = Date.now();
   const startInterval = setInterval(() => {
-    if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') {
+    if (mapLibsReady()) {
       clearInterval(startInterval);
-      refresh(currentWindow);
-      setInterval(() => refresh(currentWindow), 5 * 60 * 1000);
+      start();
+    } else if (Date.now() - waitStarted > MAP_WAIT_MS) {
+      clearInterval(startInterval);
+      const note = document.createElement('div');
+      note.id = 'xb-map-unavailable';
+      note.className = 'absolute inset-0 flex items-center justify-center text-xs text-muted text-center px-4';
+      note.textContent = 'The map could not load in this browser. The corridor list is still live.';
+      mapEl?.parentElement?.appendChild(note);
+      start();
     }
   }, 200);
 })();

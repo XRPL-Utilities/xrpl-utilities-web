@@ -647,13 +647,19 @@ function renderFlowLog(issuers) {
   }).join('');
 }
 
+// Report a loader's outcome to the stale-data notice (assets/stale-banner.js).
+function markStale(source, good) {
+  if (window.XRStale) good ? window.XRStale.ok(source) : window.XRStale.fail(source);
+}
+
 // Re-call summary so flow log renders too.
 async function loadAll() {
   try {
     const r = await fetch(`${API_BASE}/stats/rwa-summary`);
-    if (!r.ok) return;
+    if (!r.ok) { markStale('rwa-summary', false); return; }
     const body = await r.json();
-    if (!body || body.available === false) return;
+    if (!body || body.available === false) { markStale('rwa-summary', false); return; }
+    markStale('rwa-summary', true);
     _topMoversLastBody = body;
     renderSummary(body);
     applyTopMoversWindow();
@@ -661,7 +667,9 @@ async function loadAll() {
     renderAmmPools(body.amm_pools || []);
     renderFlowLog(body.issuers || []);
     overlayTokenHealth();
-  } catch {}
+  } catch {
+    markStale('rwa-summary', false);
+  }
 }
 
 function escapeHtml(s) {
@@ -681,8 +689,9 @@ setInterval(loadAll, 60000);
 async function loadXls85Totals() {
   try {
     const r = await fetch('https://pulse.xrpl-utilities.io/stats/xls85-totals');
-    if (!r.ok) return;
+    if (!r.ok) { markStale('xls85', false); return; }
     const body = await r.json();
+    markStale('xls85', true);
     const fmt = (n) => (typeof n === 'number') ? n.toLocaleString() : '0';
     const setText = (id, v) => {
       const el = document.getElementById(id);
@@ -742,8 +751,9 @@ async function loadXls85Totals() {
       }
     }
   } catch {
-    // Best-effort. Tile shows '…' on failure rather than '0' so it's
-    // visually distinct from a real zero count.
+    // Tile keeps '…' (or the last good figure) rather than showing '0';
+    // the stale notice says the counter stopped updating.
+    markStale('xls85', false);
   }
 }
 loadXls85Totals();
@@ -778,15 +788,16 @@ async function loadDailyFlow(days) {
     const r = await fetch(url);
     if (!r.ok) {
       console.error('[vault daily-flow] http', r.status);
-      document.getElementById('settlement-empty')?.classList.remove('hidden');
+      markStale('daily-flow', false);
       return;
     }
     body = await r.json();
   } catch (e) {
     console.error('[vault daily-flow] fetch failed:', e);
-    document.getElementById('settlement-empty')?.classList.remove('hidden');
+    markStale('daily-flow', false);
     return;
   }
+  markStale('daily-flow', true);
   const events = body.settlement_events_daily || [];
   const usd = body.usd_pegged_net_flow_daily || [];
   const tracked = body.tracked_issuers || [];

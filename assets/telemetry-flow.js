@@ -14,6 +14,40 @@
 
   const DROPS_PER_XRP = 1_000_000;
 
+  // Every API call gets a deadline. Without one a stalled connection left
+  // the scan spinner up forever. The abort is ours, so api-resilient.js
+  // does not treat it as a blocked network.
+  const DEFAULT_TIMEOUT_MS = 30000;
+  const SCAN_TIMEOUT_MS = 60000;
+  function fetchWithTimeout(url, opts, ms) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms || DEFAULT_TIMEOUT_MS);
+    return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
+      .finally(() => clearTimeout(timer));
+  }
+
+  function isTimeout(e) { return !!e && e.name === 'AbortError'; }
+
+  // Text for a failed response. Never the raw body: a 402 carries the x402
+  // payment envelope, which means nothing to a visitor on the free path.
+  async function failureMessage(r, what) {
+    if (r.status === 402) {
+      // The free preview needs a fresh browser check. Drop the cached token
+      // so the next attempt mints a new one.
+      if (global.PreviewToken && global.PreviewToken._clear) global.PreviewToken._clear();
+      return 'The free preview check did not go through. Reload the page and try again.';
+    }
+    if (r.status === 429) return 'Too many requests right now. Wait a minute and try again.';
+    let detail = '';
+    try {
+      const e = await r.json();
+      if (e && typeof e.detail === 'string') detail = e.detail;
+    } catch (_) { /* non-JSON body */ }
+    if (detail && detail.length <= 300) return detail;
+    if (r.status >= 500) return what + ' is temporarily unavailable (HTTP ' + r.status + '). Try again shortly.';
+    return what + ' failed (HTTP ' + r.status + ').';
+  }
+
   function el(tag, cls, text) {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -801,7 +835,7 @@
     while (Date.now() - start < POLL_TIMEOUT_MS) {
       if (getCancelled()) { restore(); return null; }
       try {
-        const r = await fetch(`${API_BASE}/status/${invoiceId}`);
+        const r = await fetchWithTimeout(`${API_BASE}/status/${invoiceId}`);
         if (r.status === 404) {
           updateStatus(target, 'Invoice not found (may have expired)', 'bad');
           restore();
@@ -812,7 +846,7 @@
           if (status.paid) {
             document.title = '✓ Payment received · XR-Telemetry';
             renderBuilding(target);
-            const rr = await fetch(`${API_BASE}/results/${invoiceId}`);
+            const rr = await fetchWithTimeout(`${API_BASE}/results/${invoiceId}`);
             if (rr.ok) {
               setTimeout(restore, 5000);
               return await rr.json();
@@ -841,19 +875,18 @@
       const previewHeaders = await (global.PreviewToken
         ? global.PreviewToken.authHeaders()
         : Promise.resolve({}));
-      const r = await fetch(`${API_BASE}/quote`, {
+      const r = await fetchWithTimeout(`${API_BASE}/quote`, {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
         body: JSON.stringify({}),
       });
       if (!r.ok) {
-        const err = await r.json().catch(() => ({}));
-        renderError(target, err.detail || `Quote failed (HTTP ${r.status}).`);
+        renderError(target, await failureMessage(r, 'The quote'));
         return null;
       }
       quote = await r.json();
     } catch (e) {
-      renderError(target, 'Network error requesting quote.');
+      renderError(target, isTimeout(e) ? 'The quote request timed out. Try again.' : 'Network error requesting quote.');
       return null;
     }
 
@@ -880,20 +913,20 @@
       const previewHeaders = await (global.PreviewToken
         ? global.PreviewToken.authHeaders()
         : Promise.resolve({}));
-      const r = await fetch(`${API_BASE}/scan`, {
+      const r = await fetchWithTimeout(`${API_BASE}/scan`, {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
         body: JSON.stringify({}),
-      });
+      }, SCAN_TIMEOUT_MS);
       if (!r.ok) {
-        let detail = '';
-        try { const e = await r.json(); detail = e.detail || JSON.stringify(e); } catch (_) {}
-        renderError(target, detail || `Snapshot fetch failed (HTTP ${r.status}).`);
+        renderError(target, await failureMessage(r, 'The snapshot'));
         return null;
       }
       payload = await r.json();
     } catch (e) {
-      renderError(target, 'Network error reaching Telemetry.');
+      renderError(target, isTimeout(e)
+        ? 'The snapshot took too long and was stopped. Try again in a minute.'
+        : 'Network error reaching Telemetry.');
       return null;
     }
     renderResults(target, payload, null);
