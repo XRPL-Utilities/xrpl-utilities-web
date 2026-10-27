@@ -23,7 +23,7 @@
         "name": "XR-Pulse",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any (HTTP API)",
-        "description": "Normalized event feed for XRPL agents: public-source news, on-chain whale activity, and XLS-70/80/81 permissioned-domain + permissioned-DEX lifecycle in one time-ordered stream.",
+        "description": "Normalized XRPL event feed for agents: public-source news, on-chain whale moves, RWA mints and burns and Sentinel signals in one time-ordered stream.",
         "url": "https://xrpl-utilities.com/pulse/",
         "image": "https://xrpl-utilities.com/assets/xr-pulse.png",
         "publisher": {
@@ -213,8 +213,8 @@
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
       <p class="text-xl text-muted">Live <span class="gloss" data-term="xrpl">XRPL</span> signal feed</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        News, on-chain <span class="gloss" data-term="whale-tier">whale</span> activity, and
-        <span class="gloss" data-term="permissioned-domain">permissioned-domain</span> events on
+        News, on-chain <span class="gloss" data-term="whale-tier">whale</span> moves,
+        real-world-asset mints and burns, and Sentinel signals on
         XRPL, combined into one time-ordered feed with the context behind
         each entry. No editorial scoring. No source ranking. No social scraping.
       </p>
@@ -377,7 +377,7 @@
       <p class="mt-2 text-sm text-muted max-w-3xl">
         Ledger-wide counts of every XRPL object type, sampled daily. These are the
         denominators behind adoption claims. They count <em>objects on the ledger</em>,
-        not distinct operators or issuers &mdash; one operator can hold several.
+        not distinct operators or issuers; one operator can hold several.
       </p>
       <div id="primitives-grid" class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"></div>
       <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -427,7 +427,7 @@
             Every successful XRPL Payment over $50k lands as a whale event with both addresses, USD value at ledger close, and labels when either side is a known exchange, market maker, treasury, or bridge.
           </p>
           <p class="text-sm text-muted leading-relaxed mt-3">
-            Real-world-asset mints and burns land as a second stream. Permissioned-domain lifecycle events (XLS-70 / 80 / 81) land as a third. All time-ordered.
+            Real-world-asset mints and burns land as a second stream, all time-ordered. Permissioned-domain activity lives on <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
@@ -713,9 +713,9 @@ feed = resp.json()
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-2 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">events[]</code>: normalized records, newest-first; mixes news + on-chain activity (whale, permissioned-domain lifecycle, focus-watch, relay-burst, RWA obligations, cross-signal choreographies, institutional dispersion) in one stream</li>
+        <li><code class="font-mono text-white">events[]</code>: normalized records, newest-first; mixes news + on-chain activity (whale, focus-watch, relay-burst, RWA obligations, cross-signal choreographies, institutional dispersion) in one stream</li>
         <li><code class="font-mono text-white">title</code>, <code class="font-mono text-white">primary_url</code>, <code class="font-mono text-white">brief</code>, <code class="font-mono text-white">published_at</code> (UNIX seconds)</li>
-        <li><code class="font-mono text-white">source_appearances[]</code>: which feed produced the event. News sources (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>) plus on-chain sources: <code class="font-mono text-white">whale_xrpl</code>, <code class="font-mono text-white">permissioned_domain_lifecycle</code>, <code class="font-mono text-white">focus_watch</code>, <code class="font-mono text-white">relay_burst</code>, <code class="font-mono text-white">rwa_obligations_delta</code>, <code class="font-mono text-white">rwa_issuer_flow</code>, <code class="font-mono text-white">sentinel_signal</code>, <code class="font-mono text-white">choreography_watcher</code>, <code class="font-mono text-white">institutional_dispersion</code></li>
+        <li><code class="font-mono text-white">source_appearances[]</code>: which feed produced the event. News sources (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>) plus on-chain sources: <code class="font-mono text-white">whale_xrpl</code>, <code class="font-mono text-white">focus_watch</code>, <code class="font-mono text-white">relay_burst</code>, <code class="font-mono text-white">rwa_obligations_delta</code>, <code class="font-mono text-white">rwa_issuer_flow</code>, <code class="font-mono text-white">sentinel_signal</code>, <code class="font-mono text-white">choreography_watcher</code>, <code class="font-mono text-white">institutional_dispersion</code></li>
         <li><code class="font-mono text-white">appearance_count</code> + <code class="font-mono text-white">cross_verified</code>: number of independent sources covering the same story; flag set when 2+ within the dedupe window. On-chain events are single-source by design.</li>
         <li><code class="font-mono text-white">correlation</code> (news only): XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim.</li>
         <li><code class="font-mono text-white">active_utility</code>: signal payload, shape varies by source. News carries <code class="font-mono text-white">{active, signals[]}</code>; on-chain rows carry a top-level <code class="font-mono text-white">signal</code> field identifying the kind (e.g. <code class="font-mono text-white">whale_transfer</code>, <code class="font-mono text-white">focus_outflow</code>, <code class="font-mono text-white">relay_burst_detected</code>, <code class="font-mono text-white">rwa_obligations_spike</code>/<code class="font-mono text-white">drop</code>, <code class="font-mono text-white">institutional_choreography_detected</code>, <code class="font-mono text-white">institutional_dispersion_detected</code>) with per-signal fields. Most signal kinds also carry an optional <code class="font-mono text-white">tldr</code> string (server-generated plain-English summary). See <code class="font-mono text-white">/schema</code> for the full per-signal field list.</li>
@@ -909,7 +909,7 @@ feed = resp.json()
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>

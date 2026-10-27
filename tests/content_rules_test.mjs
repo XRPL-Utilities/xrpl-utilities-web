@@ -67,5 +67,53 @@ for (const page of [...pages, ...scripts]) {
     }
   });
 }
+// ---- consistency rules (2026-10-27 audit, item 9) ---------------------------
+const ownScripts = scripts.filter((f) => !f.includes(`${path.sep}vendor${path.sep}`));
+const extra = ['llms.txt', '.well-known/security.txt'].map((f) => path.join(repo, f));
+function fail(msg) { fails++; console.log('FAIL ' + msg); }
+
+// No em dashes in anything served, comments included (house style).
+for (const f of [...pages, ...ownScripts, ...extra]) {
+  fs.readFileSync(f, 'utf8').split('\n').forEach((line, i) => {
+    if (/—|&mdash;|&#8212;/.test(line)) fail(`${path.relative(repo, f)}:${i + 1}: em dash`);
+  });
+}
+
+// One contact address. The contact page said hello@ while security.txt
+// said a proton.me address.
+const CONTACT = 'hello@xrpl-utilities.com';
+for (const f of [...pages, ...ownScripts, ...extra]) {
+  for (const m of fs.readFileSync(f, 'utf8').matchAll(/[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g)) {
+    if (m[0] !== CONTACT) fail(`${path.relative(repo, f)}: email ${m[0]} (use ${CONTACT})`);
+  }
+}
+
+// Same nav on every page: the 404, bulk, status, terms and tip pages had
+// lost Foundation and Lineage.
+const navLinks = (html, re) => { const m = html.match(re); return m ? [...m[0].matchAll(/href="([^"]+)"/g)].map((x) => x[1]).join(' ') : ''; };
+const DESK = /<nav class="hidden md:flex[\s\S]*?<\/nav>/;
+const MOB = /<nav class="flex-1 flex flex-col[\s\S]*?<\/nav>/;
+const NAV = '/start/ /sentinel/ /telemetry/ /pulse/ /trust/ /vault/ /flows/ /lineage/';
+for (const f of pages) {
+  const html = fs.readFileSync(f, 'utf8');
+  if (navLinks(html, DESK) !== NAV) fail(`${path.relative(repo, f)}: desktop nav differs from the standard links`);
+  if (navLinks(html, MOB) !== NAV) fail(`${path.relative(repo, f)}: mobile nav differs from the standard links`);
+  const tm = html.match(/<div>[^\n]*are trademarks of XRPL-Utilities LLC\.<\/div>/);
+  if (!tm || !tm[0].includes('XR-Lineage')) fail(`${path.relative(repo, f)}: footer trademark line omits XR-Lineage`);
+}
+const terms = fs.readFileSync(path.join(repo, 'terms/index.html'), 'utf8');
+if ((terms.match(/XR-Lineage/g) || []).length < 3) fail('terms: XR-Lineage missing from the scope or trademark lists');
+
+// Pulse handed permissioned-domain activity to Trust on 2026-09-06; its
+// page kept advertising it as part of the feed.
+const pulse = fs.readFileSync(path.join(repo, 'pulse/index.html'), 'utf8');
+if (/permissioned_domain_lifecycle|permissioned-domain<\/span> events|Permissioned-domain lifecycle events/.test(pulse)) {
+  fail('pulse: describes permissioned-domain events as part of the Pulse feed (moved to Trust 2026-09-06)');
+}
+
+// The settlement shown on /start/ was paid by our own reference agent.
+const start = fs.readFileSync(path.join(repo, 'start/index.html'), 'utf8');
+if (!start.includes('our reference agent')) fail('start: the live-proof settlement must say it was our reference agent');
+
 console.log(`content rules: ${pages.length} pages + ${scripts.length} scripts, ${BANNED.length} banned patterns + canonical footer`);
 process.exit(fails ? 1 : 0);
