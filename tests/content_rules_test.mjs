@@ -43,6 +43,15 @@ const BANNED = [
   { re: /one of six tools|Six on-chain services/i, why: 'seven tools: six agent-payable APIs plus the free Lineage view' },
   { re: /rwA8orrV[^\n]*(squat|impersonat)|(squat|impersonat)[^\n]*rwA8orrV/i, why: 'rwA8orrV is Franklin Templeton\'s genuine sgBENJI issuer (reversed 2026-10-26)' },
   { re: /payment_requirements_selector\s*=\s*(<[^>]+>)?["']/, why: 'x402-xrpl calls the selector as a function; a string silently returns the unpaid 402' },
+  // Methodology stays off public pages and served JS, comments included
+  // (2026-10-27 audit). Linking to an explorer is fine; naming it as our
+  // data source, or naming nodes, RPC methods, vendors or cadences, is not.
+  { re: /XRPS(can|CAN)('s)?[ -](well-known|labels?|advisory|per-account|holder|verified|attested|labeled|resolution|names)|(via|from) XRPS(can|CAN)\b/, why: 'names the third-party label source (methodology leak)' },
+  { re: /\b(gateway_balances|account_tx|account_lines|account_info|account_objects|book_offers)\b/, why: 'names an XRPL RPC method (methodology leak)' },
+  { re: /\bs[12]\.ripple\.com|xrplcluster|QuickNode|CoinGecko/, why: 'names a node or data vendor (methodology leak)' },
+  { re: /\bis the moat\b|\(moat\)/i, why: 'the curated wallet list is not something to advertise (methodology leak)' },
+  { re: /\bevery \d+ ?(s|sec|secs|seconds|min|mins|minutes)\b/i, why: 'names a polling cadence (methodology leak)' },
+  { re: /twenty million dollars total movement|three or more hops, twenty/, why: 'names an internal detection threshold (methodology leak)' },
 ];
 
 let fails = 0;

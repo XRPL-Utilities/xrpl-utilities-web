@@ -67,7 +67,7 @@
     },
     "obligations-delta": {
       title: "Obligations delta",
-      body: "Change in an issuer's gateway_balances.obligations between two readings. obligations is the on-chain total of an IOU outstanding (everything the issuer has put into circulation minus everything redeemed). Watching the delta catches supply changes from any mechanism: direct Payment mints, OfferCreate fills on the DEX, treasury sweeps, clawbacks. XR-Pulse fires rwa_obligations_spike or rwa_obligations_drop when this delta exceeds 1M native units."
+      body: "Change in an issuer's outstanding supply between two readings. Outstanding supply is the on-chain total of an IOU (everything the issuer has put into circulation minus everything redeemed). Watching the delta catches supply changes from any mechanism: direct Payment mints, OfferCreate fills on the DEX, treasury sweeps, clawbacks. XR-Pulse raises an event when the change is large."
     },
     "did": {
       title: "DID (Decentralized Identifier)",
@@ -111,7 +111,7 @@
     },
     "cross-border": {
       title: "Cross-border settlement",
-      body: "A whale Payment where the sender's and receiver's XRPScan labels both resolve to known jurisdictions in different countries. Captures institutional flow between exchanges, custodians, and issuers; retail wallets are unlabeled and excluded by construction."
+      body: "A whale Payment where the sender's and receiver's public wallet labels both resolve to known jurisdictions in different countries. Captures institutional flow between exchanges, custodians, and issuers; retail wallets are unlabeled and excluded by construction."
     },
     "corridor": {
       title: "Corridor",
@@ -119,11 +119,11 @@
     },
     "labeled-wallet": {
       title: "Labeled-wallet layer",
-      body: "Wallets whose XRPScan well-known label resolves to a known entity (exchange, custodian, issuer). Cross-border classification only counts Payments where BOTH ends are in this layer; unlabeled wallets are invisible to the signal."
+      body: "Wallets whose public label resolves to a known entity (exchange, custodian, issuer). Cross-border classification only counts Payments where BOTH ends are in this layer; unlabeled wallets are invisible to the signal."
     },
     "jurisdiction-map": {
       title: "wallet_jurisdiction map",
-      body: "Operator-curated table mapping XRPScan labels to ISO-3166 countries with a one-line HQ citation each (regulatory filing, official disclosure). 47 labels across 18 countries today. Auditable: every entry has a source, git history shows every change."
+      body: "Operator-curated table mapping public wallet labels to ISO-3166 countries with a one-line HQ citation each (regulatory filing, official disclosure). 47 labels across 18 countries today. Auditable: every entry has a source, git history shows every change."
     },
     "funded-wallets": {
       title: "Funded XRPL wallets",

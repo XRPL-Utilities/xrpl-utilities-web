@@ -818,9 +818,8 @@ recompute();
 // page load, without requiring the user to pay for a snapshot first.
 // /healthz exposes the oracle's last-known-good price (free; CORS-allowed
 // for the .com origin). Falls back silently to the static placeholder if
-// the fetch fails. Re-polled every 60s while the tab is visible to match
-// the backend oracle's TTL so CoinGecko load stays at one fetch / 60s
-// regardless of how many tabs are open.
+// the fetch fails. Re-polled on the backend oracle's cache interval while
+// the tab is visible, so extra tabs never add upstream price lookups.
 function refreshSpot() {
   fetch('https://telemetry.xrpl-utilities.io/healthz')
     .then(r => r.ok ? r.json() : null)

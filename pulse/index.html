@@ -67,7 +67,7 @@
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/assets/api-resilient.js?v=v2"></script>
   <script src="/assets/preview-token.js?v=v1"></script>
-  <script src="/assets/glossary-tooltip.js?v=v2" defer></script>
+  <script src="/assets/glossary-tooltip.js?v=m5" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
   <style>
@@ -255,7 +255,7 @@
           <div class="stat-tile stat-tile-glow p-5">
             <div class="flex items-center justify-between mb-3">
               <h3 class="stat-tile-label">Today (UTC, running) &middot; $1M+</h3>
-              <span id="whale-day-today-dot" class="stat-tile-pulse" title="updates every 60s"></span>
+              <span id="whale-day-today-dot" class="stat-tile-pulse" title="live, refreshes automatically"></span>
             </div>
             <div class="flex items-baseline gap-3">
               <span id="whale-day-today-usd" class="stat-tile-value">--</span>
@@ -328,7 +328,7 @@
           <div class="stat-tile stat-tile-glow p-5 max-w-xl mx-auto">
             <div class="flex items-center justify-between mb-3">
               <h3 class="stat-tile-label">RLUSD outstanding on XRPL</h3>
-              <span id="rlusd-supply-dot" class="stat-tile-pulse" title="updates every 60s"></span>
+              <span id="rlusd-supply-dot" class="stat-tile-pulse" title="live, refreshes automatically"></span>
             </div>
             <div class="flex items-baseline gap-3 flex-wrap">
               <span id="rlusd-supply-value" class="stat-tile-value">--</span>
@@ -346,7 +346,7 @@
           <div class="stat-tile p-5 max-w-xl mx-auto mt-4">
             <div class="flex items-center justify-between mb-3">
               <h3 class="stat-tile-label">RLUSD distribution &middot; mint &rarr; CEX (7d)</h3>
-              <span id="rlusd-dist-dot" class="stat-tile-pulse" title="updates every 5 min"></span>
+              <span id="rlusd-dist-dot" class="stat-tile-pulse" title="refreshes automatically"></span>
             </div>
             <div class="flex items-baseline gap-3 flex-wrap">
               <span id="rlusd-dist-total" class="stat-tile-value">--</span>
@@ -913,7 +913,7 @@ feed = resp.json()
     </div>
   </footer>
 
-  <script src="/assets/pages/pulse.js?v=2"></script>
+  <script src="/assets/pages/pulse.js?v=m5"></script>
   <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

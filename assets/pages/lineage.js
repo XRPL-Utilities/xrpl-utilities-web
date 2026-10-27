@@ -50,17 +50,17 @@ function fmtSetDelta(el, n) {
 // still resolve. Falls back to the API's `label` when no match.
 const SOURCE_WALLET_NOTES = {
   'rMxCKbEDwqr76Q': { display: 'Ripple RLUSD Issuer',  note: 'mint origin · burn destination' },
-  'r9c6A65SmhhZAL': { display: 'RLUSD Distribution',    note: 'XRPScan well-known: RLUSD' },
+  'r9c6A65SmhhZAL': { display: 'RLUSD Distribution',    note: 'RLUSD distribution' },
   'rJqiMb94hyz41S': { display: 'Ripple XRPL MM Hub',   note: 'institutional liquidity' },
-  'rBg2FuZT91C52N': { display: 'Ripple Root Treasury', note: 'XRPScan well-known: Ripple' },
+  'rBg2FuZT91C52N': { display: 'Ripple Root Treasury', note: 'Ripple treasury' },
   'rhzVLsX7yA57th': { display: 'Ripple Treasury (alt)', note: 'supplementary Ripple wallet' },
   'rGpaXxcBQFCkEL': { display: 'RLUSD Redemption / Burn Agent', note: 'multisig · DepositAuth · on-chain inferred' },
 };
 
 // Role-keyed pipeline-card copy. Operator-curated wallets are
 // grouped into role-buckets the API returns; the descriptions
-// below are the publicly-safe role descriptions matching the
-// moat protection on the API side.
+// below are the public role descriptions; the API keeps the
+// wallet-level detail private.
 const PIPELINE_ROLE_CARDS = {
   mm: {
     title: 'Market-maker tier',
@@ -172,7 +172,7 @@ async function loadTopology() {
       <div class="bg-ink border border-border rounded-lg p-3">
         <div class="text-xs font-semibold text-white">Additional CEX / OTC</div>
         <div class="text-[10px] text-muted mt-1">surfaced as detection fires</div>
-        <div class="text-[10px] text-muted mt-1">resolved via XRPScan well-known on miss</div>
+        <div class="text-[10px] text-muted mt-1">named from public labels when known</div>
       </div>`;
     exitsEl.innerHTML = eHtml;
   } catch (e) {
@@ -336,7 +336,7 @@ function renderLargestChain(bursts) {
 
   if (!bursts || bursts.length === 0) {
     if (titleEl) titleEl.textContent = "Today's largest chain";
-    flowEl.innerHTML = '<div class="text-xs text-muted">No chains detected yet. Detection requires three or more hops, twenty million dollars total movement, and at least one labeled anchor wallet.</div>';
+    flowEl.innerHTML = '<div class="text-xs text-muted">No chains detected yet. Detection looks for large, multi-hop payment chains that touch at least one labeled wallet.</div>';
     whenEl.textContent = '';
     totalsEl.innerHTML = '';
     return;
@@ -451,6 +451,6 @@ function renderLargestChain(bursts) {
 loadTopology();
 loadRlusdToday();
 loadCounterparties();
-// Refresh every 5 minutes; underlying data updates on minute cadences.
+// Refresh on a timer so the panels stay current.
 setInterval(loadRlusdToday, 5 * 60 * 1000);
 setInterval(loadCounterparties, 5 * 60 * 1000);

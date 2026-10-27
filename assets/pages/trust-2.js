@@ -283,7 +283,7 @@ function renderTable(target, rows, walkStatus) {
       }
     }
     // Institutional-issuer badge: surfaces when the warmer found one or
-    // more XRPScan-labeled credential issuers on this domain. Cheap
+    // more publicly labeled credential issuers on this domain. Cheap
     // proxy for "domain accepts credentials from N recognized
     // stablecoin issuers / custodians / exchanges".
     const instCount = d.institutional_issuer_count || 0;

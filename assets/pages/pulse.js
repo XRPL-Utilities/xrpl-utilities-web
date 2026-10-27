@@ -923,7 +923,7 @@ const _columns = {
     listId: 'activity-list',
     countId: 'activity-count',
     navId: 'activity-nav',
-    emptyMsg: 'No on-chain activity above the storage floor stored yet. The watcher polls the validated ledger every 60s.',
+    emptyMsg: 'No on-chain activity above the storage floor stored yet. New activity appears as ledgers close.',
   },
 };
 
@@ -1368,7 +1368,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
 // ----------------------------------------------------------------------
 // 24h whale strip. Pulls $1M+ XRPL transfers from the last 24 hours
 // via POST /events/recent (kind=activity, min_whale_usd=1000000) and
-// re-fetches every 60s. Renders one compact row per move with the
+// re-fetches on a timer. Renders one compact row per move with the
 // tier badge, USD value, currency, sender -> receiver. Source is the
 // same paid endpoint agents call; the marketing site reads it free
 // via the preview-token JWT (Turnstile-issued by Cloudflare Pages).
@@ -1717,7 +1717,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
 // RWA SUPPLY TRACKER. Static panel showing current RLUSD obligations
 // (from /stats/rwa-summary, the public free snapshot) plus today's
 // UTC running net change derived from rwa_obligations_delta events
-// (mints add, redemptions subtract). Refreshes every 60s. The whole
+// (mints add, redemptions subtract). Refreshes on a timer. The whole
 // panel is the static counterpart to the live event feed: instead
 // of scrolling past mints in the activity column, this tile counts
 // them up and shows the standing supply at a glance.
@@ -1746,8 +1746,8 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
       const rlusd = (data.issuers || []).find(i => i.logical_label === RLUSD_LABEL);
       if (!rlusd) return;
 
-      // Prefer live_obligations (refreshed every 10 min by the
-      // obligations-delta watcher). Fall back to obligations_raw
+      // Prefer live_obligations (the frequently refreshed live
+      // value). Fall back to obligations_raw
       // (the daily snapshot) on older Pulse builds that don't yet
       // surface the live value.
       const supplyVal = parseFloat(rlusd.live_obligations || rlusd.obligations_raw || '0');
