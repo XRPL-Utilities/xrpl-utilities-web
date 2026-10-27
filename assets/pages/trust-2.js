@@ -277,7 +277,7 @@ function renderTable(target, rows, walkStatus) {
       credCell.appendChild(credLine);
       const selfOnly = (d.accepted_credentials || []).every(c => c.issuer === d.owner_address);
       if (selfOnly) {
-        const loop = el('div', 'text-[10px] uppercase tracking-wider text-muted/70 mt-1', 'self-issued only');
+        const loop = el('div', 'text-[10px] uppercase tracking-wider text-muted mt-1', 'self-issued only');
         loop.title = 'Every accepted credential is issued by the domain owner itself: a closed loop, so the gate admits nobody the operator has not credentialed directly.';
         credCell.appendChild(loop);
       }

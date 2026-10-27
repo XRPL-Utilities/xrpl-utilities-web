@@ -34,6 +34,7 @@
 </head>
 
 <body class="bg-ink text-white font-sans antialiased min-h-screen flex flex-col">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
 
   <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -85,7 +86,7 @@
     </div>
   </div>
 
-  <main class="flex-1">
+  <main id="main" class="flex-1">
 
     <!-- HERO -->
     <section class="border-b border-border">
@@ -129,7 +130,7 @@
               <button data-amt="1"  class="amt-btn border border-border hover:border-accent text-white px-4 py-2 rounded font-mono text-sm transition">1 XRP</button>
               <button data-amt="5"  class="amt-btn border border-border hover:border-accent text-white px-4 py-2 rounded font-mono text-sm transition">5 XRP</button>
               <button data-amt="10" class="amt-btn border border-accent text-accent px-4 py-2 rounded font-mono text-sm transition">10 XRP</button>
-              <input id="amt-custom" type="number" min="0.000001" step="0.000001" placeholder="Custom" class="bg-ink border border-border hover:border-accent text-white px-3 py-2 rounded font-mono text-sm w-32 focus:outline-none focus:border-accent transition" />
+              <input id="amt-custom" type="number" aria-label="Custom tip amount in XRP" min="0.000001" step="0.000001" placeholder="Custom" class="bg-ink border border-border hover:border-accent text-white px-3 py-2 rounded font-mono text-sm w-32 focus:outline-none focus:border-accent transition" />
               <span class="text-xs text-muted self-center">XRP</span>
             </div>
             <p class="text-[11px] text-muted">RLUSD is also accepted at the same address with the same destination tag. Open your wallet, pick RLUSD as the asset, send any amount.</p>
@@ -207,5 +208,6 @@
   <script src="/assets/qr-code.js?v=v1"></script>
   <script src="/assets/pages/tip.js?v=1"></script>
 
+  <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

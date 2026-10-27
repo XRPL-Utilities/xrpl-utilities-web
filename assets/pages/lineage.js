@@ -160,7 +160,7 @@ async function loadTopology() {
     for (const ent of (j.exits && j.exits.entities) || []) {
       const linksHtml = (ent.wallets || []).map(w =>
         `<a href="https://xrpscan.com/account/${escapeHtml(w.address)}" target="_blank" rel="noopener noreferrer" class="font-mono text-[10px] text-muted hover:text-emerald-400 transition">${escapeHtml(truncAddr(w.address))}</a>`
-      ).join('<span class="text-muted/40">, </span>');
+      ).join('<span class="text-muted">, </span>');
       eHtml += `
         <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
           <div class="text-xs font-semibold text-white">${escapeHtml(ent.entity)}</div>

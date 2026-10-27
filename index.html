@@ -148,6 +148,7 @@
   <script src="/assets/stale-banner.js?v=1"></script>
 </head>
 <body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
 
   <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -202,6 +203,8 @@
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
     </div>
   </div>
+
+  <main id="main">
 
   <section class="grid-bg">
     <div class="max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">
@@ -521,6 +524,8 @@ report = resp.json()</pre>
     </div>
   </section>
 
+  </main>
+
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
       <div class="grid gap-10 md:grid-cols-4 mb-10">
@@ -582,5 +587,6 @@ report = resp.json()</pre>
        Telemetry oracle TTL so we don't burn upstream cache budget. -->
   <script src="/assets/pages/home-2.js?v=2"></script>
 
+  <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>
