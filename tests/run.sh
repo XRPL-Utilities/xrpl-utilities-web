@@ -25,6 +25,7 @@ node tests/resilience_test.mjs
 node tests/a11y_test.mjs
 node tests/buyer_path_test.mjs
 node tests/seo_test.mjs
+node tests/images_test.mjs
 node tests/telemetry_null_test.mjs
 python3 tests/python_sample_test.py
 node tests/inline_script_syntax_test.mjs
