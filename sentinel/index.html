@@ -71,6 +71,11 @@
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .hero-logo { width: 112px; height: 112px; }
+    @media (max-width: 767px) { .hero-title { font-size: clamp(1.75rem, 8vw, 2.25rem); white-space: nowrap; } }
+    @media (max-width: 359px) { .hero-logo { width: 88px; height: 88px; } }
+    @media (min-width: 768px) { .hero-logo { width: 144px; height: 144px; } }
+    @media (min-width: 1024px) { .hero-logo { width: 176px; height: 176px; } .hero-title { font-size: 3.75rem; line-height: 1; } .hero-tag { font-size: 1.25rem; } }
     .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
     .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
     .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
@@ -171,13 +176,14 @@
   <main id="main">
 
   <section>
-    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
-      <img src="/assets/img/xr-sentinel-512.webp" width="256" height="256" loading="eager" decoding="async" alt="XR-Sentinel" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
-      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted"><span class="gloss" data-term="xrpl">XRPL</span> Activity Pattern Classifier</p>
-      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        XR-Sentinel reads an XRPL wallet's recent on-ledger behavior and tells you how automated it looks. Quiet human-paced activity, mixed traffic, or the high-frequency pattern of an exchange, market maker, or bot. Behavioral classification, not a risk score.
-      </p>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 pt-10 pb-8">
+      <div class="flex items-center gap-5 sm:gap-6">
+        <img src="/assets/img/xr-sentinel-512.webp" width="176" height="176" loading="eager" decoding="async" alt="XR-Sentinel" class="hero-logo rounded-2xl glow shrink-0" />
+        <div>
+          <h1 class="hero-title text-4xl md:text-5xl font-bold tracking-tight">XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+          <p class="hero-tag text-lg text-muted mt-2">Shows how automated an <span class="gloss" data-term="xrpl">XRPL</span> wallet looks. Behavior, not a risk score.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -281,160 +287,6 @@
       </a>
 
       <div id="result" class="mt-6 hidden" aria-live="polite"></div>
-    </div>
-  </section>
-
-  <!-- WHAT IS WALLET CLASSIFICATION -->
-  <section id="what-is" class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding wallet classification</h2>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What it does</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Sentinel reads a wallet's last 90 days of on-chain activity and tells you what kind of actor it looks like. Bots, retail wallets, exchanges, AMM pools, issuers, and market makers each leave a distinct signature.
-            </p>
-            <p class="text-sm text-muted leading-relaxed mt-3">
-            You get back two separate 0&ndash;100 scores: an activity level (Low / Medium / High / Dormant / Unknown) for how automated the wallet is, and an institutional-posture score for how much institutional sophistication its signals reveal. Plus structured signal flags and a short AI narrative tying it together.
-          </p>
-          <p class="text-sm text-muted leading-relaxed mt-3">
-            The two scores are independent: a busy retail wallet can score high on activity and zero on posture, while a quiet issuer does the reverse. Posture is deterministic and fully traceable, the score is the sum of the institutional-marker signal weights, each shown next to the signal that earned it.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Who reads the output</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Agents pricing OTC trades. Market makers vetting counterparties before quoting. Researchers writing about XRPL flows. Treasuries deciding whether a wallet is shaped like a service they'd integrate with. Anyone who's about to send funds to an address they don't fully recognize and wants 90 seconds of due diligence before clicking send. <span class="text-white">Not</span> compliance officers; see the panel to the right for what this isn't.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What it isn't</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Neither score is a risk score, sanctions screen, AML determination, or credit rating. A "High" activity level usually means an exchange, market maker, or bot, not a warning; a high institutional posture means the wallet is configured like an institution, not that it is safe or unsafe. The full signal catalog is at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a>; consumers set their own thresholds.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="for-agents" class="border-t border-border bg-panel/30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <div class="grid md:grid-cols-2 gap-8 md:gap-12">
-        <div class="min-w-0">
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
-          <h3 class="text-3xl font-bold mb-6">Pay $0.10 per scan, no API key</h3>
-          <p class="text-muted leading-relaxed mb-6">
-            XR-Sentinel implements <strong class="text-white">x402 v2</strong> with the
-            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet and USDC on Base.
-            Verification and settlement are delegated to the
-            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator
-            or the Coinbase facilitator (Base).
-          </p>
-          <ol class="space-y-4 text-sm text-muted">
-            <li class="flex gap-4">
-              <span class="text-accent font-mono font-bold">1.</span>
-              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with three options: RLUSD (flat 0.10), USDC on Base (flat 0.10), or XRP (dynamic, ≈ $0.10 at spot).</span>
-            </li>
-            <li class="flex gap-4">
-              <span class="text-accent font-mono font-bold">2.</span>
-              <span>Sign an XRPL Payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
-            </li>
-            <li class="flex gap-4">
-              <span class="text-accent font-mono font-bold">3.</span>
-              <span>Server verifies, runs the classification, then settles. Returns <code class="font-mono text-white">200</code> with the report and a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
-            </li>
-          </ol>
-          <div class="mt-6 border border-accent/30 bg-accent/5 rounded-xl p-5">
-            <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Free &middot; call this before you pay anyone</div>
-            <p class="text-sm text-muted leading-relaxed">
-              <code class="font-mono text-white">GET /verify-origin?url=</code> answers one question: does this web origin actually control the XRPL account it advertises? In x402 an agent reads a catalog from the same server it is about to pay, and that catalog names the payout address. Nothing in the protocol binds the two.
-            </p>
-            <p class="text-sm text-muted leading-relaxed mt-3">
-              It cross-checks four published bindings: the domain&rsquo;s <code class="font-mono text-white">xrp-ledger.toml</code>, each account&rsquo;s own on-chain Domain field (two-way, because either half alone is one party vouching for itself), the XLS-40 DID and whether it carries a real key or is a placeholder, and whether every payout address in the served catalog is one the domain itself declares. That last check is the one a swapped catalog fails, because an attacker cannot edit the toml without already owning the domain.
-            </p>
-            <p class="text-sm text-muted leading-relaxed mt-3">
-              Pass <code class="font-mono text-white">?address=</code> instead to ask it from the other end: what does this account&rsquo;s claimed identity rest on? That is the only way to test a brand asserted inside MPT metadata, which nothing validates today. A document that cannot be fetched returns <code class="font-mono text-white">unreadable</code>, never a negative finding. Verdicts are <code class="font-mono text-white">verified</code>, <code class="font-mono text-white">partial</code>, <code class="font-mono text-white">unverified</code>, <code class="font-mono text-white">unreadable</code> or <code class="font-mono text-white">mismatch</code>.
-            </p>
-            <p class="text-xs text-muted leading-relaxed mt-3">
-              Verifies published identity bindings only. A verified origin means the domain and the account name each other. It is not an endorsement of the operator, the product, or its solvency.
-            </p>
-          </div>
-          <p class="text-sm text-muted leading-relaxed mt-6">
-            <code class="font-mono text-white">POST /scan/history</code> uses the same x402 flow and price. It returns up to 25 prior recorded scans for an address so agents can read trajectory without scanning the wallet N times themselves. Recording began with schema 2.1.0; older paid scans were not persisted.
-          </p>
-          <div class="mt-8 flex flex-wrap gap-3 text-sm">
-            <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
-            <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Signal schema (JSON) →</a>
-            <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
-          </div>
-          <div class="mt-6">
-            <div class="bg-ink border border-border rounded-lg p-4 max-w-md">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">MCP tools (2 paid, 1 free)</div>
-              <ul class="text-xs text-muted leading-relaxed space-y-1">
-                <li><code class="font-mono text-white">xrpl_sentinel_scan</code> &middot; $0.10</li>
-                <li><code class="font-mono text-white">xrpl_sentinel_scan_history</code> &middot; $0.10</li>
-                <li><code class="font-mono text-white">xrpl_sentinel_verify_origin</code> &middot; free</li>
-              </ul>
-            </div>
-          </div>
-          <p class="text-xs text-muted leading-relaxed mt-4">
-            <span class="text-white">Or skip the integration:</span> call either tool above from an
-            <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client (Claude Desktop etc.) via
-            <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
-            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Same x402 model, just wrapped as MCP arguments.
-          </p>
-        </div>
-        <div class="min-w-0">
-          <div class="bg-ink border border-border rounded-xl p-4 sm:p-6 font-mono text-xs sm:text-sm overflow-x-auto max-w-full">
-            <div class="text-muted mb-3"># pip install x402-xrpl</div>
-            <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
-<span class="text-accent">from</span> xrpl.wallet <span class="text-accent">import</span> Wallet
-
-<span class="text-accent">def</span> pay_in_xrp(accepts, *_):
-    <span class="text-accent">return</span> next(a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
-                <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span> <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>)
-
-session = X402RequestsSession(
-    wallet=Wallet.from_seed(seed),
-    rpc_url=<span class="text-green-400">"https://YOUR_XRPL_RPC"</span>,
-    payment_requirements_selector=pay_in_xrp,
-)
-
-resp = session.post(
-    <span class="text-green-400">"https://sentinel.xrpl-utilities.io/scan"</span>,
-    json={<span class="text-green-400">"address"</span>: <span class="text-green-400">"r..."</span>},
-)
-resp.raise_for_status()  <span class="text-accent"># a 402 here means the payment did not go through</span>
-report = resp.json()
-
-<span class="text-accent">print</span>(report[<span class="text-green-400">"activity_level"</span>])
-<span class="text-accent">print</span>(report[<span class="text-green-400">"signals"</span>])
-<span class="text-accent">print</span>(report[<span class="text-green-400">"reasoning"</span>])</pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="output-shape" class="border-t border-border">
-    <div class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
-      <h3 class="text-3xl font-bold mb-6">What you get back</h3>
-      <ul class="space-y-3 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">activity_score</code>: 0 to 100, scaled to how automated and service-like the wallet behaves</li>
-        <li><code class="font-mono text-white">activity_level</code>: Low / Medium / High / Dormant / Unknown</li>
-        <li><code class="font-mono text-white">institutional_posture</code>: a second, separate score (0 to 100) for how much institutional sophistication the wallet's signals reveal, with a tier (none / minimal / moderate / institutional / core-institutional) and the exact signals that drove it. Deterministic and fully traceable, distinct from the automation score above. Behavioral, not a risk or compliance score.</li>
-        <li><code class="font-mono text-white">confidence</code>: low / medium / high tier based on transaction depth</li>
-        <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog (56 entries today)</li>
-        <li><code class="font-mono text-white">features</code>: tx types, IN/OUT split, currencies, dust counts, offer churn, time span, TrustSet / AMM / NFT op counts, failed-tx ratio, median seconds between txs, per-currency net flows, and (for issuers) live outstanding-IOU obligations under <code class="font-mono text-white">issuer_summary</code></li>
-        <li><code class="font-mono text-white">genesis</code>: account-genesis block; activator address + public label, initial XRP funded, activation timestamp + age, and the multi-hop activator chain (terminates at first labeled venue or 5 hops)</li>
-        <li><code class="font-mono text-white">top_counterparties</code>: top 20 with verified public labels and direction</li>
-        <li><code class="font-mono text-white">reasoning</code>: AI-generated narrative tying the signals to the score</li>
-        <li><code class="font-mono text-white">_delta</code>: present when XR-Sentinel has a recorded prior paid scan for the same address. Carries score change, level change, tx-count change, cadence change, and hours since prior scan, so agents can track wallet trajectory without scanning N times themselves.</li>
-      </ul>
-      <p class="text-xs text-muted mt-6 leading-relaxed">
-        Full field-level details at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
-      </p>
     </div>
   </section>
 
@@ -883,6 +735,186 @@ report = resp.json()
             </dd>
           </div>
         </dl>
+      </details>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <details class="group bg-panel border border-border rounded-2xl">
+        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
+          <span class="text-sm uppercase tracking-widest text-accent font-semibold">How this works</span>
+          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="px-5 sm:px-6 pb-6 space-y-7">
+<div id="what-is">
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding wallet classification</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What it does</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Sentinel reads a wallet's last 90 days of on-chain activity and tells you what kind of actor it looks like. Bots, retail wallets, exchanges, AMM pools, issuers, and market makers each leave a distinct signature.
+            </p>
+            <p class="text-sm text-muted leading-relaxed mt-3">
+            You get back two separate 0&ndash;100 scores: an activity level (Low / Medium / High / Dormant / Unknown) for how automated the wallet is, and an institutional-posture score for how much institutional sophistication its signals reveal. Plus structured signal flags and a short AI narrative tying it together.
+          </p>
+          <p class="text-sm text-muted leading-relaxed mt-3">
+            The two scores are independent: a busy retail wallet can score high on activity and zero on posture, while a quiet issuer does the reverse. Posture is deterministic and fully traceable, the score is the sum of the institutional-marker signal weights, each shown next to the signal that earned it.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Who reads the output</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Agents pricing OTC trades. Market makers vetting counterparties before quoting. Researchers writing about XRPL flows. Treasuries deciding whether a wallet is shaped like a service they'd integrate with. Anyone who's about to send funds to an address they don't fully recognize and wants 90 seconds of due diligence before clicking send. <span class="text-white">Not</span> compliance officers; see the panel to the right for what this isn't.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What it isn't</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Neither score is a risk score, sanctions screen, AML determination, or credit rating. A "High" activity level usually means an exchange, market maker, or bot, not a warning; a high institutional posture means the wallet is configured like an institution, not that it is safe or unsafe. The full signal catalog is at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a>; consumers set their own thresholds.
+          </p>
+        </div>
+      </div>
+</div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section id="developers" class="border-t border-border">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-panel border border-border rounded-2xl p-5 sm:p-6">
+        <div>
+          <div class="text-sm font-semibold text-white">For developers and AI agents</div>
+          <p class="text-sm text-muted mt-1">The same data is available as an API and as MCP tools. Some calls are free; paid calls cost $0.10.</p>
+        </div>
+        <div class="flex flex-wrap gap-3 text-sm shrink-0">
+          <a href="/pricing/" class="bg-accent text-ink font-semibold px-4 py-2 rounded-lg hover:bg-accent-dim transition">Pricing and API</a>
+          <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Sentinel Swagger</a>
+        </div>
+      </div>
+      <details class="group mt-4 bg-panel border border-border rounded-2xl">
+        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
+          <span class="text-sm uppercase tracking-widest text-accent font-semibold">API details</span>
+          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="px-5 sm:px-6 pb-6 space-y-7">
+<div id="for-agents">
+<div class="grid md:grid-cols-2 gap-8 md:gap-12">
+        <div class="min-w-0">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
+          <h3 class="text-3xl font-bold mb-6">Pay $0.10 per scan, no API key</h3>
+          <p class="text-muted leading-relaxed mb-6">
+            XR-Sentinel implements <strong class="text-white">x402 v2</strong> with the
+            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet and USDC on Base.
+            Verification and settlement are delegated to the
+            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator
+            or the Coinbase facilitator (Base).
+          </p>
+          <ol class="space-y-4 text-sm text-muted">
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">1.</span>
+              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with three options: RLUSD (flat 0.10), USDC on Base (flat 0.10), or XRP (dynamic, ≈ $0.10 at spot).</span>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">2.</span>
+              <span>Sign an XRPL Payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent font-mono font-bold">3.</span>
+              <span>Server verifies, runs the classification, then settles. Returns <code class="font-mono text-white">200</code> with the report and a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
+            </li>
+          </ol>
+          <div class="mt-6 border border-accent/30 bg-accent/5 rounded-xl p-5">
+            <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Free &middot; call this before you pay anyone</div>
+            <p class="text-sm text-muted leading-relaxed">
+              <code class="font-mono text-white">GET /verify-origin?url=</code> answers one question: does this web origin actually control the XRPL account it advertises? In x402 an agent reads a catalog from the same server it is about to pay, and that catalog names the payout address. Nothing in the protocol binds the two.
+            </p>
+            <p class="text-sm text-muted leading-relaxed mt-3">
+              It cross-checks four published bindings: the domain&rsquo;s <code class="font-mono text-white">xrp-ledger.toml</code>, each account&rsquo;s own on-chain Domain field (two-way, because either half alone is one party vouching for itself), the XLS-40 DID and whether it carries a real key or is a placeholder, and whether every payout address in the served catalog is one the domain itself declares. That last check is the one a swapped catalog fails, because an attacker cannot edit the toml without already owning the domain.
+            </p>
+            <p class="text-sm text-muted leading-relaxed mt-3">
+              Pass <code class="font-mono text-white">?address=</code> instead to ask it from the other end: what does this account&rsquo;s claimed identity rest on? That is the only way to test a brand asserted inside MPT metadata, which nothing validates today. A document that cannot be fetched returns <code class="font-mono text-white">unreadable</code>, never a negative finding. Verdicts are <code class="font-mono text-white">verified</code>, <code class="font-mono text-white">partial</code>, <code class="font-mono text-white">unverified</code>, <code class="font-mono text-white">unreadable</code> or <code class="font-mono text-white">mismatch</code>.
+            </p>
+            <p class="text-xs text-muted leading-relaxed mt-3">
+              Verifies published identity bindings only. A verified origin means the domain and the account name each other. It is not an endorsement of the operator, the product, or its solvency.
+            </p>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mt-6">
+            <code class="font-mono text-white">POST /scan/history</code> uses the same x402 flow and price. It returns up to 25 prior recorded scans for an address so agents can read trajectory without scanning the wallet N times themselves. Recording began with schema 2.1.0; older paid scans were not persisted.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3 text-sm">
+            <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
+            <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Signal schema (JSON) →</a>
+            <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
+          </div>
+          <div class="mt-6">
+            <div class="bg-ink border border-border rounded-lg p-4 max-w-md">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">MCP tools (2 paid, 1 free)</div>
+              <ul class="text-xs text-muted leading-relaxed space-y-1">
+                <li><code class="font-mono text-white">xrpl_sentinel_scan</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_sentinel_scan_history</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_sentinel_verify_origin</code> &middot; free</li>
+              </ul>
+            </div>
+          </div>
+          <p class="text-xs text-muted leading-relaxed mt-4">
+            <span class="text-white">Or skip the integration:</span> call either tool above from an
+            <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client (Claude Desktop etc.) via
+            <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
+            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Same x402 model, just wrapped as MCP arguments.
+          </p>
+        </div>
+        <div class="min-w-0">
+          <div class="bg-ink border border-border rounded-xl p-4 sm:p-6 font-mono text-xs sm:text-sm overflow-x-auto max-w-full">
+            <div class="text-muted mb-3"># pip install x402-xrpl</div>
+            <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
+<span class="text-accent">from</span> xrpl.wallet <span class="text-accent">import</span> Wallet
+
+<span class="text-accent">def</span> pay_in_xrp(accepts, *_):
+    <span class="text-accent">return</span> next(a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
+                <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span> <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>)
+
+session = X402RequestsSession(
+    wallet=Wallet.from_seed(seed),
+    rpc_url=<span class="text-green-400">"https://YOUR_XRPL_RPC"</span>,
+    payment_requirements_selector=pay_in_xrp,
+)
+
+resp = session.post(
+    <span class="text-green-400">"https://sentinel.xrpl-utilities.io/scan"</span>,
+    json={<span class="text-green-400">"address"</span>: <span class="text-green-400">"r..."</span>},
+)
+resp.raise_for_status()  <span class="text-accent"># a 402 here means the payment did not go through</span>
+report = resp.json()
+
+<span class="text-accent">print</span>(report[<span class="text-green-400">"activity_level"</span>])
+<span class="text-accent">print</span>(report[<span class="text-green-400">"signals"</span>])
+<span class="text-accent">print</span>(report[<span class="text-green-400">"reasoning"</span>])</pre>
+          </div>
+        </div>
+      </div>
+</div>
+<div id="output-shape">
+<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
+      <h3 class="text-3xl font-bold mb-6">What you get back</h3>
+      <ul class="space-y-3 text-muted leading-relaxed">
+        <li><code class="font-mono text-white">activity_score</code>: 0 to 100, scaled to how automated and service-like the wallet behaves</li>
+        <li><code class="font-mono text-white">activity_level</code>: Low / Medium / High / Dormant / Unknown</li>
+        <li><code class="font-mono text-white">institutional_posture</code>: a second, separate score (0 to 100) for how much institutional sophistication the wallet's signals reveal, with a tier (none / minimal / moderate / institutional / core-institutional) and the exact signals that drove it. Deterministic and fully traceable, distinct from the automation score above. Behavioral, not a risk or compliance score.</li>
+        <li><code class="font-mono text-white">confidence</code>: low / medium / high tier based on transaction depth</li>
+        <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog (56 entries today)</li>
+        <li><code class="font-mono text-white">features</code>: tx types, IN/OUT split, currencies, dust counts, offer churn, time span, TrustSet / AMM / NFT op counts, failed-tx ratio, median seconds between txs, per-currency net flows, and (for issuers) live outstanding-IOU obligations under <code class="font-mono text-white">issuer_summary</code></li>
+        <li><code class="font-mono text-white">genesis</code>: account-genesis block; activator address + public label, initial XRP funded, activation timestamp + age, and the multi-hop activator chain (terminates at first labeled venue or 5 hops)</li>
+        <li><code class="font-mono text-white">top_counterparties</code>: top 20 with verified public labels and direction</li>
+        <li><code class="font-mono text-white">reasoning</code>: AI-generated narrative tying the signals to the score</li>
+        <li><code class="font-mono text-white">_delta</code>: present when XR-Sentinel has a recorded prior paid scan for the same address. Carries score change, level change, tx-count change, cadence change, and hours since prior scan, so agents can track wallet trajectory without scanning N times themselves.</li>
+      </ul>
+      <p class="text-xs text-muted mt-6 leading-relaxed">
+        Full field-level details at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
+      </p>
+</div>
+        </div>
       </details>
     </div>
   </section>

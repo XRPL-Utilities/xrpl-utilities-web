@@ -75,6 +75,8 @@
     body { min-width: 0; }
     .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
     .hero-logo { width: 112px; height: 112px; }
+    @media (max-width: 767px) { .hero-title { font-size: clamp(1.75rem, 8vw, 2.25rem); white-space: nowrap; } }
+    @media (max-width: 359px) { .hero-logo { width: 88px; height: 88px; } }
     @media (min-width: 768px) { .hero-logo { width: 144px; height: 144px; } }
     @media (min-width: 1024px) { .hero-logo { width: 176px; height: 176px; } .hero-title { font-size: 3.75rem; line-height: 1; } .hero-tag { font-size: 1.25rem; } }
     .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
