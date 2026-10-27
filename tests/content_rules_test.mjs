@@ -11,12 +11,22 @@ const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pages = [];
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name.startsWith('.') || e.name === 'node_modules') continue;
+    if (e.name.startsWith('.') || e.name === 'node_modules' || e.name === 'tools') continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p);
     else if (e.name.endsWith('.html')) pages.push(p);
   }
 })(repo);
+// Page copy that JS renders lives in assets/ since the scripts moved out of the
+// HTML (2026-10-27), so the banned patterns cover those files too.
+const scripts = [];
+(function walk(dir) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) walk(p);
+    else if (e.name.endsWith('.js')) scripts.push(p);
+  }
+})(path.join(repo, 'assets'));
 
 // One disclaimer, everywhere. 2026-10-26: footers had drifted into five
 // variants, two of which said "deterministic data only" while XR-Sentinel
@@ -36,10 +46,10 @@ const BANNED = [
 ];
 
 let fails = 0;
-for (const page of pages) {
+for (const page of [...pages, ...scripts]) {
   const rel = path.relative(repo, page);
   const html = fs.readFileSync(page, 'utf8');
-  if (/Independent project not affiliated/.test(html) && !html.includes(FOOTER)) {
+  if (page.endsWith('.html') && /Independent project not affiliated/.test(html) && !html.includes(FOOTER)) {
     fails++; console.log(`FAIL ${rel}: footer disclaimer differs from the canonical sentence`);
   }
   html.split('\n').forEach((line, i) => {
@@ -48,5 +58,5 @@ for (const page of pages) {
     }
   });
 }
-console.log(`content rules: ${pages.length} pages, ${BANNED.length} banned patterns + canonical footer`);
+console.log(`content rules: ${pages.length} pages + ${scripts.length} scripts, ${BANNED.length} banned patterns + canonical footer`);
 process.exit(fails ? 1 : 0);

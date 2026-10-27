@@ -16,3 +16,6 @@ node_modules/
 TODO.md
 NEXT_SESSION.md
 tests/qr_rendered.json
+
+# Tailwind build tooling
+tools/tailwind/node_modules/

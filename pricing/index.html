@@ -48,27 +48,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            ink: '#0a0a0a',
-            panel: '#111111',
-            border: '#262626',
-            muted: '#a3a3a3',
-            accent: '#00b8ff',
-            'accent-dim': '#0091cc',
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-        },
-      },
-    };
-  </script>
+  <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
@@ -507,20 +487,6 @@ r = resp.json()</pre>
     </div>
   </footer>
 
-  <script>
-    const navOpen = document.getElementById("nav-open");
-    const navClose = document.getElementById("nav-close");
-    const mobileNav = document.getElementById("mobile-nav");
-    if (navOpen && navClose && mobileNav) {
-      navOpen.addEventListener("click", () => {
-        mobileNav.style.display = "flex";
-        navOpen.setAttribute("aria-expanded", "true");
-      });
-      navClose.addEventListener("click", () => {
-        mobileNav.style.display = "none";
-        navOpen.setAttribute("aria-expanded", "false");
-      });
-    }
-  </script>
+  <script src="/assets/pages/pricing.js?v=1"></script>
 </body>
 </html>
