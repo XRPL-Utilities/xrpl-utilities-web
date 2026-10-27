@@ -19,15 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: {
-        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc' },
-        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
-      }},
-    };
-  </script>
+  <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
@@ -327,36 +319,7 @@
     </div>
   </footer>
 
-  <script>
-    // Mobile nav overlay. Opens on hamburger, closes on Escape, link tap,
-     // close-X tap, OR resize past the md breakpoint (so a desktop user who
-     // shrinks then grows their window doesn't end up with a stuck overlay).
-    (function setupMobileNav() {
-      const openBtn  = document.getElementById('nav-open');
-      const closeBtn = document.getElementById('nav-close');
-      const overlay  = document.getElementById('mobile-nav');
-      if (!openBtn || !closeBtn || !overlay) return;
-      const open  = () => {
-        overlay.style.display = 'flex';
-        openBtn.setAttribute('aria-expanded', 'true');
-        document.body.style.overflow = 'hidden';
-      };
-      const close = () => {
-        overlay.style.display = 'none';
-        openBtn.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
-      };
-      openBtn.addEventListener('click', open);
-      closeBtn.addEventListener('click', close);
-      overlay.querySelectorAll('a[href]').forEach(a => a.addEventListener('click', close));
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.style.display !== 'none') close();
-      });
-      window.addEventListener('resize', () => {
-        if (window.innerWidth >= 768) close();
-      });
-    })();
-  </script>
+  <script src="/assets/pages/terms.js?v=1"></script>
 
 </body>
 </html>

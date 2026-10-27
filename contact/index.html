@@ -19,16 +19,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: {
-        colors: { ink: '#0a0a0a', panel: '#111111', border: '#262626', muted: '#a3a3a3', accent: '#00b8ff', 'accent-dim': '#0091cc', good: '#22c55e' },
-        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] },
-      }},
-    };
-  </script>
+  <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
@@ -149,7 +141,7 @@
             class="w-full bg-ink border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent transition resize-y"></textarea>
         </div>
 
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADD5FJFZmiQt3CM3" data-size="invisible" data-theme="dark"></div>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADD5FJFZmiQt3CM3" data-theme="dark"></div>
 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p class="text-xs text-muted">We typically reply within two business days. Spam-protected via Cloudflare Turnstile.</p>
@@ -188,74 +180,7 @@
     </div>
   </section>
 
-  <script>
-    // Mobile nav overlay. Opens on hamburger, closes on Escape, link tap,
-     // close-X tap, OR resize past the md breakpoint (so a desktop user who
-     // shrinks then grows their window doesn't end up with a stuck overlay).
-    (function setupMobileNav() {
-      const openBtn  = document.getElementById('nav-open');
-      const closeBtn = document.getElementById('nav-close');
-      const overlay  = document.getElementById('mobile-nav');
-      if (!openBtn || !closeBtn || !overlay) return;
-      const open  = () => {
-        overlay.style.display = 'flex';
-        openBtn.setAttribute('aria-expanded', 'true');
-        document.body.style.overflow = 'hidden';
-      };
-      const close = () => {
-        overlay.style.display = 'none';
-        openBtn.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
-      };
-      openBtn.addEventListener('click', open);
-      closeBtn.addEventListener('click', close);
-      overlay.querySelectorAll('a[href]').forEach(a => a.addEventListener('click', close));
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.style.display !== 'none') close();
-      });
-      window.addEventListener('resize', () => {
-        if (window.innerWidth >= 768) close();
-      });
-    })();
-
-    const form = document.getElementById('contact-form');
-    const status = document.getElementById('contact-status');
-    const submitBtn = document.getElementById('contact-submit');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending…';
-      status.classList.add('hidden');
-
-      const formData = new FormData(form);
-      const payload = Object.fromEntries(formData.entries());
-
-      try {
-        const res = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json().catch(() => ({}));
-        if (res.ok && data.success) {
-          status.textContent = 'Thanks! Your message is on its way. We typically reply within two business days.';
-          status.className = 'text-sm text-good';
-          form.reset();
-        } else {
-          status.textContent = data.message || 'Submission failed. Please try again, or email hello@xrpl-utilities.com directly.';
-          status.className = 'text-sm text-red-400';
-        }
-      } catch (err) {
-        status.textContent = 'Network error. Please try again, or email hello@xrpl-utilities.com directly.';
-        status.className = 'text-sm text-red-400';
-      } finally {
-        status.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send message';
-      }
-    });
-  </script>
+  <script src="/assets/pages/contact.js?v=1"></script>
 
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">

@@ -17,14 +17,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// The directory client ships as an external file (no inline scripts under the
+// CSP), so load it directly and check the page still references it.
 const html = fs.readFileSync(path.join(repo, 'trust/index.html'), 'utf8');
-
-// Pull the directory client out of the page rather than pinning line numbers.
-const marker = html.indexOf('<!-- Trust directory + stats client -->');
-if (marker === -1) throw new Error('trust directory client block not found');
-const open = html.indexOf('<script>', marker);
-const close = html.indexOf('</script>', open);
-const src = html.slice(open + '<script>'.length, close);
+if (!html.includes('src="/assets/pages/trust-2.js')) throw new Error('trust page no longer loads assets/pages/trust-2.js');
+const src = fs.readFileSync(path.join(repo, 'assets/pages/trust-2.js'), 'utf8');
 
 function fakeEl() {
   return {
