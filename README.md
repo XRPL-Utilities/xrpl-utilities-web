@@ -93,17 +93,17 @@ asset bundle.
 Each `.com` service page reads from a sibling FastAPI service that also
 serves the agent-facing API:
 
-- `XR-Sentinel` — wallet activity-pattern classifier (`sentinel.xrpl-utilities.io`)
-- `XR-Telemetry` (repo: `XRPL-Utilities-XR-Telemetry`) — macro telemetry +
+- `XR-Sentinel`: wallet activity-pattern classifier (`sentinel.xrpl-utilities.io`)
+- `XR-Telemetry` (repo: `XRPL-Utilities-XR-Telemetry`): macro telemetry +
   Active Float + Burst Math (`telemetry.xrpl-utilities.io`)
-- `XR-Pulse` — normalized signal feed + WebSocket streaming
+- `XR-Pulse`: normalized signal feed + WebSocket streaming
   (`pulse.xrpl-utilities.io`)
-- `XR-Trust` — permissioned-domain directory + XLS-80/81/40 explorer
+- `XR-Trust`: permissioned-domain directory + XLS-80/81/40 explorer
   (`trust.xrpl-utilities.io`)
-- `XR-Vault` — real-world asset tracker (`vault.xrpl-utilities.io`)
-- `XR-Flows` — ETF AUM vs XRPL exchange-flow correlation
+- `XR-Vault`: real-world asset tracker (`vault.xrpl-utilities.io`)
+- `XR-Flows`: ETF AUM vs XRPL exchange-flow correlation
   (`flows.xrpl-utilities.io`)
-- `xrpl-utilities-mcp` — Model Context Protocol server exposing all six
+- `xrpl-utilities-mcp`: Model Context Protocol server exposing all six
   services as MCP tools (`mcp.xrpl-utilities.io`, also published to npm
   as `@xrpl-utilities/mcp`)
 

@@ -898,7 +898,7 @@ async function loadOperators() {
       pairs.sort((a, b) => parseFloat(b.pays_value || 0) - parseFloat(a.pays_value || 0));
       const top = pairs[0];
       const volRow = top
-        ? ('<div class="text-[11px] text-muted mt-2"><span class="text-white font-mono">' + fmtAmountShort(top.gets_value, top.gets_currency) + '</span> &rarr; <span class="text-white font-mono">' + fmtAmountShort(top.pays_value, top.pays_currency) + '</span><span class="text-muted"> &middot; ' + (top.consumed_offers_count || 0) + ' offers filled</span>' + (pairs.length > 1 ? '<span class="text-muted"> &middot; +' + (pairs.length - 1) + ' more pair' + (pairs.length === 2 ? '' : 's') + '</span>' : '') + '</div>')
+        ? ('<div class="text-[11px] text-muted mt-2"><span class="text-white font-mono">' + fmtAmountShort(top.gets_value, top.gets_currency) + '</span> &rarr; <span class="text-white font-mono">' + fmtAmountShort(top.pays_value, top.pays_currency) + '</span><span class="text-muted"> &middot; ' + escapeHtml(top.consumed_offers_count || 0) + ' offers filled</span>' + (pairs.length > 1 ? '<span class="text-muted"> &middot; +' + escapeHtml(pairs.length - 1) + ' more pair' + (pairs.length === 2 ? '' : 's') + '</span>' : '') + '</div>')
         : '';
       const xrpscan = 'https://xrpscan.com/account/' + encodeURIComponent(addr);
       // Everything below goes through innerHTML, and identity_org_name /
@@ -917,10 +917,10 @@ async function loadOperators() {
             '<div class="flex items-center gap-2 shrink-0">' + jurBadge + '</div>' +
           '</div>' +
           '<div class="grid grid-cols-4 gap-2 mt-3 text-[11px]">' +
-            '<div><div class="text-muted uppercase tracking-wider mb-0.5">Domains</div><div class="font-mono text-white">' + (o.domain_count || 0) + '</div></div>' +
-            '<div><div class="text-muted uppercase tracking-wider mb-0.5">Offers 24h</div><div class="font-mono text-white">' + (o.permissioned_offers_24h || 0) + '</div></div>' +
-            '<div><div class="text-muted uppercase tracking-wider mb-0.5">Traders 24h</div><div class="font-mono text-white">' + (o.unique_traders_24h || 0) + '</div></div>' +
-            '<div><div class="text-muted uppercase tracking-wider mb-0.5">AMM 24h</div><div class="font-mono text-white">' + (o.amm_events_24h || 0) + '</div></div>' +
+            '<div><div class="text-muted uppercase tracking-wider mb-0.5">Domains</div><div class="font-mono text-white">' + escapeHtml(o.domain_count || 0) + '</div></div>' +
+            '<div><div class="text-muted uppercase tracking-wider mb-0.5">Offers 24h</div><div class="font-mono text-white">' + escapeHtml(o.permissioned_offers_24h || 0) + '</div></div>' +
+            '<div><div class="text-muted uppercase tracking-wider mb-0.5">Traders 24h</div><div class="font-mono text-white">' + escapeHtml(o.unique_traders_24h || 0) + '</div></div>' +
+            '<div><div class="text-muted uppercase tracking-wider mb-0.5">AMM 24h</div><div class="font-mono text-white">' + escapeHtml(o.amm_events_24h || 0) + '</div></div>' +
           '</div>' +
           volRow +
         '</a>'
@@ -954,7 +954,7 @@ async function loadJurisdictions() {
       grid.innerHTML = tracked.map(b => {
         const iso = b.jurisdiction;
         const name = JURISDICTION_NAMES[iso] || iso;
-        return '<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-ink text-sm"><span class="font-mono text-[11px] text-muted">' + escapeHtml(iso) + '</span><span class="text-white">' + escapeHtml(name) + '</span><span class="text-xs text-muted">&middot; ' + b.count + ' entit' + (b.count === 1 ? 'y' : 'ies') + '</span></span>';
+        return '<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-ink text-sm"><span class="font-mono text-[11px] text-muted">' + escapeHtml(iso) + '</span><span class="text-white">' + escapeHtml(name) + '</span><span class="text-xs text-muted">&middot; ' + escapeHtml(b.count) + ' entit' + (b.count === 1 ? 'y' : 'ies') + '</span></span>';
       }).join('');
     }
     const unat = data.unattributed || {};
@@ -1004,7 +1004,7 @@ async function loadEcosystemUsage() {
     win.textContent = 'window: ' + (body.window_days || 30) + 'd';
     narr.textContent = body.narrative || '';
   } catch (e) {
-    grid.innerHTML = '<div class="text-xs text-muted col-span-2 sm:col-span-4">Could not load usage data (' + (e && e.message ? e.message : 'fetch error') + ').</div>';
+    grid.innerHTML = '<div class="text-xs text-muted col-span-2 sm:col-span-4">Could not load usage data (' + escapeHtml(e && e.message ? e.message : 'fetch error') + ').</div>';
     narr.textContent = '';
   }
 }
@@ -1044,7 +1044,7 @@ async function loadEcosystemUsage() {
   function row(e) {
     const meta = CAT[e.category] || { c: '#94a3b8', t: e.category };
     const badge = e.count > 1
-      ? '<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-ink border border-border text-muted">x' + e.count + '</span>'
+      ? '<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-ink border border-border text-muted">x' + esc(e.count) + '</span>'
       : '';
     return '<div class="bg-ink border border-border rounded-lg px-4 py-3">' +
       '<div class="flex items-start justify-between gap-3 flex-wrap">' +

@@ -8,11 +8,14 @@
   Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js https://challenges.cloudflare.com https://static.cloudflareinsights.com; script-src-elem 'self' https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js https://challenges.cloudflare.com https://static.cloudflareinsights.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://telemetry.xrpl-utilities.io; connect-src 'self' https://xrpl-utilities.com https://www.xrpl-utilities.com https://sentinel.xrpl-utilities.io https://telemetry.xrpl-utilities.io https://pulse.xrpl-utilities.io wss://pulse.xrpl-utilities.io https://trust.xrpl-utilities.io https://vault.xrpl-utilities.io https://flows.xrpl-utilities.io https://api.web3forms.com https://api.xrpscan.com https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json https://challenges.cloudflare.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://ethereum-rpc.publicnode.com; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
   Cache-Control: public, max-age=300, must-revalidate
 
-/assets/*.png
-  Cache-Control: public, max-age=31536000, immutable
+/assets/*
+  ! Cache-Control
+  Cache-Control: public, max-age=86400
 
 /assets/*.js
+  ! Cache-Control
   Cache-Control: public, max-age=300, must-revalidate
 
-/assets/*
-  Cache-Control: public, max-age=3600
+/assets/*.css
+  ! Cache-Control
+  Cache-Control: public, max-age=300, must-revalidate

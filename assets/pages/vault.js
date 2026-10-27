@@ -90,14 +90,14 @@ function renderIssuerActivityChips(i) {
   const chips = [];
   if (escCount) {
     const pct = esc.pct_of_net_circulating;
-    const pctText = (pct !== null && pct !== undefined) ? ` · ${pct}% of supply` : '';
-    chips.push(`<span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded border border-amber-500/40 text-amber-300 whitespace-nowrap" title="EscrowCreate/Finish/Cancel on this token in the last 24h${pctText}">${escCount} escrow${escCount === 1 ? '' : 's'}${pctText}</span>`);
+    const pctText = (pct !== null && pct !== undefined) ? ` · ${escapeHtml(pct)}% of supply` : '';
+    chips.push(`<span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded border border-amber-500/40 text-amber-300 whitespace-nowrap" title="EscrowCreate/Finish/Cancel on this token in the last 24h${pctText}">${escapeHtml(escCount)} escrow${escCount === 1 ? '' : 's'}${pctText}</span>`);
   }
   if (dvp) {
-    chips.push(`<span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded border border-accent/40 text-accent whitespace-nowrap" title="DvP candidates: shared Condition + reciprocal direction within 1h. Candidate not confirmed.">${dvp} DvP candidate${dvp === 1 ? '' : 's'}</span>`);
+    chips.push(`<span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded border border-accent/40 text-accent whitespace-nowrap" title="DvP candidates: shared Condition + reciprocal direction within 1h. Candidate not confirmed.">${escapeHtml(dvp)} DvP candidate${dvp === 1 ? '' : 's'}</span>`);
   }
   if (dfTx) {
-    chips.push(`<span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded border border-red-500/50 text-red-300 whitespace-nowrap" title="TrustSet with tfSetDeepFreeze fired by this issuer in the last 24h. Deep-freeze blocks both send and receive.">${dfHolders} deep-frozen holder${dfHolders === 1 ? '' : 's'}</span>`);
+    chips.push(`<span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded border border-red-500/50 text-red-300 whitespace-nowrap" title="TrustSet with tfSetDeepFreeze fired by this issuer in the last 24h. Deep-freeze blocks both send and receive.">${escapeHtml(dfHolders)} deep-frozen holder${dfHolders === 1 ? '' : 's'}</span>`);
   }
   return `<div class="flex flex-wrap gap-1.5 mt-3">${chips.join('')}</div>`;
 }
@@ -250,9 +250,9 @@ function renderTopMovers(movers, windowKey) {
         <div class="min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="font-semibold text-white truncate">${escapeHtml(m.logical_label || m.label || '')}</span>
-            <span class="class-${cls} text-[10px] px-2 py-0.5 rounded border uppercase tracking-wider">${escapeHtml(fmtAssetClass(cls))}</span>
+            <span class="class-${escapeHtml(cls)} text-[10px] px-2 py-0.5 rounded border uppercase tracking-wider">${escapeHtml(fmtAssetClass(cls))}</span>
           </div>
-          <div class="text-[11px] text-muted mt-0.5">${labelText}</div>
+          <div class="text-[11px] text-muted mt-0.5">${escapeHtml(labelText)}</div>
         </div>
         <div class="text-right shrink-0">
           <div class="text-2xl font-bold font-mono ${deltaClass(net)}">${escapeHtml(deltaSign(net) + fmtNumber(net))}</div>
@@ -348,7 +348,7 @@ function renderIssuerTiles(issuers) {
           <div class="flex items-center gap-1 flex-shrink-0">
             ${fcBadge}
             ${mptBadge}
-            <span class="status-${status} text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(status === 'rails_only' ? 'rails' : status)}</span>
+            <span class="status-${escapeHtml(status)} text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(status === 'rails_only' ? 'rails' : status)}</span>
           </div>
         </div>
         <div class="flex items-baseline gap-2 mb-1">
@@ -367,7 +367,7 @@ function renderIssuerTiles(issuers) {
           </div>
           <div>
             <div class="text-muted uppercase tracking-wider mb-0.5">Class</div>
-            <div><span class="class-${cls} text-[9px] px-1.5 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(fmtAssetClass(cls))}</span></div>
+            <div><span class="class-${escapeHtml(cls)} text-[9px] px-1.5 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(fmtAssetClass(cls))}</span></div>
           </div>
         </div>
         ${renderIssuerActivityChips(i)}
@@ -405,11 +405,11 @@ async function overlayTokenHealth() {
       const dots = Object.entries(_HEALTH_LABELS).map(([dim, label]) => {
         const d = h[dim] || {};
         const color = _HEALTH_COLORS[d.rating] || 'bg-zinc-600';
-        return `<span class="inline-flex items-center gap-1 text-[9px] text-muted" title="${label}: ${d.score}/10 (${d.rating})"><span class="inline-block w-1.5 h-1.5 rounded-full ${color}"></span>${label}</span>`;
+        return `<span class="inline-flex items-center gap-1 text-[9px] text-muted" title="${escapeHtml(label)}: ${escapeHtml(d.score)}/10 (${escapeHtml(d.rating)})"><span class="inline-block w-1.5 h-1.5 rounded-full ${color}"></span>${escapeHtml(label)}</span>`;
       }).join('');
       const totalColor = _HEALTH_COLORS[h.overall_rating] || 'bg-zinc-600';
       const badge = `<div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border">`
-        + `<span class="inline-flex items-center gap-1 text-[10px] font-semibold text-white" title="Health score ${h.total}/50"><span class="inline-block w-2 h-2 rounded-full ${totalColor}"></span>${h.total}/50</span>`
+        + `<span class="inline-flex items-center gap-1 text-[10px] font-semibold text-white" title="Health score ${escapeHtml(h.total)}/50"><span class="inline-block w-2 h-2 rounded-full ${totalColor}"></span>${escapeHtml(h.total)}/50</span>`
         + dots + `</div>`;
       const caveatEl = tile.querySelector('.border-t.border-border.pt-3');
       if (caveatEl) {
@@ -476,7 +476,7 @@ function candidateTile(c) {
   if (c.allow_clawback) flagBadges.push('clawback');
   if (c.require_auth)   flagBadges.push('require-auth');
   const flagsHtml = flagBadges.length
-    ? flagBadges.map(f => `<span class="text-[9px] uppercase tracking-wider text-muted border border-border rounded px-1.5 py-0.5">${f}</span>`).join(' ')
+    ? flagBadges.map(f => `<span class="text-[9px] uppercase tracking-wider text-muted border border-border rounded px-1.5 py-0.5">${escapeHtml(f)}</span>`).join(' ')
     : '';
   return `
     <a href="${xrpscan}" target="_blank" rel="noopener noreferrer" class="block bg-ink border border-amber-500/20 hover:border-amber-500/60 rounded-xl p-5 transition">
@@ -492,10 +492,10 @@ function candidateTile(c) {
         <div class="text-[10px] text-muted font-mono uppercase mt-0.5">${escapeHtml(cur)} obligations</div>
       </div>
       <div class="text-[11px] text-muted space-y-1">
-        <div><span class="text-white">${tlines}</span> trustlines</div>
+        <div><span class="text-white">${escapeHtml(tlines)}</span> trustlines</div>
         <div>${domain}</div>
         ${flagsHtml ? `<div class="pt-1 flex gap-1 flex-wrap">${flagsHtml}</div>` : ''}
-        ${firstSeen ? `<div class="text-[10px] pt-1 border-t border-border mt-2">First seen ${firstSeen}</div>` : ''}
+        ${firstSeen ? `<div class="text-[10px] pt-1 border-t border-border mt-2">First seen ${escapeHtml(firstSeen)}</div>` : ''}
       </div>
     </a>
   `;
@@ -586,7 +586,7 @@ function renderAmmPools(pools) {
             <div class="font-semibold text-white truncate">${escapeHtml(p.rwa_logical_label || '')} <span class="text-muted">/</span> ${escapeHtml(p.counterparty_label || '')}</div>
             <div class="text-[11px] text-muted truncate font-mono">${escapeHtml(fmtAddrShort(p.pool_account))}</div>
           </div>
-          <span class="class-${cls} text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(fmtAssetClass(cls))}</span>
+          <span class="class-${escapeHtml(cls)} text-[9px] px-2 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap">${escapeHtml(fmtAssetClass(cls))}</span>
         </div>
         <div class="grid grid-cols-2 gap-3 mb-3">
           <div>
@@ -631,12 +631,12 @@ function renderFlowLog(issuers) {
         <div class="min-w-0">
           <div class="font-semibold text-white truncate">${escapeHtml(i.logical_label || i.label || '')}</div>
           <div class="text-[11px] text-muted mt-0.5">
-            <span class="delta-positive">+${fmtNumber(minted)}</span>
+            <span class="delta-positive">+${escapeHtml(fmtNumber(minted))}</span>
             <span class="text-muted mx-1">·</span>
-            <span class="delta-negative">-${fmtNumber(burned)}</span>
+            <span class="delta-negative">-${escapeHtml(fmtNumber(burned))}</span>
             <span class="text-muted ml-1">${escapeHtml(i.currency || '')}</span>
           </div>
-          <div class="text-[10px] text-muted mt-1">${i.mints_24h_count} mint${i.mints_24h_count === 1 ? '' : 's'} · ${i.burns_24h_count} burn${i.burns_24h_count === 1 ? '' : 's'} · last 24h</div>
+          <div class="text-[10px] text-muted mt-1">${escapeHtml(i.mints_24h_count)} mint${i.mints_24h_count === 1 ? '' : 's'} · ${escapeHtml(i.burns_24h_count)} burn${i.burns_24h_count === 1 ? '' : 's'} · last 24h</div>
         </div>
         <div class="text-right shrink-0">
           <div class="text-lg font-bold font-mono ${deltaClass(net)}">${escapeHtml(deltaSign(net) + fmtNumber(net))}</div>
@@ -681,7 +681,7 @@ function escapeHtml(s) {
 document.getElementById('flow-refresh')?.addEventListener('click', loadAll);
 loadAll();
 // Poll on a timer so the dashboard stays current without page reload.
-setInterval(loadAll, 60000);
+pollWhileVisible(loadAll, 60000);
 
 // XLS-85 all-time + windowed counter. Free passthrough call to
 // Pulse's /stats/xls85-totals; refresh on the same 60s cadence as
@@ -757,7 +757,7 @@ async function loadXls85Totals() {
   }
 }
 loadXls85Totals();
-setInterval(loadXls85Totals, 60000);
+pollWhileVisible(loadXls85Totals, 60000);
 
 // ============================================================
 // Settlement activity over time; /stats/daily-flow on Vault.
@@ -1038,6 +1038,6 @@ function bootDailyFlow() {
   loadDailyFlow(currentFlowRange);
   // Refresh once per hour; the underlying data updates on the
   // UTC-day cadence so polling faster is wasted work.
-  setInterval(() => loadDailyFlow(currentFlowRange), 3600 * 1000);
+  pollWhileVisible(() => loadDailyFlow(currentFlowRange), 3600 * 1000);
 }
 bootDailyFlow();

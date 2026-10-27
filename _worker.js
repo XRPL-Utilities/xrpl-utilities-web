@@ -31,24 +31,63 @@ const TURNSTILE_VERIFY_URL =
 const TOKEN_TTL_SECONDS = 15 * 60;
 const NOT_BEFORE_LEEWAY_SECONDS = 60;
 
-// Per-IP rate limit on the mint endpoint. Soft per-pop guardrail; the
-// primary defense is Turnstile gating the mint at all.
+// Per-visitor rate limits, kept in this isolate's memory. Each Cloudflare
+// location runs its own isolates, so these are soft guardrails, not a global
+// quota. The mint's main defense is Turnstile; the proxy's is that it only
+// reaches six fixed hosts. If the API_PROXY_LIMITER binding from
+// wrangler.jsonc is present the proxy also checks it, which shares counts
+// across every isolate in a location.
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-const RATE_LIMIT_MAX_PER_WINDOW = 10;
-const ipMintHistory = new Map();
+const MINT_MAX_PER_WINDOW = 10;
+// A blocked visitor opening /trust/ or /vault/ fires about 15 calls at once,
+// and the live panels then poll, so this sits well above a real page's use.
+const PROXY_MAX_PER_WINDOW = 120;
+// Cap on visitors tracked per isolate, so a spray of addresses can't grow
+// the maps without bound.
+const RATE_LIMIT_MAX_KEYS = 5000;
 
-function rateLimited(ip) {
-  const now = Date.now();
-  const history = (ipMintHistory.get(ip) || []).filter(
-    (t) => now - t < RATE_LIMIT_WINDOW_MS,
-  );
-  if (history.length >= RATE_LIMIT_MAX_PER_WINDOW) {
-    ipMintHistory.set(ip, history);
-    return true;
-  }
-  history.push(now);
-  ipMintHistory.set(ip, history);
-  return false;
+function makeLimiter(maxPerWindow) {
+  const hits = new Map(); // key -> timestamps inside the window, oldest first
+  return function limited(key, now = Date.now()) {
+    const recent = (hits.get(key) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (recent.length >= maxPerWindow) {
+      hits.set(key, recent);
+      return true;
+    }
+    recent.push(now);
+    hits.delete(key); // re-insert so Map order tracks last use
+    hits.set(key, recent);
+    if (hits.size > RATE_LIMIT_MAX_KEYS) {
+      // Least recently used first; deleting while iterating a Map is safe.
+      for (const k of hits.keys()) {
+        if (hits.size <= RATE_LIMIT_MAX_KEYS) break;
+        if (k !== key) hits.delete(k);
+      }
+    }
+    return false;
+  };
+}
+
+const mintLimited = makeLimiter(MINT_MAX_PER_WINDOW);
+const proxyLimited = makeLimiter(PROXY_MAX_PER_WINDOW);
+
+// Cloudflare sets CF-Connecting-IP on every request that reaches a Worker
+// and overwrites any value the client sent. Nothing else is trusted: a
+// fallback to X-Real-IP or X-Forwarded-For would let a caller pick a fresh
+// rate-limit bucket on every request.
+function visitorIp(request) {
+  return request.headers.get("CF-Connecting-IP") || "unknown";
+}
+
+function rateLimitedResponse() {
+  return new Response(JSON.stringify({ error: "rate_limited" }), {
+    status: 429,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "retry-after": "60",
+      "x-content-type-options": "nosniff",
+    },
+  });
 }
 
 function base64UrlEncode(input) {
@@ -107,19 +146,8 @@ async function handlePreviewTokenMint(request, env) {
   if (!env.TURNSTILE_SECRET_KEY || !env.PREVIEW_TOKEN_SECRET) {
     return jsonResponse(503, { error: "preview-token mint not configured" });
   }
-  const ip =
-    request.headers.get("CF-Connecting-IP") ||
-    request.headers.get("X-Real-IP") ||
-    "unknown";
-  if (rateLimited(ip)) {
-    return new Response(JSON.stringify({ error: "rate_limited" }), {
-      status: 429,
-      headers: {
-        "content-type": "application/json; charset=utf-8",
-        "retry-after": "60",
-      },
-    });
-  }
+  const ip = visitorIp(request);
+  if (mintLimited(ip)) return rateLimitedResponse();
   let body;
   try {
     body = await request.json();
@@ -161,22 +189,22 @@ async function handlePreviewTokenMint(request, env) {
  * every data panel on the site empty. The pages loaded (they come from
  * this domain, via Cloudflare) but every call to *.xrpl-utilities.io died
  * with ERR_SSL_PROTOCOL_ERROR. Cause was xFi Advanced Security blocking
- * the API hosts — a filter that ships ON by default for the largest home
+ * the API hosts, a filter that ships ON by default for the largest home
  * ISP in the US. Server side was healthy throughout: valid TLS 1.3, full
  * chain, correct SNI, every endpoint 200 from everywhere else.
  *
  * A visitor in that state sees a fully-rendered site with no numbers in
  * it and no way to know why. They conclude the product is broken.
  *
- * So: the browser can reach this domain by definition — it just loaded
- * the page from it — and this route lets the site's data ride that same
+ * So: the browser can reach this domain by definition, since it just
+ * loaded the page from it, and this route lets the site's data ride that same
  * connection when the direct one is unreachable. It is a FALLBACK, not
  * the default path (see assets/api-resilient.js): unblocked visitors
  * keep talking to the API hosts directly, so this adds no hop, no Worker
  * request, and no single point of failure for the common case.
  *
  * Deliberately NOT a general proxy. The service name is matched against a
- * fixed map — an attacker cannot steer it at an arbitrary host — and only
+ * fixed map (an attacker cannot steer it at an arbitrary host), and only
  * an explicit header allowlist crosses in either direction.
  * ------------------------------------------------------------------- */
 
@@ -200,7 +228,7 @@ const PROXY_REQUEST_HEADERS = [
   "x-payment",
 ];
 
-// Returned to the page. Same reasoning in reverse — the x402 client reads
+// Returned to the page. Same reasoning in reverse: the x402 client reads
 // PAYMENT-REQUIRED off the 402 to build its payment.
 const PROXY_RESPONSE_HEADERS = [
   "content-type",
@@ -212,8 +240,8 @@ const PROXY_RESPONSE_HEADERS = [
 ];
 
 // What the XR-* services actually answer with on this path. Anything else
-// gets served as a download rather than as a document — see the comment on
-// hardenProxyResponse below.
+// gets served as a download rather than as a document; see the comment
+// above the content-type check in handleApiProxy.
 const PROXY_ALLOWED_MEDIA_TYPES = [
   "application/json",
   "application/problem+json",
@@ -222,7 +250,23 @@ const PROXY_ALLOWED_MEDIA_TYPES = [
   "text/event-stream",
 ];
 
-async function handleApiProxy(request, url) {
+async function proxyRateLimited(request, env) {
+  const ip = visitorIp(request);
+  if (proxyLimited(ip)) return true;
+  if (env && env.API_PROXY_LIMITER && typeof env.API_PROXY_LIMITER.limit === "function") {
+    try {
+      const { success } = await env.API_PROXY_LIMITER.limit({ key: "api-x:" + ip });
+      return success === false;
+    } catch {
+      // A limiter outage should not take the fallback path down with it;
+      // the in-isolate check above has already run.
+      return false;
+    }
+  }
+  return false;
+}
+
+async function handleApiProxy(request, url, env) {
   // /api/x/<service>/<upstream path...>
   const rest = url.pathname.slice("/api/x/".length);
   const slash = rest.indexOf("/");
@@ -241,6 +285,7 @@ async function handleApiProxy(request, url) {
       headers: { allow: "GET, POST" },
     });
   }
+  if (await proxyRateLimited(request, env)) return rateLimitedResponse();
 
   const headers = new Headers();
   for (const name of PROXY_REQUEST_HEADERS) {
@@ -278,9 +323,9 @@ async function handleApiProxy(request, url) {
   // _headers is applied by the static-assets binding only, and wrangler.jsonc
   // pins /api/* to this Worker, so a passthrough body reaches the browser on
   // xrpl-utilities.com with the upstream's content-type and none of the site's
-  // protections. An upstream that answers HTML — FastAPI's /docs, an error
+  // protections. An upstream that answers HTML (FastAPI's /docs, an error
   // page from something in front of Railway, or any route that reflects the
-  // query string (url.search is forwarded verbatim above) — would then be a
+  // query string, since url.search is forwarded verbatim above) would then be a
   // same-origin document with no CSP over it, on the origin that holds the
   // preview token in localStorage. So: stamp the protections here, and refuse
   // HTML rather than downgrade it. This path exists for the site's JSON data
@@ -441,7 +486,7 @@ export default {
     }
 
     if (url.pathname.startsWith("/api/x/")) {
-      return handleApiProxy(request, url);
+      return handleApiProxy(request, url, env);
     }
 
     if (url.pathname === "/.well-known/x402") {

@@ -1811,7 +1811,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
 
   load();
   loadEthereumCrossChain();  // once on load, not on the refresh loop
-  setInterval(load, REFRESH_MS);
+  pollWhileVisible(load, REFRESH_MS);
 })();
 
 // ----------------------------------------------------------------------
@@ -1871,7 +1871,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
   }
 
   load();
-  setInterval(load, REFRESH_MS);
+  pollWhileVisible(load, REFRESH_MS);
 })();
 
 loadColumnInitial('news');
