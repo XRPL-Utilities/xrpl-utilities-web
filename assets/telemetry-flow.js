@@ -1,7 +1,7 @@
 // Payment + polling + results rendering for /telemetry/.
 // Pure ES2018, no framework. Cloned from scan-flow.js and adapted to the
 // Telemetry contract:
-//   POST /quote          -> {invoice_id, amount_drops, destination, deep_link, qr_code, expires_at}
+//   POST /quote          -> {invoice_id, amount_drops, destination, destination_tag, deep_link, qr_code, expires_at}
 //   GET  /status/{id}    -> {paid: bool, tx_hash?: string}
 //   GET  /results/{id}   -> TelemetryPayload
 
@@ -171,17 +171,28 @@
   }
 
   function renderPayment(target, quote, onCancel) {
+    // Recipient, amount, tag and wallet link all come from the checked copy
+    // (see /assets/pay-pin.js), never straight from the response. The
+    // backend's qr_code image is not used: the QR is encoded here from the
+    // checked link, so its pixels can't disagree with the rows below it.
+    let pay;
+    try {
+      pay = global.XRPayPin.verifyQuote(quote, 'destination');
+    } catch (e) {
+      renderError(target, e.message);
+      return false;
+    }
     target.innerHTML = '';
     const wrap = el('div', 'bg-panel border border-border rounded-2xl p-8');
     wrap.appendChild(el('div', 'text-xs uppercase tracking-widest text-accent font-semibold mb-2', 'Payment required'));
-    wrap.appendChild(el('h3', 'text-3xl font-bold mb-1', fmtXrp(quote.amount_drops)));
+    wrap.appendChild(el('h3', 'text-3xl font-bold mb-1', fmtXrp(pay.drops)));
     const minsLeft = minutesUntil(quote.expires_at);
     wrap.appendChild(el('div', 'text-muted text-sm mb-6',
       `Telemetry snapshot · expires in ${minsLeft != null ? minsLeft : '-'} min`));
 
     const linkRow = el('div', 'flex flex-col sm:flex-row gap-3 mb-6');
     const payBtn = el('a', 'flex-1 bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-4 rounded-lg transition text-center');
-    payBtn.href = safeUrl(quote.deep_link);
+    payBtn.href = pay.link;
     payBtn.textContent = 'Open in XRPL wallet';
     linkRow.appendChild(payBtn);
 
@@ -197,41 +208,21 @@
     const grid = el('div', 'grid md:grid-cols-2 gap-6 items-start');
     const qrCol = el('div');
     qrCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Scan with Xaman / mobile wallet'));
-    // qr_code comes from our own backend, which is as trusted as the quote
-    // itself. Everything else is encoded here (see /assets/qr-code.js) - the
-    // old third-party image-host fallback meant a stranger generated the
-    // pixels a payer scans, so a transient omission of qr_code must not
-    // silently reintroduce it.
     const qrBox = el('div', 'bg-white p-3 rounded-lg inline-block');
-    if (quote.qr_code) {
-      const qrImg = document.createElement('img');
-      qrImg.alt = 'XRPL payment QR code';
-      qrImg.width = 192;
-      qrImg.height = 192;
-      qrImg.style.display = 'block';
-      qrImg.src = quote.qr_code;
-      qrImg.onerror = () => {
-        qrBox.remove();
-        qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
-      };
-      qrBox.appendChild(qrImg);
+    try {
+      qrBox.appendChild(global.XRQr.toCanvas(pay.link, 192));
       qrCol.appendChild(qrBox);
-    } else {
-      try {
-        qrBox.appendChild(global.XRQr.toCanvas(safeUrl(quote.deep_link), 192));
-        qrCol.appendChild(qrBox);
-      } catch (e) {
-        qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
-      }
+    } catch (e) {
+      qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
     }
     grid.appendChild(qrCol);
 
     const manualCol = el('div', 'space-y-3');
     manualCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Or send manually from any XRPL wallet'));
     [
-      ['Recipient',    quote.destination],
-      ['Amount (XRP)', String(Number(quote.amount_drops) / DROPS_PER_XRP)],
-      ['Invoice ID',   quote.invoice_id],
+      ['Recipient',       pay.recipient],
+      ['Amount (XRP)',    pay.xrp],
+      ['Destination Tag', String(pay.tag)],
     ].forEach(([k, v]) => {
       const row = el('div', 'bg-ink border border-border rounded-lg p-3 flex items-center justify-between gap-3');
       const left = el('div', 'flex-grow min-w-0');
@@ -241,7 +232,7 @@
       row.appendChild(copyButton(v));
       manualCol.appendChild(row);
     });
-    manualCol.appendChild(el('div', 'text-xs text-muted leading-relaxed mt-2', 'The deep link encodes everything your wallet needs. Use the manual fields if you prefer to enter them by hand.'));
+    manualCol.appendChild(el('div', 'text-xs text-muted leading-relaxed mt-2', 'The destination tag is required so we can match your payment to this snapshot. Payments without the correct tag are not credited automatically.'));
     grid.appendChild(manualCol);
     wrap.appendChild(grid);
 
@@ -252,6 +243,7 @@
 
     target.appendChild(wrap);
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return true;
   }
 
   function buildStatusBanner(message, tone) {
@@ -866,7 +858,7 @@
     }
 
     let cancelled = false;
-    renderPayment(target, quote, () => { cancelled = true; updateStatus(target, 'Cancelled by user.', 'bad'); });
+    if (!renderPayment(target, quote, () => { cancelled = true; updateStatus(target, 'Cancelled by user.', 'bad'); })) return null;
 
     const payload = await pollUntilPaid(target, quote.invoice_id, () => cancelled);
     if (payload) {

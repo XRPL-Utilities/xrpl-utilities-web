@@ -18,13 +18,6 @@
 
   function fmtXrp(s) { return s + ' XRP'; }
 
-  // Reject any URL scheme other than http(s) / xrpl so a malicious backend
-  // response can't smuggle a javascript: URI into the pay-button href.
-  function safeUrl(u) {
-    const s = String(u || '').trim();
-    return /^(?:https?|xrpl):/i.test(s) ? s : '#';
-  }
-
   function levelBadgeClass(level) {
     const m = { Low: 'badge-low', Medium: 'badge-medium', High: 'badge-high', Dormant: 'badge-dormant', Unknown: 'badge-unknown' };
     return m[level] || 'badge-unknown';
@@ -67,17 +60,26 @@
   }
 
   function renderPayment(target, quote, onCancel) {
+    // Recipient, amount, tag and wallet link all come from the checked copy
+    // (see /assets/pay-pin.js), never straight from the response.
+    let pay;
+    try {
+      pay = global.XRPayPin.verifyQuote(quote, 'recipient');
+    } catch (e) {
+      renderError(target, e.message);
+      return false;
+    }
     target.innerHTML = '';
     const wrap = el('div', 'bg-panel border border-border rounded-2xl p-8');
     wrap.appendChild(el('div', 'text-xs uppercase tracking-widest text-accent font-semibold mb-2', 'Payment required'));
-    wrap.appendChild(el('h3', 'text-3xl font-bold mb-1', fmtXrp(quote.amount_xrp)));
+    wrap.appendChild(el('h3', 'text-3xl font-bold mb-1', fmtXrp(pay.xrp)));
     wrap.appendChild(el('div', 'text-muted text-sm mb-6',
       `${quote.address_count} ${quote.address_count === 1 ? 'address' : 'addresses'} · $${(quote.address_count * 0.10).toFixed(2)} USD at $${quote.xrp_usd_at_quote.toFixed(4)}/XRP · expires in ${Math.round(quote.expires_in_seconds / 60)} min`));
 
     // Primary action: deep link button
     const linkRow = el('div', 'flex flex-col sm:flex-row gap-3 mb-6');
     const payBtn = el('a', 'flex-1 bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-4 rounded-lg transition text-center');
-    payBtn.href = safeUrl(quote.deep_link);
+    payBtn.href = pay.link;
     payBtn.textContent = 'Open in XRPL wallet';
     linkRow.appendChild(payBtn);
 
@@ -100,7 +102,7 @@
     // column rather than leaving an empty white box.
     try {
       const qrBox = el('div', 'bg-white p-3 rounded-lg inline-block');
-      qrBox.appendChild(global.XRQr.toCanvas(safeUrl(quote.deep_link), 192));
+      qrBox.appendChild(global.XRQr.toCanvas(pay.link, 192));
       qrCol.appendChild(qrBox);
     } catch (e) {
       qrCol.appendChild(el('div', 'text-xs text-muted mt-2', 'QR rendering unavailable; use manual instructions →'));
@@ -110,9 +112,9 @@
     const manualCol = el('div', 'space-y-3');
     manualCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Or send manually from any XRPL wallet'));
     [
-      ['Recipient',          quote.recipient],
-      ['Amount (XRP)',       quote.amount_xrp],
-      ['Destination Tag',    String(quote.destination_tag)],
+      ['Recipient',          pay.recipient],
+      ['Amount (XRP)',       pay.xrp],
+      ['Destination Tag',    String(pay.tag)],
     ].forEach(([k, v]) => {
       const row = el('div', 'bg-ink border border-border rounded-lg p-3 flex items-center justify-between gap-3');
       const left = el('div', 'flex-grow min-w-0');
@@ -134,6 +136,7 @@
 
     target.appendChild(wrap);
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return true;
   }
 
   function buildStatusBanner(message, tone) {
@@ -759,7 +762,7 @@
     }
 
     let cancelled = false;
-    renderPayment(target, quote, () => { cancelled = true; updateStatus(target, 'Cancelled by user.', 'bad'); });
+    if (!renderPayment(target, quote, () => { cancelled = true; updateStatus(target, 'Cancelled by user.', 'bad'); })) return;
 
     const results = await pollUntilDone(target, quote.invoice_id, () => cancelled);
     if (results) renderResults(target, results);
