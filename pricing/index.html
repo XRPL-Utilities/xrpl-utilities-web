@@ -281,6 +281,75 @@
     </div>
   </section>
 
+  <!-- FIRST CALL -->
+  <section id="first-call" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Your first call</h2>
+      <h3 class="text-3xl font-bold mb-6">Free data in one line, paid data with any x402 client</h3>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6 min-w-0">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">1. Free, no key</div>
+          <p class="text-sm text-muted leading-relaxed mb-3">The free endpoints answer any client. This one returns every tracked real-world-asset issuer on XRPL.</p>
+          <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl https://pulse.xrpl-utilities.io/stats/rwa-summary</pre>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6 min-w-0">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">2. See the price</div>
+          <p class="text-sm text-muted leading-relaxed mb-3">A paid endpoint called without payment answers HTTP 402 with its three payment options: RLUSD, USDC on Base and XRP.</p>
+          <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl -i -X POST https://sentinel.xrpl-utilities.io/scan \
+  -H 'Content-Type: application/json' \
+  -d '{"address":"rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"}'</pre>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6 min-w-0">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">3. Or try it free here</div>
+          <p class="text-sm text-muted leading-relaxed">
+            The scan boxes on <a href="/sentinel/" class="text-accent hover:underline">XR-Sentinel</a>, <a href="/telemetry/" class="text-accent hover:underline">XR-Telemetry</a> and the other product pages run the same paid calls at no cost. A quick, invisible browser check stands in for payment so people can test-drive the data. Scripts and agents pay per call.
+          </p>
+        </div>
+      </div>
+      <div class="mt-8 grid md:grid-cols-2 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6 min-w-0">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Pay in USDC on Base (Node.js)</div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Any standard x402 v2 client works. This uses the reference <code class="font-mono text-white text-xs">@x402/fetch</code> package with a Base wallet holding a little USDC. The facilitator pays the gas.
+          </p>
+          <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">npm install @x402/fetch @x402/evm viem
+
+import { wrapFetchWithPaymentFromConfig } from "@x402/fetch";
+import { ExactEvmScheme } from "@x402/evm";
+import { privateKeyToAccount } from "viem/accounts";
+
+const account = privateKeyToAccount(process.env.BASE_PRIVATE_KEY);
+const fetchWithPayment = wrapFetchWithPaymentFromConfig(fetch, {
+  schemes: [{ network: "eip155:8453", client: new ExactEvmScheme(account) }],
+});
+
+const res = await fetchWithPayment("https://sentinel.xrpl-utilities.io/scan", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ address: "rExample..." }),
+});
+if (res.status === 402) throw new Error("payment did not go through");
+console.log(await res.json());</pre>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6 min-w-0">
+          <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Claude Desktop (MCP)</div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Add this to <code class="font-mono text-white text-xs">claude_desktop_config.json</code> and restart Claude Desktop. The free tools work right away. Paid tools take a signed x402 payment header in the call, so they need a client or wallet that can sign one.
+          </p>
+          <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">{
+  "mcpServers": {
+    "xrpl-utilities": {
+      "command": "npx",
+      "args": ["-y", "@xrpl-utilities/mcp", "--transport", "stdio"]
+    }
+  }
+}</pre>
+          <p class="text-xs text-muted leading-relaxed mt-3">Remote MCP clients can use <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code> instead.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- HOW PAYMENT WORKS -->
   <section class="border-t border-border">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
@@ -337,7 +406,7 @@ r = resp.json()</pre>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">MCP for AI agents</div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Every paid endpoint is also exposed as an <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener" class="text-accent hover:underline">MCP</a> tool. Wire it into Claude Desktop or any MCP host and the agent pays per call through its own configured XRPL wallet.
+            Every paid endpoint is also exposed as an <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener" class="text-accent hover:underline">MCP</a> tool. Wire it into Claude Desktop or any MCP host. Free tools need nothing else; paid tools take a signed x402 payment header in each call.
           </p>
           <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">npm install -g @xrpl-utilities/mcp
 

@@ -20,8 +20,8 @@
     // returning the assets 404 (empty body) and the real upstream response
     // on alternating requests, depending on which handler won. Pinning
     // /api/* to the Worker removes the race for both the proxy and the
-    // preview-token mint.
-    "run_worker_first": ["/api/*"]
+    // preview-token mint. /.well-known/x402 is built by the Worker too.
+    "run_worker_first": ["/api/*", "/.well-known/x402"]
   },
   "compatibility_flags": [
     "nodejs_compat"
