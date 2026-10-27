@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <title>XR-Vault | Real-world assets on XRPL</title>
-  <meta name="description" content="Real-world asset tracker for the XRP Ledger. Live mint and burn flow, daily circulating snapshots, and per-issuer dashboards covering tokenized private credit, USD/EUR/BRL/AUD/SGD stablecoins, US Treasuries, commodities, money-market funds, real estate and commercial paper. Free on the web." />
+  <meta name="description" content="Real-world asset tracker for the XRP Ledger: supply, mints and burns by issuer across stablecoins, treasuries, funds, credit and commodities. Free on the web." />
   <meta property="og:title" content="XR-Vault" />
   <meta property="og:description" content="Real-world asset tracker for XRPL. Live mint/burn flow + daily circulating snapshots across tokenized private credit, stablecoins, treasuries, commodities, MMFs, real estate and commercial paper." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
@@ -30,13 +32,29 @@
           "name": "XRPL-Utilities",
           "url": "https://xrpl-utilities.com",
           "logo": "https://xrpl-utilities.com/assets/logo.png"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.10",
+          "priceCurrency": "USD",
+          "description": "Per-call fee, payable in XRP/RLUSD on XRPL or USDC on Base via x402 protocol"
         }
       },
       {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "XRPL-Utilities", "item": "https://xrpl-utilities.com/" },
-          { "@type": "ListItem", "position": 2, "name": "XR-Vault", "item": "https://xrpl-utilities.com/vault/" }
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "XRPL-Utilities",
+            "item": "https://xrpl-utilities.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "XR-Vault",
+            "item": "https://xrpl-utilities.com/vault/"
+          }
         ]
       }
     ]
@@ -46,7 +64,6 @@
   <meta name="twitter:title" content="XR-Vault" />
   <meta name="twitter:description" content="Real-world asset tracker for XRPL. Live mint/burn flow + daily circulating snapshots across tokenized private credit, stablecoins, treasuries, commodities, MMFs, real estate and commercial paper." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
-  <link rel="icon" type="image/png" href="/assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -730,6 +747,7 @@
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
           <ul class="space-y-3 text-sm">
             <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/status/"  class="text-muted hover:text-white transition">Service status</a></li>
             <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
             <li><a href="/tip/"     class="text-accent hover:text-white transition">Tip the maker</a></li>
           </ul>
