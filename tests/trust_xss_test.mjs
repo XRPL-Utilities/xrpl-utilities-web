@@ -47,7 +47,8 @@ const OPERATORS = {
     operator_address: 'rEvil"><script>alert(1)</script>',
     identity_org_name: PAYLOAD,
     jurisdiction: '"><svg onload=alert(2)>',
-    domain_count: 1,
+    // Counts are numbers in practice, but they are still server values.
+    domain_count: '<img src=x onerror=alert(6)>',
     permissioned_offers_24h: 3,
     unique_traders_24h: 1,
     amm_events_24h: 0,
@@ -61,6 +62,7 @@ const OPERATORS = {
 const JURISDICTIONS = {
   combined_entity_count_by_jurisdiction: [
     { jurisdiction: '<img src=x onerror=alert(5)>', count: 2 },
+    { jurisdiction: 'US', count: '<img src=x onerror=alert(7)>' },
   ],
   unattributed: {},
 };

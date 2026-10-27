@@ -164,7 +164,7 @@ async function loadTopology() {
       eHtml += `
         <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
           <div class="text-xs font-semibold text-white">${escapeHtml(ent.entity)}</div>
-          <div class="text-[10px] text-muted mt-1">${ent.wallet_count} hot wallet${ent.wallet_count === 1 ? '' : 's'} attributed</div>
+          <div class="text-[10px] text-muted mt-1">${escapeHtml(ent.wallet_count)} hot wallet${ent.wallet_count === 1 ? '' : 's'} attributed</div>
           <div class="text-[10px] mt-1">${linksHtml}</div>
         </div>`;
     }
@@ -236,8 +236,8 @@ async function loadCounterparties() {
       const wrap = document.createElement('div');
       wrap.className = `tier-${key} border rounded-lg p-3`;
       wrap.innerHTML = `
-        <div class="text-2xl font-bold">${fmtInt(count)}</div>
-        <div class="text-[10px] uppercase tracking-wider mt-1 opacity-80">${tierLabels[key]}</div>`;
+        <div class="text-2xl font-bold">${escapeHtml(fmtInt(count))}</div>
+        <div class="text-[10px] uppercase tracking-wider mt-1 opacity-80">${escapeHtml(tierLabels[key])}</div>`;
       tierGrid.appendChild(wrap);
     });
 
@@ -250,7 +250,7 @@ async function loadCounterparties() {
       sourceGrid.innerHTML = sources.map(([label, count]) => `
         <div class="bg-ink border border-border rounded-lg p-3 flex items-center justify-between gap-3">
           <span class="text-sm text-white truncate">${escapeHtml(label)}</span>
-          <span class="text-sm font-mono text-accent shrink-0">${fmtInt(count)}</span>
+          <span class="text-sm font-mono text-accent shrink-0">${escapeHtml(fmtInt(count))}</span>
         </div>`).join('');
     }
 
@@ -279,7 +279,7 @@ async function loadCounterparties() {
         // Build the inline hop-value progression: $100M → $82M → $82M
         const hops = b.hops_public || [];
         const hopFlow = hops.length
-          ? hops.map(h => `<span class="text-white font-mono">${fmtUSD(h.value || 0)}</span>`)
+          ? hops.map(h => `<span class="text-white font-mono">${escapeHtml(fmtUSD(h.value || 0))}</span>`)
                 .join('<span class="text-accent mx-1">&rarr;</span>')
           : '';
         // Inline currency badge to make the chain type read at a glance
@@ -295,19 +295,19 @@ async function loadCounterparties() {
           <div class="flex items-start justify-between gap-4 flex-wrap">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span class="text-[10px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded border ${curClass}">${curDisplay}</span>
-                <span class="text-sm font-semibold text-white">${b.hop_count}-hop chain &middot; ${fmtUSD(b.total_usd || 0)}</span>
+                <span class="text-[10px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded border ${curClass}">${escapeHtml(curDisplay)}</span>
+                <span class="text-sm font-semibold text-white">${escapeHtml(b.hop_count)}-hop chain &middot; ${escapeHtml(fmtUSD(b.total_usd || 0))}</span>
               </div>
               ${b.chain_summary ? `<div class="text-[12px] text-white mt-1 mb-1">${escapeHtml(b.chain_summary)}</div>` : ''}
               ${hopFlow ? `<div class="text-[12px] mt-2 mb-1">Flow: ${hopFlow}</div>` : ''}
               <div class="text-[11px] text-muted mt-2">
-                On-chain: <span class="text-white">${chainDate}</span> (${fmtRel(chainTs)})
+                On-chain: <span class="text-white">${escapeHtml(chainDate)}</span> (${escapeHtml(fmtRel(chainTs))})
               </div>
               <div class="text-[11px] text-muted mt-1">
                 Anchor: <span class="text-accent">${escapeHtml(b.anchor_label || 'unlabeled')}</span>
-                ${b.news_correlation_count > 0 ? `&middot; <span class="text-amber-400">${b.news_correlation_count} news event${b.news_correlation_count === 1 ? '' : 's'} in window</span>` : ''}
+                ${b.news_correlation_count > 0 ? `&middot; <span class="text-amber-400">${escapeHtml(b.news_correlation_count)} news event${b.news_correlation_count === 1 ? '' : 's'} in window</span>` : ''}
               </div>
-              ${chainTs ? `<div class="text-[11px] mt-2"><a href="/pulse/?since=${Math.floor(chainTs - 60)}&kind=activity" class="text-accent hover:underline">View live whale events in this window &rarr;</a></div>` : ''}
+              ${chainTs ? `<div class="text-[11px] mt-2"><a href="/pulse/?since=${escapeHtml(Math.floor(chainTs - 60))}&kind=activity" class="text-accent hover:underline">View live whale events in this window &rarr;</a></div>` : ''}
             </div>
           </div>
         </div>`;
@@ -324,7 +324,7 @@ async function loadCounterparties() {
 }
 
 function escapeHtml(s) {
-  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function renderLargestChain(bursts) {
@@ -398,7 +398,7 @@ function renderLargestChain(bursts) {
     </div>`;
   const arrow = (label) => `
     <div class="flex flex-col items-center justify-center min-w-[44px] sm:min-w-[80px]">
-      <div class="text-[10px] text-accent font-mono whitespace-nowrap">${label}</div>
+      <div class="text-[10px] text-accent font-mono whitespace-nowrap">${escapeHtml(label)}</div>
       <svg class="h-3 w-full" viewBox="0 0 60 10" fill="none" preserveAspectRatio="none">
         <line x1="0" y1="5" x2="55" y2="5" stroke="#00b8ff" stroke-width="1.5" />
         <polygon points="55,1 60,5 55,9" fill="#00b8ff" />
@@ -432,19 +432,19 @@ function renderLargestChain(bursts) {
   totalsEl.innerHTML = `
     <div class="bg-ink border border-border rounded-lg p-3">
       <div class="text-[10px] uppercase tracking-widest text-muted" title="Largest single Payment observed across the chain. The honest 'money that moved' figure.">Peak hop</div>
-      <div class="text-base font-semibold text-white mt-1">${fmtUSD(peakHop)}</div>
+      <div class="text-base font-semibold text-white mt-1">${escapeHtml(fmtUSD(peakHop))}</div>
     </div>
     <div class="bg-ink border border-border rounded-lg p-3">
       <div class="text-[10px] uppercase tracking-widest text-muted">Hops</div>
-      <div class="text-base font-semibold text-white mt-1">${top.hop_count}</div>
+      <div class="text-base font-semibold text-white mt-1">${escapeHtml(top.hop_count)}</div>
     </div>
     <div class="bg-ink border border-border rounded-lg p-3">
       <div class="text-[10px] uppercase tracking-widest text-muted" title="Sum of per-hop Payment values. Overstates actual money moved when the same dollars flow through each relay node.">Aggregate hop value</div>
-      <div class="text-base font-semibold text-muted mt-1">${fmtUSD(aggregateHopUsd)}</div>
+      <div class="text-base font-semibold text-muted mt-1">${escapeHtml(fmtUSD(aggregateHopUsd))}</div>
     </div>
     <div class="bg-ink border border-border rounded-lg p-3">
       <div class="text-[10px] uppercase tracking-widest text-muted">News in window</div>
-      <div class="text-base font-semibold ${newsCount > 0 ? 'text-amber-400' : 'text-muted'} mt-1">${newsCount}</div>
+      <div class="text-base font-semibold ${newsCount > 0 ? 'text-amber-400' : 'text-muted'} mt-1">${escapeHtml(newsCount)}</div>
     </div>`;
 }
 
@@ -452,5 +452,5 @@ loadTopology();
 loadRlusdToday();
 loadCounterparties();
 // Refresh on a timer so the panels stay current.
-setInterval(loadRlusdToday, 5 * 60 * 1000);
-setInterval(loadCounterparties, 5 * 60 * 1000);
+pollWhileVisible(loadRlusdToday, 5 * 60 * 1000);
+pollWhileVisible(loadCounterparties, 5 * 60 * 1000);

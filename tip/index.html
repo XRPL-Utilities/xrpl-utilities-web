@@ -140,6 +140,12 @@
             <p class="text-[11px] text-muted">RLUSD is also accepted at the same address with the same destination tag. Open your wallet, pick RLUSD as the asset, send any amount.</p>
           </div>
 
+          <!-- Payments are final: say so before any wallet button. -->
+          <div id="tip-final-warning" role="note" class="border border-amber-500/40 bg-amber-500/10 rounded-lg px-4 py-3 mb-6 text-xs text-amber-200 leading-relaxed">
+            <span class="font-semibold text-white">Tips are final.</span>
+            An XRPL payment cannot be reversed, cancelled or charged back once the ledger validates it, which takes a few seconds. Check the address, the destination tag and the amount in your wallet before you sign.
+          </div>
+
           <!-- Wallet entry points -->
           <div class="border-t border-border pt-6">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">Open in your wallet</div>

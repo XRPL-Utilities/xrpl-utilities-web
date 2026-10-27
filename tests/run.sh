@@ -15,6 +15,7 @@ node --check assets/pay-pin.js
 node --check assets/stale-banner.js
 node --check assets/api-resilient.js
 node --check assets/a11y.js
+node --check assets/poll.js
 for f in assets/pages/*.js; do node --check "$f"; done
 
 node tests/trust_xss_test.mjs
@@ -31,6 +32,9 @@ python3 tests/python_sample_test.py
 node tests/inline_script_syntax_test.mjs
 node tests/content_rules_test.mjs
 node tests/csp_headers_test.mjs
+node tests/cache_headers_test.mjs
+node tests/html_escape_lint_test.mjs
+node tests/polling_test.mjs
 node tests/status_model_test.mjs
 node --check assets/status-model.js
 python3 tests/qr_matrix_crosscheck.py

@@ -156,6 +156,7 @@ for (const [name, file, start] of [['sentinel', 'assets/scan-flow.js', startSent
   vm.runInContext(read('assets/stale-banner.js'), ctx);
   const asOf = new Node('span'); asOf.textContent = 'as of 09:00 UTC';
   ctx.byId['live-state-asof'] = asOf;
+  vm.runInContext(read('assets/poll.js'), ctx); // loaded before home-2.js, as on the page
   vm.runInContext(read('assets/pages/home-2.js'), ctx);
   await tick();
   check('home: a failed refresh keeps the old "as of"', asOf.textContent === 'as of 09:00 UTC', asOf.textContent);

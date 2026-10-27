@@ -136,7 +136,7 @@ function renderMoexIndexPanel(moex) {
   if (futEl) {
     if (futures.length) {
       const chips = futures.map(f =>
-        `<span class="inline-block bg-ink/60 border border-border rounded px-1.5 py-0.5 mr-1.5 mb-1">${escapeHtml(f.sec_name)} @ $${(f.prev_settle_price ?? 0).toFixed(4)}</span>`
+        `<span class="inline-block bg-ink/60 border border-border rounded px-1.5 py-0.5 mr-1.5 mb-1">${escapeHtml(f.sec_name)} @ $${escapeHtml(Number(f.prev_settle_price ?? 0).toFixed(4))}</span>`
       ).join('');
       futEl.innerHTML = `<span class="text-white">MOEX XRP futures (RFUD):</span> ${chips}`;
     } else {
@@ -147,9 +147,9 @@ function renderMoexIndexPanel(moex) {
   const fmtPct = (v) => (typeof v === 'number' ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%' : '-');
   const cls = (snap.change_pct ?? 0) >= 0 ? 'text-emerald-400' : 'text-rose-400';
   if (snapEl) {
-    snapEl.innerHTML = `<span class="text-white font-mono text-xl">${fmtUsd(snap.last_value)}</span>
-      <span class="${cls} font-mono text-xs ml-2">${fmtPct(snap.change_pct)}</span>
-      <span class="text-muted text-[10px] ml-2">as of ${snap.systime || snap.trade_date || ''} MSK</span>`;
+    snapEl.innerHTML = `<span class="text-white font-mono text-xl">${escapeHtml(fmtUsd(snap.last_value))}</span>
+      <span class="${cls} font-mono text-xs ml-2">${escapeHtml(fmtPct(snap.change_pct))}</span>
+      <span class="text-muted text-[10px] ml-2">as of ${escapeHtml(snap.systime || snap.trade_date || '')} MSK</span>`;
   }
   if (typeof Chart === 'undefined') return;
   if (!history.length) {
@@ -575,7 +575,7 @@ function bootFlows() {
   if (typeof Chart === 'undefined') { setTimeout(bootFlows, 200); return; }
   loadCorrelation(currentRange);
   // Hourly refresh matches the scrape cadence on the backend.
-  setInterval(() => loadCorrelation(currentRange), 3600 * 1000);
+  pollWhileVisible(() => loadCorrelation(currentRange), 3600 * 1000);
 }
 bootFlows();
 
@@ -640,7 +640,7 @@ async function loadTrackedEtfsGrid() {
   }).join('');
 }
 loadTrackedEtfsGrid();
-setInterval(loadTrackedEtfsGrid, 3600 * 1000);
+pollWhileVisible(loadTrackedEtfsGrid, 3600 * 1000);
 
 // -----------------------------------------------------------------
 // Cross-border world heatmap. Uses d3 + topojson-client + world-atlas
@@ -745,8 +745,8 @@ setInterval(loadTrackedEtfsGrid, 3600 * 1000);
     }
     elCorridors.innerHTML = corridors.slice(0, 10).map(c =>
       `<div class="flex items-baseline justify-between gap-2 border-b border-border/40 pb-1">` +
-        `<span><span class="text-white">${c.origin_iso}</span> <span class="text-muted">&rarr;</span> <span class="text-white">${c.dest_iso}</span></span>` +
-        `<span class="text-emerald-400">${fmtUsdCompact(c.usd_total)}</span>` +
+        `<span><span class="text-white">${escapeHtml(c.origin_iso)}</span> <span class="text-muted">&rarr;</span> <span class="text-white">${escapeHtml(c.dest_iso)}</span></span>` +
+        `<span class="text-emerald-400">${escapeHtml(fmtUsdCompact(c.usd_total))}</span>` +
       `</div>`
     ).join('');
   }
@@ -802,7 +802,7 @@ setInterval(loadTrackedEtfsGrid, 3600 * 1000);
         const v = a2 ? totals.get(a2) : 0;
         const name = (d.properties && d.properties.name) || a2 || '?';
         const valueStr = (v && v > 0) ? fmtUsdCompact(v) : 'no labeled flow';
-        elTooltip.innerHTML = `<span class="text-white">${name}</span> <span class="text-muted">${a2 || ''}</span><br/><span class="text-emerald-400">${valueStr}</span>`;
+        elTooltip.innerHTML = `<span class="text-white">${escapeHtml(name)}</span> <span class="text-muted">${escapeHtml(a2 || '')}</span><br/><span class="text-emerald-400">${escapeHtml(valueStr)}</span>`;
         const rect = mapEl.getBoundingClientRect();
         const offX = evt.clientX - rect.left + 12;
         const offY = evt.clientY - rect.top + 12;
@@ -983,7 +983,7 @@ setInterval(loadTrackedEtfsGrid, 3600 * 1000);
   const mapLibsReady = () => typeof d3 !== 'undefined' && typeof topojson !== 'undefined';
   function start() {
     refresh(currentWindow);
-    setInterval(() => refresh(currentWindow), 5 * 60 * 1000);
+    pollWhileVisible(() => refresh(currentWindow), 5 * 60 * 1000);
   }
   const waitStarted = Date.now();
   const startInterval = setInterval(() => {

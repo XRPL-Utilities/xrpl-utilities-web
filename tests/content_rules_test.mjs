@@ -69,7 +69,11 @@ for (const page of [...pages, ...scripts]) {
 }
 // ---- consistency rules (2026-10-27 audit, item 9) ---------------------------
 const ownScripts = scripts.filter((f) => !f.includes(`${path.sep}vendor${path.sep}`));
-const extra = ['llms.txt', '.well-known/security.txt'].map((f) => path.join(repo, f));
+// _worker.js, the config files and the README ship in a public repo, so the
+// house style covers them too (8 em dashes sat in _worker.js comments until
+// 2026-10-27).
+const extra = ['llms.txt', '.well-known/security.txt', '_worker.js', 'wrangler.jsonc', '_headers', '_redirects', 'README.md']
+  .map((f) => path.join(repo, f));
 function fail(msg) { fails++; console.log('FAIL ' + msg); }
 
 // No em dashes in anything served, comments included (house style).
@@ -110,6 +114,15 @@ const pulse = fs.readFileSync(path.join(repo, 'pulse/index.html'), 'utf8');
 if (/permissioned_domain_lifecycle|permissioned-domain<\/span> events|Permissioned-domain lifecycle events/.test(pulse)) {
   fail('pulse: describes permissioned-domain events as part of the Pulse feed (moved to Trust 2026-09-06)');
 }
+
+// The tip page sent visitors straight to wallet buttons with no word that an
+// XRPL payment can't be undone (2026-10-26 audit). The warning has to sit
+// above the first wallet button so it is read before signing.
+const tip = fs.readFileSync(path.join(repo, 'tip/index.html'), 'utf8');
+const warnAt = tip.indexOf('id="tip-final-warning"');
+const firstWallet = tip.indexOf('id="xaman-btn"');
+if (warnAt === -1 || !/cannot be reversed/.test(tip.slice(warnAt, warnAt + 600))) fail('tip: the payments-are-final warning is missing');
+else if (firstWallet !== -1 && warnAt > firstWallet) fail('tip: the payments-are-final warning must come before the wallet buttons');
 
 // The settlement shown on /start/ was paid by our own reference agent.
 const start = fs.readFileSync(path.join(repo, 'start/index.html'), 'utf8');

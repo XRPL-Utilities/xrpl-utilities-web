@@ -139,5 +139,5 @@
   }
 
   refresh();
-  setInterval(refresh, 60000);
+  pollWhileVisible(refresh, 60000);
 })();

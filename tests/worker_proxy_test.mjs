@@ -74,6 +74,46 @@ check('absent content-type is not invented', r.headers.get('content-type') === n
 r = await worker.fetch(req('/api/x/evil/'), {});
 check('unknown service still 404s first', r.status === 404 && (await r.json()).error === 'unknown_service');
 
+// ---- per-visitor rate limit (audit P2: the proxy had none) ----
+const fromIp = (p, ip, extra = {}) => new Request('https://xrpl-utilities.com' + p, {
+  headers: { 'CF-Connecting-IP': ip, ...extra },
+});
+mockUpstream('application/json');
+let statuses = [];
+for (let k = 0; k < 121; k++) {
+  statuses.push((await worker.fetch(fromIp('/api/x/pulse/stats', '203.0.113.7'), {})).status);
+}
+check('120 calls a minute pass', statuses.slice(0, 120).every((s) => s === 200), statuses.slice(0, 120).join(','));
+r = await worker.fetch(fromIp('/api/x/pulse/stats', '203.0.113.7'), {});
+check('call 122 from one visitor is refused', r.status === 429, String(r.status));
+check('429 says when to retry', r.headers.get('retry-after') === '60');
+check('429 is json', (await r.json()).error === 'rate_limited');
+r = await worker.fetch(fromIp('/api/x/pulse/stats', '203.0.113.7', { 'X-Real-IP': '198.51.100.1', 'X-Forwarded-For': '198.51.100.2' }), {});
+check('a spoofed X-Real-IP or X-Forwarded-For does not reset the bucket', r.status === 429, String(r.status));
+r = await worker.fetch(fromIp('/api/x/pulse/stats', '203.0.113.8'), {});
+check('another visitor is unaffected', r.status === 200, String(r.status));
+
+let limiterKey = null;
+r = await worker.fetch(fromIp('/api/x/pulse/stats', '203.0.113.9'), {
+  API_PROXY_LIMITER: { limit: async ({ key }) => { limiterKey = key; return { success: false }; } },
+});
+check('location-wide limiter is honoured when bound', r.status === 429, String(r.status));
+check('limiter is keyed on the visitor IP', limiterKey === 'api-x:203.0.113.9', String(limiterKey));
+r = await worker.fetch(fromIp('/api/x/pulse/stats', '203.0.113.10'), {
+  API_PROXY_LIMITER: { limit: async () => { throw new Error('down'); } },
+});
+check('a limiter outage does not take the proxy down', r.status === 200, String(r.status));
+
+// The mint limiter used to fall back to X-Real-IP when CF-Connecting-IP was
+// absent, so rotating that header gave a fresh bucket on every call.
+const mintEnv = { TURNSTILE_SECRET_KEY: 't', PREVIEW_TOKEN_SECRET: 'p' };
+const mintReq = (realIp) => new Request('https://xrpl-utilities.com/api/preview-token', {
+  method: 'POST', headers: { 'X-Real-IP': realIp }, body: 'not json',
+});
+statuses = [];
+for (let k = 0; k < 11; k++) statuses.push((await worker.fetch(mintReq('198.51.100.' + k), mintEnv)).status);
+check('mint limit ignores a rotating X-Real-IP', statuses[10] === 429 && statuses.slice(0, 10).every((s) => s === 400), statuses.join(','));
+
 globalThis.fetch = realFetch;
 console.log(fails ? `${fails} FAILED` : 'api passthrough: ok');
 process.exit(fails ? 1 : 0);
