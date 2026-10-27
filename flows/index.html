@@ -255,11 +255,11 @@
 
         <div class="mb-4">
           <div class="flex items-baseline justify-between mb-2 gap-2">
-            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">Daily AUM change (per ticker, USD)</h3>
+            <h3 class="text-xs uppercase tracking-widest text-white font-semibold">Daily net AUM change (USD)</h3>
             <span id="aum-delta-headline" class="text-[10px] text-muted font-mono"></span>
           </div>
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 240px;">
-            <canvas id="chart-etf-aum-delta" role="img" aria-label="Bar chart of the daily change in net assets for each tracked XRP ETF, in US dollars."></canvas>
+            <canvas id="chart-etf-aum-delta" role="img" aria-label="Bar chart of the daily net change in assets across all tracked XRP ETFs, in US dollars. Hover a bar for the change by fund."></canvas>
           </div>
           <p class="text-[10px] text-muted mt-2">Green = AUM rose that day, red = AUM fell. Computed from day-over-day delta of the per-ticker series; first day in the window has no prior reference and is omitted. Aggregator AUM freezes over weekends and US market holidays, so the move accrued across a closed period books on the next trading day. A bar following a closed period reflects multi-day change, not a single session.</p>
         </div>
@@ -635,7 +635,8 @@
     </div>
   </footer>
 
-  <script src="/assets/pages/flows.js?v=4"></script>
+  <script src="/assets/chart-palette.js?v=2"></script>
+  <script src="/assets/pages/flows.js?v=6"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>

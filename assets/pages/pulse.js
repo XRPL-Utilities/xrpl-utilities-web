@@ -1329,7 +1329,23 @@ function renderWhaleSummary(stats) {
   // Each bar's height is its share of the busiest hour. min-height
   // of 1px keeps zero-volume hours visually present so the timeline
   // reads correctly (vs. disappearing entirely).
-  chart.innerHTML = stats.hourly.map((v, i) => {
+  // Scale: the busiest hour's value sits at the top edge of the bars,
+  // and the caption names the peak (design review 2026-10-27: the bars
+  // had no scale at all).
+  const peakIdx = stats.hourly.indexOf(Math.max(...stats.hourly));
+  const peakVal = stats.hourly[peakIdx] || 0;
+  const peakAgo = 23 - peakIdx;
+  const detailEl = document.getElementById('hourly-chart-detail');
+  if (detailEl && peakVal > 0) {
+    const when = peakAgo === 0 ? 'this hour' : `${peakAgo}h ago`;
+    detailEl.dataset.default = `Peak ${fmtUsd(peakVal)}, ${when}`;
+    detailEl.textContent = detailEl.dataset.default;
+  }
+  const scaleLabel = peakVal > 0
+    ? `<span class="absolute text-[9px] text-muted font-mono pointer-events-none" style="left: 6px; top: 1px;" aria-hidden="true">${escapeHtml(fmtUsd(peakVal))}</span>`
+      + `<span class="absolute border-t border-dashed border-border pointer-events-none" style="left: 12px; right: 12px; top: 12px;" aria-hidden="true"></span>`
+    : '';
+  chart.innerHTML = scaleLabel + stats.hourly.map((v, i) => {
     const heightPct = (v / max) * 100;
     const hoursAgo = 23 - i;
     const label = hoursAgo === 0
@@ -1365,7 +1381,7 @@ function renderWhaleSummary(stats) {
       detail.textContent = bar.dataset.detail;
       if (resetTimer) clearTimeout(resetTimer);
       resetTimer = setTimeout(() => {
-        detail.textContent = detail.dataset.default || 'USD, both tiers combined';
+        detail.textContent = detail.dataset.default || 'US dollars, both tiers combined';
       }, 4000);
     };
     chart.addEventListener('click', showDetail);

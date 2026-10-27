@@ -3,47 +3,6 @@
 // ============================================================
 const FLOWS_API = 'https://flows.xrpl-utilities.io';
 
-// Curated 12-color palette. Hash-derived HSL was producing
-// near-duplicate hues for several tickers; a hand-picked palette
-// keeps the stacked-AUM chart legible across the full registry.
-// Order chosen so adjacent stack segments contrast strongly
-// (cyan next to amber, magenta next to lime). Extra colors past
-// index 11 fall back to the hash-derived value so the function
-// stays stable for any future registry growth.
-const TICKER_PALETTE = [
-  '#00b8ff', // cyan (brand)
-  '#f59e0b', // amber
-  '#a855f7', // violet
-  '#10b981', // emerald
-  '#ef4444', // red
-  '#facc15', // yellow
-  '#ec4899', // pink
-  '#22d3ee', // sky
-  '#84cc16', // lime
-  '#fb923c', // orange
-  '#6366f1', // indigo
-  '#14b8a6', // teal
-];
-const _COLOR_BY_LABEL = {};
-let _COLOR_INDEX = 0;
-function labelColor(label) {
-  if (_COLOR_BY_LABEL[label]) return _COLOR_BY_LABEL[label];
-  if (_COLOR_INDEX < TICKER_PALETTE.length) {
-    const c = TICKER_PALETTE[_COLOR_INDEX++];
-    _COLOR_BY_LABEL[label] = c;
-    return c;
-  }
-  // Fallback for any future ticker past index 11; hash-derived,
-  // shifted hue band to avoid colliding with the palette above.
-  let h = 0;
-  for (let i = 0; i < label.length; i++) {
-    h = (h * 31 + label.charCodeAt(i)) >>> 0;
-  }
-  const c = `hsl(${(h % 180) + 180}, 70%, 55%)`;
-  _COLOR_BY_LABEL[label] = c;
-  return c;
-}
-
 function fmtUsd(n) {
   if (n == null) return '-';
   const abs = Math.abs(n);
@@ -180,8 +139,8 @@ function renderMoexIndexPanel(moex) {
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: '#7a8088', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-        y: { ticks: { color: '#7a8088', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        x: { ticks: { color: '#7a8088', font: { size: 9 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#7a8088', font: { size: 10 }, callback: (v) => '$' + Number(v).toFixed(2) }, grid: { color: 'rgba(255,255,255,0.04)' } },
       },
     },
   });
@@ -276,34 +235,29 @@ function renderEtfAumDeltaChart(series, totals, tracked) {
   }));
   const dates = Array.from(dateSet).sort();
 
-  // One bar segment per (date, ticker) where delta != null. Color by
-  // sign so positive moves are emerald, negative rose.
+  // One net bar per day. Per-ticker segments in a single green or red
+  // carried no information (design review 2026-10-27); the split by fund
+  // moves to the tooltip.
   const orderedTickers = tracked.length ? tracked : Object.keys(series).sort();
-  const datasets = orderedTickers.map(ticker => {
-    const tickerRows = series[ticker] || [];
-    const byDate = Object.fromEntries(
-      tickerRows.filter(r => r.aum_delta_usd != null)
-                .map(r => [r.snapshot_date, r.aum_delta_usd])
-    );
-    const data = dates.map(d => byDate[d] ?? null);
-    const colors = data.map(v =>
-      v == null ? 'rgba(0,0,0,0)'
-                : v >= 0 ? 'rgba(74, 222, 128, 0.78)'
-                         : 'rgba(248, 113, 113, 0.78)'
-    );
-    return {
-      label: ticker,
-      data,
-      backgroundColor: colors,
-      borderWidth: 0,
-      stack: 'delta',
-      // Floor non-zero segments so a small real move (e.g. the European
-      // ETPs on a US market holiday like 2026-05-25 Memorial Day, when US
-      // funds are flat) is visible instead of reading as a gap. Exact-zero
-      // segments stay invisible, so a true no-change day still shows flat.
-      minBarLength: 2,
-    };
+  const perDay = dates.map(d => {
+    const moves = [];
+    orderedTickers.forEach(t => {
+      const row = (series[t] || []).find(r => r.snapshot_date === d);
+      if (row && row.aum_delta_usd != null && row.aum_delta_usd !== 0) moves.push([t, row.aum_delta_usd]);
+    });
+    moves.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+    return { net: moves.reduce((acc, m) => acc + m[1], 0), moves };
   });
+  const netData = perDay.map(p => p.net);
+  const datasets = [{
+    label: 'Net change',
+    data: netData,
+    backgroundColor: netData.map(v => (v >= 0 ? XRChart.UP : XRChart.DOWN)),
+    borderWidth: 0,
+    borderRadius: 2,
+    // Keep a real but small move visible next to large days.
+    minBarLength: 2,
+  }];
 
   // Daily net total for the headline.
   let totalAbsMoved = 0;
@@ -345,15 +299,19 @@ function renderEtfAumDeltaChart(series, totals, tracked) {
             label: (item) => {
               const v = item.parsed.y;
               if (v == null) return null;
-              const sign = v >= 0 ? '+' : '-';
-              return `${item.dataset.label}: ${sign}${fmtUsd(Math.abs(v))}`;
+              return `Net: ${v >= 0 ? '+' : '-'}${fmtUsd(Math.abs(v))}`;
+            },
+            afterBody: (items) => {
+              const p = items.length ? perDay[items[0].dataIndex] : null;
+              if (!p) return [];
+              return p.moves.slice(0, 8).map(([t, v]) => `  ${t}: ${v >= 0 ? '+' : '-'}${fmtUsd(Math.abs(v))}`);
             },
           },
         },
       },
       scales: {
-        x: { stacked: true, ticks: { color: '#7a8088', font: { size: 9 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: 'rgba(255,255,255,0.04)' } },
-        y: { stacked: true, ticks: { color: '#7a8088', font: { size: 10 }, callback: (v) => fmtUsd(v) }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        x: { ticks: { color: '#7a8088', font: { size: 9 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { title: { display: true, text: 'US dollars', color: '#7a8088', font: { size: 10 } }, ticks: { color: '#7a8088', font: { size: 10 }, callback: (v) => XRChart.compact(v, '$') }, grid: { color: 'rgba(255,255,255,0.04)' } },
       },
     },
   });
@@ -380,16 +338,42 @@ function renderEtfAumChart(series, totals, tracked) {
 
   const orderedTickers = tracked.length ? tracked : Object.keys(series).sort();
 
-  const datasets = orderedTickers.map(ticker => {
-    const tickerSeries = series[ticker] || [];
-    const byDate = Object.fromEntries(tickerSeries.map(r => [r.snapshot_date, r.aum_usd]));
-    return {
-      label: ticker,
-      data: dates.map(d => byDate[d] ?? null),
-      backgroundColor: labelColor(ticker),
-      borderWidth: 0,
-    };
+  // Top 5 funds by latest AUM in fixed colors, the rest in one grey
+  // "Other" band (design review 2026-10-27: 15 stacked colors could not be
+  // told apart). The tooltip still names every fund.
+  const byTicker = {};
+  orderedTickers.forEach(t => {
+    byTicker[t] = Object.fromEntries((series[t] || []).map(r => [r.snapshot_date, r.aum_usd]));
   });
+  const latestAum = (t) => {
+    for (let k = dates.length - 1; k >= 0; k--) {
+      const v = byTicker[t][dates[k]];
+      if (v != null) return v;
+    }
+    return 0;
+  };
+  const { top, rest } = XRChart.topN(orderedTickers, latestAum);
+  const datasets = top.map((ticker, k) => ({
+    label: ticker,
+    data: dates.map(d => byTicker[ticker][d] ?? null),
+    backgroundColor: XRChart.SERIES[k],
+    borderColor: XRChart.GAP,
+    borderWidth: { top: 2 },
+  }));
+  if (rest.length) {
+    datasets.push({
+      label: `Other ${rest.length} funds`,
+      data: dates.map(d => {
+        let sum = 0; let any = false;
+        rest.forEach(t => { const v = byTicker[t][d]; if (v != null) { sum += v; any = true; } });
+        return any ? sum : null;
+      }),
+      backgroundColor: XRChart.OTHER,
+      borderColor: XRChart.GAP,
+      borderWidth: { top: 2 },
+      otherTickers: rest,
+    });
+  }
 
   // Headline: latest total + ticker count contributing
   const headlineEl = document.getElementById('aum-total-headline');
@@ -443,12 +427,24 @@ function renderEtfAumChart(series, totals, tracked) {
         tooltip: {
           backgroundColor: '#0a0d10', titleColor: '#ffffff', bodyColor: '#c8d0d8',
           borderColor: '#2a3038', borderWidth: 1,
-          callbacks: { label: (item) => `${item.dataset.label}: ${fmtUsd(item.parsed.y)}` },
+          callbacks: {
+            label: (item) => `${item.dataset.label}: ${fmtUsd(item.parsed.y)}`,
+            afterLabel: (item) => {
+              const others = item.dataset.otherTickers;
+              if (!others) return [];
+              const d = dates[item.dataIndex];
+              return others
+                .map(t => [t, byTicker[t][d]])
+                .filter(([, v]) => v != null)
+                .sort((a, b) => b[1] - a[1])
+                .map(([t, v]) => `  ${t}: ${fmtUsd(v)}`);
+            },
+          },
         },
       },
       scales: {
         x: { stacked: true, ticks: { color: '#7a8088', font: { size: 9 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: 'rgba(255,255,255,0.04)' } },
-        y: { stacked: true, ticks: { color: '#7a8088', font: { size: 10 }, callback: (v) => fmtUsd(v) }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { stacked: true, title: { display: true, text: 'US dollars', color: '#7a8088', font: { size: 10 } }, ticks: { color: '#7a8088', font: { size: 10 }, callback: (v) => XRChart.compact(v, '$') }, grid: { color: 'rgba(255,255,255,0.04)' } },
       },
     },
   });
@@ -502,10 +498,10 @@ function renderChainFlowChart(chainFlow, correlation, requestedDays) {
 
   const fillFor = (v, ip) => {
     const pos = (v ?? 0) >= 0;
-    if (ip) return pos ? 'rgba(74, 222, 128, 0.22)' : 'rgba(248, 113, 113, 0.22)';
-    return pos ? 'rgba(74, 222, 128, 0.65)' : 'rgba(248, 113, 113, 0.65)';
+    const c = pos ? XRChart.UP : XRChart.DOWN;
+    return ip ? c + '38' : c;
   };
-  const strokeFor = (v) => ((v ?? 0) >= 0 ? 'rgb(74, 222, 128)' : 'rgb(248, 113, 113)');
+  const strokeFor = (v) => ((v ?? 0) >= 0 ? XRChart.UP : XRChart.DOWN);
 
   if (chainChart) chainChart.destroy();
   chainChart = new Chart(ctx, {
@@ -541,6 +537,8 @@ function renderChainFlowChart(chainFlow, correlation, requestedDays) {
           ticks: {
             color: '#7a8088',
             font: { size: 9 },
+            maxRotation: 0,
+            autoSkipPadding: 12,
             callback: function(value, index) {
               const lbl = this.getLabelForValue(value);
               return inProgress[index] ? `${lbl} *` : lbl;
@@ -548,7 +546,7 @@ function renderChainFlowChart(chainFlow, correlation, requestedDays) {
           },
           grid: { color: 'rgba(255,255,255,0.04)' },
         },
-        y: { ticks: { color: '#7a8088', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { title: { display: true, text: 'XRP', color: '#7a8088', font: { size: 10 } }, ticks: { color: '#7a8088', font: { size: 10 }, callback: (v) => XRChart.compact(v, 'XRP') }, grid: { color: 'rgba(255,255,255,0.04)' } },
       },
     },
   });

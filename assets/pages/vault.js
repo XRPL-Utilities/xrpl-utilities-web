@@ -793,19 +793,6 @@ pollWhileVisible(loadXls85Totals, 60000);
 // ============================================================
 const VAULT_API = 'https://vault.xrpl-utilities.io';
 
-// Deterministic per-label color so each issuer keeps the same hue
-// across re-renders. Hash on the logical_label so new issuers
-// (added via Pulse registry promotion) get a stable color without
-// any hardcoded map here.
-function labelColor(label) {
-  let h = 0;
-  for (let i = 0; i < label.length; i++) {
-    h = (h * 31 + label.charCodeAt(i)) >>> 0;
-  }
-  const hue = h % 360;
-  return `hsl(${hue}, 65%, 58%)`;
-}
-
 let settlementChart = null;
 let usdFlowChart = null;
 let currentFlowRange = 30;
@@ -879,12 +866,28 @@ function renderSettlementEventsChart(daily, tracked) {
     });
   });
   const orderedLabels = Array.from(seen).sort();
-  const datasets = orderedLabels.map(lbl => ({
+  // Top 4 issuers by events in the window keep fixed colors; the rest
+  // fold into grey "Other" (design review 2026-10-27: hashed hues put
+  // four issuers in near-identical reds). The tooltip names each one.
+  const countFor = (lbl) => daily.reduce((acc, d) => acc + ((d.by_logical_label || {})[lbl] || 0), 0);
+  const { top, rest } = XRChart.topN(orderedLabels, countFor, 4);
+  const datasets = top.map((lbl, k) => ({
     label: lbl,
     data: daily.map(d => (d.by_logical_label || {})[lbl] || 0),
-    backgroundColor: labelColor(lbl),
-    borderWidth: 0,
+    backgroundColor: XRChart.SERIES[k],
+    borderColor: XRChart.GAP,
+    borderWidth: { top: 2 },
   }));
+  if (rest.length) {
+    datasets.push({
+      label: `Other ${rest.length} issuers`,
+      data: daily.map(d => rest.reduce((acc, lbl) => acc + ((d.by_logical_label || {})[lbl] || 0), 0)),
+      backgroundColor: XRChart.OTHER,
+      borderColor: XRChart.GAP,
+      borderWidth: { top: 2 },
+      otherLabels: rest,
+    });
+  }
 
   const total = daily.reduce((acc, d) => {
     const labels = d.by_logical_label || {};
@@ -931,6 +934,18 @@ function renderSettlementEventsChart(daily, tracked) {
           bodyColor: '#c8d0d8',
           borderColor: '#2a3038',
           borderWidth: 1,
+          filter: (item) => item.parsed.y > 0,
+          callbacks: {
+            afterLabel: (item) => {
+              const others = item.dataset.otherLabels;
+              if (!others) return [];
+              const by = daily[item.dataIndex].by_logical_label || {};
+              return others
+                .filter(lbl => (by[lbl] || 0) > 0)
+                .sort((a, b) => by[b] - by[a])
+                .map(lbl => `  ${lbl}: ${by[lbl]}`);
+            },
+          },
         },
       },
       scales: {
@@ -941,6 +956,7 @@ function renderSettlementEventsChart(daily, tracked) {
         },
         y: {
           stacked: true,
+          title: { display: true, text: 'Mint and burn events', color: '#7a8088', font: { size: 10 } },
           ticks: { color: '#7a8088', font: { size: 10 }, precision: 0 },
           grid: { color: 'rgba(255,255,255,0.04)' },
         },
@@ -985,9 +1001,9 @@ function renderUsdPeggedChart(daily, usdClasses, tracked) {
       datasets: [{
         label: 'Net USD flow',
         data: netData,
-        backgroundColor: netData.map(v => v >= 0 ? 'rgba(74, 222, 128, 0.65)' : 'rgba(248, 113, 113, 0.65)'),
-        borderColor: netData.map(v => v >= 0 ? 'rgb(74, 222, 128)' : 'rgb(248, 113, 113)'),
-        borderWidth: 1,
+        backgroundColor: netData.map(v => (v >= 0 ? XRChart.UP : XRChart.DOWN)),
+        borderWidth: 0,
+        borderRadius: 2,
       }],
     },
     options: {
@@ -1004,7 +1020,7 @@ function renderUsdPeggedChart(daily, usdClasses, tracked) {
           callbacks: {
             label: (item) => {
               const v = item.parsed.y || 0;
-              const sign = v >= 0 ? '+' : '−';
+              const sign = v >= 0 ? '+' : '-';
               return `${sign}$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
             },
           },
@@ -1016,16 +1032,11 @@ function renderUsdPeggedChart(daily, usdClasses, tracked) {
           grid: { color: 'rgba(255,255,255,0.04)' },
         },
         y: {
+          title: { display: true, text: 'US dollars', color: '#7a8088', font: { size: 10 } },
           ticks: {
             color: '#7a8088',
             font: { size: 10 },
-            callback: (v) => {
-              const abs = Math.abs(v);
-              const sign = v < 0 ? '-' : '';
-              if (abs >= 1_000_000) return `${sign}$${(abs/1_000_000).toFixed(1)}M`;
-              if (abs >= 1_000) return `${sign}$${(abs/1_000).toFixed(0)}K`;
-              return `${sign}$${abs}`;
-            },
+            callback: (v) => XRChart.compact(v, '$'),
           },
           grid: { color: 'rgba(255,255,255,0.04)' },
         },
