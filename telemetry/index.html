@@ -6,15 +6,15 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <title>XR-Telemetry | Live XRPL macro telemetry</title>
-  <meta name="description" content="On-chain XRPL macro telemetry: supply constriction, regional liquidity, AMM depth, and a utility-floor projection. Agent-payable, $0.10 per snapshot." />
+  <meta name="description" content="On-chain XRPL macro telemetry: supply constriction, regional liquidity, AMM depth, and a utility-floor scenario calculator. Agent-payable, $0.10 per snapshot." />
   <meta property="og:title" content="XR-Telemetry" />
-  <meta property="og:description" content="XRPL Macro Telemetry. Supply, liquidity, AMM depth, and utility-floor projection. Agent-payable, $0.10 per snapshot." />
+  <meta property="og:description" content="XRPL Macro Telemetry. Supply, liquidity, AMM depth, and utility-floor scenarios. Agent-payable, $0.10 per snapshot." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/telemetry/" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="XR-Telemetry" />
-  <meta name="twitter:description" content="XRPL Macro Telemetry. Supply, liquidity, AMM depth, and utility-floor projection. Agent-payable, $0.10 per snapshot." />
+  <meta name="twitter:description" content="XRPL Macro Telemetry. Supply, liquidity, AMM depth, and utility-floor scenarios. Agent-payable, $0.10 per snapshot." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
   <link rel="canonical" href="https://xrpl-utilities.com/telemetry/" />
   <script type="application/ld+json">
@@ -27,7 +27,7 @@
         "name": "XR-Telemetry",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any (HTTP API)",
-        "description": "On-chain XRPL macro telemetry: supply constriction, regional liquidity flows, AMM depth, and an implied utility-floor projection.",
+        "description": "On-chain XRPL macro telemetry: supply constriction, regional liquidity flows, AMM depth, and an implied utility-floor scenario calculator.",
         "url": "https://xrpl-utilities.com/telemetry/",
         "image": "https://xrpl-utilities.com/assets/xr-telemetry.png",
         "publisher": {
@@ -65,7 +65,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js" integrity="sha384-G436+Z2nlA8+PNoeRvWdxKbvOf8E/y+lYxqht2iBwNHTQDV5CJr3+AGVj8fGZi5t" crossorigin="anonymous"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
-  <script src="/assets/glossary-tooltip.js?v=m5" defer></script>
+  <script src="/assets/glossary-tooltip.js?v=m6" defer></script>
   <script src="/assets/api-resilient.js?v=v2"></script>
   <script src="/assets/preview-token.js?v=v1"></script>
   <script src="/assets/vendor/qrcode-generator.min.js?v=2.0.4"></script>
@@ -305,7 +305,7 @@
           <div class="bg-ink border border-accent rounded-lg p-6 text-center">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-1">P &middot; Required equilibrium price</div>
             <div id="bm-p" class="text-4xl sm:text-5xl font-bold tracking-tight">-</div>
-            <div class="text-xs text-muted mt-2">USD per XRP &middot; algorithmic utility floor</div>
+            <div class="text-xs text-muted mt-2">USD per XRP &middot; settlement-math floor</div>
           </div>
           <div class="bg-ink border border-border rounded-lg p-6 text-center">
             <div class="text-xs uppercase tracking-widest text-muted font-semibold mb-1">Current spot</div>
@@ -541,16 +541,16 @@
 
   <section id="floor-matrix" class="border-t border-border">
     <div class="max-w-5xl mx-auto px-6 py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Predictive Floor Matrix</h2>
-      <h3 class="text-3xl font-bold mb-2">24-month projection</h3>
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Floor Scenarios</h2>
+      <h3 class="text-3xl font-bold mb-2">24-month what-if</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        Burst Math gives you a price today. Real networks compound: supply tightens, settlement grows. Pick monthly rates below and the math projects forward 24 months. Shaded band is a &plusmn;15% visual envelope, not a confidence interval. Grey dashed line is today's market price.
+        Pick monthly rates for supply and settlement growth and see where the Burst Math floor lands after 24 months. It is a what-if, not a forecast. Grey dashed line is today's market price.
       </p>
 
       <div class="grid lg:grid-cols-3 gap-6">
         <div class="bg-panel border border-border rounded-2xl p-6 lg:col-span-2">
           <div class="bg-ink border border-border rounded-lg p-4">
-            <canvas id="floor-chart" role="img" aria-label="Line chart of the 24-month projected price floor under the stated volume and velocity assumptions. The values are listed in the matrix on this page." height="300"></canvas>
+            <canvas id="floor-chart" role="img" aria-label="Line chart of the settlement-math floor over 24 months under the monthly rates you pick. The values are listed in the matrix on this page." height="300"></canvas>
           </div>
           <div id="fm-warning" class="hidden mt-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 rounded-lg px-3 py-2 text-xs leading-relaxed"></div>
           <div class="text-xs text-muted mt-3 text-center">
@@ -586,7 +586,7 @@
           </div>
 
           <div class="bg-ink border border-border rounded-lg p-4 text-sm">
-            <div class="text-xs text-muted uppercase tracking-wider mb-1">Projected price at month 24</div>
+            <div class="text-xs text-muted uppercase tracking-wider mb-1">Floor at month 24 under these inputs</div>
             <div id="fm-p24" class="font-mono font-medium">-</div>
           </div>
         </div>
@@ -821,7 +821,7 @@ payload = requests.get(
     <div class="max-w-4xl mx-auto px-6 py-12">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Safe harbor &amp; compliance</h2>
       <p class="text-muted leading-relaxed text-sm">
-        XR-Telemetry produces on-chain telemetry and an algebraic implied-floor computation. Not a price prediction, investment recommendation, or financial advice. Burst Math and Floor Matrix are sensitivity tools. They show what the math implies under explicit assumptions, not what XRP will or should be priced at.
+        XR-Telemetry produces on-chain telemetry and an algebraic implied-floor computation. Not a price prediction, investment recommendation, or financial advice. Burst Math and Floor Scenarios are sensitivity tools. They show what the math implies under explicit assumptions, not what XRP will or should be priced at.
       </p>
       <p class="text-muted leading-relaxed text-sm mt-4">
         Users are responsible for complying with local digital asset and AI regulations, including the California Digital Financial Assets Law and the Colorado AI Act where applicable.
@@ -927,7 +927,7 @@ payload = requests.get(
     </div>
   </footer>
 
-  <script src="/assets/pages/telemetry.js?v=m5"></script>
+  <script src="/assets/pages/telemetry.js?v=m6"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>

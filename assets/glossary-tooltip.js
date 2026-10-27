@@ -119,11 +119,11 @@
     },
     "labeled-wallet": {
       title: "Labeled-wallet layer",
-      body: "Wallets whose public label resolves to a known entity (exchange, custodian, issuer). Cross-border classification only counts Payments where BOTH ends are in this layer; unlabeled wallets are invisible to the signal."
+      body: "Wallets we can tie to a known exchange, custodian or issuer. The cross-border view only counts payments where both ends are known wallets."
     },
     "jurisdiction-map": {
-      title: "wallet_jurisdiction map",
-      body: "Operator-curated table mapping public wallet labels to ISO-3166 countries with a one-line HQ citation each (regulatory filing, official disclosure). 47 labels across 18 countries today. Auditable: every entry has a source, git history shows every change."
+      title: "Wallet locations",
+      body: "Each known wallet is placed in the country where its company is based, backed by a public filing or official disclosure."
     },
     "funded-wallets": {
       title: "Funded XRPL wallets",

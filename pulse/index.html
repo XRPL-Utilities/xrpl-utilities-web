@@ -69,7 +69,7 @@
   <script src="/assets/api-resilient.js?v=v2"></script>
   <script src="/assets/poll.js?v=1"></script>
   <script src="/assets/preview-token.js?v=v1"></script>
-  <script src="/assets/glossary-tooltip.js?v=m5" defer></script>
+  <script src="/assets/glossary-tooltip.js?v=m6" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
   <style>
@@ -752,7 +752,7 @@ feed = resp.json()
         <span class="text-white">On-chain stream.</span> The watcher reads validated XRPL ledgers continuously. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger position, currency (XRP or RLUSD), and full sender + receiver addresses. Where either address resolves to a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
       </p>
       <p class="text-sm text-muted leading-relaxed mt-4">
-        <span class="text-white">RWA supply stream.</span> Per-issuer mint and burn detection runs in two parallel paths. The Payment classifier catches direct issuer-to-holder IOU Payments and the redemption pattern (holder returns IOU to issuer). The <span class="gloss" data-term="obligations-delta">obligations-delta</span> watcher fires when an issuer's outstanding obligations change by more than the configured threshold between passes, which catches DEX-mediated mints the Payment classifier misses (Ripple brings RLUSD into circulation via OfferCreate on the XRPL DEX, not direct Payments). Both surface as event cards with the issuer, asset, and direction; the latter explicitly tags inference_method=obligations_delta so consumers can tell the two apart.
+        <span class="text-white">RWA supply stream.</span> Each tracked issuer gets an event when it mints or redeems tokens, or when its outstanding supply moves by more than a set amount between reads. Supply-change events catch mints that happen through the XRPL DEX rather than a direct payment, and they are labeled so you can tell them apart.
       </p>
     </div>
   </section>
@@ -919,7 +919,7 @@ feed = resp.json()
     </div>
   </footer>
 
-  <script src="/assets/pages/pulse.js?v=m6"></script>
+  <script src="/assets/pages/pulse.js?v=m7"></script>
   <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>
