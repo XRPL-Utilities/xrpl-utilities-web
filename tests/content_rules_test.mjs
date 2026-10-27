@@ -128,5 +128,23 @@ else if (firstWallet !== -1 && warnAt > firstWallet) fail('tip: the payments-are
 const start = fs.readFileSync(path.join(repo, 'start/index.html'), 'utf8');
 if (!start.includes('our reference agent')) fail('start: the live-proof settlement must say it was our reference agent');
 
+// Footer link columns drifted page to page (2026-10-27: the 404, terms,
+// status and tip footers had no Lineage or Foundation, six pages lacked the
+// MCP link). Every page's Products, Developers and Legal columns must match
+// the home page's.
+const footerCol = (html, h) => {
+  const m = html.match(new RegExp('>' + h + '</h4>\\s*<ul[^>]*>([\\s\\S]*?)</ul>'));
+  return m ? [...m[1].matchAll(/href="([^"]+)"/g)].map((x) => x[1]).join(' ') : null;
+};
+const home = fs.readFileSync(path.join(repo, 'index.html'), 'utf8');
+for (const col of ['Products', 'Developers', 'Legal']) {
+  const want = footerCol(home, col);
+  if (!want) { fail(`index.html: footer ${col} column not found`); continue; }
+  for (const f of pages) {
+    const got = footerCol(fs.readFileSync(f, 'utf8'), col);
+    if (got !== null && got !== want) fail(`${path.relative(repo, f)}: footer ${col} links differ from the home page`);
+  }
+}
+
 console.log(`content rules: ${pages.length} pages + ${scripts.length} scripts, ${BANNED.length} banned patterns + canonical footer`);
 process.exit(fails ? 1 : 0);
