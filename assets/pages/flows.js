@@ -704,6 +704,7 @@ pollWhileVisible(loadTrackedEtfsGrid, 3600 * 1000);
   const elCorridors  = document.getElementById('xb-corridors');
   const elCoverage   = document.getElementById('xb-coverage');
   const elCaveat     = document.getElementById('xb-caveat');
+  const XB_NOTE = 'Read country totals as a direction, not an exact count. Most XRPL wallets have no known location, so this shows exchange, custodian and issuer flow, and a company with offices in several countries is counted where it is based.';
   const elTooltip    = document.getElementById('xb-tooltip');
 
   function fmtUsdCompact(n) {
@@ -737,15 +738,25 @@ pollWhileVisible(loadTrackedEtfsGrid, 3600 * 1000);
     elHeadline.textContent = `${xb.toLocaleString('en-US')} edges · ${fmtUsdCompact(usd)} · ${windowDays}d window`;
   }
 
+  // Country codes read as jargon on a public page; show the English
+  // country name and keep the code for hover.
+  let _regionNames = null;
+  try { _regionNames = new Intl.DisplayNames(['en'], { type: 'region' }); } catch { _regionNames = null; }
+  function countryName(iso) {
+    const code = String(iso || '').toUpperCase();
+    if (!/^[A-Z]{2}$/.test(code) || !_regionNames) return code;
+    try { return _regionNames.of(code) || code; } catch { return code; }
+  }
+
   function renderCorridors(corridors) {
     if (!elCorridors) return;
     if (!corridors || corridors.length === 0) {
-      elCorridors.innerHTML = '<div class="text-muted">No cross-border edges in this window yet. Coverage accrues as labeled-wallet whale Payments fire.</div>';
+      elCorridors.innerHTML = '<div class="text-muted">No cross-border payments in this window yet.</div>';
       return;
     }
     elCorridors.innerHTML = corridors.slice(0, 10).map(c =>
       `<div class="flex items-baseline justify-between gap-2 border-b border-border/40 pb-1">` +
-        `<span><span class="text-white">${escapeHtml(c.origin_iso)}</span> <span class="text-muted">&rarr;</span> <span class="text-white">${escapeHtml(c.dest_iso)}</span></span>` +
+        `<span><span class="text-white" title="${escapeHtml(c.origin_iso)}">${escapeHtml(countryName(c.origin_iso))}</span> <span class="text-muted">&rarr;</span> <span class="text-white" title="${escapeHtml(c.dest_iso)}">${escapeHtml(countryName(c.dest_iso))}</span></span>` +
         `<span class="text-emerald-400">${escapeHtml(fmtUsdCompact(c.usd_total))}</span>` +
       `</div>`
     ).join('');
@@ -757,7 +768,8 @@ pollWhileVisible(loadTrackedEtfsGrid, 3600 * 1000);
     const seen = coverage.whale_events_seen || 0;
     const labeled = coverage.both_sides_labeled || 0;
     const labeledPct = coverage.labeled_pct_of_seen;
-    elCoverage.textContent = `${seen} whale Payments observed; ${labeled} (${labeledPct !== null ? labeledPct.toFixed(0) + '%' : 'n/a'}) had both sides labeled. Jurisdiction map: ${coverage.jurisdiction_label_count} labels across ${coverage.jurisdiction_country_count} countries.`;
+    const pct = typeof labeledPct === 'number' ? ' (' + labeledPct.toFixed(0) + '%)' : '';
+    elCoverage.textContent = `${seen.toLocaleString('en-US')} large payments seen; ${labeled.toLocaleString('en-US')}${pct} could be placed in a country at both ends.`;
   }
 
   function renderMap(perCountry, corridors) {
@@ -950,9 +962,9 @@ pollWhileVisible(loadTrackedEtfsGrid, 3600 * 1000);
     setHeadline(body.coverage, currentWindow);
     renderCorridors(body.top_corridors || []);
     renderCoverage(body.coverage);
-    if (elCaveat && body.methodology && body.methodology.coverage_caveat) {
-      elCaveat.textContent = body.methodology.coverage_caveat;
-    }
+    // The API's caveat field explains the method; the page keeps a
+    // plain reading note instead.
+    if (elCaveat) elCaveat.textContent = XB_NOTE;
     if (features) {
       document.getElementById('xb-map-unavailable')?.remove();
       renderMap(body.per_country || [], body.top_corridors || []);

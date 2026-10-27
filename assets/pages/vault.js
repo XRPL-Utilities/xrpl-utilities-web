@@ -350,7 +350,6 @@ function renderIssuerTiles(issuers) {
     const cls = i.asset_class || '';
     const status = i.mint_status || 'live';
     const isMpt = i.token_standard === 'mpt';
-    const caveat = i.caveat ? `<div class="text-[10px] text-muted mt-3 leading-snug border-t border-border pt-3">${escapeHtml(i.caveat)}</div>` : '';
     const net = i.net_24h || '0';
     // MPTs (XLS-33) use MPToken holder objects, not trustlines, and the
     // snapshot doesn't enumerate holders, so show n/a rather than a
@@ -407,7 +406,6 @@ function renderIssuerTiles(issuers) {
           </div>
         </div>
         ${renderIssuerActivityChips(i)}
-        ${caveat}
       </a>
     `;
   }).join('');
@@ -447,12 +445,7 @@ async function overlayTokenHealth() {
       const badge = `<div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border">`
         + `<span class="inline-flex items-center gap-1 text-[10px] font-semibold text-white" title="Health score ${escapeHtml(h.total)}/50"><span class="inline-block w-2 h-2 rounded-full ${totalColor}"></span>${escapeHtml(h.total)}/50</span>`
         + dots + `</div>`;
-      const caveatEl = tile.querySelector('.border-t.border-border.pt-3');
-      if (caveatEl) {
-        caveatEl.insertAdjacentHTML('beforebegin', badge);
-      } else {
-        tile.insertAdjacentHTML('beforeend', badge);
-      }
+      tile.insertAdjacentHTML('beforeend', badge);
     }
   } catch {
     // Best-effort overlay; tiles render fine without it.

@@ -666,7 +666,7 @@ document.querySelectorAll('.sv-bucket-btn').forEach(btn => {
   });
 });
 
-// ---- Predictive Floor Matrix ----
+// ---- Floor Scenarios (24-month what-if) ----
 const fmConstriction = document.getElementById('fm-constriction');
 const fmGrowth = document.getElementById('fm-growth');
 const fmConstrictionVal = document.getElementById('fm-constriction-val');
@@ -774,7 +774,7 @@ function updateFloorChart() {
     chart.data.datasets[1].data = [];
     chart.data.datasets[2].data = [];
     chart.update('none');
-    showWarning('Enter a positive Q and V in the Burst Math calculator above to anchor the projection.');
+    showWarning('Enter a positive Q and V in the Burst Math calculator above to anchor the scenario.');
     return;
   }
   fmP0.textContent = fmtUsdEq(p0);
@@ -793,14 +793,14 @@ function updateFloorChart() {
   if (cPct >= 100) {
     warning = 'Constriction at or above 100% has no physical interpretation. Supply cannot shrink to zero in one month.';
   } else if (!isFinite(p24)) {
-    warning = 'Projection is undefined for these inputs.';
+    warning = 'The scenario is undefined for these inputs.';
   } else {
     const supplyRemaining = Math.pow(1 - cPct / 100, HORIZON);
     const ratio = p24 / p0;
     if (ratio > 10) {
       warning = `These inputs imply a ${ratio.toFixed(1)}× price by month 24. That's an extreme scenario. The model assumes V is constant and ignores velocity feedback, regulatory shocks, and AMM depth.`;
     } else if (ratio > 5) {
-      warning = `Inputs imply a ${ratio.toFixed(1)}× projection by month 24. Constriction cannot compound indefinitely in reality; treat as sensitivity, not forecast.`;
+      warning = `These inputs imply a ${ratio.toFixed(1)}× floor by month 24. Constriction cannot compound forever, so read this as a what-if, not a forecast.`;
     } else if (supplyRemaining < 0.3) {
       warning = `At this constriction rate, only ${(supplyRemaining * 100).toFixed(0)}% of liquid supply remains by month 24. Implausible without a major regime change.`;
     }
