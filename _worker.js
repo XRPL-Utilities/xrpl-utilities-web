@@ -399,6 +399,14 @@ function catalogResponse(body) {
   });
 }
 
+// Every page directory on the site (each holds an index.html). Keep in step
+// with the matching entries in wrangler.jsonc run_worker_first; the SEO test
+// checks both against the pages in the repo.
+const PAGE_DIRS = new Set([
+  "/start", "/sentinel", "/sentinel/bulk", "/telemetry", "/pulse", "/trust",
+  "/vault", "/flows", "/lineage", "/pricing", "/status", "/contact", "/tip", "/terms",
+]);
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -443,9 +451,23 @@ export default {
       return handleX402Catalog();
     }
 
+    // A page URL without its trailing slash. The assets layer would answer
+    // with a 307 (temporary), which tells search engines both URLs are live;
+    // a 301 settles on the canonical one. wrangler.jsonc routes exactly
+    // these paths to the Worker.
+    if (PAGE_DIRS.has(url.pathname)) {
+      return Response.redirect(`${url.origin}${url.pathname}/${url.search}`, 301);
+    }
+
     // Everything else: static assets bound at env.ASSETS via wrangler.jsonc
-    // assets.directory. Returns 404 for paths not present in the directory,
-    // which is the existing pre-Worker behavior.
-    return env.ASSETS.fetch(request);
+    // assets.directory. A path with no asset gets the site's 404 page, with
+    // a 404 status so it is never indexed as a real page.
+    const res = await env.ASSETS.fetch(request);
+    if (res.status !== 404 || (request.method !== "GET" && request.method !== "HEAD")) {
+      return res;
+    }
+    const notFound = await env.ASSETS.fetch(new Request(new URL("/404", url), { method: request.method }));
+    if (!notFound.ok) return res;
+    return new Response(notFound.body, { status: 404, headers: notFound.headers });
   },
 };

@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <title>XR-Flows | ETF flow meets the ledger</title>
-  <meta name="description" content="ETF AUM and XRPL on-chain flow, plotted side by side. Daily AUM across US spot XRP ETFs, indirect-basket funds, and European XRP ETPs, overlaid with XRPL exchange-flow delta. Correlation only, never causation." />
+  <meta name="description" content="Daily AUM for spot XRP ETFs and European XRP ETPs, plotted against XRPL exchange flow. Correlation only, never causation. Free on the web." />
   <meta property="og:title" content="XR-Flows" />
   <meta property="og:description" content="ETF flow meets the ledger. Spot XRP ETF AUM and XRPL on-chain flow plotted side by side, daily. Correlation, not causation." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
@@ -30,13 +32,29 @@
           "name": "XRPL-Utilities",
           "url": "https://xrpl-utilities.com",
           "logo": "https://xrpl-utilities.com/assets/logo.png"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.10",
+          "priceCurrency": "USD",
+          "description": "Per-call fee, payable in XRP/RLUSD on XRPL or USDC on Base via x402 protocol"
         }
       },
       {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "XRPL-Utilities", "item": "https://xrpl-utilities.com/" },
-          { "@type": "ListItem", "position": 2, "name": "XR-Flows", "item": "https://xrpl-utilities.com/flows/" }
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "XRPL-Utilities",
+            "item": "https://xrpl-utilities.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "XR-Flows",
+            "item": "https://xrpl-utilities.com/flows/"
+          }
         ]
       }
     ]
@@ -46,7 +64,6 @@
   <meta name="twitter:title" content="XR-Flows" />
   <meta name="twitter:description" content="ETF flow meets the ledger. Spot XRP ETF AUM and XRPL on-chain flow plotted side by side, daily. Correlation, not causation." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
-  <link rel="icon" type="image/png" href="/assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -602,6 +619,7 @@
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
           <ul class="space-y-3 text-sm">
             <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/status/"  class="text-muted hover:text-white transition">Service status</a></li>
             <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
             <li><a href="/tip/"     class="text-accent hover:text-white transition">Tip the maker</a></li>
           </ul>

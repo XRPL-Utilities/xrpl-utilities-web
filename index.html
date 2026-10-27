@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <title>XRPL-Utilities | XRPL data services for institutions, developers, and AI agents</title>
-  <meta name="description" content="Six agent-payable XRPL data APIs plus the free Lineage view, covering wallet behavior, network state, signal feed, permissioned domains, real-world assets, ETF flow. Free on the web. Agent-payable via x402: XRP/RLUSD on XRPL or USDC on Base. No accounts, no API keys." />
+  <meta name="description" content="XRPL data for AI agents and people: wallet behavior, network flows, events, permissioned domains, RWAs and ETF flows. Free on the web, $0.10 per call over x402." />
   <meta property="og:title" content="XRPL-Utilities" />
   <meta property="og:description" content="XRPL data services for institutions, developers, and AI agents. Six on-chain APIs. Free on the web, agent-payable via x402: XRP/RLUSD on XRPL or USDC on Base." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
@@ -15,7 +17,6 @@
   <meta name="twitter:description" content="XRPL data services for institutions, developers, and AI agents. Six on-chain APIs. Free on the web, agent-payable via x402: XRP/RLUSD on XRPL or USDC on Base." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
   <link rel="canonical" href="https://xrpl-utilities.com/" />
-  <link rel="icon" type="image/png" href="/assets/logo.png" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -27,7 +28,25 @@
         "url": "https://xrpl-utilities.com",
         "logo": "https://xrpl-utilities.com/assets/logo.png",
         "description": "XRPL AI Agent Applications. A growing suite of XRPL-native data APIs, agent-payable over x402 in XRP or RLUSD on XRPL, or USDC on Base. Built for the agentic economy.",
-        "sameAs": ["https://github.com/XRPL-Utilities"]
+        "sameAs": [
+          "https://github.com/XRPL-Utilities"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "hello@xrpl-utilities.com",
+          "url": "https://xrpl-utilities.com/contact/"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://xrpl-utilities.com/#website",
+        "url": "https://xrpl-utilities.com/",
+        "name": "XRPL-Utilities",
+        "publisher": {
+          "@id": "https://xrpl-utilities.com/#org"
+        },
+        "inLanguage": "en"
       },
       {
         "@type": "SoftwareApplication",
@@ -35,10 +54,12 @@
         "name": "XR-Sentinel",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any (HTTP API)",
-        "description": "AI-assisted behavioral pattern classifier for XRP Ledger wallets. Returns 0-100 activity score, signal catalog, and AI-generated narrative summary.",
+        "description": "Behavioral pattern classifier for XRP Ledger wallets. Returns an activity score, signal catalog, label context and an AI-generated narrative summary.",
         "url": "https://xrpl-utilities.com/sentinel/",
         "image": "https://xrpl-utilities.com/assets/xr-sentinel.png",
-        "publisher": { "@id": "https://xrpl-utilities.com/#org" },
+        "publisher": {
+          "@id": "https://xrpl-utilities.com/#org"
+        },
         "offers": {
           "@type": "Offer",
           "price": "0.10",
@@ -55,7 +76,9 @@
         "description": "On-chain XRPL macro telemetry: supply constriction, regional liquidity flows, AMM depth, and an implied utility-floor projection.",
         "url": "https://xrpl-utilities.com/telemetry/",
         "image": "https://xrpl-utilities.com/assets/xr-telemetry.png",
-        "publisher": { "@id": "https://xrpl-utilities.com/#org" },
+        "publisher": {
+          "@id": "https://xrpl-utilities.com/#org"
+        },
         "offers": {
           "@type": "Offer",
           "price": "0.10",
@@ -69,10 +92,12 @@
         "name": "XR-Pulse",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any (HTTP API)",
-        "description": "Normalized event feed for XRPL agents: public-source news, on-chain whale activity, and XLS-70/80/81 permissioned-domain + permissioned-DEX lifecycle in one time-ordered stream.",
+        "description": "Normalized XRPL event feed for agents: public-source news, on-chain whale moves and RWA mints and burns in one time-ordered stream.",
         "url": "https://xrpl-utilities.com/pulse/",
         "image": "https://xrpl-utilities.com/assets/xr-pulse.png",
-        "publisher": { "@id": "https://xrpl-utilities.com/#org" },
+        "publisher": {
+          "@id": "https://xrpl-utilities.com/#org"
+        },
         "offers": {
           "@type": "Offer",
           "price": "0.10",
@@ -89,7 +114,9 @@
         "description": "Public directory + explorer for XRPL Permissioned Domains (XLS-80) and Permissioned DEX activity (XLS-81). Lists active domains, accepted credentials, credential issuers, owner identity (DID + .well-known TOML), and permissioned market state.",
         "url": "https://xrpl-utilities.com/trust/",
         "image": "https://xrpl-utilities.com/assets/xr-trust.png",
-        "publisher": { "@id": "https://xrpl-utilities.com/#org" },
+        "publisher": {
+          "@id": "https://xrpl-utilities.com/#org"
+        },
         "offers": {
           "@type": "Offer",
           "price": "0.10",
@@ -106,7 +133,15 @@
         "description": "Real-world asset tracker for the XRP Ledger. Per-issuer mint/burn flow, daily circulating snapshots, and AMM-of-RWA pool surface across tokenized treasuries, stablecoins, commercial paper, money-market funds, and energy commodities.",
         "url": "https://xrpl-utilities.com/vault/",
         "image": "https://xrpl-utilities.com/assets/xr-vault.png",
-        "publisher": { "@id": "https://xrpl-utilities.com/#org" }
+        "publisher": {
+          "@id": "https://xrpl-utilities.com/#org"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.10",
+          "priceCurrency": "USD",
+          "description": "Per-call fee, payable in XRP/RLUSD on XRPL or USDC on Base via x402 protocol"
+        }
       },
       {
         "@type": "SoftwareApplication",
@@ -117,7 +152,34 @@
         "description": "ETF AUM and XRPL on-chain flow correlation for US-listed spot XRP ETFs. Daily AUM scraped from each issuer's public dashboard, overlaid with XRPL exchange-flow delta from XR-Pulse. Correlation, never causation.",
         "url": "https://xrpl-utilities.com/flows/",
         "image": "https://xrpl-utilities.com/assets/xr-flows.png",
-        "publisher": { "@id": "https://xrpl-utilities.com/#org" }
+        "publisher": {
+          "@id": "https://xrpl-utilities.com/#org"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0.10",
+          "priceCurrency": "USD",
+          "description": "Per-call fee, payable in XRP/RLUSD on XRPL or USDC on Base via x402 protocol"
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://xrpl-utilities.com/lineage/#app",
+        "name": "XR-Lineage",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (web browser)",
+        "description": "Live lineage tracker for institutional XRPL flow: Ripple-counterparty discovery, multi-hop relay-burst detection and per-wallet focus alerts.",
+        "url": "https://xrpl-utilities.com/lineage/",
+        "image": "https://xrpl-utilities.com/assets/xr-lineage.png",
+        "publisher": {
+          "@id": "https://xrpl-utilities.com/#org"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "Free on the web"
+        }
       }
     ]
   }
@@ -566,6 +628,7 @@ report = resp.json()</pre>
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
           <ul class="space-y-3 text-sm">
             <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/status/"  class="text-muted hover:text-white transition">Service status</a></li>
             <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
             <li><a href="/tip/"     class="text-accent hover:text-white transition">Tip the maker</a></li>
           </ul>
