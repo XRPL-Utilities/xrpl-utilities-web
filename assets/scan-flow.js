@@ -208,7 +208,7 @@
     const isError = report.error;
     const card = el('div', 'bg-panel border border-border rounded-2xl p-6');
 
-    // Identity banner (only renders when XRPScan has labeled the address).
+    // Identity banner (only renders when the address has a public label).
     // Surfaced from /scan response's top-level `identity` block (schema 2.4.0+).
     // Renders display_name, watchlist role pill, verified badge, and optional
     // domain. Hidden cleanly for unlabeled wallets so retail addresses don't
@@ -227,26 +227,26 @@
       if (id.domain) {
         banner.appendChild(el('span', 'font-mono text-xs text-muted', id.domain));
       }
-      // Surface XRPScan advisory in the identity banner so a viewer who
+      // Surface the advisory in the identity banner so a viewer who
       // only skims the header still sees the warning. The TARGET_ADVISORY
       // signal in the signals list also covers it, but identity-banner
       // placement is much harder to miss. Tooltip carries the full
       // provider/category/trusted shape so an analyst can judge weight
-      // (CHAINABUSE phishing reports against a verified exchange wallet
-      // are typically `trusted: false` and represent a depositor losing
-      // funds upstream, not the exchange itself being compromised).
+      // (an untrusted phishing report against a verified exchange wallet
+      // usually means a depositor lost funds upstream, not that the
+      // exchange itself was compromised).
       if (id.advisory) {
         const adv = id.advisory;
         const cat = adv.scamCategory || adv.report?.scamCategory || adv.type || 'advisory';
         const provider = adv.provider || adv.report?.provider || 'unknown';
         const trusted = (adv.trusted ?? adv.report?.trusted) === true ? 'trusted' : 'untrusted reporter';
-        const tip = `${provider} ${cat.toLowerCase()} report (${trusted}). Source: XRPScan advisory.`;
+        const tip = `${provider} ${cat.toLowerCase()} report (${trusted}). Source: public advisory.`;
         const pill = el('span', 'border border-red-500/50 text-red-300 text-xs uppercase tracking-wider px-2 py-0.5 rounded font-semibold');
         pill.title = tip;
         pill.textContent = '⚠ ' + cat.toLowerCase();
         banner.appendChild(pill);
       }
-      banner.appendChild(el('span', 'text-xs text-muted ml-auto', 'via XRPScan'));
+      banner.appendChild(el('span', 'text-xs text-muted ml-auto', 'public label'));
       card.appendChild(banner);
     }
 
@@ -472,9 +472,8 @@
       card.appendChild(el('p', 'text-white text-sm leading-relaxed', report.reasoning));
     }
     // Optional second narrative block, only present when the target wallet
-    // is a token issuer (Sentinel schema 2.5.0+). Sourced exclusively from
-    // on-chain account_info + gateway_balances + the XRPScan domain - no
-    // off-ledger context. Rendered with a margin-top so it visually pairs
+    // is a token issuer (Sentinel schema 2.5.0+). Built from on-chain
+    // state and the issuer's declared domain only, no off-ledger context. Rendered with a margin-top so it visually pairs
     // with Reasoning rather than blending into it.
     if (report.issuer_profile) {
       card.appendChild(el('div', 'text-xs text-muted uppercase tracking-wider mb-2 mt-4', 'Issuer profile'));

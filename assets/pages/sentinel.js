@@ -48,7 +48,7 @@ const GALLERY = [
       { address: "rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p", name: "Ondo Finance · OUSG (permissioned)",          blurb: "Tokenized US Treasuries. RequireAuth + clawback. Operator-restricted distribution." },
       { address: "roUSG6gvxKGBcgGVXhPKHEgy4YyDfiSi3",  name: "Ondo Finance · OUSG (retail/public)",          blurb: "Same token family, Ripple-deployed public-distribution wallet. ~4k trustlines vs the permissioned wallet's ~20." },
       { address: "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De", name: "Ripple · RLUSD",                               blurb: "USD stablecoin. ~93k trustlines · the largest IOU issuer on XRPL by every measure." },
-      { address: "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK", name: "Schuman Financial · EURØP",                   blurb: "Euro-denominated RWA. XRPScan-verified, ~600 trustlines." },
+      { address: "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK", name: "Schuman Financial · EURØP",                   blurb: "Euro-denominated RWA. Publicly verified issuer, ~600 trustlines." },
       { address: "rB3y9EPnq1ZrZP3aXgfyfdXQThzdXMrLMc", name: "Braza Group · USDB",                          blurb: "Brazilian-issued USD-denominated RWA. ~95M obligations." },
       { address: "rH5CJsqvNqZGxrMyGaqLEoMWRYcVTAPZMt", name: "Braza Group · BBRL",                          blurb: "Brazilian-real-denominated RWA. Sibling issuer to USDB." },
       { address: "rUNaS5sqRuxZz6V7rBGhoSaZiVYA3ut4UL", name: "SG-FORGE · EURCV",                            blurb: "Societe Generale subsidiary, euro stablecoin. Single launch tranche, ~20 trustlines (no retail distribution yet)." },

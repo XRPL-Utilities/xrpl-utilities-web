@@ -566,10 +566,8 @@
       r.appendChild(flow);
 
       // Coverage caveat: when both flows are zero AND no venues are listed,
-      // the region is in the schema but the labeled venues don't have any
-      // wallets large enough to surface in XRPSCAN's holder-list discovery
-      // cutoff. Currently the case for MENA (Rain / BitOasis / CoinMENA all
-      // below the cutoff). Surface this honestly instead of letting humans
+      // the region is in the schema but none of its labeled venues has a
+      // wallet large enough to be picked up yet. Surface this honestly instead of letting humans
       // read 0 / 0 as 'no activity'.
       const inflowZero = Number(row.inflow_24h_xrp) === 0;
       const outflowZero = Number(row.outflow_24h_xrp) === 0;
@@ -637,8 +635,8 @@
       r.appendChild(header);
 
       // `pair` is a DISPLAY string built from a third-party name and is not
-      // unique -- XRPSCAN names three different tokens from one issuer
-      // "Axelar Bridge". Identity is quote_currency + quote_issuer, so show
+      // unique: three different tokens from one issuer can share the
+      // display name "Axelar Bridge". Identity is quote_currency + quote_issuer, so show
       // the issuer (and its entity name when known) rather than leaving two
       // different tokens indistinguishable on screen.
       if (p.quote_issuer) {

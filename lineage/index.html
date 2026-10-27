@@ -257,7 +257,7 @@
           <span class="text-[10px] text-muted">public attribution &middot; named wallets only</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
-          The named on-chain infrastructure that anchors institutional flow on XRPL. Wallets shown by name are publicly attributed by Ripple's own TOML metadata, by XRPScan's well-known list, or by on-chain behavior that uniquely identifies their function. The operator-curated mid-layer of relay nodes and pre-staging wallets is shown by role and count; specific addresses are intentionally not exposed (the curated wallet list is the moat).
+          The named on-chain infrastructure that anchors institutional flow on XRPL. Wallets shown by name are publicly attributed by Ripple's own published metadata, by public explorer labels, or by on-chain behavior that uniquely identifies their function. The operator-curated mid-layer of relay nodes and pre-staging wallets is shown by role and count; specific addresses are intentionally not shown.
         </p>
 
         <!-- ASCII-style flow diagram. Pure CSS so it stays legible without
@@ -265,8 +265,8 @@
              Each column is a stack of cards; cross-column arrows are
              rendered with vertical lines and arrow-heads using border + svg. -->
         <!-- API-driven topology. Filled from /stats/ripple-topology on load.
-             Source column shows named Ripple-attested wallets (XRPScan link).
-             Pipeline column shows operator-curated roles by count only (moat).
+             Source column shows named Ripple-attested wallets.
+             Pipeline column shows operator-curated roles by count only.
              Exits column shows named CEX hot wallets grouped by entity. -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-3">
           <div class="space-y-3">
@@ -291,7 +291,7 @@
 
         <!-- Caption / movement explanation -->
         <p class="text-[11px] text-muted leading-relaxed mt-6 border-t border-border pt-4">
-          <span class="text-amber-400 font-semibold">Source</span> wallets are Ripple-published or XRPScan-attested. Mint events originate at the issuer, route through distribution wallets, and fund the pipeline. <span class="text-accent font-semibold">Pipeline</span> nodes are the institutional middle that aggregates, routes, and pre-stages liquidity; the operator-curated specifics are not exposed publicly. <span class="text-emerald-400 font-semibold">Exits</span> are named CEX hot wallets where the flow eventually settles. Burns route from any pipeline node back through the redemption agent to the issuer.
+          <span class="text-amber-400 font-semibold">Source</span> wallets are Ripple-published or publicly labeled. Mint events originate at the issuer, route through distribution wallets, and fund the pipeline. <span class="text-accent font-semibold">Pipeline</span> nodes are the institutional middle that aggregates, routes, and pre-stages liquidity; the operator-curated specifics are not exposed publicly. <span class="text-emerald-400 font-semibold">Exits</span> are named CEX hot wallets where the flow eventually settles. Burns route from any pipeline node back through the redemption agent to the issuer.
         </p>
       </div>
     </div>
@@ -361,7 +361,7 @@
         </div>
 
         <p class="text-[11px] text-muted leading-relaxed mt-6">
-          Anonymized aggregates only. Specific wallet addresses are intentionally not exposed on this public surface; the operator-curated wallet list is the moat. Score tiers and funding-source counts give a public read on the volume and origin of newly-onboarded institutional counterparties without disclosing identities. A row entering the promoted_70_plus tier means a wallet cleared both the weighted scoring threshold and the provenance gate.
+          Anonymized aggregates only. Specific wallet addresses are intentionally not shown on this public page. Score tiers and funding-source counts give a public read on the volume and origin of newly-onboarded institutional counterparties without disclosing identities. A row in the top tier means a wallet passed both our scoring and provenance checks.
         </p>
       </div>
     </div>
@@ -381,9 +381,9 @@
             <div class="skeleton-bar h-3 w-1/4"></div>
           </div>
         </div>
-        <p id="burst-empty" class="text-xs text-muted mt-4 hidden">No relay-burst detections in the current window. Detection requires three or more hops, twenty million dollars total movement, pure-payment fingerprint, and at least one labeled anchor wallet.</p>
+        <p id="burst-empty" class="text-xs text-muted mt-4 hidden">No relay-burst detections in the current window. Detection looks for large, multi-hop payment chains that touch at least one labeled wallet.</p>
         <p class="text-[11px] text-muted leading-relaxed mt-6">
-          Each row is one detected multi-hop chain. Anchor label is the strongest labeled wallet in the chain (operator-curated label wins over XRPScan well-known, which wins over auto-promoted). Hop count is the chain length. Total USD is the sum of every hop's value. News correlation count is the number of public-source headlines within thirty minutes of the chain window; non-zero means the on-chain activity coincided with a public news event.
+          Each row is one detected multi-hop chain. Anchor label is the strongest labeled wallet in the chain (our curated labels take priority over public ones). Hop count is the chain length. Total USD is the sum of every hop's value. News correlation count is the number of public-source headlines close in time to the chain; non-zero means the on-chain activity coincided with a public news event.
         </p>
       </div>
     </div>
@@ -502,7 +502,7 @@
     </div>
   </footer>
 
-  <script src="/assets/pages/lineage.js?v=2"></script>
+  <script src="/assets/pages/lineage.js?v=m5"></script>
   <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

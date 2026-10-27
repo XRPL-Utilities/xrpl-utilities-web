@@ -680,7 +680,7 @@ function escapeHtml(s) {
 
 document.getElementById('flow-refresh')?.addEventListener('click', loadAll);
 loadAll();
-// Poll every 60s so the dashboard stays current without page reload.
+// Poll on a timer so the dashboard stays current without page reload.
 setInterval(loadAll, 60000);
 
 // XLS-85 all-time + windowed counter. Free passthrough call to
