@@ -95,6 +95,45 @@ function context(extra) {
   check('resilient: a real network failure still falls back to the proxy', r.ok && calls[1] === '/api/x/pulse/healthz', JSON.stringify(calls));
 }
 
+// A free-preview 402 on the direct path (the token was minted from another
+// address, as on carrier NAT pools or iCloud Private Relay) is retried once
+// through /api/x, which rides the connection the token was minted on. A paid
+// call's 402 is never replayed.
+{
+  const calls = [];
+  let proxyStatus = 200;
+  const ctx = context({
+    Request: class {},
+    fetch: async (url, init) => {
+      calls.push([String(url), init]);
+      if (String(url).startsWith('https://')) return { ok: false, status: 402 };
+      return { ok: proxyStatus === 200, status: proxyStatus };
+    },
+  });
+  vm.runInContext(read('assets/api-resilient.js'), ctx);
+  const bearer = { 'Content-Type': 'application/json', Authorization: 'Bearer abc.def.ghi' };
+  let r = await ctx.fetch('https://telemetry.xrpl-utilities.io/scan', { method: 'POST', headers: bearer, body: '{}' });
+  check('preview 402: retried through the proxy', r.status === 200 && calls.length === 2 && calls[1][0] === '/api/x/telemetry/scan', JSON.stringify(calls.map((c) => c[0])));
+  check('preview 402: the retry keeps method, token and body', calls[1][1].method === 'POST' && calls[1][1].headers.Authorization === bearer.Authorization && calls[1][1].body === '{}');
+  check('preview 402: later preview calls go straight to the proxy', ctx.XRUApiResilient.isPreviewViaProxy() === true);
+  calls.length = 0;
+  await ctx.fetch('https://trust.xrpl-utilities.io/domains', { headers: { Authorization: 'Bearer abc.def.ghi' } });
+  check('preview 402: sticky mode skips the failing direct call', calls.length === 1 && calls[0][0] === '/api/x/trust/domains', JSON.stringify(calls.map((c) => c[0])));
+  check('preview 402: sticky mode does not switch unauthenticated calls', ctx.XRUApiResilient.isProxyMode() === false);
+
+  ctx.XRUApiResilient._reset(); calls.length = 0;
+  r = await ctx.fetch('https://sentinel.xrpl-utilities.io/scan', { method: 'POST', headers: { 'PAYMENT-SIGNATURE': 'x', Authorization: 'Bearer abc' }, body: '{}' });
+  check('paid 402: never replayed', r.status === 402 && calls.length === 1, JSON.stringify(calls.map((c) => c[0])));
+  calls.length = 0;
+  r = await ctx.fetch('https://sentinel.xrpl-utilities.io/scan', { method: 'POST', body: '{}' });
+  check('no-token 402: never replayed', r.status === 402 && calls.length === 1);
+
+  proxyStatus = 402; calls.length = 0;
+  r = await ctx.fetch('https://pulse.xrpl-utilities.io/events/recent', { headers: { Authorization: 'Bearer abc.def.ghi' } });
+  check('preview 402 twice: the caller sees the 402', r.status === 402 && calls.length === 2);
+  check('preview 402 twice: proxy mode is not made sticky', ctx.XRUApiResilient.isPreviewViaProxy() === false);
+}
+
 // ---- scan-flow.js / telemetry-flow.js error paths ------------------------------
 async function runFlow(file, start, fetchImpl, opts = {}) {
   let cleared = 0;
