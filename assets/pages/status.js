@@ -43,6 +43,7 @@ const SUBSYSTEM_LABELS = {
   xrpl_node:  { name: "XRPL RPC node",            desc: "Ledger data source" },
   whale_watcher:  { name: "Large-payment watcher", desc: "Scans each new ledger for big transfers" },
   xls85_backfill: { name: "Token escrow history",  desc: "One-time load of past token escrows" },
+  ripple_counterparty_second_hop: { name: "Counterparty discovery", desc: "Finds new wallets linked to Ripple flows" },
   pulse_upstream: { name: "XR-Pulse feed",         desc: "Source of this service's asset data" },
   flows_upstream: { name: "XR-Flows feed",         desc: "ETF data used by this service" },
   vault_upstream: { name: "XR-Vault feed",         desc: "Asset data used by this service" },

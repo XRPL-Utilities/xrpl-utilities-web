@@ -40,5 +40,6 @@ check('failed watcher pass is a warning', summarize(200, { status: 'active', che
 check('active + warning check is not shown as all-operational', summarize(200, { status: 'active', checks: { whale_watcher: { last_pass_status: 'fetch_failed' } } }).overall === 'attention');
 check('bad outranks warning', summarize(200, { status: 'active', checks: { a: { ok: false }, b: { last_pass_status: 'fetch_failed' } } }).overall === 'degraded');
 check('status page has a headline for the attention state', fs.readFileSync(path.join(repo, 'assets/pages/status.js'), 'utf8').includes('status === "attention"'));
+check('a job waiting for its first run after a restart is not a warning', summarize(200, { status: 'active', checks: { j: { status: 'not yet run' } } }).overall === 'active');
 check('unknown status word is not mistaken for healthy', normalizeStatus('weird') === 'unknown');
 process.exit(fails ? 1 : 0);

@@ -24,6 +24,9 @@
       return ['ok', 'success'].includes(v.last_pass_status) ? { state: 'good', label: 'Operational' } : { state: 'warn', label: 'Last run failed' };
     }
     if (typeof v.status === 'string') {
+      // A job that has not had its first pass since a restart is not a fault
+      // (Pulse after every deploy: ripple_counterparty_second_hop).
+      if (['not yet run', 'pending', 'scheduled'].includes(v.status)) return { state: 'good', label: 'Waiting for first run' };
       return ['ok', 'completed', 'idle', 'running'].includes(v.status) ? { state: 'good', label: 'Operational' } : { state: 'warn', label: 'Needs attention' };
     }
     if (v.last_error) return { state: 'warn', label: 'Reporting errors' };
