@@ -12,12 +12,15 @@ node --check assets/qr-code.js
 node --check assets/scan-flow.js
 node --check assets/telemetry-flow.js
 node --check assets/pay-pin.js
+node --check assets/stale-banner.js
+node --check assets/api-resilient.js
 for f in assets/pages/*.js; do node --check "$f"; done
 
 node tests/trust_xss_test.mjs
 node tests/worker_proxy_test.mjs
 node tests/qr_render_test.mjs
 node tests/payment_pin_test.mjs
+node tests/resilience_test.mjs
 node tests/telemetry_null_test.mjs
 python3 tests/python_sample_test.py
 node tests/inline_script_syntax_test.mjs

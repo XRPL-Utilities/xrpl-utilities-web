@@ -35,14 +35,19 @@
   }
   function setText(el, txt) { if (el) el.textContent = txt; }
 
+  // Each tile's source reports to the stale-data notice
+  // (assets/stale-banner.js), keyed by URL, so a dead service is visible
+  // instead of leaving a dash or an old number with a fresh "as of".
   async function fetchJson(url) {
+    let body = null;
     try {
       const r = await fetch(url, { mode: 'cors' });
-      if (!r.ok) return null;
-      return await r.json();
+      if (r.ok) body = await r.json();
     } catch (e) {
-      return null;
+      body = null;
     }
+    if (window.XRStale) body ? window.XRStale.ok(url) : window.XRStale.fail(url);
+    return body;
   }
 
   async function refresh() {
@@ -123,10 +128,14 @@
       }
     }
 
-    const now = new Date();
-    const hh = String(now.getUTCHours()).padStart(2, '0');
-    const mm = String(now.getUTCMinutes()).padStart(2, '0');
-    setText(elAsOf, 'as of ' + hh + ':' + mm + ' UTC');
+    // "as of" is the time of the last refresh that reached every source.
+    // A partial or failed refresh leaves the previous stamp in place.
+    if (tel && pulseHc && trustStats && sentinelStats && rwaSummary && flowsCorr && pulseNet) {
+      const now = new Date();
+      const hh = String(now.getUTCHours()).padStart(2, '0');
+      const mm = String(now.getUTCMinutes()).padStart(2, '0');
+      setText(elAsOf, 'as of ' + hh + ':' + mm + ' UTC');
+    }
   }
 
   refresh();

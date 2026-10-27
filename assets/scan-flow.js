@@ -9,6 +9,41 @@
   const POLL_INTERVAL_MS = 5000;
   const POLL_TIMEOUT_MS = 35 * 60 * 1000; // 35 min, slightly past invoice expiry
 
+  // Every API call gets a deadline. Without one a stalled connection left
+  // the scan spinner up forever. The abort is ours, so api-resilient.js
+  // does not treat it as a blocked network.
+  const DEFAULT_TIMEOUT_MS = 30000;
+  // A single scan can make two AI calls of up to 45s each on the backend.
+  const SCAN_TIMEOUT_MS = 120000;
+  function fetchWithTimeout(url, opts, ms) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms || DEFAULT_TIMEOUT_MS);
+    return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
+      .finally(() => clearTimeout(timer));
+  }
+
+  function isTimeout(e) { return !!e && e.name === 'AbortError'; }
+
+  // Text for a failed response. Never the raw body: a 402 carries the x402
+  // payment envelope, which means nothing to a visitor on the free path.
+  async function failureMessage(r, what) {
+    if (r.status === 402) {
+      // The free preview needs a fresh browser check. Drop the cached token
+      // so the next attempt mints a new one.
+      if (global.PreviewToken && global.PreviewToken._clear) global.PreviewToken._clear();
+      return 'The free preview check did not go through. Reload the page and try again.';
+    }
+    if (r.status === 429) return 'Too many requests right now. Wait a minute and try again.';
+    let detail = '';
+    try {
+      const e = await r.json();
+      if (e && typeof e.detail === 'string') detail = e.detail;
+    } catch (_) { /* non-JSON body */ }
+    if (detail && detail.length <= 300) return detail;
+    if (r.status >= 500) return what + ' is temporarily unavailable (HTTP ' + r.status + '). Try again shortly.';
+    return what + ' failed (HTTP ' + r.status + ').';
+  }
+
   function el(tag, cls, text) {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -622,7 +657,7 @@
     while (Date.now() - start < POLL_TIMEOUT_MS) {
       if (getCancelled()) { restore(); return null; }
       try {
-        const r = await fetch(`${API_BASE}/bulk/status/${invoiceId}`);
+        const r = await fetchWithTimeout(`${API_BASE}/bulk/status/${invoiceId}`);
         if (r.status === 404) {
           updateStatus(target, 'Invoice not found (may have expired)', 'bad');
           restore();
@@ -638,7 +673,7 @@
           document.title = `[${status.scans_complete}/${status.scans_total}] Scanning · XR-Sentinel`;
         } else if (status.state === 'complete') {
           document.title = '✓ Scans complete · XR-Sentinel';
-          const rr = await fetch(`${API_BASE}/bulk/results/${invoiceId}`);
+          const rr = await fetchWithTimeout(`${API_BASE}/bulk/results/${invoiceId}`);
           if (rr.ok) { setTimeout(restore, 5000); return await rr.json(); }
           if (scanningShown) { updateStatus(target, 'Could not fetch results', 'bad'); }
           else { renderError(target, 'Could not fetch results. Try refreshing.'); }
@@ -694,20 +729,20 @@
       const previewHeaders = await (global.PreviewToken
         ? global.PreviewToken.authHeaders()
         : Promise.resolve({}));
-      const r = await fetch(`${API_BASE}/scan`, {
+      const r = await fetchWithTimeout(`${API_BASE}/scan`, {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
         body: JSON.stringify({ address }),
-      });
+      }, SCAN_TIMEOUT_MS);
       if (!r.ok) {
-        let detail = '';
-        try { const e = await r.json(); detail = e.detail || JSON.stringify(e); } catch (_) {}
-        renderError(target, detail || `Scan failed (HTTP ${r.status}).`);
+        renderError(target, await failureMessage(r, 'The scan'));
         return null;
       }
       report = await r.json();
     } catch (e) {
-      renderError(target, 'Network error reaching the scanner.');
+      renderError(target, isTimeout(e)
+        ? 'The scan took too long and was stopped. Busy wallets can take a while; try again in a minute.'
+        : 'Network error reaching the scanner.');
       return null;
     }
 
@@ -745,19 +780,18 @@
       const previewHeaders = await (global.PreviewToken
         ? global.PreviewToken.authHeaders()
         : Promise.resolve({}));
-      const r = await fetch(`${API_BASE}/bulk/quote`, {
+      const r = await fetchWithTimeout(`${API_BASE}/bulk/quote`, {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, previewHeaders),
         body: JSON.stringify({ addresses }),
       });
       if (!r.ok) {
-        const err = await r.json().catch(() => ({}));
-        renderError(target, err.detail || `Quote failed (HTTP ${r.status}).`);
+        renderError(target, await failureMessage(r, 'The quote'));
         return;
       }
       quote = await r.json();
     } catch (e) {
-      renderError(target, 'Network error requesting quote.');
+      renderError(target, isTimeout(e) ? 'The quote request timed out. Try again.' : 'Network error requesting quote.');
       return;
     }
 

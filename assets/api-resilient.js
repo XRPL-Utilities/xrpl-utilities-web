@@ -87,6 +87,12 @@
     return nativeFetch(url, init);
   }
 
+  function isAbort(err, input, init) {
+    if (err && err.name === 'AbortError') return true;
+    var signal = (init && init.signal) || (input instanceof Request ? input.signal : null);
+    return !!(signal && signal.aborted);
+  }
+
   function markBlocked() {
     proxyMode = true;
     try { sessionStorage.setItem(STICKY_KEY, '1'); } catch (_) {}
@@ -103,6 +109,10 @@
     if (proxyMode) return sendTo(proxied, input, init);
 
     return nativeFetch(input, init).catch(function (err) {
+      // A caller's own abort (a timeout, a cancelled scan) is not a blocked
+      // network. Retrying it would ignore the cancel, and marking the session
+      // blocked would send every later call through the proxy for no reason.
+      if (isAbort(err, input, init)) throw err;
       // Only network-level failures land here — DNS block, TLS reset,
       // blocked-by-extension, offline. HTTP errors like 402 or 503 resolve
       // normally and must NOT be retried: a 402 is the x402 payment

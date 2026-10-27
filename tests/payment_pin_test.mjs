@@ -47,7 +47,7 @@ function load(file, quote) {
   const calls = [];
   const qrTexts = [];
   const ctx = {
-    console, Math, JSON, Date, Number, String, Boolean, Array, Object, Error, Promise,
+    console, Math, JSON, Date, Number, String, Boolean, Array, Object, Error, Promise, AbortController,
     isFinite, isNaN, Node,
     setTimeout() {}, clearTimeout() {}, setInterval() {}, clearInterval() {},
     fetch: async (url) => {
