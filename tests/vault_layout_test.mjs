@@ -17,7 +17,13 @@ const fail = (m) => { fails++; console.log('FAIL ' + m); };
 const html = read('vault/index.html');
 const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
 
-if (/xr-vault-512\.webp/.test(main) || /\bh-64\b/.test(main)) fail('vault: hero still uses the 256px logo');
+// Aaron, 2026-10-27: 64px was too small. 128px desktop / 96px phone, drawn
+// from the 512px source so it stays sharp on high-density screens.
+if (/\bh-64\b/.test(main)) fail('vault: hero is back to the 256px logo that filled the first phone screen');
+const logo = main.match(/<img[^>]*class="[^"]*hero-logo[^"]*"[^>]*>/);
+if (!logo) fail('vault: hero logo missing the hero-logo size class');
+else if (!/xr-vault-512\.webp/.test(logo[0])) fail('vault: hero logo must use the 512px source to stay sharp at 128px');
+if (!/\.hero-logo \{ width: 96px; height: 96px; \}/.test(html) || !/min-width: 768px\) \{ \.hero-logo \{ width: 128px; height: 128px; \}/.test(html)) fail('vault: hero logo must be 96px on phones and 128px from 768px up');
 
 const at = (id) => main.indexOf(`<section id="${id}"`);
 const order = ['vault-summary', 'top-movers', 'issuer-grid', 'settlement-over-time', 'how-it-works', 'developers'];
@@ -45,7 +51,7 @@ if (!/applyIssuerLimit\(\);\n}/.test(js)) fail('vault.js: renderIssuerTiles must
 // does nothing. Every class in the new layout blocks must exist in it.
 const css = read('assets/tailwind.css') + read('assets/stat-tile.css');
 const esc = (c) => c.replace(/[:/.[\]]/g, (m) => '\\' + m);
-const custom = new Set(['gloss', 'group']);
+const custom = new Set(['gloss', 'group', 'glow', 'hero-logo']);
 const blocks = [main.slice(0, at('discovery-callout')), how, dev];
 for (const b of blocks) {
   for (const m of b.matchAll(/class="([^"]+)"/g)) {
