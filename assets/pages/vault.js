@@ -409,7 +409,33 @@ function renderIssuerTiles(issuers) {
       </a>
     `;
   }).join('');
+  applyIssuerLimit();
 }
+
+// Show the 12 largest issuers first and keep the rest one click away
+// (design review 2026-10-27: 48 tiles made the page about 38 phone
+// screens long). The choice survives the periodic re-render.
+const ISSUER_TILE_LIMIT = 12;
+let _issuersExpanded = false;
+function applyIssuerLimit() {
+  const el = document.getElementById('issuer-tiles');
+  const btn = document.getElementById('issuer-show-all');
+  if (!el || !btn) return;
+  const tiles = Array.from(el.querySelectorAll('.issuer-tile'));
+  tiles.forEach((t, k) => t.classList.toggle('hidden', !_issuersExpanded && k >= ISSUER_TILE_LIMIT));
+  if (tiles.length <= ISSUER_TILE_LIMIT) {
+    btn.classList.add('hidden');
+    return;
+  }
+  btn.classList.remove('hidden');
+  btn.textContent = _issuersExpanded ? 'Show fewer' : `Show all ${tiles.length} issuers`;
+  btn.setAttribute('aria-expanded', String(_issuersExpanded));
+}
+document.getElementById('issuer-show-all')?.addEventListener('click', () => {
+  _issuersExpanded = !_issuersExpanded;
+  applyIssuerLimit();
+  if (!_issuersExpanded) document.getElementById('issuer-grid')?.scrollIntoView({ block: 'start' });
+});
 
 const _HEALTH_COLORS = { green: 'bg-green-500', yellow: 'bg-yellow-500', red: 'bg-red-500' };
 const _HEALTH_LABELS = {

@@ -195,46 +195,12 @@
   <main id="main">
 
   <section>
-    <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
-      <img src="/assets/img/xr-vault-512.webp" width="256" height="256" loading="eager" decoding="async" alt="XR-Vault" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
-      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-      <p class="text-xl text-muted">Real-world assets, on-chain in real time</p>
-      <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
-        Live tracker for tokenized <span class="gloss" data-term="rwa">real-world assets</span> on
-        <span class="gloss" data-term="xrpl">XRPL</span>. Per-issuer
-        circulating supply, today's mint and burn flow, and the canonical
-        wallet map across private credit, stablecoins, treasuries, commodities,
-        money-market funds, real estate, commercial paper and energy.
-      </p>
-      <div class="mt-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs text-muted border border-border rounded-full">
-        <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-        Verified issuer wallets &middot; on-chain figures only &middot; native unit-of-account
-      </div>
-    </div>
-  </section>
-
-  <!-- WHAT IS A REAL-WORLD ASSET -->
-  <section id="what-is" class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding real-world assets on XRPL</h2>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What an RWA is</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            A real-world asset (RWA) token represents off-chain value on-chain. A tokenized US Treasury bill, a Brazilian Real stablecoin, a megawatt-hour of energy, an institutional money-market fund share. The issuer holds the underlying asset off-chain; the on-chain token is the claim against it. When you swap into RWA, you're buying exposure to the off-chain thing through an on-chain rail.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Who issues them on XRPL</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Names you know: Ondo Finance (BlackRock-backed treasuries), Ripple (RLUSD stablecoin), Soci&eacute;t&eacute; G&eacute;n&eacute;rale FORGE (MiCA-licensed EUR stablecoin), OpenEden (T-bills), Archax (abrdn money-market). Names you might not: Schuman Financial, Braza Group (USD + BRL stablecoins), Justoken (energy commodity), Guggenheim / Zeconomy (commercial paper). The live tracked set is rendered below and grows as new institutional rails mature.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Why XRPL</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Sub-second settlement at fractions of a cent. Native multi-currency support without bridges. Permissioned trading rails (XLS-80) for regulated assets. Built-in clawback flags for issuers who need them. The combination makes XRPL one of the few public chains where a regulated RWA can settle natively, which is why institutional issuers have been deploying through 2024 and 2025.
-          </p>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-8">
+      <div class="flex items-center gap-4">
+        <img src="/assets/img/xr-vault-128.webp" width="64" height="64" loading="eager" decoding="async" alt="XR-Vault" class="h-16 w-16 rounded-xl shrink-0" />
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold tracking-tight">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
+          <p class="text-base text-muted mt-1">Every tracked <span class="gloss" data-term="rwa">real-world asset</span> on the XRP Ledger, live.</p>
         </div>
       </div>
     </div>
@@ -306,46 +272,6 @@
     </div>
   </section>
 
-  <section id="xls85-counter">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
-      <div class="stat-tile stat-tile-glow p-5 sm:p-7">
-        <div class="flex items-baseline justify-between gap-4 mb-4 flex-wrap">
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">XLS-85 token escrow</h2>
-          <span id="xls85-since" class="stat-tile-sub text-[10px]">&hellip;</span>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-          <div>
-            <div id="xls85-all-time" class="stat-tile-value">&hellip;</div>
-            <div class="stat-tile-label mt-2">events all-time</div>
-            <div id="xls85-all-time-raw" class="stat-tile-sub text-[10px] mt-1"></div>
-          </div>
-          <div>
-            <div id="xls85-7d" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
-            <div class="stat-tile-label mt-2">last 7d</div>
-            <div id="xls85-7d-raw" class="stat-tile-sub text-[10px] mt-1"></div>
-          </div>
-          <div>
-            <div id="xls85-24h" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
-            <div class="stat-tile-label mt-2">last 24h</div>
-            <div id="xls85-24h-raw" class="stat-tile-sub text-[10px] mt-1"></div>
-          </div>
-          <div>
-            <div id="xls85-issuers" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
-            <div class="stat-tile-label mt-2">distinct issuers</div>
-            <div id="xls85-dvp-sub" class="stat-tile-sub text-[10px] mt-1"></div>
-          </div>
-        </div>
-        <!-- Shown only when automated high-rate emitters are present in the
-             window. Counts above are already net of them; this explains the
-             gap rather than leaving two different numbers unexplained. -->
-        <p id="xls85-caveat" class="hidden text-[11px] leading-relaxed mt-4 rounded border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-amber-200/90"></p>
-        <p class="text-[11px] text-muted leading-relaxed mt-5">
-          XLS-85 enables time-locked or condition-locked escrow of non-XRP IOU tokens. Used for vesting, deferred settlement, and atomic two-leg trades. DvP candidates are paired escrows sharing a Condition hash within an hour (delivery-versus-payment pattern, candidate not confirmed). The counts here cover XLS-85 activity across all XRPL IOUs that Pulse's whale watcher observes; the per-issuer chips on the tiles below scope to operator-tracked RWA issuers only, which is a smaller subset.
-        </p>
-      </div>
-    </div>
-  </section>
-
   <section id="top-movers">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
@@ -367,6 +293,49 @@
           </div>
         </div>
         <p id="top-movers-empty" class="text-xs text-muted mt-4 hidden">No measurable RWA flow in the last 24 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="issuer-grid">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
+        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Per-issuer state</h2>
+          <span class="text-[10px] text-muted font-mono">Native units, no USD valuation</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mb-5">
+          One tile per tracked issuer. <span class="text-white">Circulating</span> is how much of the token exists on-chain right now in the issuer's native units (treasury holdings excluded where applicable, like OpenEden TBL). <span class="text-white">24h &Delta;</span> is how that number moved since yesterday's snapshot. <span class="text-white">Trustlines</span> is roughly the number of holders. The colored badge is the asset class. When the underlying token sees XLS-85 escrow activity or an issuer-side deep-freeze in the last 24h, the tile adds chips for <span class="text-amber-300">N escrow(s)</span>, <span class="text-accent">DvP candidates</span> (shared-condition reciprocal pairs; candidate, not confirmed), or <span class="text-red-300">deep-frozen holders</span> (TrustSet+tfSetDeepFreeze). Ondo OUSG appears twice because Ondo operates two issuer wallets: one for institutional access (authorized-trustline gating + clawback), one for the broader retail variant. "Permissioned" here refers to those wallet-level controls, not XLS-80 PermissionedDomains (those live in <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>).
+        </p>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted mb-4 px-1">
+          <span class="text-white font-semibold">Health score</span>
+          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500 align-middle mr-0.5"></span> 7-10</span>
+          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-yellow-500 align-middle mr-0.5"></span> 4-6</span>
+          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 align-middle mr-0.5"></span> 0-3</span>
+          <span class="border-l border-border pl-3">Sov = can the issuer seize or freeze your tokens?</span>
+          <span>Dist = how spread out is ownership across holders?</span>
+          <span>Liq = can you buy or sell without moving the price?</span>
+          <span>Trans = is the issuer publicly identified and verified?</span>
+          <span>Demand = are new wallets still opting in to hold this token?</span>
+        </div>
+        <div id="issuer-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
+            <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
+            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
+            <div class="skeleton-bar h-3 w-2/3"></div>
+          </div>
+          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
+            <div class="skeleton-bar h-5 w-2/3 mb-4"></div>
+            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
+            <div class="skeleton-bar h-3 w-2/3"></div>
+          </div>
+          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
+            <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
+            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
+            <div class="skeleton-bar h-3 w-1/2"></div>
+          </div>
+        </div>
+        <button id="issuer-show-all" type="button" class="hidden mt-5 border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" aria-expanded="false" aria-controls="issuer-tiles"></button>
       </div>
     </div>
   </section>
@@ -410,48 +379,6 @@
 
         <div id="settlement-empty" class="hidden text-xs text-muted mt-4">
           No accrued daily snapshots yet. The series starts from the first complete UTC day after each Vault deploy.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="issuer-grid">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
-      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
-        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Per-issuer state</h2>
-          <span class="text-[10px] text-muted font-mono">Native units, no USD valuation</span>
-        </div>
-        <p class="text-xs text-muted leading-relaxed mb-5">
-          One tile per tracked issuer. <span class="text-white">Circulating</span> is how much of the token exists on-chain right now in the issuer's native units (treasury holdings excluded where applicable, like OpenEden TBL). <span class="text-white">24h &Delta;</span> is how that number moved since yesterday's snapshot. <span class="text-white">Trustlines</span> is roughly the number of holders. The colored badge is the asset class. When the underlying token sees XLS-85 escrow activity or an issuer-side deep-freeze in the last 24h, the tile adds chips for <span class="text-amber-300">N escrow(s)</span>, <span class="text-accent">DvP candidates</span> (shared-condition reciprocal pairs; candidate, not confirmed), or <span class="text-red-300">deep-frozen holders</span> (TrustSet+tfSetDeepFreeze). Ondo OUSG appears twice because Ondo operates two issuer wallets: one for institutional access (authorized-trustline gating + clawback), one for the broader retail variant. "Permissioned" here refers to those wallet-level controls, not XLS-80 PermissionedDomains (those live in <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>).
-        </p>
-        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted mb-4 px-1">
-          <span class="text-white font-semibold">Health score</span>
-          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500 align-middle mr-0.5"></span> 7-10</span>
-          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-yellow-500 align-middle mr-0.5"></span> 4-6</span>
-          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 align-middle mr-0.5"></span> 0-3</span>
-          <span class="border-l border-border pl-3">Sov = can the issuer seize or freeze your tokens?</span>
-          <span>Dist = how spread out is ownership across holders?</span>
-          <span>Liq = can you buy or sell without moving the price?</span>
-          <span>Trans = is the issuer publicly identified and verified?</span>
-          <span>Demand = are new wallets still opting in to hold this token?</span>
-        </div>
-        <div id="issuer-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
-            <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
-            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
-            <div class="skeleton-bar h-3 w-2/3"></div>
-          </div>
-          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
-            <div class="skeleton-bar h-5 w-2/3 mb-4"></div>
-            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
-            <div class="skeleton-bar h-3 w-2/3"></div>
-          </div>
-          <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
-            <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
-            <div class="skeleton-bar h-8 w-1/2 mb-3"></div>
-            <div class="skeleton-bar h-3 w-1/2"></div>
-          </div>
         </div>
       </div>
     </div>
@@ -512,6 +439,46 @@
     </div>
   </section>
 
+  <section id="xls85-counter">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+      <div class="stat-tile stat-tile-glow p-5 sm:p-7">
+        <div class="flex items-baseline justify-between gap-4 mb-4 flex-wrap">
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">XLS-85 token escrow</h2>
+          <span id="xls85-since" class="stat-tile-sub text-[10px]">&hellip;</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+          <div>
+            <div id="xls85-all-time" class="stat-tile-value">&hellip;</div>
+            <div class="stat-tile-label mt-2">events all-time</div>
+            <div id="xls85-all-time-raw" class="stat-tile-sub text-[10px] mt-1"></div>
+          </div>
+          <div>
+            <div id="xls85-7d" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
+            <div class="stat-tile-label mt-2">last 7d</div>
+            <div id="xls85-7d-raw" class="stat-tile-sub text-[10px] mt-1"></div>
+          </div>
+          <div>
+            <div id="xls85-24h" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
+            <div class="stat-tile-label mt-2">last 24h</div>
+            <div id="xls85-24h-raw" class="stat-tile-sub text-[10px] mt-1"></div>
+          </div>
+          <div>
+            <div id="xls85-issuers" class="stat-tile-value text-2xl sm:text-3xl">&hellip;</div>
+            <div class="stat-tile-label mt-2">distinct issuers</div>
+            <div id="xls85-dvp-sub" class="stat-tile-sub text-[10px] mt-1"></div>
+          </div>
+        </div>
+        <!-- Shown only when automated high-rate emitters are present in the
+             window. Counts above are already net of them; this explains the
+             gap rather than leaving two different numbers unexplained. -->
+        <p id="xls85-caveat" class="hidden text-[11px] leading-relaxed mt-4 rounded border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-amber-200/90"></p>
+        <p class="text-[11px] text-muted leading-relaxed mt-5">
+          XLS-85 enables time-locked or condition-locked escrow of non-XRP IOU tokens. Used for vesting, deferred settlement, and atomic two-leg trades. DvP candidates are paired escrows sharing a Condition hash within an hour (delivery-versus-payment pattern, candidate not confirmed). The counts here cover XLS-85 activity across all XRPL IOUs that Pulse's whale watcher observes; the per-issuer chips on the tiles below scope to operator-tracked RWA issuers only, which is a smaller subset.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <section id="flow-log">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
@@ -541,11 +508,35 @@
     </div>
   </section>
 
-  <section class="border-t border-border bg-panel/30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">What this tracks</h2>
-      <h3 class="text-3xl font-bold mb-6">Verified issuers, native units, transparent valuation</h3>
-      <ul class="grid md:grid-cols-2 gap-x-8 gap-y-5 text-muted leading-relaxed list-none">
+  <section id="how-it-works" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      <details class="group bg-panel border border-border rounded-2xl">
+        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
+          <span class="text-sm uppercase tracking-widest text-accent font-semibold">How this works</span>
+          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="px-5 sm:px-6 pb-6 space-y-7">
+          <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">What an RWA is</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            A real-world asset (RWA) token represents off-chain value on-chain. A tokenized US Treasury bill, a Brazilian Real stablecoin, a megawatt-hour of energy, an institutional money-market fund share. The issuer holds the underlying asset off-chain; the on-chain token is the claim against it. When you swap into RWA, you're buying exposure to the off-chain thing through an on-chain rail.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Who issues them on XRPL</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Names you know: Ondo Finance (BlackRock-backed treasuries), Ripple (RLUSD stablecoin), Soci&eacute;t&eacute; G&eacute;n&eacute;rale FORGE (MiCA-licensed EUR stablecoin), OpenEden (T-bills), Archax (abrdn money-market). Names you might not: Schuman Financial, Braza Group (USD + BRL stablecoins), Justoken (energy commodity), Guggenheim / Zeconomy (commercial paper). The live tracked set is shown above and grows as new institutional rails mature.
+          </p>
+        </div>
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 text-white">Why XRPL</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Sub-second settlement at fractions of a cent. Native multi-currency support without bridges. Permissioned trading rails (XLS-80) for regulated assets. Built-in clawback flags for issuers who need them. The combination makes XRPL one of the few public chains where a regulated RWA can settle natively, which is why institutional issuers have been deploying through 2024 and 2025.
+          </p>
+        </div>
+      </div>
+          <ul class="grid md:grid-cols-2 gap-x-8 gap-y-5 text-sm text-muted leading-relaxed list-none">
         <li>
           <span class="text-white font-semibold">Verified issuers, native units.</span>
           Every issuer is checked against the ledger and reported in its native unit (shares, megawatt-hours, peg unit), never multiplied by a price oracle. The single headline figure is a USD-equivalent convenience rollup that applies clearly-disclosed peg assumptions; every per-issuer number below it stays native.
@@ -563,54 +554,23 @@
           For each issuer, see whether the token has real swap-pool liquidity or only issuer-held supply. When an issuer also operates an XLS-80 domain, the /scan response carries a fingerprint block (domains, credentials, subjects, recent permissioned-offer + AMM activity) as descriptive fact, not a verdict.
         </li>
       </ul>
+        </div>
+      </details>
     </div>
   </section>
 
-  <section class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
-      <h3 class="text-3xl font-bold mb-6">Agents read the same data via XR-Pulse</h3>
-      <p class="text-muted leading-relaxed mb-6 max-w-3xl">
-        XR-Vault renders dashboards over the
-        <code class="font-mono text-white">rwa_issuer_flow</code> and
-        <code class="font-mono text-white">rwa_issuer_daily</code> event sources on XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>. Agents that want the raw stream
-        call <code class="font-mono text-white">POST /events/recent</code> on
-        <code class="font-mono text-white">pulse.xrpl-utilities.io</code> for $0.10 USD per query
-        via x402 v2 (XRP or RLUSD on XRPL, or USDC on Base). The cross-issuer summary that powers this
-        page is exposed at <code class="font-mono text-white">GET /stats/rwa-summary</code>, free.
-      </p>
-      <p class="text-muted leading-relaxed mb-6 max-w-3xl">
-        Vault also exposes its own paid per-issuer drill-down at
-        <code class="font-mono text-white">POST /scan</code> on
-        <code class="font-mono text-white">vault.xrpl-utilities.io</code>, plus a free cross-issuer
-        daily-flow series at <code class="font-mono text-white">GET /stats/daily-flow</code>.
-      </p>
-      <div class="flex flex-wrap gap-3 text-sm mb-6">
-        <a href="https://vault.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Vault Swagger</a>
-        <a href="https://vault.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Vault agents.json</a>
-        <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse Swagger</a>
-        <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Pulse agents.json</a>
-      </div>
-      <div class="grid sm:grid-cols-2 gap-3 max-w-3xl">
-        <div class="bg-ink border border-border rounded-lg p-4">
-          <div class="text-[10px] uppercase tracking-[0.2em] text-green-400 font-semibold mb-2">Free MCP tools (1)</div>
-          <ul class="text-xs text-muted leading-relaxed space-y-1">
-            <li><code class="font-mono text-white">xrpl_vault_daily_flow</code></li>
-          </ul>
+  <section id="developers" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-panel border border-border rounded-2xl p-5 sm:p-6">
+        <div>
+          <div class="text-sm font-semibold text-white">For developers and AI agents</div>
+          <p class="text-sm text-muted mt-1">The same data is available as an API and as MCP tools. Some calls are free; paid calls cost $0.10.</p>
         </div>
-        <div class="bg-ink border border-border rounded-lg p-4">
-          <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Paid MCP tools (1)</div>
-          <ul class="text-xs text-muted leading-relaxed space-y-1">
-            <li><code class="font-mono text-white">xrpl_vault_scan</code> &middot; $0.10</li>
-          </ul>
+        <div class="flex flex-wrap gap-3 text-sm shrink-0">
+          <a href="/pricing/" class="bg-accent text-ink font-semibold px-4 py-2 rounded-lg hover:bg-accent-dim transition">Pricing and API</a>
+          <a href="https://vault.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Vault Swagger</a>
         </div>
       </div>
-      <p class="text-xs text-muted leading-relaxed mt-4 max-w-3xl">
-        Call any tool above from an
-        <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client (Claude Desktop etc.) via
-        <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
-        or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Free tools work without a payment header; paid tools use the same x402 model wrapped as MCP arguments.
-      </p>
     </div>
   </section>
   <section class="border-t border-border">
@@ -765,7 +725,7 @@
   </footer>
 
   <script src="/assets/chart-palette.js?v=2"></script>
-  <script src="/assets/pages/vault.js?v=m9"></script>
+  <script src="/assets/pages/vault.js?v=m10"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>
