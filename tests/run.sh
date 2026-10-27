@@ -35,6 +35,7 @@ node tests/csp_headers_test.mjs
 node tests/cache_headers_test.mjs
 node tests/html_escape_lint_test.mjs
 node tests/polling_test.mjs
+node tests/vault_headline_test.mjs
 node tests/status_model_test.mjs
 node --check assets/status-model.js
 python3 tests/qr_matrix_crosscheck.py
