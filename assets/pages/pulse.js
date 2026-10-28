@@ -1701,8 +1701,11 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
           whaleByDay[yestStr] = { usd, count: cnt };
           paintCoverage('yesterday');
         } else if (yestUsdEl) {
-          yestUsdEl.textContent = '$0';
-          if (yestCntEl) yestCntEl.textContent = '0 txs';
+          // The rollup writes yesterday's row shortly after UTC midnight.
+          // Until it lands the total is unknown, not zero (the card read
+          // zero at 00:08 UTC on 2026-10-28 for a $300M+ day).
+          yestUsdEl.textContent = '--';
+          if (yestCntEl) yestCntEl.textContent = 'final tally pending';
         }
       }
     } catch (_) { /* leave last good values in place */ }
