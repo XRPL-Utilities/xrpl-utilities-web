@@ -1781,33 +1781,29 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
       const rlusd = (data.issuers || []).find(i => i.logical_label === RLUSD_LABEL);
       if (!rlusd) return;
 
-      // Prefer live_obligations (the frequently refreshed live
-      // value). Fall back to obligations_raw
-      // (the daily snapshot) on older Pulse builds that don't yet
-      // surface the live value.
-      const supplyVal = parseFloat(rlusd.live_obligations || rlusd.obligations_raw || '0');
+      // Prefer the fresh ledger reading. live_circulating and its change
+      // since the 00:00 UTC reading are published only when the reading is
+      // under an hour old; otherwise fall back to the live obligations value
+      // and to yesterday's whole-day change. The badge used to say "(24h)"
+      // beside a live supply while carrying the change between the last two
+      // daily readings, which by evening could be a day stale.
+      const live = rlusd.live_circulating != null;
+      const supplyVal = parseFloat(live ? rlusd.live_circulating
+        : (rlusd.live_obligations || rlusd.obligations_raw || '0'));
       supplyEl.textContent = formatBig(supplyVal);
-
-      // obligations_delta_today is the diff between live obligations
-      // now and yesterday's UTC daily snapshot. Catches mints the
-      // event-watcher missed by bootstrapping after they landed.
-      // Show the badge only when nonzero.
-      const deltaRaw = rlusd.obligations_delta_today;
-      if (deltaRaw === null || deltaRaw === undefined || deltaRaw === '') {
-        badgeEl.classList.add('hidden');
-        return;
-      }
-      const deltaNum = parseFloat(deltaRaw);
+      const deltaNum = parseFloat(live ? rlusd.live_change_since_snapshot : rlusd.obligations_delta_today);
+      const when = live ? 'since 00:00 UTC' : 'yesterday (UTC)';
       if (!isFinite(deltaNum) || Math.abs(deltaNum) < 1) {
         badgeEl.classList.add('hidden');
         return;
       }
+      badgeEl.classList.remove('hidden');
       if (deltaNum > 0) {
-        badgeEl.textContent = '↑ +' + formatBig(deltaNum) + ' net minted (24h)';
+        badgeEl.textContent = '↑ +' + formatBig(deltaNum) + ' net minted ' + when;
         badgeEl.className = 'text-xs px-2 py-1 rounded border font-semibold ml-2 '
           + 'text-green-400 border-green-500/50 bg-green-500/10';
       } else {
-        badgeEl.textContent = '↓ -' + formatBig(Math.abs(deltaNum)) + ' net redeemed (24h)';
+        badgeEl.textContent = '↓ -' + formatBig(Math.abs(deltaNum)) + ' net redeemed ' + when;
         badgeEl.className = 'text-xs px-2 py-1 rounded border font-semibold ml-2 '
           + 'text-red-400 border-red-500/50 bg-red-500/10';
       }

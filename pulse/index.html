@@ -323,8 +323,8 @@
         <div class="mt-10">
           <h3 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3 text-center">RWA supply tracker</h3>
           <p class="text-sm text-muted mb-4 leading-relaxed text-center max-w-2xl mx-auto">
-            On-chain RLUSD outstanding on the XRP Ledger, continuously refreshed. The
-            <span class="gloss" data-term="obligations-delta">24h change</span> badge appears when net XRPL supply has moved since the prior daily snapshot: green up-arrow for mints, red down-arrow for redemptions.
+            RLUSD outstanding on the XRP Ledger, read from the ledger several times an hour. The badge shows the
+            <span class="gloss" data-term="obligations-delta">net change</span> since 00:00 UTC: green for net minting, red for net redemptions.
           </p>
           <div class="stat-tile stat-tile-glow p-5 max-w-xl mx-auto">
             <div class="flex items-center justify-between mb-3">
@@ -355,7 +355,7 @@
               <span id="rlusd-dist-pct" class="hidden text-xs px-2 py-1 rounded border font-semibold ml-2"></span>
             </div>
             <div id="rlusd-dist-venues" class="mt-3 space-y-1 text-sm"></div>
-            <p class="stat-tile-sub mt-3">RLUSD routed to a named exchange is institutional stablecoin provisioning, not XRP sell-side. Amounts are face value (RLUSD is USD-pegged). <a href="https://pulse.xrpl-utilities.io/stats/rlusd-distribution?days=7" class="text-accent hover:underline" target="_blank" rel="noopener">view JSON</a></p>
+            <p class="stat-tile-sub mt-3">RLUSD sent to a named exchange adds dollar stablecoin supply there; it is not XRP being sold. Amounts are face value, at $1 per RLUSD. <a href="https://pulse.xrpl-utilities.io/stats/rlusd-distribution?days=7" class="text-accent hover:underline" target="_blank" rel="noopener">view JSON</a></p>
           </div>
         </div>
       </div>
@@ -399,7 +399,7 @@
             <div class="mb-1">
               <span class="tier-institutional text-[10px] px-2 py-0.5 rounded border">INSTITUTIONAL</span>
             </div>
-            <div class="text-[10px] text-muted leading-snug mb-2">&ge; $10M, or any size involving a named institutional wallet</div>
+            <div class="text-[10px] text-muted leading-snug mb-2">$10M or more, or $50K or more with a named institution on either side</div>
             <div id="stat-inst-usd" class="text-3xl font-bold font-mono"><span class="inline-block h-8 w-24 bg-border rounded animate-pulse"></span></div>
             <div id="stat-inst-count" class="text-[11px] text-muted mt-1">; </div>
           </div>
@@ -425,9 +425,6 @@
             <span>12h ago</span>
             <span>now</span>
           </div>
-          <p class="text-[11px] text-muted leading-relaxed mt-4">
-            Need more than 24 hours? <code class="font-mono text-white">GET /stats/whale-flow-history</code> returns the same institutional + whale tiers rolled up to one row per UTC day, queryable as a trailing window or an explicit date range. Free endpoint, no payment header. Coverage accrues forward from each deploy; pre-rollup windows return an honest no-data marker.
-          </p>
         </div>
       </div>
     </div>
@@ -442,7 +439,7 @@
           <span id="choreo-count" class="text-[11px] text-muted font-mono">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-5 max-w-3xl">
-          Wallets touched by multiple distinct watcher signal types in a tight window, OR wallets with two direct signals adjacent to a wallet-anonymized macro signal (relay-burst chain or RWA obligations change). Surfaces the cross-signal coordination that any single watcher would only show in part: a CEX-funded operator routing through a known consolidator while a parallel burn fires, that kind of thing. Sorted by attributable USD descending.
+          Wallets tied to three or more different kinds of signal within an hour, such as a mint, a large transfer and a multi-hop relay, or to two kinds within 15 minutes of a relay chain or a token supply change. One signal alone shows part of a move; together they show the whole operation. The dollar figure is the money that passed through the wallet, counted once. Largest first.
         </p>
         <div id="choreo-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-ink border border-border rounded-lg p-4">
@@ -456,7 +453,7 @@
             <div class="skeleton-bar h-3 w-2/3"></div>
           </div>
         </div>
-        <p id="choreo-empty" class="text-[11px] text-muted mt-3 hidden">No institutional choreographies in the last 24 hours. The cross-signal correlator surfaces a cluster when a single wallet is touched by three or more distinct signal types within an hour; sparse cross-coordination produces no entries.</p>
+        <p id="choreo-empty" class="text-[11px] text-muted mt-3 hidden">No wallet was tied to three or more kinds of signal within an hour in the last 24 hours.</p>
       </div>
     </div>
   </section>
@@ -550,9 +547,6 @@
           <p class="stat-tile-sub mt-3"><span id="primitives-amm-locked">--</span> XRP locked</p>
         </div>
       </div>
-      <p class="mt-4 text-[11px] text-muted font-mono">
-        source: <a class="underline hover:text-fg" href="https://pulse.xrpl-utilities.io/stats/xrpl-primitives">/stats/xrpl-primitives</a> &middot; free, no key
-      </p>
     </div>
   </section>
 
@@ -573,27 +567,27 @@
             Three buckets, no social-media noise:
           </p>
           <ul class="text-sm text-muted leading-relaxed space-y-1.5 mb-3">
-            <li><span class="text-white">Regulators</span> &middot; SEC, FCA, ESMA</li>
+            <li><span class="text-white">Regulators</span> &middot; SEC, FCA, Financial Stability Board</li>
             <li><span class="text-white">Central banks</span> &middot; Fed, ECB, BoE, BoJ, BoC, RBA, BIS</li>
             <li><span class="text-white">Crypto press</span> &middot; XRP / RLUSD / XRPL / Ripple coverage only</li>
           </ul>
           <p class="text-sm text-muted leading-relaxed">
-            No Twitter, no influencer feeds, no paid placements. Items that hit multiple sources within 48 hours get marked cross-verified.
+            No social media or paid placements. A story carried by two sources within 48 hours is marked cross-verified.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">On-chain, in real time</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Every successful XRPL Payment over $50k lands as a whale event with both addresses, USD value at ledger close, and labels when either side is a known exchange, market maker, treasury, or bridge.
+            XRP and RLUSD payments of $1M or more, with both addresses, the dollar value at ledger close, and a label when either side is a known exchange, market maker, treasury or bridge.
           </p>
           <p class="text-sm text-muted leading-relaxed mt-3">
-            Real-world-asset mints and burns land as a second stream, all time-ordered. Permissioned-domain activity lives on <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>.
+            Real-world-asset mints and redemptions arrive as a second stream. Permissioned-domain activity is on <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Who reads it</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Traders watching for a news catalyst that just moved on-chain flow. Researchers correlating a regulatory announcement to actual settlement activity. Agents that need both market context and raw on-chain signal in one paid call. Not editorial; sources are reported as a property of an event, not as a verdict on whether the source is credible.
+            Traders checking whether news moved money on the ledger, researchers matching announcements to settlement, and agents that want both in one call. We don't rate sources; we only record who carried a story.
           </p>
         </div>
       </div>
@@ -607,19 +601,13 @@
         </div>
       </div>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">News stream.</span> Every entry must mention Ripple, XRP, RLUSD, or XRPL. The institutional sources rarely name Ripple, so they fire infrequently but high-signal when they do. The crypto-press sources are tagged for XRP at the source and carry most of the volume.
+        <span class="text-white">News.</span> Every item must mention Ripple, XRP, RLUSD or XRPL. When two sources carry the same story within 48 hours, they merge into one cross-verified record that lists both links. We note the XRP price when a story arrives and again four hours later. That is a measurement, not a claim that the news moved the price.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        When two news sources publish the same story (titles overlap within a 48-hour window), we collapse them into one record with a <span class="text-white">cross-verified</span> flag and the secondary URLs listed alongside.
-      </p>
-      <p class="text-sm text-muted leading-relaxed mb-4">
-        At ingestion we record the XRPL price. Four hours later we record it again and report the change. Pure measurement, no causal claim.
+        <span class="text-white">On-chain.</span> Each large payment is one event with its transaction hash, currency, both addresses and any known label (Binance, Coinbase, bitFlyer and so on). One transaction in, one event out.
       </p>
       <p class="text-sm text-muted leading-relaxed">
-        <span class="text-white">On-chain stream.</span> The watcher reads validated XRPL ledgers continuously. Each successful Payment whose USD value clears the storage floor lands as one event with the transaction hash, ledger position, currency (XRP or RLUSD), and full sender + receiver addresses. Where either address resolves to a labeled venue (Binance, Coinbase, bitFlyer, Wanchain Bridge, etc.) the label appears on the card. One ledger transaction in, one event out, no clustering.
-      </p>
-      <p class="text-sm text-muted leading-relaxed mt-4">
-        <span class="text-white">RWA supply stream.</span> Each tracked issuer gets an event when it mints or redeems tokens, or when its outstanding supply moves by more than a set amount between reads. Supply-change events catch mints that happen through the XRPL DEX rather than a direct payment, and they are labeled so you can tell them apart.
+        <span class="text-white">Real-world assets.</span> A tracked issuer gets an event when it mints or redeems, or when its supply moves between readings. Supply-change events catch mints made through the XRPL exchange rather than a direct payment, and are labeled as such.
       </p>
 </div>
         </div>
@@ -679,7 +667,7 @@
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">2.</span>
-              <span>Sign an XRPL Payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
+              <span>Sign a payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">3.</span>
@@ -768,7 +756,7 @@ feed = resp.json()
         <li><code class="font-mono text-white">correlation</code> (news only): XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim.</li>
         <li><code class="font-mono text-white">active_utility</code>: signal payload, shape varies by source. News carries <code class="font-mono text-white">{active, signals[]}</code>; on-chain rows carry a top-level <code class="font-mono text-white">signal</code> field identifying the kind (e.g. <code class="font-mono text-white">whale_transfer</code>, <code class="font-mono text-white">focus_outflow</code>, <code class="font-mono text-white">relay_burst_detected</code>, <code class="font-mono text-white">rwa_obligations_spike</code>/<code class="font-mono text-white">drop</code>, <code class="font-mono text-white">institutional_choreography_detected</code>, <code class="font-mono text-white">institutional_dispersion_detected</code>) with per-signal fields. Most signal kinds also carry an optional <code class="font-mono text-white">tldr</code> string (server-generated plain-English summary). See <code class="font-mono text-white">/schema</code> for the full per-signal field list.</li>
         <li><code class="font-mono text-white">target_addresses[]</code>, <code class="font-mono text-white">sentinel_context</code>: XRPL addresses attached to the event + best-effort XR-Sentinel cross-reference</li>
-        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">kind</code> (<code class="font-mono text-white">news</code> | <code class="font-mono text-white">activity</code> filter), <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $100k so the $100k-$1M attribution band is visible; pass 0 to see the full $50k+ stream).</li>
+        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">kind</code> (<code class="font-mono text-white">news</code> | <code class="font-mono text-white">activity</code> filter), <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $1M; pass 0 to see every stored payment of $50k or more).</li>
         <li><code class="font-mono text-white">high_rate_escrow_issuers_excluded[]</code>: XLS-85 token-escrow issuers dropped from this response. An issuer whose peak single-day escrow count clears the high-rate threshold is automated repetition on its own token, not adoption, and one such bot can be 99% of the stored escrow record. They are excluded by default and always named here. Send <code class="font-mono text-white">include_high_rate_escrows: true</code> for the raw stream.</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
@@ -792,7 +780,7 @@ feed = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Sentinel</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL wallet activity pattern classifier. Reads on-chain behavior and tells you how automated it looks. Free on the web, $0.10 per scan over the agent API.
+                  Paste any XRPL address to see what kind of wallet it is.
                 </div>
               </div>
             </div>
@@ -806,7 +794,7 @@ feed = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL macro telemetry: supply, regional liquidity, AMM depth, Active Float, and a utility-floor projection. Free on the web, $0.10 per snapshot over the agent API.
+                  Supply, liquidity and flow across the whole XRP Ledger.
                 </div>
               </div>
             </div>
@@ -820,7 +808,7 @@ feed = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Trust</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Permissioned-asset stack directory: XLS-70/80 domains and credentials, XLS-81 permissioned DEX, XLS-40 DID identity. The institutional-side index of XRPL. Free on the web, $0.10 per call over the agent API.
+                  Directory of permissioned domains and credentials on XRPL.
                 </div>
               </div>
             </div>
@@ -834,7 +822,7 @@ feed = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Vault</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Real-world asset tracker: per-issuer mint and burn flow, daily circulating snapshots, AMM-of-RWA pool exposure across tokenized treasuries, stablecoins, commercial paper, MMFs, and energy commodities. Free on the web, $0.10 per scan over the agent API.
+                  Supply and flow for every tracked real-world asset on XRPL.
                 </div>
               </div>
             </div>
@@ -848,7 +836,7 @@ feed = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Flows</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  ETF AUM ↔ XRPL flow correlation. The off-chain side of institutional capital plotted next to the on-chain side. Whale events on this feed often line up with the same-day ETF flow direction, so reading them together is the natural workflow.
+                  The 15 XRP funds' assets next to on-chain flows.
                 </div>
               </div>
             </div>
@@ -863,7 +851,7 @@ feed = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Lineage</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Live lineage tracker for institutional XRPL movement. Fresh RLUSD mint and burn activity, auto-discovered Ripple counterparties, and multi-hop relay-burst detection. Trace the flow, understand the origin.
+                  Where new RLUSD comes from and where it goes.
                 </div>
               </div>
             </div>
