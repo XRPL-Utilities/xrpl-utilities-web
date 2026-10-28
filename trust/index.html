@@ -200,7 +200,7 @@
           <span id="stat-jurisdictions" class="stat-tile-sub text-[11px]">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-4">
-          Where the entities running XRPL's permissioned stack are headquartered, attributed per-address from operator-curated identity, on-chain TOML, and external-label domain ccTLDs. Country-as-vanity TLDs (.io, .ai) are not inferred from. Missing &gt; inaccurate.
+          Where the domain operators and credential issuers are based, when we can tell. We leave a country blank rather than guess.
         </p>
         <div id="jurisdictions-grid" class="flex flex-wrap gap-2">
           <span class="text-xs text-muted">Loading&hellip;</span>
@@ -219,12 +219,12 @@
           <span id="stat-operators" class="stat-tile-sub text-[11px]">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-4">
-          Per-operator rollup over the last 24 hours: domain count, permissioned offers placed inside their domain, unique traders, and on-chain execution volume per currency pair (native units, no USD conversion). Sourced from XR-Trust's live ledger feed, which captures every <code class="font-mono text-white">OfferCreate</code> inside a permissioned domain at validation time. Operators with no 24h activity are hidden.
+          Each operator active in the last 24 hours: its domains, offers placed inside them, distinct traders, and filled volume per currency pair in the tokens' own units. Operators with no activity are hidden.
         </p>
         <div id="operators-grid" class="space-y-3">
           <span class="text-xs text-muted">Loading&hellip;</span>
         </div>
-        <p id="operators-empty" class="text-[11px] text-muted mt-3 hidden">No 24h activity captured yet. As operators publish offers inside their domains, they'll show up here.</p>
+        <p id="operators-empty" class="text-[11px] text-muted mt-3 hidden">No operator activity in the last 24 hours.</p>
       </div>
     </div>
   </section>
@@ -238,7 +238,7 @@
           <span id="usage-window" class="stat-tile-sub text-[11px]">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-4">
-          Ecosystem-wide rollup of XRPL Permissioned Domain (XLS-70/80) and Permissioned DEX (XLS-81) activity over the last 30 days. Every credential issued or accepted, every permissioned offer placed, every domain created or modified. As more institutions onboard, the counters grow; this is the live institutional-adoption dashboard.
+          Permissioned domains, credentials and permissioned-exchange offers across the whole ledger over the last 30 days.
         </p>
         <div id="usage-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
           <div class="skeleton-bar h-16"></div>
@@ -284,7 +284,7 @@
 
         <p class="text-xs text-muted mt-6 leading-relaxed">
           Free from this page. Agents pay $0.10 per query over the x402 API at
-          <code class="font-mono text-white">trust.xrpl-utilities.io</code>. The directory is event-driven: it persists between requests and updates the moment a new domain or credential event validates on the ledger. Reads are instant.
+          <code class="font-mono text-white">trust.xrpl-utilities.io</code>. New domains and credential changes appear within seconds of reaching the ledger.
         </p>
       </div>
     </div>
@@ -299,7 +299,7 @@
           <span id="activity-rollup" class="stat-tile-sub text-[11px]">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-4">
-          Every domain change, credential, permissioned offer and in-domain payment on XRPL, newest first. Most of the raw volume is a domain-scoped market maker replacing its own quotes: a resting offer is a standing promise at a fixed price, so it has to be replaced as the reference moves or it gets picked off. That is normal market making, so consecutive runs from one account are folded into a single row with a count rather than dropped. Switch to <span class="text-white">Lifecycle</span> for domain and credential changes alone, which is the rare part.
+          Every domain change, credential, permissioned offer and in-domain payment, newest first. Most of the volume is market makers replacing their own quotes as prices move, so back-to-back runs from one account fold into one row with a count. Choose <span class="text-white">Lifecycle</span> to see only domain and credential changes.
         </p>
         <div class="flex flex-wrap gap-2 mb-4">
           <button class="act-filter bg-accent text-ink text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-cat="">All</button>
@@ -334,43 +334,37 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">What it is</h3>
           <p class="text-sm text-muted leading-relaxed">
-            A Permissioned Domain (XLS-80) is an on-chain trading venue that gates participation by credential. The owner publishes a list of accepted credential issuers, and only accounts holding a valid credential from one of those issuers can match orders inside. XLS-81 extends this to permissioned market-maker offers.
+            A permissioned domain (XLS-80) is a ledger object that limits who can take part. Its owner lists the credential issuers it accepts, and only accounts holding a valid credential from one of them can trade inside it. XLS-81 adds a permissioned exchange that uses those domains.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Who uses them</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Institutional liquidity venues, tokenized real-world-asset issuers, KYC'd OTC desks, and regulated security tokens. The earliest named example on XRPL mainnet, xrp-liquid, published an on-chain identity (XLS-40 DID) and domain offers for XRP against USDC, RLUSD and EURQ. It has been inactive since mid-2026.
+            Institutional liquidity venues, tokenized real-world-asset issuers, OTC desks that check identity, and regulated security tokens. The live directory above lists every one on mainnet.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">How long it takes</h3>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            The on-chain side is fast. Publishing a Permissioned Domain takes one transaction, about 30 seconds, and roughly $0.01 in XRP fees.
+            The on-chain side is fast. Creating a domain is one transaction, confirmed in seconds, with a fee well under a cent and 0.2 XRP held in reserve while the domain exists.
           </p>
           <p class="text-sm text-muted leading-relaxed">
-            The off-chain side is slower. A useful domain needs a credential issuer, legal review, and a credential-issuance flow that gets attestations into participants' wallets. Self-attested credentials: hours. Third-party KYC and AML: days to weeks.
+            The off-chain side is slower. A useful domain needs a credential issuer, legal review and a way to get credentials to participants: hours if self-issued, days to weeks with third-party identity checks.
           </p>
         </div>
       </div>
 </div>
 <div>
 <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">How it works</h2>
-      <h3 class="text-3xl font-bold mb-6">Reads the validated XRPL ledger directly</h3>
+      <h3 class="text-3xl font-bold mb-6">Read straight from the ledger</h3>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Source.</span> XR-Trust reads PermissionedDomain ledger objects directly from the validated XRPL ledger. No third-party indexer, no editorial filter, no curated list. If it's on-ledger and validated, it's in the directory.
+        Every permissioned domain on the validated XRP Ledger is in the directory. Nothing is added or left out by hand.
       </p>
       <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Materialization.</span> The directory is event-driven. A persisted snapshot is hydrated on startup, kept current by an incremental refresh of every known owner, and extended in real time by a long-lived ledger-subscribe stream that picks up new owners the moment a PermissionedDomainSet from them is validated. No periodic full-ledger walk; reads stay instant.
-      </p>
-      <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Drill-down vs enumeration.</span> Looking up a single domain by its <code class="font-mono text-white">domain_id</code> is O(1) against the live ledger state. Whole-network enumeration is served from the persisted snapshot.
-      </p>
-      <p class="text-sm text-muted leading-relaxed mb-4">
-        <span class="text-white">Owner labels.</span> Where an external label provider recognizes a domain owner (banks, asset managers, infrastructure providers), the label appears on the directory row and the drill-down panel. Unlabeled owners surface their raw classic address.
+        Where an owner is a known organization (a bank, asset manager or infrastructure firm), its name appears on the row. Otherwise you see the address.
       </p>
       <p class="text-sm text-muted leading-relaxed">
-        <span class="text-white">Cross-product link.</span> Every drill-down includes a one-click jump to <a href="/sentinel/" class="text-accent hover:underline">XR-Sentinel</a> to inspect the owner's on-chain behavioral pattern. Eventually the same panel will surface XR-Telemetry macro context, the XR-Pulse <code class="font-mono text-white">permissioned_domain_lifecycle</code> event feed, and an <a href="/vault/" class="text-accent hover:underline">XR-Vault</a> link when the owner is a tracked RWA issuer; all queued for v2.
+        Each domain links to <a href="/sentinel/" class="text-accent hover:underline">XR-Sentinel</a> so you can check how the owner's wallet behaves.
       </p>
 </div>
 <div>
@@ -412,19 +406,17 @@
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
           <h3 class="text-3xl font-bold mb-6">Pay $0.10 per query, no API key</h3>
           <p class="text-muted leading-relaxed mb-6">
-            XR-Trust implements <strong class="text-white">x402 v2</strong> with the
-            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
-            Verification and settlement are delegated to the
-            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator.
+            XR-Trust uses <strong class="text-white">x402 v2</strong> with the
+            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme. Pay in RLUSD or XRP on the XRP Ledger, or USDC on Base.
           </p>
           <ol class="space-y-4 text-sm text-muted">
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">1.</span>
-              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with the XRP option (RLUSD coming in a follow-up).</span>
+              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with three payment options: RLUSD, XRP and USDC on Base.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">2.</span>
-              <span>Sign an XRPL Payment matching the requirement, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
+              <span>Sign a payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">3.</span>
@@ -437,14 +429,14 @@
             <a href="https://trust.xrpl-utilities.io/schema"       target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">/schema</a>
           </div>
           <p class="text-xs text-muted leading-relaxed mt-6">
-            <span class="text-white">Free read-only views:</span> <code class="font-mono text-white">GET /permissioned-domains/operators/index</code> (paginated operator list), <code class="font-mono text-white">/permissioned-domains/operators/{addr}/attribution</code> (auto-walker output: funder, gated assets, retail signals, narrative), and <code class="font-mono text-white">/permissioned-domains/usage-summary</code> (ecosystem onboarding stats) all return without a payment header. Use them for dashboards; <code class="font-mono text-white">/scan</code> stays paid for full per-domain drill-down.
+            <span class="text-white">Free read-only views:</span> <code class="font-mono text-white">GET /permissioned-domains/operators/index</code> (paginated operator list), <code class="font-mono text-white">/permissioned-domains/operators/{addr}/attribution</code> (who funded the operator, which assets it gates, and a short summary), and <code class="font-mono text-white">/permissioned-domains/usage-summary</code> (ecosystem onboarding stats) all return without a payment header. Use them for dashboards; <code class="font-mono text-white">/scan</code> stays paid for full per-domain drill-down.
           </p>
           <div class="mt-6 grid sm:grid-cols-2 gap-3">
             <div class="bg-ink border border-border rounded-lg p-4">
               <div class="text-[10px] uppercase tracking-[0.2em] text-green-400 font-semibold mb-2">Free MCP tools (6)</div>
               <ul class="text-xs text-muted leading-relaxed space-y-1">
+                <li><code class="font-mono text-white">xrpl_trust_recent_events</code></li>
                 <li><code class="font-mono text-white">xrpl_trust_list_operators_index</code></li>
-                <li><code class="font-mono text-white">xrpl_trust_operator_drilldown</code></li>
                 <li><code class="font-mono text-white">xrpl_trust_operator_attribution</code></li>
                 <li><code class="font-mono text-white">xrpl_trust_usage_summary</code></li>
                 <li><code class="font-mono text-white">xrpl_trust_jurisdictions</code></li>
@@ -457,7 +449,7 @@
                 <li><code class="font-mono text-white">xrpl_trust_list_domains</code> &middot; $0.10</li>
                 <li><code class="font-mono text-white">xrpl_trust_get_domain</code> &middot; $0.10</li>
                 <li><code class="font-mono text-white">xrpl_trust_credential_issuers</code> &middot; $0.10</li>
-                <li><code class="font-mono text-white">xrpl_trust_recent_events</code> &middot; $0.10</li>
+                <li><code class="font-mono text-white">xrpl_trust_operator_drilldown</code> &middot; $0.10</li>
               </ul>
             </div>
           </div>
@@ -537,7 +529,7 @@ record = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Sentinel</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL wallet activity pattern classifier. Reads on-chain behavior and tells you how automated it looks. Free on the web, $0.10 per scan over the agent API.
+                  Paste any XRPL address to see what kind of wallet it is.
                 </div>
               </div>
             </div>
@@ -551,7 +543,7 @@ record = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL macro telemetry: supply, regional liquidity, AMM depth, Active Float, and a utility-floor projection. Free on the web, $0.10 per snapshot over the agent API.
+                  Supply, liquidity and flow across the whole XRP Ledger.
                 </div>
               </div>
             </div>
@@ -565,7 +557,7 @@ record = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Pulse</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL signal feed: public-source news plus on-chain whale activity, with institutional-watchlist labels and RWA mint/burn events in one normalized stream. Free on the web. $0.10 per query or live WebSocket stream from $0.50/hr.
+                  News and large on-chain moves on XRPL, in one feed.
                 </div>
               </div>
             </div>
@@ -579,7 +571,7 @@ record = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Vault</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Real-world asset tracker: per-issuer mint and burn flow, daily circulating snapshots, AMM-of-RWA pool exposure across tokenized treasuries, stablecoins, commercial paper, MMFs, and energy commodities. Free on the web, $0.10 per scan over the agent API.
+                  Supply and flow for every tracked real-world asset on XRPL.
                 </div>
               </div>
             </div>
@@ -593,7 +585,7 @@ record = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Flows</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  ETF AUM ↔ XRPL flow correlation across the fifteen XRP-exposure funds. Daily AUM plus on-chain exchange-flow, plotted on one date axis. Free on the web, $0.10 per-ETF deep dive over the agent API.
+                  The 15 XRP funds' assets next to on-chain flows.
                 </div>
               </div>
             </div>
@@ -608,7 +600,7 @@ record = resp.json()
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Lineage</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Live lineage tracker for institutional XRPL movement. Fresh RLUSD mint and burn activity, auto-discovered Ripple counterparties, and multi-hop relay-burst detection. Trace the flow, understand the origin.
+                  Where new RLUSD comes from and where it goes.
                 </div>
               </div>
             </div>

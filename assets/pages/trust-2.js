@@ -224,7 +224,7 @@ function renderTable(target, rows, walkStatus) {
     if (d.jurisdiction) {
       const j = el('span', 'inline-flex items-center gap-1 ml-2 mt-2 px-2 py-0.5 rounded border border-border text-[10px] uppercase tracking-wider text-muted');
       j.textContent = d.jurisdiction;
-      j.title = (JURISDICTION_NAMES[d.jurisdiction] || d.jurisdiction) + '; inferred from operator-curated map / TOML ccTLD / external label domain';
+      j.title = JURISDICTION_NAMES[d.jurisdiction] || d.jurisdiction;
       ownerCell.appendChild(j);
     }
     if (did && did.org_name) {
@@ -957,10 +957,11 @@ async function loadJurisdictions() {
         return '<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-ink text-sm"><span class="font-mono text-[11px] text-muted">' + escapeHtml(iso) + '</span><span class="text-white">' + escapeHtml(name) + '</span><span class="text-xs text-muted">&middot; ' + escapeHtml(b.count) + ' entit' + (b.count === 1 ? 'y' : 'ies') + '</span></span>';
       }).join('');
     }
-    const unat = data.unattributed || {};
-    const totalUnat = (unat.operators || 0) + (unat.credential_issuers || 0);
-    if (totalUnat > 0) {
-      unattrib.textContent = totalUnat + ' entit' + (totalUnat === 1 ? 'y' : 'ies') + ' not yet attributed (no ccTLD signal, no entry in operator-curated map).';
+    // Distinct entities with no known country. Adding the operator and
+    // issuer counts double-counted addresses that are both (39 vs 23).
+    const unknown = combined.filter(b => !b.jurisdiction).reduce((n, b) => n + (b.count || 0), 0);
+    if (unknown > 0) {
+      unattrib.textContent = unknown + ' more with no known country.';
     } else {
       unattrib.textContent = '';
     }
@@ -973,6 +974,15 @@ async function loadJurisdictions() {
 // Fetches /permissioned-domains/usage-summary (free) and renders the
 // four headline counters + narrative. Updates the "Institutional
 // onboarding" tile above the directory.
+function usageSentence(eco) {
+  const made = eco.permissioned_offers_measurable || 0;
+  const filled = eco.permissioned_offers_filled || 0;
+  if (!made) return '';
+  const pct = (100 * filled / made).toFixed(2);
+  return `${filled.toLocaleString()} of ${made.toLocaleString()} offers placed in the window were filled (${pct}%). `
+    + 'The rest were cancelled, replaced, expired or are still open.';
+}
+
 async function loadEcosystemUsage() {
   const grid = document.getElementById('usage-grid');
   const win  = document.getElementById('usage-window');
@@ -985,8 +995,10 @@ async function loadEcosystemUsage() {
     const tiles = [
       { label: 'Active domains',         value: eco.total_domains ?? 0 },
       { label: 'Operators',              value: eco.total_operators ?? 0 },
-      { label: 'Credential events (30d)', value: (eco.credentials_issued || 0) + (eco.credentials_accepted || 0) },
-      { label: 'Permissioned offers (30d)', value: (eco.permissioned_offers_created || 0) + (eco.permissioned_offers_cancelled || 0) },
+      { label: 'Credential issues and acceptances (30d)', value: (eco.credentials_issued || 0) + (eco.credentials_accepted || 0) },
+      // Offers placed, not placed + cancelled: the old tile added the two
+      // and showed 215,564 against 188,752 offers actually placed.
+      { label: 'Offers placed (30d)', value: eco.permissioned_offers_created || 0 },
     ];
     grid.innerHTML = '';
     tiles.forEach(t => {
@@ -1002,7 +1014,9 @@ async function loadEcosystemUsage() {
       grid.appendChild(cell);
     });
     win.textContent = 'window: ' + (body.window_days || 30) + 'd';
-    narr.textContent = body.narrative || '';
+    // Built here rather than taken from body.narrative, which set "36 with
+    // institutional attribution" (an all-time count) beside 15 operators.
+    narr.textContent = usageSentence(eco);
   } catch (e) {
     grid.innerHTML = '<div class="text-xs text-muted col-span-2 sm:col-span-4">Could not load usage data (' + escapeHtml(e && e.message ? e.message : 'fetch error') + ').</div>';
     narr.textContent = '';
@@ -1065,7 +1079,7 @@ async function loadEcosystemUsage() {
   async function load(append) {
     if (!append) { list.innerHTML = '<div class="skeleton-bar h-12"></div>'; beforeId = null; }
     try {
-      let url = API_BASE + '/activity?limit=25';
+      let url = API_BASE + '/activity?limit=10';
       if (category) url += '&category=' + encodeURIComponent(category);
       if (append && beforeId) url += '&before_id=' + encodeURIComponent(beforeId);
       const r = await fetch(url);
@@ -1086,7 +1100,7 @@ async function loadEcosystemUsage() {
         : '';
       note.textContent = (busiest && total)
         ? Math.round(100 * busiest.events / total) + '% of the last ' +
-          (body.window_hours || 24) + 'h is one account (' + busiest.account.slice(0, 10) + '\u2026) requoting.'
+          (body.window_hours || 24) + 'h is one account (' + busiest.account.slice(0, 10) + '\u2026).'
         : '';
     } catch (e) {
       // A failure to reach the service is not a statement about the
