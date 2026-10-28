@@ -30,5 +30,7 @@ check('recent_events is listed as free', free.includes('xrpl_trust_recent_events
 check('402 lists all three payment options', !html.includes('RLUSD coming') && html.includes('RLUSD, XRP and USDC on Base'));
 check('tile counts events, not credentials', !js.includes("'Credentials issued or accepted (30d)'"));
 check('the usage line is not built from the API narrative', js.includes('narr.textContent = usageSentence(eco)'));
+// Account addresses ran past the activity cards on phones (2026-10-28).
+check('activity rows wrap long addresses', js.includes('text-sm text-white break-words min-w-0 max-w-full'));
 console.log(fails ? `${fails} FAILED` : 'trust copy: ok');
 process.exit(fails ? 1 : 0);

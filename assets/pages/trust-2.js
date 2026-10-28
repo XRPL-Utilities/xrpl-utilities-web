@@ -1066,9 +1066,9 @@ async function loadEcosystemUsage() {
           '<div class="flex items-center gap-2 flex-wrap">' +
             '<span class="text-[10px] uppercase tracking-wider font-semibold" style="color:' + meta.c + '">' + esc(meta.t) + '</span>' +
             badge +
-            '<span class="text-sm text-white">' + esc(e.title) + '</span>' +
+            '<span class="text-sm text-white break-words min-w-0 max-w-full">' + esc(e.title) + '</span>' +
           '</div>' +
-          '<div class="text-xs text-muted leading-relaxed mt-1">' + esc(e.brief) + '</div>' +
+          '<div class="text-xs text-muted leading-relaxed mt-1 break-words">' + esc(e.brief) + '</div>' +
         '</div>' +
         '<a href="https://xrpscan.com/tx/' + esc(e.tx_hash) + '" target="_blank" rel="noopener noreferrer" ' +
           'class="text-[11px] text-muted hover:text-accent whitespace-nowrap shrink-0">' + esc(ago(e.date_unix)) + ' &rarr;</a>' +
