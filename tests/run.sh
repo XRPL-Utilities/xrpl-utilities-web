@@ -30,6 +30,7 @@ node tests/images_test.mjs
 node tests/telemetry_null_test.mjs
 node tests/pulse_copy_test.mjs
 node tests/trust_copy_test.mjs
+node tests/telemetry_copy_test.mjs
 python3 tests/python_sample_test.py
 node tests/inline_script_syntax_test.mjs
 node tests/content_rules_test.mjs

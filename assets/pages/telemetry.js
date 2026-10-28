@@ -127,6 +127,8 @@ function setActiveFloatDelta(deltaXrp, deltaPct) {
   // No data: leave empty (no placeholder text). Only shown after a
   // paid /scan delivers a real delta from the time-series snapshot.
   if (typeof deltaXrp !== 'number' || typeof deltaPct !== 'number') return;
+  // A change that rounds to 0.00% is no change, not a red "-0.00%".
+  if (Math.abs(deltaPct) < 0.005) return;
   const shrinking = deltaXrp < 0;
   const arrow = shrinking ? '↓' : '↑';
   const tone = shrinking ? 'text-bad' : 'text-good';
@@ -980,6 +982,36 @@ function reanchorFromPayload(payload) {
   }
   if (touched) recompute();
 }
+
+// Open on the cached live snapshot. The SNAPSHOT constants date from
+// launch (2026-04-28) and only show, labelled with that date, if this read
+// fails: on 2026-10-28 the page showed 66.80B circulating as current while
+// the live snapshot read 68.59B.
+const afAsOfEl = document.getElementById('af-as-of');
+function liquidityToPayload(d) {
+  const fallback = new Set(d.fallback_fields || []);
+  // No generated_at: that would relabel the spot price, which comes from /healthz.
+  const payload = { derived_models: { active_float: d.active_float || {} } };
+  // A seeded supply figure is not a reading; leave the dated seed in place.
+  if (!fallback.has('total_xrp') && !fallback.has('escrowed_xrp')) payload.supply = d.supply || {};
+  return payload;
+}
+fetch(TELEMETRY_API + '/stats/liquidity')
+  .then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))))
+  .then(d => {
+    const payload = liquidityToPayload(d);
+    reanchorFromPayload(payload);
+    const live = payload.supply && typeof (d.active_float || {}).value_xrp === 'number';
+    if (afAsOfEl) {
+      const t = new Date(d.generated_at);
+      afAsOfEl.textContent = live && !isNaN(t.getTime())
+        ? 'Snapshot taken ' + t.toISOString().slice(11, 16) + ' UTC.'
+        : 'Part of the latest snapshot could not be read; older figures are dated ' + SNAPSHOT_AS_OF + '.';
+    }
+  })
+  .catch(() => {
+    if (afAsOfEl) afAsOfEl.textContent = 'Live figures unavailable right now. Showing figures as of ' + SNAPSHOT_AS_OF + '.';
+  });
 
 document.getElementById('snap-btn').addEventListener('click', () => {
   const r = document.getElementById('result');
