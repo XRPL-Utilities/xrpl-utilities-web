@@ -44,49 +44,27 @@ function fmtSetDelta(el, n) {
   el.classList.add(n >= 0 ? 'delta-positive' : 'delta-negative');
 }
 
-// Address-keyed marketing notes for the Source column.
-// Operator-curated copy that the API doesn't carry. Keys are the
+// Address-keyed display notes for the Source column that the API
+// doesn't carry. Keys are the
 // first 14 chars of a wallet address so partial-prefix matches
 // still resolve. Falls back to the API's `label` when no match.
 const SOURCE_WALLET_NOTES = {
   'rMxCKbEDwqr76Q': { display: 'Ripple RLUSD Issuer',  note: 'mint origin · burn destination' },
   'r9c6A65SmhhZAL': { display: 'RLUSD Distribution',    note: 'RLUSD distribution' },
-  'rJqiMb94hyz41S': { display: 'Ripple XRPL MM Hub',   note: 'institutional liquidity' },
+  'rJqiMb94hyz41S': { display: 'Ripple XRPL MM Hub',   note: '' },
   'rBg2FuZT91C52N': { display: 'Ripple Root Treasury', note: 'Ripple treasury' },
   'rhzVLsX7yA57th': { display: 'Ripple Treasury (alt)', note: 'supplementary Ripple wallet' },
-  'rGpaXxcBQFCkEL': { display: 'RLUSD Redemption / Burn Agent', note: 'multisig · DepositAuth · on-chain inferred' },
+  'rGpaXxcBQFCkEL': { display: 'RLUSD Redemption Wallet', note: 'identified from on-chain behavior' },
 };
 
-// Role-keyed pipeline-card copy. Operator-curated wallets are
-// grouped into role-buckets the API returns; the descriptions
-// below are the public role descriptions; the API keeps the
-// wallet-level detail private.
+// Role-keyed titles for the middle column. The API returns counts
+// per role only.
 const PIPELINE_ROLE_CARDS = {
-  mm: {
-    title: 'Market-maker tier',
-    sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
-    note: 'specific addresses curated · receive flow from Ripple MM hub',
-  },
-  other: {
-    title: 'Mid-pipeline relays',
-    sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
-    note: 'specific addresses curated · Payment-only routing',
-  },
-  treasury: {
-    title: 'Treasury / accumulation',
-    sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
-    note: 'specific addresses curated · accumulation pattern',
-  },
-  custody: {
-    title: 'Custody-style',
-    sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
-    note: 'specific addresses curated',
-  },
-  issuer: {
-    title: 'Inferred issuer-side',
-    sub: (n) => `${n} operator-tracked wallet${n === 1 ? '' : 's'}`,
-    note: 'specific addresses curated',
-  },
+  mm: 'Market makers',
+  treasury: 'Treasury and accumulation',
+  custody: 'Custody',
+  issuer: 'Issuer-side',
+  other: 'Other tracked wallets',
 };
 
 function truncAddr(a) {
@@ -129,8 +107,8 @@ async function loadTopology() {
       html += `
         <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
           <div class="text-xs font-semibold text-white">Ripple Escrow Wallets</div>
-          <div class="text-[10px] text-muted mt-1">${escrowWallets.length} wallets, TOML-attested</div>
-          <div class="text-[10px] text-amber-400 mt-1">ripple.com/.well-known/xrp-ledger.toml</div>
+          <div class="text-[10px] text-muted mt-1">${escrowWallets.length} wallets</div>
+          <div class="text-[10px] text-amber-400 mt-1">named in Ripple's xrp-ledger.toml</div>
         </div>`;
     }
     sourceEl.innerHTML = html || '<div class="text-[11px] text-muted">No source wallets returned.</div>';
@@ -139,41 +117,41 @@ async function loadTopology() {
     // Render role buckets in a fixed order so the layout is stable
     // even when role_counts changes over time.
     const roles = (j.pipeline && j.pipeline.role_counts) || {};
-    const ROLE_ORDER = ['mm', 'other', 'treasury', 'custody', 'issuer'];
+    const ROLE_ORDER = ['mm', 'treasury', 'custody', 'issuer', 'other'];
     let pHtml = '';
     for (const role of ROLE_ORDER) {
       const count = roles[role] || 0;
       if (count === 0) continue;
-      const card = PIPELINE_ROLE_CARDS[role] || { title: role, sub: (n) => `${n} wallets`, note: 'operator-curated' };
       pHtml += `
         <div class="bg-ink border border-accent/30 rounded-lg p-3">
-          <div class="text-xs font-semibold text-white">${escapeHtml(card.title)}</div>
-          <div class="text-[10px] text-muted mt-1">${escapeHtml(card.sub(count))}</div>
-          <div class="text-[10px] text-accent mt-1">${escapeHtml(card.note)}</div>
+          <div class="text-xs font-semibold text-white">${escapeHtml(PIPELINE_ROLE_CARDS[role])}</div>
+          <div class="text-[10px] text-muted mt-1">${escapeHtml(fmtInt(count))} wallet${count === 1 ? '' : 's'}</div>
         </div>`;
     }
-    if (!pHtml) pHtml = '<div class="text-[11px] text-muted">No pipeline wallets curated yet.</div>';
+    if (!pHtml) pHtml = '<div class="text-[11px] text-muted">No tracked wallets yet.</div>';
     pipelineEl.innerHTML = pHtml;
 
     // ===== EXITS COLUMN =====
+    // wallets[] holds only XRPScan-named addresses; inferred_wallet_count
+    // is our own attribution and has no addresses.
     let eHtml = '';
     for (const ent of (j.exits && j.exits.entities) || []) {
-      const linksHtml = (ent.wallets || []).map(w =>
+      const named = ent.wallets || [];
+      const more = ent.inferred_wallet_count || 0;
+      const linksHtml = named.map(w =>
         `<a href="https://xrpscan.com/account/${escapeHtml(w.address)}" target="_blank" rel="noopener noreferrer" class="font-mono text-[10px] text-muted hover:text-emerald-400 transition">${escapeHtml(truncAddr(w.address))}</a>`
       ).join('<span class="text-muted">, </span>');
+      const lines = [];
+      if (named.length) lines.push(`${fmtInt(named.length)} publicly named`);
+      if (more) lines.push(`${fmtInt(more)} ${named.length ? 'more ' : ''}we attribute (addresses not shown)`);
       eHtml += `
         <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
           <div class="text-xs font-semibold text-white">${escapeHtml(ent.entity)}</div>
-          <div class="text-[10px] text-muted mt-1">${escapeHtml(ent.wallet_count)} hot wallet${ent.wallet_count === 1 ? '' : 's'} attributed</div>
-          <div class="text-[10px] mt-1">${linksHtml}</div>
+          <div class="text-[10px] text-muted mt-1">${escapeHtml(lines.join(' · '))}</div>
+          ${linksHtml ? `<div class="text-[10px] mt-1">${linksHtml}</div>` : ''}
         </div>`;
     }
-    eHtml += `
-      <div class="bg-ink border border-border rounded-lg p-3">
-        <div class="text-xs font-semibold text-white">Additional CEX / OTC</div>
-        <div class="text-[10px] text-muted mt-1">surfaced as detection fires</div>
-        <div class="text-[10px] text-muted mt-1">named from public labels when known</div>
-      </div>`;
+    if (!eHtml) eHtml = '<div class="text-[11px] text-muted">No exchange wallets returned.</div>';
     exitsEl.innerHTML = eHtml;
   } catch (e) {
     console.warn('[lineage] topology fetch failed', e);
@@ -191,20 +169,27 @@ async function loadRlusdToday() {
     const issuers = j.per_issuer || j.issuers || [];
     const rlusd = issuers.find(x => (x.label || '').includes('RLUSD') && (x.wallet || '').startsWith('rMxCKb'));
     if (!rlusd) return;
+    // Live supply, its change since today's 00:00 UTC reading, and that
+    // reading. obligations_delta_today is yesterday's full-day change, so
+    // it is not shown next to the live figure.
     const live = parseFloat(rlusd.live_obligations || 0);
-    const delta = parseFloat(rlusd.obligations_delta_today || 0);
-    const hist = rlusd.daily_obligations_history || [];
-    // The card shows the snapshot the delta was measured against.
-    const basis = rlusd.obligations_delta_today_basis_date;
-    const priorRow = (basis && hist.find(h => h.snapshot_date === basis))
-      || (hist.length >= 2 ? hist[hist.length - 2] : null);
-    const prior = priorRow ? parseFloat(priorRow.obligations_raw || 0) : 0;
-    const tlc = priorRow ? parseFloat(priorRow.trustline_count || 0) : 0;
+    const midnight = parseFloat(rlusd.obligations_raw || 0);
+    const delta = rlusd.live_change_since_snapshot != null
+      ? parseFloat(rlusd.live_change_since_snapshot)
+      : live - midnight;
+    const tlc = parseFloat(rlusd.trustline_count || 0);
+    // Both figures come from the same daily reading. Just after midnight,
+    // before today's reading exists, that is yesterday's, so say which.
+    const snapDate = rlusd.snapshot_date;
+    const today = new Date().toISOString().slice(0, 10);
+    const since = snapDate && snapDate !== today ? `${snapDate} 00:00 UTC` : '00:00 UTC';
+    document.getElementById('rlusd-delta-label').textContent = `Change since ${since}`;
+    document.getElementById('rlusd-prior-label').textContent = `${since} reading`;
 
     document.getElementById('rlusd-outstanding').textContent = fmtUSD(live);
     fmtSetDelta(document.getElementById('rlusd-delta'), delta);
-    document.getElementById('rlusd-prior').textContent = fmtUSD(prior);
-    document.getElementById('rlusd-trustlines').textContent = fmtInt(tlc) + (rlusd.trustline_count_truncated || priorRow?.trustline_count_truncated ? '+' : '');
+    document.getElementById('rlusd-prior').textContent = fmtUSD(midnight);
+    document.getElementById('rlusd-trustlines').textContent = fmtInt(tlc) + (rlusd.trustline_count_truncated ? '+' : '');
     document.getElementById('rlusd-asof').textContent = `as of ${new Date().toISOString().replace('T',' ').slice(0,19)}Z`;
   } catch (e) {
     console.warn('[lineage] rwa-summary fetch failed', e);
@@ -222,15 +207,20 @@ async function loadCounterparties() {
     document.getElementById('cp-candidates').textContent = fmtInt(j.candidate_count);
     document.getElementById('cp-promoted').textContent = fmtInt(j.promoted_count);
     document.getElementById('cp-rlusd').textContent = fmtInt(j.rlusd_pre_approval_count);
-    document.getElementById('cp-bursts').textContent = fmtInt((j.relay_bursts_recent || []).length);
+    const todayUtc = new Date().toISOString().slice(0, 10);
+    const chainsToday = (j.relay_bursts_recent || []).filter(b => {
+      const ts = b.chain_started_at || b.detected_at;
+      return ts && new Date(ts * 1000).toISOString().slice(0, 10) === todayUtc;
+    }).length;
+    document.getElementById('cp-bursts').textContent = fmtInt(chainsToday);
 
     const tierGrid = document.getElementById('cp-tier-grid');
     const tiers = j.tier_distribution || {};
     const tierLabels = {
-      promoted_70_plus: 'Promoted (70+)',
-      high_50_69: 'High (50-69)',
-      mid_30_49: 'Mid (30-49)',
-      low_under_30: 'Low (<30)',
+      promoted_70_plus: 'Score 70+',
+      high_50_69: 'Score 50-69',
+      mid_30_49: 'Score 30-49',
+      low_under_30: 'Score under 30',
     };
     const tierOrder = ['promoted_70_plus','high_50_69','mid_30_49','low_under_30'];
     tierGrid.innerHTML = '';
@@ -247,7 +237,7 @@ async function loadCounterparties() {
     const sourceGrid = document.getElementById('cp-source-grid');
     const sources = Object.entries(j.funding_source_distribution || {});
     if (sources.length === 0) {
-      sourceGrid.innerHTML = '<div class="text-xs text-muted">No candidates surfaced yet. The discovery loop checks back on a recurring basis.</div>';
+      sourceGrid.innerHTML = '<div class="text-xs text-muted">No candidates yet.</div>';
     } else {
       sources.sort((a, b) => b[1] - a[1]);
       sourceGrid.innerHTML = sources.map(([label, count]) => `
@@ -257,9 +247,7 @@ async function loadCounterparties() {
         </div>`).join('');
     }
 
-    // Today's largest chain visualization. Pick the burst with the
-    // highest total_usd in the response; render hops_public as a
-    // step-by-step flow with arrows + per-hop amounts.
+    // Today's largest chain: the burst with the largest single hop.
     renderLargestChain(j.relay_bursts_recent || []);
 
     // Bursts table
@@ -299,16 +287,15 @@ async function loadCounterparties() {
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 mb-1 flex-wrap">
                 <span class="text-[10px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded border ${curClass}">${escapeHtml(curDisplay)}</span>
-                <span class="text-sm font-semibold text-white">${escapeHtml(b.hop_count)}-hop chain &middot; ${escapeHtml(fmtUSD(b.total_usd || 0))}</span>
+                <span class="text-sm font-semibold text-white">${escapeHtml(b.hop_count)}-hop chain &middot; largest hop ${escapeHtml(fmtUSD(peakOf(b)))}</span>
               </div>
-              ${b.chain_summary ? `<div class="text-[12px] text-white mt-1 mb-1">${escapeHtml(b.chain_summary)}</div>` : ''}
-              ${hopFlow ? `<div class="text-[12px] mt-2 mb-1">Flow: ${hopFlow}</div>` : ''}
+              ${hopFlow ? `<div class="text-[12px] mt-2 mb-1 flex flex-wrap items-center gap-y-1">Flow:&nbsp;${hopFlow}</div>` : ''}
               <div class="text-[11px] text-muted mt-2">
                 On-chain: <span class="text-white">${escapeHtml(chainDate)}</span> (${escapeHtml(fmtRel(chainTs))})
               </div>
               <div class="text-[11px] text-muted mt-1">
                 Anchor: <span class="text-accent">${escapeHtml(b.anchor_label || 'unlabeled')}</span>
-                ${b.news_correlation_count > 0 ? `&middot; <span class="text-amber-400">${escapeHtml(b.news_correlation_count)} news event${b.news_correlation_count === 1 ? '' : 's'} in window</span>` : ''}
+                ${b.news_correlation_count > 0 ? `&middot; <span class="text-amber-400">${escapeHtml(b.news_correlation_count)} headline${b.news_correlation_count === 1 ? '' : 's'} around the same time</span>` : ''}
               </div>
               ${chainTs ? `<div class="text-[11px] mt-2"><a href="/pulse/?since=${escapeHtml(Math.floor(chainTs - 60))}&kind=activity" class="text-accent hover:underline">View live whale events in this window &rarr;</a></div>` : ''}
             </div>
@@ -330,6 +317,14 @@ function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// Largest single payment in a chain. The same money moves through every
+// hop, so summing hops (total_usd) overstates what moved.
+function peakOf(b) {
+  if (b.peak_hop_usd != null) return Number(b.peak_hop_usd) || 0;
+  const hs = b.hops_public || [];
+  return hs.length ? Math.max(...hs.map(h => h.value || 0)) : 0;
+}
+
 function renderLargestChain(bursts) {
   const flowEl = document.getElementById('largest-chain-flow');
   const whenEl = document.getElementById('largest-chain-when');
@@ -339,19 +334,11 @@ function renderLargestChain(bursts) {
 
   if (!bursts || bursts.length === 0) {
     if (titleEl) titleEl.textContent = "Today's largest chain";
-    flowEl.innerHTML = '<div class="text-xs text-muted">No chains detected yet. Detection looks for large, multi-hop payment chains that touch at least one labeled wallet.</div>';
+    flowEl.innerHTML = '<div class="text-xs text-muted">No payment chains detected yet.</div>';
     whenEl.textContent = '';
     totalsEl.innerHTML = '';
     return;
   }
-
-  // Peak hop = largest single Payment in the chain. Honest "money
-  // that moved" signal vs sum(hop_usd) which triple-counts when the
-  // same dollars relay through each node.
-  const peakOf = (b) => {
-    const hs = b.hops_public || [];
-    return hs.length ? Math.max(...hs.map(h => h.value || 0)) : 0;
-  };
 
   // Filter to actual today (UTC). Without this, the picker grabbed
   // the all-time-largest burst in the response window and labeled
@@ -391,14 +378,9 @@ function renderLargestChain(bursts) {
   const chainDate = chainTs ? new Date(chainTs * 1000).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : '?';
   whenEl.textContent = `${chainDate} (${fmtRel(chainTs)})`;
 
-  // Build the flow: [Anchor]  →  [Hop 1 $X]  →  [Hop 2 $Y]  →  ...
-  const anchorBox = `
-    <div class="flex flex-col items-center">
-      <div class="bg-ink border border-amber-500/40 rounded-lg px-3 py-2 text-center min-w-[120px] sm:min-w-[140px]">
-        <div class="text-[9px] uppercase tracking-widest text-amber-400 font-semibold">Anchor</div>
-        <div class="text-xs text-white font-semibold mt-1">${escapeHtml(top.anchor_label || 'unlabeled')}</div>
-      </div>
-    </div>`;
+  // One box per wallet: n payments link n + 1 wallets. The anchor (the
+  // best-known wallet in the chain) can sit anywhere in it, so it is named
+  // above the flow rather than drawn as the first box.
   const arrow = (label) => `
     <div class="flex flex-col items-center justify-center min-w-[44px] sm:min-w-[80px]">
       <div class="text-[10px] text-accent font-mono whitespace-nowrap">${escapeHtml(label)}</div>
@@ -407,46 +389,43 @@ function renderLargestChain(bursts) {
         <polygon points="55,1 60,5 55,9" fill="#00b8ff" />
       </svg>
     </div>`;
-  const hopBox = (i, isLast) => `
+  const walletBox = (n, isLast) => `
     <div class="flex flex-col items-center">
       <div class="bg-ink border ${isLast ? 'border-emerald-500/40' : 'border-accent/40'} rounded-lg px-3 py-2 text-center min-w-[90px] sm:min-w-[110px]">
-        <div class="text-[9px] uppercase tracking-widest ${isLast ? 'text-emerald-400' : 'text-accent'} font-semibold">${isLast ? 'Terminal recipient' : `Hop ${i}`}</div>
-        <div class="text-xs text-white font-semibold mt-1">${isLast ? 'Holding wallet' : 'Routing node'}</div>
+        <div class="text-[9px] uppercase tracking-widest ${isLast ? 'text-emerald-400' : 'text-accent'} font-semibold">${isLast ? 'Last' : `Wallet ${n}`}</div>
+        <div class="text-xs text-white font-semibold mt-1">${isLast ? 'Recipient' : (n === 1 ? 'Sender' : 'Passes on')}</div>
       </div>
     </div>`;
   const fallbackNotice = isFallback
-    ? `<div class="w-full text-xs text-amber-400/90 bg-amber-500/5 border border-amber-500/20 rounded-md px-3 py-2 mb-3">No multi-hop chain detected today. Showing the last detected chain for context.</div>`
+    ? `<div class="w-full text-xs text-amber-400/90 bg-amber-500/5 border border-amber-500/20 rounded-md px-3 py-2 mb-3">No payment chain detected today. Showing the most recent one.</div>`
     : '';
-  let html = fallbackNotice + anchorBox;
+  const anchorLine = `<div class="w-full text-xs text-muted mb-2">Anchor: <span class="text-amber-400 font-semibold">${escapeHtml(top.anchor_label || 'unlabeled')}</span></div>`;
+  let html = fallbackNotice + anchorLine + walletBox(1, hops.length === 0);
   hops.forEach((h, i) => {
     html += arrow(fmtUSD(h.value || 0));
-    html += hopBox(i + 1, i === hops.length - 1);
+    html += walletBox(i + 2, i === hops.length - 1);
   });
   flowEl.innerHTML = html;
 
-  // Totals tiles below. Peak hop = largest single Payment value
-  // observed in the chain. This is the honest "money that moved"
-  // figure; the per-hop values aggregated together (still surfaced
-  // separately) overstate because the same dollars typically move
-  // through each relay node sequentially.
-  const peakHop = hops.length ? Math.max(...hops.map(h => h.value || 0)) : 0;
-  const aggregateHopUsd = top.total_usd || 0;
+  // Totals tiles below.
   const newsCount = top.news_correlation_count || 0;
+  const cur = (top.chain_currency || '?').toUpperCase();
+  const curDisplay = (cur === 'RLUSD' || cur.startsWith('524C5553')) ? 'RLUSD' : cur;
   totalsEl.innerHTML = `
     <div class="bg-ink border border-border rounded-lg p-3">
-      <div class="text-[10px] uppercase tracking-widest text-muted" title="Largest single Payment observed across the chain. The honest 'money that moved' figure.">Peak hop</div>
-      <div class="text-base font-semibold text-white mt-1">${escapeHtml(fmtUSD(peakHop))}</div>
+      <div class="text-[10px] uppercase tracking-widest text-muted">Largest hop</div>
+      <div class="text-base font-semibold text-white mt-1">${escapeHtml(fmtUSD(peakOf(top)))}</div>
     </div>
     <div class="bg-ink border border-border rounded-lg p-3">
       <div class="text-[10px] uppercase tracking-widest text-muted">Hops</div>
       <div class="text-base font-semibold text-white mt-1">${escapeHtml(top.hop_count)}</div>
     </div>
     <div class="bg-ink border border-border rounded-lg p-3">
-      <div class="text-[10px] uppercase tracking-widest text-muted" title="Sum of per-hop Payment values. Overstates actual money moved when the same dollars flow through each relay node.">Aggregate hop value</div>
-      <div class="text-base font-semibold text-muted mt-1">${escapeHtml(fmtUSD(aggregateHopUsd))}</div>
+      <div class="text-[10px] uppercase tracking-widest text-muted">Currency</div>
+      <div class="text-base font-semibold text-white mt-1">${escapeHtml(curDisplay)}</div>
     </div>
     <div class="bg-ink border border-border rounded-lg p-3">
-      <div class="text-[10px] uppercase tracking-widest text-muted">News in window</div>
+      <div class="text-[10px] uppercase tracking-widest text-muted">Headlines nearby</div>
       <div class="text-base font-semibold ${newsCount > 0 ? 'text-amber-400' : 'text-muted'} mt-1">${escapeHtml(newsCount)}</div>
     </div>`;
 }

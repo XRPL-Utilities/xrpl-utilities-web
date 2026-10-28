@@ -2,8 +2,8 @@
 // for yesterday's whale tally yet. On 2026-10-28 at 00:08 UTC the Pulse
 // card read "Yesterday $0, 0 txs" for a $300M+ day and Lineage's RLUSD
 // card paired a $0 delta with a prior-snapshot figure from a different day.
-// A missing row is unknown, not zero, and the prior card must show the
-// snapshot the delta was measured against.
+// A missing row is unknown, not zero, and the reading card must show the
+// reading the change was measured against.
 //
 // Run: node tests/midnight_gap_test.mjs
 import fs from 'node:fs';
@@ -26,8 +26,13 @@ else {
 }
 
 const lineage = read('assets/pages/lineage.js');
-if (!/hist\.find\(h => h\.snapshot_date === basis\)/.test(lineage) || !/obligations_delta_today_basis_date/.test(lineage)) {
-  fail('lineage.js: the prior-snapshot card must use the row the delta was measured against');
+// The change and the reading beside it must come from the same daily
+// reading, and the labels must name that reading's date when it is not today.
+if (!/live_change_since_snapshot/.test(lineage) || !/rlusd\.obligations_raw/.test(lineage)) {
+  fail('lineage.js: the change and the reading card must come from the same daily reading');
+}
+if (!/rlusd\.snapshot_date/.test(lineage) || !/rlusd-prior-label/.test(lineage)) {
+  fail("lineage.js: the reading card must name the reading's date when it is not today");
 }
 
 console.log('midnight gap: ' + (fails ? fails + ' failure(s)' : 'ok'));

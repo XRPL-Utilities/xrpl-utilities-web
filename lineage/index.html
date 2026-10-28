@@ -6,9 +6,9 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <title>XR-Lineage | Trace XRPL institutional flow</title>
-  <meta name="description" content="Follow institutional XRP flow on XRPL: Ripple treasury outflows, newly onboarded counterparties and multi-hop relay bursts, live. Free on the web." />
+  <meta name="description" content="Live RLUSD supply, Ripple's wallets and counterparties, and large multi-hop payment chains on the XRP Ledger. Free on the web." />
   <meta property="og:title" content="XR-Lineage" />
-  <meta property="og:description" content="Trace the flow, understand the origin. Live lineage tracker for institutional XRPL movement. Discovery + relay-burst detection + focus-watch alerts." />
+  <meta property="og:description" content="Live RLUSD supply, Ripple's wallets and counterparties, and large multi-hop payment chains on the XRP Ledger." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/lineage/" />
   <meta property="og:type" content="website" />
@@ -23,7 +23,7 @@
         "name": "XR-Lineage",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any (HTTP)",
-        "description": "Live lineage tracker for institutional XRPL flow. Ripple-counterparty discovery, multi-hop relay-burst detection, and per-wallet focus alerts.",
+        "description": "Live RLUSD supply, Ripple's wallets and counterparties, and large multi-hop payment chains on the XRP Ledger.",
         "url": "https://xrpl-utilities.com/lineage/",
         "image": "https://xrpl-utilities.com/assets/xr-lineage.png",
         "publisher": {
@@ -159,7 +159,7 @@
         <img src="/assets/img/xr-lineage-512.webp" width="176" height="176" loading="eager" decoding="async" alt="XR-Lineage" class="hero-logo rounded-2xl glow shrink-0" />
         <div>
           <h1 class="hero-title text-4xl md:text-5xl font-bold tracking-tight">XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h1>
-          <p class="hero-tag text-lg text-muted mt-2">Live RLUSD supply, Ripple counterparties and relay bursts on the XRP Ledger.</p>
+          <p class="hero-tag text-lg text-muted mt-2">Live RLUSD supply, Ripple counterparties and large payment chains on the XRP Ledger.</p>
         </div>
       </div>
     </div>
@@ -177,26 +177,26 @@
           <div class="stat-tile p-4">
             <div class="stat-tile-label mb-2">Outstanding</div>
             <div id="rlusd-outstanding" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">live circulating supply</div>
+            <div class="stat-tile-sub mt-2">live supply on the ledger</div>
           </div>
           <div class="stat-tile p-4">
-            <div class="stat-tile-label mb-2">Supply change (24h)</div>
+            <div id="rlusd-delta-label" class="stat-tile-label mb-2">Change since 00:00 UTC</div>
             <div id="rlusd-delta" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">vs prior daily snapshot</div>
+            <div class="stat-tile-sub mt-2">minted minus redeemed today</div>
           </div>
           <div class="stat-tile p-4">
-            <div class="stat-tile-label mb-2">Prior snapshot</div>
+            <div id="rlusd-prior-label" class="stat-tile-label mb-2">00:00 UTC reading</div>
             <div id="rlusd-prior" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">supply at the last daily read</div>
+            <div class="stat-tile-sub mt-2">supply at the start of today</div>
           </div>
           <div class="stat-tile p-4">
             <div class="stat-tile-label mb-2">Trustlines</div>
             <div id="rlusd-trustlines" class="stat-tile-value"><span class="inline-block h-7 w-20 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">from the last daily read</div>
+            <div class="stat-tile-sub mt-2">our count stops at 2,000</div>
           </div>
         </div>
         <p class="text-[11px] text-muted leading-relaxed mt-5">
-          Daily settlement state for Ripple's stablecoin issuer. Outstanding is the live circulating-supply read from the validated XRPL ledger. Supply change is the difference against the prior daily snapshot; positive means more was minted than burned, negative means net redemption to issuer. When the live number diverges sharply from the prior snapshot mid-day, that's the on-chain trace of an active mint or burn pipeline running.
+          Supply of Ripple's RLUSD stablecoin on the XRP Ledger. A positive change means more was minted than redeemed since midnight UTC.
         </p>
       </div>
     </div>
@@ -208,20 +208,13 @@
       <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7">
         <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Ripple ecosystem topology</h2>
-          <span class="text-[10px] text-muted">public attribution &middot; named wallets only</span>
+          <span class="text-[10px] text-muted">addresses shown only where publicly named</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
-          The named on-chain infrastructure that anchors institutional flow on XRPL. Wallets shown by name are publicly attributed by Ripple's own published metadata, by public explorer labels, or by on-chain behavior that uniquely identifies their function. The operator-curated mid-layer of relay nodes and pre-staging wallets is shown by role and count; specific addresses are intentionally not shown.
+          Ripple's own wallets, the wallets in between, and the exchanges where the money lands. Ripple's wallets are publicly named, except the redemption wallet, which we identify from its on-chain behavior. Wallets in the middle are counted by role, without addresses. Exchange addresses are shown only where they are publicly named; others we attribute are counted.
         </p>
 
-        <!-- ASCII-style flow diagram. Pure CSS so it stays legible without
-             JS or heavy charting libs. Three columns: Source / Pipeline / Exits.
-             Each column is a stack of cards; cross-column arrows are
-             rendered with vertical lines and arrow-heads using border + svg. -->
-        <!-- API-driven topology. Filled from /stats/ripple-topology on load.
-             Source column shows named Ripple-attested wallets.
-             Pipeline column shows operator-curated roles by count only.
-             Exits column shows named CEX hot wallets grouped by entity. -->
+        <!-- Filled from /stats/ripple-topology on load. -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-3">
           <div class="space-y-3">
             <h3 class="text-[10px] uppercase tracking-widest text-amber-400 font-semibold mb-2">Source: Ripple infrastructure</h3>
@@ -230,22 +223,21 @@
             </div>
           </div>
           <div class="space-y-3">
-            <h3 class="text-[10px] uppercase tracking-widest text-accent font-semibold mb-2">Pipeline: institutional middle</h3>
+            <h3 class="text-[10px] uppercase tracking-widest text-accent font-semibold mb-2">Middle: tracked wallets</h3>
             <div id="topology-pipeline" class="space-y-3">
               <div class="bg-ink border border-border rounded-lg p-3 text-[11px] text-muted">Loading&hellip;</div>
             </div>
           </div>
           <div class="space-y-3">
-            <h3 class="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold mb-2">Exits: named CEX hot wallets</h3>
+            <h3 class="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold mb-2">Exits: exchange wallets</h3>
             <div id="topology-exits" class="space-y-3">
               <div class="bg-ink border border-border rounded-lg p-3 text-[11px] text-muted">Loading&hellip;</div>
             </div>
           </div>
         </div>
 
-        <!-- Caption / movement explanation -->
         <p class="text-[11px] text-muted leading-relaxed mt-6 border-t border-border pt-4">
-          <span class="text-amber-400 font-semibold">Source</span> wallets are Ripple-published or publicly labeled. Mint events originate at the issuer, route through distribution wallets, and fund the pipeline. <span class="text-accent font-semibold">Pipeline</span> nodes are the institutional middle that aggregates, routes, and pre-stages liquidity; the operator-curated specifics are not exposed publicly. <span class="text-emerald-400 font-semibold">Exits</span> are named CEX hot wallets where the flow eventually settles. Burns route from any pipeline node back through the redemption agent to the issuer.
+          New RLUSD starts at the issuer and goes out through the distribution wallet. Redeemed RLUSD returns through the redemption wallet to the issuer, where it is burned.
         </p>
       </div>
     </div>
@@ -260,7 +252,7 @@
           <span id="largest-chain-when" class="text-[10px] text-muted">&hellip;</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
-          Step-by-step visualization of the biggest multi-hop chain in the current detection window. Each box is one hop; the arrow shows the on-chain Payment value. The anchor label identifies the publicly-attested wallet that anchors the chain. Specific addresses for operator-curated intermediate hops are intentionally not exposed.
+          The biggest chain of large payments today, one box per wallet. The amount on each arrow is that payment's value. Addresses are not shown.
         </p>
         <div id="largest-chain-flow" class="flex flex-wrap items-center gap-2">
           <div class="text-xs text-muted">Loading&hellip;</div>
@@ -276,38 +268,38 @@
       <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7">
         <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Counterparty discovery</h2>
-          <span class="text-[10px] text-muted">live anonymized aggregates</span>
+          <span class="text-[10px] text-muted">counts only, no addresses</span>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div class="stat-tile p-4">
             <div class="stat-tile-label mb-2">Candidates</div>
             <div id="cp-candidates" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">all-time tracked</div>
+            <div class="stat-tile-sub mt-2">wallets linked to Ripple's wallets</div>
           </div>
           <div class="stat-tile p-4">
-            <div class="stat-tile-label mb-2">Auto-promoted</div>
+            <div class="stat-tile-label mb-2">Added to tracking</div>
             <div id="cp-promoted" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">cleared score + provenance</div>
+            <div class="stat-tile-sub mt-2">on Ripple's redemption list, publicly named, or scored 70+</div>
           </div>
           <div class="stat-tile p-4">
-            <div class="stat-tile-label mb-2">RLUSD pre-approval</div>
+            <div class="stat-tile-label mb-2">RLUSD test payment</div>
             <div id="cp-rlusd" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">test transfer observed</div>
+            <div class="stat-tile-sub mt-2">small RLUSD test from Ripple seen</div>
           </div>
           <div class="stat-tile p-4">
-            <div class="stat-tile-label mb-2">Recent bursts</div>
+            <div class="stat-tile-label mb-2">Chains today</div>
             <div id="cp-bursts" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-            <div class="stat-tile-sub mt-2">multi-hop chains detected</div>
+            <div class="stat-tile-sub mt-2">payment chains since 00:00 UTC</div>
           </div>
         </div>
 
-        <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-3">Score-tier distribution</h3>
+        <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-3">Candidates by score</h3>
         <div id="cp-tier-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div class="text-xs text-muted">Loading&hellip;</div>
         </div>
 
-        <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-3">Funding-source distribution</h3>
+        <h3 class="text-xs uppercase tracking-widest text-white font-semibold mb-3">Candidates by the Ripple wallet they are linked to</h3>
         <div id="cp-source-grid" class="space-y-2">
           <div class="bg-ink border border-border rounded-lg p-4">
             <div class="skeleton-bar h-4 w-2/3"></div>
@@ -315,7 +307,7 @@
         </div>
 
         <p class="text-[11px] text-muted leading-relaxed mt-6">
-          Anonymized aggregates only. Specific wallet addresses are intentionally not shown on this public page. Score tiers and funding-source counts give a public read on the volume and origin of newly-onboarded institutional counterparties without disclosing identities. A row in the top tier means a wallet passed both our scoring and provenance checks.
+          The score reflects on-chain behavior such as balance, account age, RLUSD test payments and links to exchanges. It is not a judgment of who owns the wallet.
         </p>
       </div>
     </div>
@@ -326,8 +318,8 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
       <div class="bg-panel border border-border rounded-2xl p-5 sm:p-7">
         <div class="flex items-baseline justify-between gap-4 mb-5 flex-wrap">
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Recent relay-burst detections</h2>
-          <span class="text-[10px] text-muted">anonymized; anchor labels shown</span>
+          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Recent payment chains</h2>
+          <span class="text-[10px] text-muted">no addresses shown</span>
         </div>
         <div id="burst-list" class="space-y-2">
           <div class="bg-ink border border-border rounded-lg p-4">
@@ -335,83 +327,19 @@
             <div class="skeleton-bar h-3 w-1/4"></div>
           </div>
         </div>
-        <p id="burst-empty" class="text-xs text-muted mt-4 hidden">No relay-burst detections in the current window. Detection looks for large, multi-hop payment chains that touch at least one labeled wallet.</p>
+        <p id="burst-empty" class="text-xs text-muted mt-4 hidden">No payment chains detected recently. A chain is three or more large payments in a row, each passing the money to the next wallet, that touches at least one known wallet.</p>
         <p class="text-[11px] text-muted leading-relaxed mt-6">
-          Each row is one detected multi-hop chain. Anchor label is the strongest labeled wallet in the chain (our curated labels take priority over public ones). Hop count is the chain length. Total USD is the sum of every hop's value. News correlation count is the number of public-source headlines close in time to the chain; non-zero means the on-chain activity coincided with a public news event.
+          Each row is one chain: large payments in a row where each receiver passes the money on within a short time. The same money moves through every hop, so the largest single payment is the size shown, not the sum. The anchor is the best-known wallet in the chain. A news count means public headlines appeared around the same time; it does not mean one caused the other.
         </p>
       </div>
     </div>
   </section>
 
-  <section id="how-it-works" class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-      <details class="group bg-panel border border-border rounded-2xl">
-        <summary class="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
-          <span class="text-sm uppercase tracking-widest text-accent font-semibold">How this works</span>
-          <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
-        </summary>
-        <div class="px-5 sm:px-6 pb-6 space-y-7">
-<div id="what-is">
-<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Three detection layers</h2>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Counterparty discovery</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            A background loop scores every new outgoing-Payment
-            destination from Ripple infrastructure against a weighted
-            on-chain heuristic stack. Candidates that clear the score
-            threshold and show at least one on-chain provenance signal
-            tying them to Ripple's institutional rails are auto-promoted
-            into the runtime watchlist. Personal whales don't
-            auto-promote on capital alone.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Relay-burst detection</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Multi-hop chain detector that links consecutive whale Payments
-            where one hop's receiver is the next hop's sender, same
-            currency, within a short time window. Fires when a chain
-            exceeds the configured hop count and total-movement
-            thresholds, shows the behavioral fingerprint of institutional
-            routing, and anchors on at least one labeled wallet. Every
-            unlabeled hop in a detected chain is auto-promoted with a
-            synthesized label so future events from that wallet carry
-            context automatically.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Focus watch</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Per-wallet outgoing-Payment alerter that fires on every new
-            outgoing transaction at any value, regardless of USD floor.
-            Fills the gap between the whale-grade watcher and the multi-
-            hop chain detector for the case where a labeled wallet is
-            sitting on a large fresh balance and starts moving it in
-            small chunks. The focus list is operator-curated.
-          </p>
-        </div>
-      </div>
-</div>
-<div id="methodology">
-<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Methodology and limits</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What we measure</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            On-chain Payments, Trustlines, and Escrow activity from the validated XRPL ledger. Issuer obligations from live ledger reads. Auto-discovered candidates are scored on a weighted heuristic stack tied to Ripple-infrastructure provenance signals. Relay bursts are detected from sequenced whale Payments meeting the configured thresholds. Detection is deterministic and reproducible.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What we don't claim</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            The wallets surfaced here are heuristic candidates, not confirmed identities. Auto-promotion attaches a synthesized label for downstream event enrichment; it is not an endorsement, regulatory determination, or investment recommendation. We are not affiliated with Ripple Labs. Use this surface as one input among many. The full attributed wallet list is intentionally not exposed publicly. DYOR.
-          </p>
-        </div>
-      </div>
-</div>
-        </div>
-      </details>
+  <section id="limits" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <p class="text-[11px] text-muted leading-relaxed">
+        Wallet roles on this page are our reading of public ledger data, not confirmed identities. Tracking a wallet is not an endorsement. We are not affiliated with Ripple. Not investment advice.
+      </p>
     </div>
   </section>
 
@@ -435,7 +363,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3 text-center">More from the XRPL-Utilities portfolio</h2>
       <p class="text-sm text-muted text-center max-w-2xl mx-auto mb-10 leading-relaxed">
-        Lineage is the free view in a set of seven tools (six agent-payable APIs plus Lineage) that share an operator-curated data foundation. Each surface answers a different question about XRPL.
+        Lineage is free. The other tools are paid APIs for AI agents with free views on this site, and each answers a different question about the XRP Ledger.
       </p>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <a href="/sentinel/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
