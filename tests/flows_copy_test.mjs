@@ -1,0 +1,33 @@
+// Flows page facts checked against the live service and issuer sources on 2026-10-28.
+//
+// - The MOEX snapshot printed last_value (the prior reading) next to a
+//   change_pct measured to current_value.
+// - Futures chips showed the raw Russian contract name and did not say the
+//   price was the previous settlement.
+// - The European subline named GXRP.DE, which has no figure.
+// - Copy named data vendors, the SEC ticker index and scraper internals.
+// - The x402 line said "x402 v2 (XRP/RLUSD on XRPL or USDC on Base)".
+//
+// Run: node tests/flows_copy_test.mjs
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const html = fs.readFileSync(path.join(repo, 'flows/index.html'), 'utf8');
+const js = fs.readFileSync(path.join(repo, 'assets/pages/flows.js'), 'utf8');
+let fails = 0;
+function check(name, cond) { console.log((cond ? 'PASS ' : 'FAIL ') + name); if (!cond) fails++; }
+
+check('MOEX value matches the change it is shown with', js.includes('snap.current_value ?? snap.last_value'));
+check('futures show the contract code and say previous settlement', js.includes('f.short_name') && !js.includes('f.sec_name') && js.includes('previous settlement'));
+check('European subline does not name a fund with no figure', !js.includes('AXRP / WXRP / GXRP.DE'));
+for (const leak of ['aggregator', 'discovery loop', "SEC's", 'public-source', 'scraper', 'static HTML']) {
+  check(`no "${leak}" in page copy`, !html.includes(leak) && !js.replace(/\/\/.*$/gm, '').includes(leak));
+}
+check('payment options listed in full', html.includes('Pay in RLUSD or XRP on the XRP Ledger, or USDC on Base.'));
+check('AUM change is not presented as pure inflow', html.includes('A rise can come from the XRP price rather than new money.'));
+// The stacked chart said "Other 10 funds" while 3 of them had no figures.
+check('Other band counts only funds with data', js.includes('XRChart.topN(chartTickers, latestAum)'));
+console.log(fails ? `${fails} FAILED` : 'flows copy: ok');
+process.exit(fails ? 1 : 0);
