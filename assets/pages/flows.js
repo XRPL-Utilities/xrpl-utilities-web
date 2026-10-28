@@ -95,9 +95,9 @@ function renderMoexIndexPanel(moex) {
   if (futEl) {
     if (futures.length) {
       const chips = futures.map(f =>
-        `<span class="inline-block bg-ink/60 border border-border rounded px-1.5 py-0.5 mr-1.5 mb-1">${escapeHtml(f.sec_name)} @ $${escapeHtml(Number(f.prev_settle_price ?? 0).toFixed(4))}</span>`
+        `<span class="inline-block bg-ink/60 border border-border rounded px-1.5 py-0.5 mr-1.5 mb-1">${escapeHtml(f.short_name || f.secid || '')} $${escapeHtml(Number(f.prev_settle_price ?? 0).toFixed(4))}</span>`
       ).join('');
-      futEl.innerHTML = `<span class="text-white">MOEX XRP futures (RFUD):</span> ${chips}`;
+      futEl.innerHTML = `<span class="text-white">MOEX XRP futures, previous settlement:</span> ${chips}`;
     } else {
       futEl.textContent = '';
     }
@@ -106,7 +106,7 @@ function renderMoexIndexPanel(moex) {
   const fmtPct = (v) => (typeof v === 'number' ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%' : '-');
   const cls = (snap.change_pct ?? 0) >= 0 ? 'text-emerald-400' : 'text-rose-400';
   if (snapEl) {
-    snapEl.innerHTML = `<span class="text-white font-mono text-xl">${escapeHtml(fmtUsd(snap.last_value))}</span>
+    snapEl.innerHTML = `<span class="text-white font-mono text-xl">${escapeHtml(fmtUsd(snap.current_value ?? snap.last_value))}</span>
       <span class="${cls} font-mono text-xs ml-2">${escapeHtml(fmtPct(snap.change_pct))}</span>
       <span class="text-muted text-[10px] ml-2">as of ${escapeHtml(snap.systime || snap.trade_date || '')} MSK</span>`;
   }
@@ -171,7 +171,7 @@ async function renderSummaryTiles(series, totals, tracked, euTotals) {
     elAum.textContent = fmtUsd(latest.aum_usd_total);
     if (elAumEu) {
       elAumEu.textContent = latestEu
-        ? `includes ${fmtUsd(latestEu.aum_usd_total)} European tier (AXRP / WXRP / GXRP.DE)`
+        ? `includes ${fmtUsd(latestEu.aum_usd_total)} from European products`
         : '';
     }
     if (nonNull.length >= 2 && elDelta) {
@@ -211,7 +211,7 @@ async function renderSummaryTiles(series, totals, tracked, euTotals) {
         s => Array.isArray(s) && s.some(r => r.aum_usd != null)
       ).length;
       if (liveCount && liveCount < tracked.length) {
-        elTickersD.textContent = `${liveCount} live · ${tracked.length - liveCount} pending coverage`;
+        elTickersD.textContent = `${liveCount} with figures · ${tracked.length - liveCount} not yet`;
       } else {
         elTickersD.textContent = `${liveCount || tracked.length} live across spot + indirect tiers`;
       }
@@ -352,7 +352,10 @@ function renderEtfAumChart(series, totals, tracked) {
     }
     return 0;
   };
-  const { top, rest } = XRChart.topN(orderedTickers, latestAum);
+  // Only funds with at least one figure in the window go in the chart, so
+  // the "Other N funds" label does not count funds that have no data.
+  const chartTickers = orderedTickers.filter(t => dates.some(d => byTicker[t][d] != null));
+  const { top, rest } = XRChart.topN(chartTickers, latestAum);
   const datasets = top.map((ticker, k) => ({
     label: ticker,
     data: dates.map(d => byTicker[ticker][d] ?? null),
@@ -406,11 +409,11 @@ function renderEtfAumChart(series, totals, tracked) {
     const parts = [];
     if (liveTickers.length < orderedTickers.length) {
       const missing = orderedTickers.filter(t => !liveTickers.includes(t));
-      parts.push(`Live coverage: ${liveTickers.length}/${orderedTickers.length} tickers (${missing.join(', ')} pending aggregator coverage).`);
+      parts.push(`${liveTickers.length} of ${orderedTickers.length} funds have figures; ${missing.join(', ')} not yet.`);
     }
     if (backfilledTickers.length < liveTickers.length) {
       const fwdOnly = liveTickers.filter(t => !backfilledTickers.includes(t));
-      parts.push(`Historical backfill ran for ${backfilledTickers.length} spot tickers only (${fwdOnly.join(', ')} accruing forward; indirect-basket funds excluded from backfill to avoid full-basket vs XRP-slice formula drift).`);
+      parts.push(`${fwdOnly.join(', ')} start from when tracking began, so their history is shorter.`);
     }
     caveatEl.textContent = parts.join(' ');
   }
@@ -483,14 +486,14 @@ function renderChainFlowChart(chainFlow, correlation, requestedDays) {
   if (caveatEl) {
     const parts = [];
     if (hasInProgress) {
-      parts.push(`Today's bar (${todayUtc} UTC) is in-progress: the per-venue daily totals refresh through the day as new on-chain activity is scanned, so this value updates and may briefly match yesterday until the next refresh.`);
+      parts.push(`Today's bar (${todayUtc} UTC) is still filling in and updates through the day.`);
     }
     // When the on-chain history is shorter than the selected range (the
     // AUM series above can reach further back), the chart fits to actual
     // coverage instead of padding the axis with empty space. Say so, so a
     // shorter window doesn't read as missing data.
     if (requestedDays && chainFlow.length < requestedDays) {
-      parts.push(`Fitted to actual coverage: XRPL exchange-flow history currently spans ${chainFlow.length} days, shorter than the selected ${requestedDays}-day range and the AUM series above. This is the full on-chain depth available, not missing data.`);
+      parts.push(`Exchange-flow history covers ${chainFlow.length} days, shorter than the selected ${requestedDays}-day range. That is all the history there is, not missing data.`);
     }
     if (correlation.note) parts.push(correlation.note);
     caveatEl.textContent = parts.join(' ');

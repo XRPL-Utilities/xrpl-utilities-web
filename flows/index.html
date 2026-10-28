@@ -180,7 +180,7 @@
         <div class="stat-tile stat-tile-glow p-4">
           <div class="stat-tile-label mb-2">Total tracked AUM</div>
           <div id="stat-flows-aum" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="stat-tile-sub mt-2">USD, US spot + indirect + European ETP</div>
+          <div class="stat-tile-sub mt-2">USD: US spot, US basket and European funds</div>
           <div id="stat-flows-aum-european" class="stat-tile-sub text-[10px] mt-0.5"></div>
         </div>
         <div class="stat-tile stat-tile-gold p-4">
@@ -191,12 +191,12 @@
         <div class="stat-tile p-4">
           <div class="stat-tile-label mb-2">XRP attributable</div>
           <div id="stat-flows-xrp" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="stat-tile-sub mt-2">XRP held under ETF wrappers</div>
+          <div class="stat-tile-sub mt-2">fund assets divided by the XRP price</div>
         </div>
         <div class="stat-tile stat-tile-muted p-4">
           <div class="stat-tile-label mb-2">Tickers tracked</div>
           <div id="stat-flows-tickers" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div id="stat-flows-tickers-detail" class="stat-tile-sub mt-2">live + stubbed pending coverage</div>
+          <div id="stat-flows-tickers-detail" class="stat-tile-sub mt-2">with figures today</div>
         </div>
       </div>
     </div>
@@ -214,7 +214,7 @@
           </div>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
-          Net Assets per tracked issuer per UTC day, stacked. AUM is refreshed from public-source issuer dashboards and secondary public-source fallbacks where issuer pages are gated. Same-day re-reads overwrite the prior reading. Indirect-basket funds (BITW, GDLC, EZPZ, NCIQ, TTOP, TXBC) appear separately and persist only their XRP-attributable slice. Recent 21Shares launches TTOP + TXBC return null until public coverage indexes them.
+          Net assets per fund per UTC day, stacked. Basket funds (BITW, GDLC, EZPZ, NCIQ, TTOP, TXBC) count only their XRP share; TTOP and TXBC show no figure until that share is confirmed. AUM moves with the XRP price as well as with money coming in or going out.
         </p>
 
         <div class="mb-4">
@@ -236,7 +236,7 @@
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 240px;">
             <canvas id="chart-etf-aum-delta" role="img" aria-label="Bar chart of the daily net change in assets across all tracked XRP ETFs, in US dollars. Hover a bar for the change by fund."></canvas>
           </div>
-          <p class="text-[10px] text-muted mt-2">Green = AUM rose that day, red = AUM fell. Computed from day-over-day delta of the per-ticker series; first day in the window has no prior reference and is omitted. Aggregator AUM freezes over weekends and US market holidays, so the move accrued across a closed period books on the next trading day. A bar following a closed period reflects multi-day change, not a single session.</p>
+          <p class="text-[10px] text-muted mt-2">Green means AUM rose that day and red means it fell. A rise can come from the XRP price rather than new money. Fund figures do not update on weekends or US market holidays, so the bar after a closed period covers several days.</p>
         </div>
 
         <div>
@@ -258,7 +258,7 @@
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 220px;">
             <canvas id="chart-moex-index" role="img" aria-label="Line chart of the Moscow Exchange XRP index (MOEXXRP) in US dollars, by day."></canvas>
           </div>
-          <p class="text-[10px] text-muted mt-2">USD-denominated XRP price benchmark published by the Moscow Exchange from four spot venues, weighted by trading volume. Launched 2026-05-13; the series grows one row per MOEX trading day. Trading is restricted to professional investors but the index itself is a public reference price.</p>
+          <p class="text-[10px] text-muted mt-2">An XRP price in US dollars that the Moscow Exchange has published since 2026-05-13, built from four large spot exchanges. One value per MOEX trading day. MOEX also lists XRP futures for qualified investors; their previous settlement prices are below.</p>
           <div id="moex-futures-strip" class="mt-3 text-[10px] font-mono text-muted"></div>
         </div>
 
@@ -319,10 +319,10 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Tracked ETFs</h2>
       <p class="text-muted text-sm leading-relaxed mb-3 max-w-3xl">
-        Operator-curated registry. Three tiers: US spot funds that hold XRP directly, US indirect baskets that hold XRP alongside other large-cap crypto assets, and European spot products. The list grows automatically as the discovery loop surfaces new US-listed products and they pass operator review. Excludes futures-only XRP products.
+        Three groups: US spot funds, US basket funds that hold XRP alongside other large crypto assets, and European spot products. XRPR holds part of its XRP through another XRP fund. Futures-only XRP funds are left out. New US funds are added after review.
       </p>
       <p class="text-[11px] text-muted mb-6 max-w-3xl">
-        <span class="text-white">Expense ratio</span> is the annual management fee the issuer charges as a percent of fund assets, paid by the fund itself (so it reduces NAV over time rather than billing investors directly). Lower is cheaper to hold long-term.
+        <span class="text-white">Expense ratio</span> is the yearly fee the fund pays its issuer, as a percent of assets. It comes out of the fund's value, so lower is cheaper to hold.
       </p>
       <div id="flows-etf-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <div class="bg-panel border border-border rounded-xl p-5">
@@ -356,19 +356,19 @@
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">What an XRP ETF is</h3>
           <p class="text-sm text-muted leading-relaxed">
-            A spot XRP ETF holds XRP off-chain in institutional custody and issues exchange-traded shares against it. Buying a share is buying a claim on a slice of that custodied XRP, without ever touching a wallet or a private key. The custody is pooled across all investors in the fund, so individual holders cannot be attributed to specific on-chain wallets.
+            A spot XRP ETF keeps XRP with a custodian and sells shares in it on a stock exchange. A share is a claim on part of that XRP, with no wallet or key to manage. The XRP is held for all the fund's investors together.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Who issues them on US exchanges</h3>
           <p class="text-sm text-muted leading-relaxed">
-            Names you know: Bitwise, Franklin Templeton, Grayscale, 21Shares. Names you might not: Canary Capital, REX-Osprey, Hashdex. Plus indirect-basket exposure via funds that hold XRP alongside other large-cap crypto assets. New US-listed products are discovered from SEC's ticker index and promoted once they pass operator review. European listings are added by hand, since SEC's index does not cover them.
+            In the US: Bitwise, Canary Capital, Franklin Templeton, Grayscale, 21Shares and REX-Osprey, plus basket funds from Bitwise, Grayscale, Franklin Templeton, Hashdex and 21Shares. In Europe: 21Shares, WisdomTree and Bitwise Europe.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <h3 class="text-lg font-bold mb-3 text-white">Why correlation, not causation</h3>
           <p class="text-sm text-muted leading-relaxed">
-            ETFs hold XRP through pooled custody. That custody serves every share holder in the fund collectively, not any single buyer. So when ETF AUM and XRPL exchange-flow move in the same direction on the same day, that's a useful institutional-capital signal, but it isn't proof that the ETF caused the flow. We measure both sides honestly and let the consumer draw their own inference.
+            Custodians hold XRP for many clients at once. When fund assets and exchange flow move the same way on the same day, that is worth noticing, but it does not show the fund caused the flow. We measure both and leave the reading to you.
           </p>
         </div>
       </div>
@@ -381,42 +381,35 @@
         <div class="bg-panel border border-border rounded-xl p-6">
           <h4 class="text-white font-semibold mb-2">Off-chain AUM</h4>
           <p class="text-muted text-sm leading-relaxed">
-            ETF AUM is collected daily from each issuer's public dashboard after the US market close. <span class="text-white">Spot tier</span> funds hold XRP directly via institutional custody. <span class="text-white">Indirect-basket tier</span> funds hold XRP alongside other large-cap crypto; we persist only the XRP-attributable slice (weight &times; total basket AUM). Each snapshot row carries a source label for lineage audit.
+            Fund assets are recorded once a day as each issuer publishes them. <span class="text-white">Basket funds</span> count only their XRP share (XRP weight &times; fund assets).
           </p>
         </div>
 
         <div class="bg-panel border border-border rounded-xl p-6">
           <h4 class="text-white font-semibold mb-2">On-chain flow</h4>
           <p class="text-muted text-sm leading-relaxed">
-            XRPL exchange-flow delta comes from XR-Pulse, measuring net XRP moving in and out of labeled exchange wallets per UTC day. Positive = XRP left exchange custody (off-exchange accumulation); negative = XRP arrived at exchanges (sell-side distribution). Independent of the AUM scrape; plotted on the same axis.
+            Net XRP moving out of or into known exchange wallets each UTC day, from XR-Pulse. Positive means XRP left exchanges; negative means it arrived.
           </p>
         </div>
 
         <div class="bg-panel border border-border rounded-xl p-6">
           <h4 class="text-white font-semibold mb-2">Correlation, never causation</h4>
           <p class="text-muted text-sm leading-relaxed">
-            A custodian wallet on XRPL serves many clients, not a single fund. XR-Flows does not attempt to attribute on-chain wallets to specific ETFs. The rolling 7-day Pearson coefficient is a directional alignment score: if the two series moved together, nothing more.
+            We do not tie on-chain wallets to individual funds. The rolling 7-day Pearson coefficient says whether the two series moved together, nothing more.
           </p>
         </div>
 
         <div class="bg-panel border border-border rounded-xl p-6">
           <h4 class="text-white font-semibold mb-2">AUM is issuer-reported</h4>
           <p class="text-muted text-sm leading-relaxed">
-            AUM is what each issuer publishes. We do not cross-validate it against on-chain spot price times XRP held; different sources, different timestamps. The issuer's number is the official number for our purposes. Per-scraper freshness is exposed on /healthz so consumers can tell when a dashboard parser breaks.
+            We use each issuer's published figure as it stands. Issuers can revise or delay it.
           </p>
         </div>
 
         <div class="bg-panel border border-border rounded-xl p-6">
           <h4 class="text-white font-semibold mb-2">Launch-event window analysis</h4>
           <p class="text-muted text-sm leading-relaxed">
-            For each ETF, the 7 days before and the 7 days from launch are summarised separately (window tunable up to 30 each side). The post-window vs pre-window ratio of institutional and whale-grade XRP transfer flow is the headline launch-impact figure. Pre-rollup launches return an honest no-data marker rather than synthetic zeros.
-          </p>
-        </div>
-
-        <div class="bg-panel border border-border rounded-xl p-6">
-          <h4 class="text-white font-semibold mb-2">Auto-discovery + public sources only</h4>
-          <p class="text-muted text-sm leading-relaxed">
-            No paid feeds. Direct issuer dashboards where data is exposed in static HTML, plus secondary public-source fallbacks where issuer pages are gated. A discovery loop watches SEC's public ticker index for new XRP ETFs and surfaces candidates at <code class="font-mono text-white">/stats/etf-candidates</code> for operator review.
+            For each fund, large XRP transfers in the week before launch are compared with the week from launch day. Launches older than our transfer history show no data rather than zero.
           </p>
         </div>
 
@@ -454,7 +447,7 @@
         <code class="font-mono text-white">GET /stats/launch-impact</code> for the per-launch window analysis, and
         <code class="font-mono text-white">GET /stats/cross-border-flow</code> for the country-pair institutional settlement edges.
         The paid per-ETF deep dive lives at <code class="font-mono text-white">POST /scan</code> on
-        <code class="font-mono text-white">flows.xrpl-utilities.io</code> for $0.10 USD per call via x402 v2 (XRP/RLUSD on XRPL or USDC on Base).
+        <code class="font-mono text-white">flows.xrpl-utilities.io</code> for $0.10 per call. Pay in RLUSD or XRP on the XRP Ledger, or USDC on Base.
         Each /scan response carries the latest scrape, full daily history, the chain-flow context from XR-Pulse,
         and the SEC EDGAR filing list for that ticker.
       </p>
@@ -496,7 +489,7 @@
       <a href="https://flows.xrpl-utilities.io/healthz" target="_blank" rel="noopener" class="bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
         <div class="text-xs uppercase tracking-wider text-accent font-semibold mb-1">Liveness</div>
         <div class="text-white font-mono text-sm">/healthz</div>
-        <p class="text-muted text-xs mt-2">Per-scraper freshness, DB state, upstream Pulse.</p>
+        <p class="text-muted text-xs mt-2">Service health.</p>
       </a>
 </div>
 </div>
@@ -518,7 +511,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Sentinel</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL wallet activity pattern classifier. Reads on-chain behavior and tells you how automated it looks. Free on the web, $0.10 per scan over the agent API.
+                  Paste any XRPL address to see what kind of wallet it is.
                 </div>
               </div>
             </div>
@@ -532,7 +525,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL macro telemetry: supply, regional liquidity, AMM depth, Active Float, and a utility-floor projection. Now also surfaces ETF custody XRP from this service. Free on the web, $0.10 per snapshot over the agent API.
+                  Supply, liquidity and flow across the whole XRP Ledger.
                 </div>
               </div>
             </div>
@@ -546,7 +539,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Pulse</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL signal feed: public-source news plus on-chain whale activity in one normalized stream. Powers the chain-flow side of XR-Flows via /stats/exchange-flow-delta. Free on the web, $0.10 per query over the agent API.
+                  News and large on-chain moves on XRPL, in one feed.
                 </div>
               </div>
             </div>
@@ -560,7 +553,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Trust</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Permissioned-asset stack directory: XLS-70/80 domains and credentials, XLS-81 permissioned DEX, XLS-40 DID identity. The institutional-side index of XRPL. Free on the web, $0.10 per call over the agent API.
+                  Directory of permissioned domains and credentials on XRPL.
                 </div>
               </div>
             </div>
@@ -574,7 +567,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Vault</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Real-world asset tracker for XRPL. Per-issuer mint and burn flow, daily circulating snapshots, AMM-of-RWA pool exposure. Free on the web, $0.10 per scan over the agent API.
+                  Supply and flow for every tracked real-world asset on XRPL.
                 </div>
               </div>
             </div>
@@ -589,7 +582,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Lineage</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Live lineage tracker for institutional XRPL movement. Fresh RLUSD mint and burn activity, auto-discovered Ripple counterparties, and multi-hop relay-burst detection. Trace the flow, understand the origin.
+                  Where new RLUSD comes from and where it goes.
                 </div>
               </div>
             </div>
