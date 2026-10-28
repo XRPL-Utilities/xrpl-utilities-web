@@ -41,6 +41,7 @@ node tests/public_copy_test.mjs
 node tests/chart_palette_test.mjs
 node tests/vault_layout_test.mjs
 node tests/product_layout_test.mjs
+node tests/midnight_gap_test.mjs
 node --check assets/chart-palette.js
 node --check assets/status-model.js
 python3 tests/qr_matrix_crosscheck.py

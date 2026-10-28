@@ -194,7 +194,10 @@ async function loadRlusdToday() {
     const live = parseFloat(rlusd.live_obligations || 0);
     const delta = parseFloat(rlusd.obligations_delta_today || 0);
     const hist = rlusd.daily_obligations_history || [];
-    const priorRow = hist.length >= 2 ? hist[hist.length - 2] : null;
+    // The card shows the snapshot the delta was measured against.
+    const basis = rlusd.obligations_delta_today_basis_date;
+    const priorRow = (basis && hist.find(h => h.snapshot_date === basis))
+      || (hist.length >= 2 ? hist[hist.length - 2] : null);
     const prior = priorRow ? parseFloat(priorRow.obligations_raw || 0) : 0;
     const tlc = priorRow ? parseFloat(priorRow.trustline_count || 0) : 0;
 
