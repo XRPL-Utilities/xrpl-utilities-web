@@ -248,7 +248,7 @@
             <div id="stat-usd-pegged-detail" class="stat-tile-sub mt-2">&hellip;</div>
           </div>
           <div class="text-right text-[11px] text-muted max-w-md leading-relaxed">
-            USD-equivalent rollup: USD stablecoins at $1, treasuries at NAV, commercial paper at par, MMFs at NAV, plus EUR/AUD/BRL/JPY converted at assumed FX rates. Energy credits are priced only by their issuer, so they sit outside the headline figure. These peg assumptions are estimates, not on-chain truth. Native-unit tokens with no peg (gold, BOB, and other natives) are listed separately below. <span id="stat-usd-pegged-excluded-summary"></span>
+            Dollar tokens at $1, fund and Treasury shares at their latest published price, and euro, pound, Australian dollar, Singapore dollar and Brazilian real tokens at recent exchange rates. These are estimates, not on-chain prices. Tokens with no price are counted in their own units. <span id="stat-usd-pegged-excluded-summary"></span>
           </div>
         </div>
       </div>
@@ -289,7 +289,7 @@
           </div>
         </div>
         <p id="top-movers-prose" class="text-xs text-muted leading-relaxed mb-5">
-          The issuers with the biggest net change in circulating supply over the last 30 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. The default view because institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint infrequently in large discrete amounts; a 30-day window keeps them on the list between mint events rather than flickering in and out of a 7d boundary.
+          Biggest change in supply over the last 30 days. Plus means more was issued than redeemed.
         </p>
         <div id="top-movers-list" class="space-y-2">
           <div class="bg-ink border border-border rounded-lg p-4">
@@ -298,6 +298,7 @@
           </div>
         </div>
         <p id="top-movers-empty" class="text-xs text-muted mt-4 hidden">No measurable RWA flow in the last 24 hours.</p>
+        <p id="top-movers-asof" class="text-[10px] text-muted mt-3"></p>
       </div>
     </div>
   </section>
@@ -310,19 +311,8 @@
           <span class="text-[10px] text-muted font-mono">Native units, no USD valuation</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-5">
-          One tile per tracked issuer. <span class="text-white">Circulating</span> is how much of the token exists on-chain right now in the issuer's native units (treasury holdings excluded where applicable, like OpenEden TBL). <span class="text-white">24h &Delta;</span> is how that number moved since yesterday's snapshot. <span class="text-white">Trustlines</span> is roughly the number of holders. The colored badge is the asset class. When the underlying token sees XLS-85 escrow activity or an issuer-side deep-freeze in the last 24h, the tile adds chips for <span class="text-amber-300">N escrow(s)</span>, <span class="text-accent">DvP candidates</span> (shared-condition reciprocal pairs; candidate, not confirmed), or <span class="text-red-300">deep-frozen holders</span> (TrustSet+tfSetDeepFreeze). Ondo OUSG appears twice because Ondo operates two issuer wallets: one for institutional access (authorized-trustline gating + clawback), one for the broader retail variant. "Permissioned" here refers to those wallet-level controls, not XLS-80 PermissionedDomains (those live in <a href="/trust/" class="text-accent hover:underline">XR-Trust</a>).
+          Supply in each token's own unit, read from the ledger. Trustlines roughly equal holders.
         </p>
-        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted mb-4 px-1">
-          <span class="text-white font-semibold">Health score</span>
-          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500 align-middle mr-0.5"></span> 7-10</span>
-          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-yellow-500 align-middle mr-0.5"></span> 4-6</span>
-          <span><span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 align-middle mr-0.5"></span> 0-3</span>
-          <span class="border-l border-border pl-3">Sov = can the issuer seize or freeze your tokens?</span>
-          <span>Dist = how spread out is ownership across holders?</span>
-          <span>Liq = can you buy or sell without moving the price?</span>
-          <span>Trans = is the issuer publicly identified and verified?</span>
-          <span>Demand = are new wallets still opting in to hold this token?</span>
-        </div>
         <div id="issuer-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="issuer-tile bg-ink border border-border rounded-xl p-5">
             <div class="skeleton-bar h-5 w-3/4 mb-4"></div>
@@ -357,7 +347,7 @@
           </div>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-6">
-          Daily settlement activity across every tracked real-world-asset issuer. The top chart counts every mint and redemption event per UTC day, stacked by issuer; currency-agnostic, so a Braza BBRL redemption sits alongside an Ondo OUSG mint as one settlement event. The bottom chart sums the dollar value of net flow per day, restricted to issuers whose native unit sits at or near 1 USD (fiat USD stables, treasury bills at NAV, commercial paper, money-market funds); non-USD native-unit issuers (EUR, BRL, AUD, MWh, gold, BOB) are excluded from the dollar aggregate by design.
+          Mint and redemption events per day, and the dollar value of each UTC day's change in supply, read from the ledger at midnight. A missing bar is a day we could not measure.
         </p>
 
         <div class="mb-6">
@@ -379,7 +369,7 @@
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 220px;">
             <canvas id="chart-usd-pegged-flow" role="img" aria-label="Bar chart of the daily net mint or burn of US-dollar-pegged real-world-asset tokens, in US dollars."></canvas>
           </div>
-          <p id="usd-flow-caveat" class="text-[10px] text-muted mt-2"></p>
+          <div id="usd-flow-caveat" class="text-[10px] text-muted mt-2"></div>
         </div>
 
         <div id="settlement-empty" class="hidden text-xs text-muted mt-4">
@@ -425,7 +415,7 @@
           <span class="text-[10px] text-muted font-mono">Liquidity where RWAs trade</span>
         </div>
         <p class="text-xs text-muted leading-relaxed mb-5">
-          Every Automated Market Maker pool on XRPL where one of the two tokens is a tracked RWA. AMMs are constant-product liquidity pools (XRPL's XLS-30 standard). Anyone can swap between the two tokens at any time without an order book, with the price set by the pool's reserves. These tiles tell you how much liquidity is actually sitting in each pool, which is a proxy for how tradeable the RWA is on-chain right now. Pools with dust-level balances (under a few dollars) show up too; they're the "rails set up, no real liquidity yet" signal.
+          Automated market maker pools that hold a tracked token, with how much of each side sits in the pool.
         </p>
         <div id="amm-pool-tiles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="bg-ink border border-border rounded-xl p-5">
@@ -439,6 +429,7 @@
             <div class="skeleton-bar h-3 w-1/3"></div>
           </div>
         </div>
+        <button id="amm-show-all" type="button" class="hidden mt-5 border border-border hover:border-accent text-sm px-4 py-2 rounded-lg transition" aria-expanded="false" aria-controls="amm-pool-tiles"></button>
         <p id="amm-pool-empty" class="text-xs text-muted mt-4 hidden">No AMM pools currently include an RWA issuer's IOU.</p>
       </div>
     </div>
@@ -478,36 +469,7 @@
              gap rather than leaving two different numbers unexplained. -->
         <p id="xls85-caveat" class="hidden text-[11px] leading-relaxed mt-4 rounded border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-amber-200/90"></p>
         <p class="text-[11px] text-muted leading-relaxed mt-5">
-          XLS-85 enables time-locked or condition-locked escrow of non-XRP IOU tokens. Used for vesting, deferred settlement, and atomic two-leg trades. DvP candidates are paired escrows sharing a Condition hash within an hour (delivery-versus-payment pattern, candidate not confirmed). The counts here cover XLS-85 activity across all XRPL IOUs that Pulse's whale watcher observes; the per-issuer chips on the tiles below scope to operator-tracked RWA issuers only, which is a smaller subset.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section id="flow-log">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
-      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
-        <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Recent flow</h2>
-          <button id="flow-refresh" class="text-xs text-muted hover:text-white transition">Refresh</button>
-        </div>
-        <p class="text-xs text-muted leading-relaxed mb-5">
-          Per-issuer mint and burn activity over the last 24 hours. Each row shows how many new tokens were minted (green +), how many were redeemed back to the issuer (red &minus;), and the <span class="text-white">net</span> change. Positive net means more came in than went out and the issuer's outstanding supply grew; negative means it shrank.
-        </p>
-        <div id="flow-list" class="space-y-3">
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
-            <div class="skeleton-bar h-3 w-1/3"></div>
-          </div>
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="skeleton-bar h-4 w-2/3 mb-3"></div>
-            <div class="skeleton-bar h-3 w-1/4"></div>
-          </div>
-        </div>
-        <p class="text-xs text-muted mt-6 leading-relaxed">
-          Mints and burns ride the XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> feed at
-          <code class="font-mono text-white">pulse.xrpl-utilities.io</code> under the
-          <code class="font-mono text-white">rwa_issuer_flow</code> source. This page surfaces the most recent entries; agents can subscribe to the full stream via x402.
+          Escrow of tokens other than XRP, across every XRPL token, not only the ones tracked here. DvP candidates are two escrows that share a release condition within an hour, a sign of a two-sided trade; candidate, not confirmed.
         </p>
       </div>
     </div>
@@ -520,45 +482,10 @@
           <span class="text-sm uppercase tracking-widest text-accent font-semibold">How this works</span>
           <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
         </summary>
-        <div class="px-5 sm:px-6 pb-6 space-y-7">
-          <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What an RWA is</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            A real-world asset (RWA) token represents off-chain value on-chain. A tokenized US Treasury bill, a Brazilian Real stablecoin, a megawatt-hour of energy, an institutional money-market fund share. The issuer holds the underlying asset off-chain; the on-chain token is the claim against it. When you swap into RWA, you're buying exposure to the off-chain thing through an on-chain rail.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Who issues them on XRPL</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Names you know: Ondo Finance (BlackRock-backed treasuries), Ripple (RLUSD stablecoin), Soci&eacute;t&eacute; G&eacute;n&eacute;rale FORGE (MiCA-licensed EUR stablecoin), OpenEden (T-bills), Archax (abrdn money-market). Names you might not: Schuman Financial, Braza Group (USD + BRL stablecoins), Justoken (energy commodity), Guggenheim / Zeconomy (commercial paper). The live tracked set is shown above and grows as new institutional rails mature.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Why XRPL</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Sub-second settlement at fractions of a cent. Native multi-currency support without bridges. Permissioned trading rails (XLS-80) for regulated assets. Built-in clawback flags for issuers who need them. The combination makes XRPL one of the few public chains where a regulated RWA can settle natively, which is why institutional issuers have been deploying through 2024 and 2025.
-          </p>
-        </div>
-      </div>
-          <ul class="grid md:grid-cols-2 gap-x-8 gap-y-5 text-sm text-muted leading-relaxed list-none">
-        <li>
-          <span class="text-white font-semibold">Verified issuers, native units.</span>
-          Every issuer is checked against the ledger and reported in its native unit (shares, megawatt-hours, peg unit), never multiplied by a price oracle. The single headline figure is a USD-equivalent convenience rollup that applies clearly-disclosed peg assumptions; every per-issuer number below it stays native.
-        </li>
-        <li>
-          <span class="text-white font-semibold">Treasury-aware, and honest about who holds the rest.</span>
-          Issuer's own holdings are excluded where applicable (e.g. OpenEden TBL), so "circulating" tracks what left the issuer. That still counts every issued unit regardless of where it sits, so each issuer also carries a holder-spread reading: a token whose supply sits in one or two wallets is tagged 1 HOLDER or CONCENTRATED rather than quietly counted as float. Issuers with very large trustline sets carry no tag, which means not measured, not spread out.
-        </li>
-        <li>
-          <span class="text-white font-semibold">Live and historical.</span>
-          Mints and burns land within minutes of settlement; daily snapshots accrue into trend data per issuer. Rails-configured-only issuers (e.g. Archax) stay on the list so the first mint surfaces immediately.
-        </li>
-        <li>
-          <span class="text-white font-semibold">AMM exposure + permissioned-domain fingerprint.</span>
-          For each issuer, see whether the token has real swap-pool liquidity or only issuer-held supply. When an issuer also operates an XLS-80 domain, the /scan response carries a fingerprint block (domains, credentials, subjects, recent permissioned-offer + AMM activity) as descriptive fact, not a verdict.
-        </li>
-      </ul>
+        <div class="px-5 sm:px-6 pb-6 space-y-4 text-sm text-muted leading-relaxed max-w-3xl">
+          <p><span class="text-white font-semibold">What is tracked.</span> A real-world asset token is an on-chain claim on something held off-chain: a dollar, a Treasury bill, a fund share, a megawatt-hour. Issuers here include Ripple (RLUSD), Ondo (OUSG), Franklin Templeton (sgBENJI), Aviva Investors, Circle, SG-FORGE (EURCV), Braza and Justoken. Each issuer wallet is checked on the ledger before it is added.</p>
+          <p><span class="text-white font-semibold">How supply is counted.</span> Supply is what the issuer has put into circulation, in the token's own unit. Where an issuer keeps tokens in its own treasury wallet (OpenEden TBL, for example), those are left out. A token held almost entirely by one or two wallets is marked 1 HOLDER or CONCENTRATED. Most tokens are read from the ledger several times an hour. MPT tokens, the charts and the 7 and 30 day figures use one reading a day, taken just after midnight UTC.</p>
+          <p><span class="text-white font-semibold">Dollar figures.</span> Only the headline and the dollar charts use prices. Everything else stays in native units.</p>
         </div>
       </details>
     </div>
@@ -590,7 +517,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Sentinel</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL wallet activity pattern classifier. Reads on-chain behavior and tells you how automated it looks. Free on the web, $0.10 per scan over the agent API.
+                  Paste any XRPL address to see what kind of wallet it is.
                 </div>
               </div>
             </div>
@@ -604,7 +531,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL macro telemetry: supply, regional liquidity, AMM depth, Active Float, and a utility-floor projection. Free on the web, $0.10 per snapshot over the agent API.
+                  Supply, liquidity and flow across the whole XRP Ledger.
                 </div>
               </div>
             </div>
@@ -618,7 +545,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Pulse</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  XRPL signal feed: public-source news plus on-chain whale activity, with institutional-watchlist labels and RWA mint/burn events in one normalized stream. Free on the web. $0.10 per query or live WebSocket stream from $0.50/hr.
+                  News and large on-chain moves on XRPL, in one feed.
                 </div>
               </div>
             </div>
@@ -632,7 +559,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Trust</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Permissioned-asset stack directory: XLS-70/80 domains and credentials, XLS-81 permissioned DEX, XLS-40 DID identity. The institutional-side index of XRPL. Free on the web, $0.10 per call over the agent API.
+                  Directory of permissioned domains and credentials on XRPL.
                 </div>
               </div>
             </div>
@@ -646,7 +573,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Flows</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  ETF AUM ↔ XRPL flow correlation across the fifteen XRP-exposure funds. RWA mint and burn flow on this page often coincides with ETF-side institutional capital moves; reading the two together is the natural workflow.
+                  The 15 XRP funds' assets next to on-chain flows.
                 </div>
               </div>
             </div>
@@ -661,7 +588,7 @@
               <div>
                 <div class="font-bold text-xl text-white mb-1">XR-Lineage</div>
                 <div class="text-sm text-muted leading-relaxed">
-                  Live lineage tracker for institutional XRPL movement. Fresh RLUSD mint and burn activity, auto-discovered Ripple counterparties, and multi-hop relay-burst detection. Trace the flow, understand the origin.
+                  Where new RLUSD comes from and where it goes.
                 </div>
               </div>
             </div>

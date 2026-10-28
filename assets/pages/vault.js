@@ -19,9 +19,13 @@ const API_BASE = 'https://pulse.xrpl-utilities.io';
 // Display helpers. Native units only, no USD conversion. Large
 // amounts get a compact form (1.23M, 4.56K). Small fractional
 // values render with up to 4 decimals. Zero stays zero.
+// Anything that rounds to zero at four decimals is zero. A -0.000002 supply
+// change used to render as a red "-0".
+const ZERO_EPS = 0.00005;
+
 function fmtNumber(n) {
   const num = typeof n === 'string' ? parseFloat(n) : n;
-  if (!isFinite(num) || num === 0) return '0';
+  if (!isFinite(num) || Math.abs(num) < ZERO_EPS) return '0';
   const abs = Math.abs(num);
   if (abs >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2).replace(/\.?0+$/, '') + 'B';
   if (abs >= 1_000_000)     return (num / 1_000_000).toFixed(2).replace(/\.?0+$/, '') + 'M';
@@ -41,6 +45,7 @@ function fmtAssetClass(c) {
     fiat_stable_eur:   'EUR STABLE',
     fiat_stable_brl:   'BRL STABLE',
     fiat_stable_aud:   'AUD STABLE',
+    fiat_stable_sgd:   'SGD STABLE',
     commercial_paper:  'C-PAPER',
     money_market:      'MMF',
     commodity_energy:  'ENERGY',
@@ -49,6 +54,7 @@ function fmtAssetClass(c) {
     structured_product: 'STRUCTURED',
     gateway_iou:       'GATEWAY IOU',
     real_estate:       'REAL ESTATE',
+    other:             'OTHER',
   };
   return map[c] || (c || '').toUpperCase();
 }
@@ -69,13 +75,13 @@ function fmtRelative(ts) {
 
 function deltaClass(value) {
   const n = typeof value === 'string' ? parseFloat(value) : value;
-  if (!isFinite(n) || n === 0) return 'delta-zero';
+  if (!isFinite(n) || Math.abs(n) < ZERO_EPS) return 'delta-zero';
   return n > 0 ? 'delta-positive' : 'delta-negative';
 }
 
 function deltaSign(value) {
   const n = typeof value === 'string' ? parseFloat(value) : value;
-  if (!isFinite(n) || n === 0) return '';
+  if (!isFinite(n) || Math.abs(n) < ZERO_EPS) return '';
   return n > 0 ? '+' : '';
 }
 
@@ -102,26 +108,8 @@ function renderIssuerActivityChips(i) {
   return `<div class="flex flex-wrap gap-1.5 mt-3">${chips.join('')}</div>`;
 }
 
-async function loadSummary() {
-  try {
-    const r = await fetch(`${API_BASE}/stats/rwa-summary`);
-    if (!r.ok) return;
-    const body = await r.json();
-    if (!body || body.available === false) return;
-    _topMoversLastBody = body;
-    renderSummary(body);
-    applyTopMoversWindow();
-    renderIssuerTiles(body.issuers || []);
-    renderCandidates(body.candidates || []);
-    overlayTokenHealth();
-  } catch (err) {
-    // Best-effort. Dashboard skeletons stay visible if Pulse is unreachable.
-  }
-}
-
 function renderSummary(body) {
   const t = body.totals || {};
-  const cls = body.by_asset_class || {};
   const trackedEl = document.getElementById('stat-tracked');
   const trackedDetail = document.getElementById('stat-tracked-detail');
   const mintsEl = document.getElementById('stat-mints');
@@ -142,8 +130,9 @@ function renderSummary(body) {
   if (burnsEl)       burnsEl.textContent = String(t.burns_24h_total ?? 0);
   if (ammEl)         ammEl.textContent = String(t.amm_pools_tracked ?? 0);
   if (ammDetail) {
-    const classCount = Object.keys(cls).length;
-    const base = classCount ? `across ${classCount} asset classes` : 'RWA-touching XLS-30';
+    // by_asset_class counts the classes of tracked ISSUERS, not of pools,
+    // so it must not describe the pool count.
+    const base = 'pools holding a tracked token';
     // A bare "20" is a numerator with no denominator -- a reader cannot
     // tell whether that is every pool or a fraction. Pulse now reports how
     // many exist ledger-wide. The gap is deliberate: the unmeasured
@@ -153,7 +142,7 @@ function renderSummary(body) {
     const onLedger = t.amm_pools_on_ledger;
     if (typeof onLedger === 'number' && onLedger > 0) {
       const stale = t.amm_pools_on_ledger_stale ? ' (cached)' : '';
-      ammDetail.textContent = `${base} · measured, of ${onLedger} on-ledger${stale}`;
+      ammDetail.textContent = `measured, of ${onLedger} ledger pools holding a tracked token${stale}`;
       ammDetail.title =
         'We measure pools with live reserves via a curated per-issuer probe. ' +
         'The ledger-wide count includes every pool holding a tracked issuer\'s ' +
@@ -193,7 +182,7 @@ function renderSummary(body) {
   if (usdDetailEl) {
     const inc = Math.max(0, (usdAgg.issuer_count_included || 0) - split.unattested.length);
     const exc = usdAgg.issuer_count_excluded || 0;
-    usdDetailEl.textContent = `${inc} issuer${inc === 1 ? '' : 's'} converted into the total · ${exc} no-peg native issuer${exc === 1 ? '' : 's'} shown separately`;
+    usdDetailEl.textContent = `${inc} issuer${inc === 1 ? '' : 's'} priced in dollars · ${exc} counted in ${exc === 1 ? 'its' : 'their'} own unit${exc === 1 ? '' : 's'}`;
   }
   if (usdExclEl) {
     const nonUsd = usdAgg.non_usd_pegged_natives || [];
@@ -207,7 +196,7 @@ function renderSummary(body) {
         else fmt = String(Math.round(amt));
         return `${fmt} ${row.currency || '?'}`;
       });
-      usdExclEl.textContent = 'Native-unit: ' + parts.join(' · ') + '.';
+      usdExclEl.textContent = 'Largest of those: ' + parts.join(' · ') + '.';
     } else {
       usdExclEl.textContent = '';
     }
@@ -246,17 +235,30 @@ let _topMoversWindow = '30d';
 let _topMoversLastBody = null;
 
 const _MOVER_NET_FIELD = { '24h': 'net_24h', '7d': 'net_7d', '30d': 'net_30d' };
-const _MOVER_LABEL = { '24h': 'net 24h flow', '7d': 'net 7d flow', '30d': 'net 30d flow' };
+const _MOVER_LABEL = { '24h': 'net change, 1 day', '7d': 'net change, 7 days', '30d': 'net change, 30 days' };
 const _MOVER_EMPTY = {
-  '24h': 'No measurable RWA flow in the last 24 hours.',
+  '24h': 'No measurable RWA flow in the last day.',
   '7d':  'No measurable RWA flow in the last 7 days.',
   '30d': 'No measurable RWA flow in the last 30 days.',
 };
-const _MOVER_PROSE = {
-  '24h': "The issuers with the biggest net change in circulating supply over the last 24 hours, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow.",
-  '7d':  "The issuers with the biggest net change in circulating supply over the last 7 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. Institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint in discrete monthly chunks so they can drop out of this window unpredictably; the 30d view is steadier if you care about that cohort.",
-  '30d': "The issuers with the biggest net change in circulating supply over the last 30 days, in either direction. A positive number means more tokens were minted than burned (capital flowed in); a negative number means more were redeemed than issued (capital flowed out). Ranked by absolute size so a $1M outflow ranks alongside a $1M inflow. The default view because institutional issuers (Justoken JMWH, Ondo OUSG, Schuman EURØP) mint infrequently in large discrete amounts; a 30-day window keeps them on the list between mint events rather than flickering in and out of a 7d boundary.",
-};
+const _MOVER_SPAN = { '24h': 'day', '7d': '7 days', '30d': '30 days' };
+// usdRanked: Pulse ranks by dollar value only when its mover rows carry
+// net_<window>_usd; an older Pulse ranks by native units, and the copy
+// must say which.
+function moverProse(w, usdRanked) {
+  const rank = usdRanked ? 'ranked by dollar value where the token has a price' : "ranked by size in each token's own unit";
+  return `Biggest change in supply over the last ${_MOVER_SPAN[w] || '30 days'}, ${rank}. Plus means more was issued than redeemed.`;
+}
+
+// $ value of a mover's net change, from Pulse (null when the token has no
+// price). Compact, signed.
+function fmtUsdSigned(v) {
+  if (typeof v !== 'number' || !isFinite(v)) return '';
+  const a = Math.abs(v);
+  const body = a >= 1e9 ? (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? (a / 1e6).toFixed(1) + 'M'
+    : a >= 1e3 ? (a / 1e3).toFixed(0) + 'K' : a.toFixed(0);
+  return (v < 0 ? '-$' : '+$') + body;
+}
 
 function renderTopMovers(movers, windowKey) {
   const el = document.getElementById('top-movers-list');
@@ -277,6 +279,7 @@ function renderTopMovers(movers, windowKey) {
   el.innerHTML = movers.map(m => {
     const cls = m.asset_class || '';
     const net = m[netField];
+    const usd = fmtUsdSigned(m[netField + '_usd']);
     return `
       <div class="flex items-center justify-between gap-4 bg-ink border border-border rounded-lg p-4">
         <div class="min-w-0">
@@ -288,11 +291,21 @@ function renderTopMovers(movers, windowKey) {
         </div>
         <div class="text-right shrink-0">
           <div class="text-2xl font-bold font-mono ${deltaClass(net)}">${escapeHtml(deltaSign(net) + fmtNumber(net))}</div>
-          <div class="text-[10px] text-muted font-mono uppercase">${escapeHtml(m.currency || '')}</div>
+          <div class="text-[10px] text-muted font-mono uppercase">${escapeHtml(m.currency || '')}${usd ? ` · ≈ ${escapeHtml(usd)}` : ''}</div>
         </div>
       </div>
     `;
   }).join('');
+}
+
+// When the daily reading behind the 1/7/30 day figures was taken.
+function renderMoversAsOf(issuers) {
+  const el = document.getElementById('top-movers-asof');
+  if (!el) return;
+  const ts = Math.max(0, ...(issuers || []).map(i => Number(i.snapshot_captured_at) || 0));
+  el.textContent = ts
+    ? `Measured between daily ledger readings. Latest: ${new Date(ts * 1000).toISOString().slice(0, 16).replace('T', ' ')} UTC.`
+    : '';
 }
 
 function applyTopMoversWindow() {
@@ -302,6 +315,9 @@ function applyTopMoversWindow() {
     : w === '7d' ? (_topMoversLastBody.top_movers_7d || [])
     : (_topMoversLastBody.top_movers_24h || []);
   renderTopMovers(arr, w);
+  const proseEl = document.getElementById('top-movers-prose');
+  const usdField = (_MOVER_NET_FIELD[w] || 'net_30d') + '_usd';
+  if (proseEl) proseEl.textContent = moverProse(w, arr.some((m) => m && usdField in m));
 }
 
 // Wire the 24h/7d/30d toggle buttons.
@@ -318,13 +334,34 @@ document.querySelectorAll('.mover-window-btn').forEach(btn => {
       b.classList.toggle('text-muted', !active);
       b.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
-    const proseEl = document.getElementById('top-movers-prose');
-    if (proseEl && _MOVER_PROSE[w]) {
-      proseEl.textContent = _MOVER_PROSE[w];
-    }
     applyTopMoversWindow();
   });
 });
+
+// Supply and change shown on a tile. A fresh ledger reading (Pulse
+// live_circulating, set only when it is comparable to the daily snapshot)
+// wins, with its change since that snapshot; otherwise the daily snapshot
+// and its change over the previous day. 2026-10-28: RLUSD showed 1B and
+// "-0" from the 00:31 snapshot at 18:12 UTC while the ledger read 977.6M.
+function hhmmUtc(ts) {
+  return ts ? new Date(Number(ts) * 1000).toISOString().slice(11, 16) + ' UTC' : '';
+}
+function tileSupply(i) {
+  if (i.live_circulating !== null && i.live_circulating !== undefined && i.live_change_since_snapshot !== null && i.live_change_since_snapshot !== undefined) {
+    return {
+      supply: i.live_circulating,
+      change: i.live_change_since_snapshot,
+      label: 'Today',
+      title: `Change since the daily reading at ${hhmmUtc(i.live_change_since_ts)}`,
+    };
+  }
+  return {
+    supply: i.circulating || '0',
+    change: i.net_24h || '0',
+    label: 'Last day',
+    title: `Daily reading at ${hhmmUtc(i.snapshot_captured_at)}, change over the day before it`,
+  };
+}
 
 function renderIssuerTiles(issuers) {
   const el = document.getElementById('issuer-tiles');
@@ -342,15 +379,16 @@ function renderIssuerTiles(issuers) {
     const aLive = statusRank(a.mint_status);
     const bLive = statusRank(b.mint_status);
     if (aLive !== bLive) return bLive - aLive;
-    const aCirc = parseFloat(a.circulating || '0') || 0;
-    const bCirc = parseFloat(b.circulating || '0') || 0;
+    const aCirc = parseFloat(tileSupply(a).supply) || 0;
+    const bCirc = parseFloat(tileSupply(b).supply) || 0;
     return bCirc - aCirc;
   });
   el.innerHTML = sorted.map(i => {
     const cls = i.asset_class || '';
     const status = i.mint_status || 'live';
     const isMpt = i.token_standard === 'mpt';
-    const net = i.net_24h || '0';
+    const tile = tileSupply(i);
+    const net = tile.change;
     // MPTs (XLS-33) use MPToken holder objects, not trustlines, and the
     // snapshot doesn't enumerate holders, so show n/a rather than a
     // misleading "0".
@@ -387,13 +425,13 @@ function renderIssuerTiles(issuers) {
           </div>
         </div>
         <div class="flex items-baseline gap-2 mb-1">
-          <span class="text-2xl font-bold font-mono">${escapeHtml(fmtNumber(i.circulating || '0'))}</span>
+          <span class="text-2xl font-bold font-mono">${escapeHtml(fmtNumber(tile.supply))}</span>
           <span class="text-xs text-muted font-mono uppercase">${escapeHtml(i.currency || '')}</span>
         </div>
         <div class="text-[11px] text-muted mb-3">circulating</div>
         <div class="grid grid-cols-3 gap-2 text-[11px]">
           <div>
-            <div class="text-muted uppercase tracking-wider mb-0.5">24h Δ</div>
+            <div class="text-muted uppercase tracking-wider mb-0.5" title="${escapeHtml(tile.title)}">${escapeHtml(tile.label)}</div>
             <div class="font-mono ${deltaClass(net)}">${escapeHtml(deltaSign(net) + fmtNumber(net))}</div>
           </div>
           <div>
@@ -436,47 +474,6 @@ document.getElementById('issuer-show-all')?.addEventListener('click', () => {
   applyIssuerLimit();
   if (!_issuersExpanded) document.getElementById('issuer-grid')?.scrollIntoView({ block: 'start' });
 });
-
-const _HEALTH_COLORS = { green: 'bg-green-500', yellow: 'bg-yellow-500', red: 'bg-red-500' };
-const _HEALTH_LABELS = {
-  sovereignty: 'Sov',
-  distribution: 'Dist',
-  liquidity: 'Liq',
-  transparency: 'Trans',
-  demand_pipeline: 'Demand',
-};
-
-async function overlayTokenHealth() {
-  try {
-    const r = await fetch(`${API_BASE}/stats/token-health?limit=200`);
-    if (!r.ok) return;
-    const body = await r.json();
-    if (!body || body.available === false) return;
-    const byIssuer = {};
-    for (const t of (body.tokens || [])) {
-      if (t.issuer) byIssuer[t.issuer] = t;
-    }
-    const tiles = document.querySelectorAll('.issuer-tile[data-wallet]');
-    for (const tile of tiles) {
-      const wallet = tile.getAttribute('data-wallet');
-      const token = byIssuer[wallet];
-      if (!token || !token.health) continue;
-      const h = token.health;
-      const dots = Object.entries(_HEALTH_LABELS).map(([dim, label]) => {
-        const d = h[dim] || {};
-        const color = _HEALTH_COLORS[d.rating] || 'bg-zinc-600';
-        return `<span class="inline-flex items-center gap-1 text-[9px] text-muted" title="${escapeHtml(label)}: ${escapeHtml(d.score)}/10 (${escapeHtml(d.rating)})"><span class="inline-block w-1.5 h-1.5 rounded-full ${color}"></span>${escapeHtml(label)}</span>`;
-      }).join('');
-      const totalColor = _HEALTH_COLORS[h.overall_rating] || 'bg-zinc-600';
-      const badge = `<div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border">`
-        + `<span class="inline-flex items-center gap-1 text-[10px] font-semibold text-white" title="Health score ${escapeHtml(h.total)}/50"><span class="inline-block w-2 h-2 rounded-full ${totalColor}"></span>${escapeHtml(h.total)}/50</span>`
-        + dots + `</div>`;
-      tile.insertAdjacentHTML('beforeend', badge);
-    }
-  } catch {
-    // Best-effort overlay; tiles render fine without it.
-  }
-}
 
 // Headless meme/RWA classifier. Mirrors XR-Vault's _classify_candidate.
 // A candidate is "noise" when BOTH the wallet is vanity-generated AND
@@ -631,7 +628,7 @@ function renderAmmPools(pools) {
     return;
   }
   if (empty) empty.classList.add('hidden');
-  el.innerHTML = pools.map(p => {
+  el.innerHTML = sortPoolsByValue(pools).map(p => {
     const cls = p.rwa_asset_class || '';
     const xrpscan = `https://xrpscan.com/account/${encodeURIComponent(p.pool_account || '')}`;
     return `
@@ -657,50 +654,45 @@ function renderAmmPools(pools) {
       </a>
     `;
   }).join('');
+  applyAmmLimit();
 }
 
-// ---- Recent flow log -----------------------------------------------------
-// Drives the "Recent flow" section by reading rwa_issuer_flow events from
-// the latest /stats/rwa-summary embed... actually we don't embed events
-// there. Pull a small page from /events/recent without auth would 402;
-// instead we render a compact list from /stats/rwa-summary's per-issuer
-// mints/burns counts. For Phase 1 we keep this simple. Show the per-
-// issuer 24h aggregates as "flow rows" since that's what the summary
-// endpoint gives us cheaply.
-function renderFlowLog(issuers) {
-  const el = document.getElementById('flow-list');
-  if (!el) return;
-  const rows = (issuers || [])
-    .filter(i => (i.mints_24h_count || 0) > 0 || (i.burns_24h_count || 0) > 0)
-    .sort((a, b) => (b.mints_24h_count + b.burns_24h_count) - (a.mints_24h_count + a.burns_24h_count));
-  if (!rows.length) {
-    el.innerHTML = '<div class="bg-ink border border-border rounded-lg p-4 text-xs text-muted">No mints or burns recorded in the last 24 hours.</div>';
-    return;
-  }
-  el.innerHTML = rows.map(i => {
-    const minted = parseFloat(i.minted_24h || '0') || 0;
-    const burned = parseFloat(i.burned_24h || '0') || 0;
-    const net = i.net_24h || '0';
-    return `
-      <div class="bg-ink border border-border rounded-lg p-4 flex items-center justify-between gap-4">
-        <div class="min-w-0">
-          <div class="font-semibold text-white truncate">${escapeHtml(i.logical_label || i.label || '')}</div>
-          <div class="text-[11px] text-muted mt-0.5">
-            <span class="delta-positive">+${escapeHtml(fmtNumber(minted))}</span>
-            <span class="text-muted mx-1">·</span>
-            <span class="delta-negative">-${escapeHtml(fmtNumber(burned))}</span>
-            <span class="text-muted ml-1">${escapeHtml(i.currency || '')}</span>
-          </div>
-          <div class="text-[10px] text-muted mt-1">${escapeHtml(i.mints_24h_count)} mint${i.mints_24h_count === 1 ? '' : 's'} · ${escapeHtml(i.burns_24h_count)} burn${i.burns_24h_count === 1 ? '' : 's'} · last 24h</div>
-        </div>
-        <div class="text-right shrink-0">
-          <div class="text-lg font-bold font-mono ${deltaClass(net)}">${escapeHtml(deltaSign(net) + fmtNumber(net))}</div>
-          <div class="text-[10px] text-muted font-mono uppercase">net</div>
-        </div>
-      </div>
-    `;
-  }).join('');
+// Order pools by what they hold. Pulse sorts by the RWA side in native
+// units, which ranks 24 EUR above 4.9 ETH. Value each pool from its non-RWA
+// side instead: an RLUSD side at $1, an XRP side at the XRP price implied by
+// the RLUSD/XRP pool itself, doubled for both sides. Unvalued pools go last.
+function sortPoolsByValue(pools) {
+  const ref = pools.find(p => p.rwa_currency === 'RLUSD' && p.counterparty_label === 'XRP');
+  const xrpUsd = ref ? (parseFloat(ref.rwa_amount) / parseFloat(ref.counterparty_amount)) : NaN;
+  const value = (p) => {
+    const cp = parseFloat(p.counterparty_amount);
+    if (!isFinite(cp)) return -1;
+    if (p.counterparty_label === 'RLUSD') return 2 * cp;
+    if (p.counterparty_label === 'XRP' && isFinite(xrpUsd)) return 2 * cp * xrpUsd;
+    return -1;
+  };
+  return pools.slice().sort((a, b) => value(b) - value(a));
 }
+
+// Most pools beyond the first few hold a few dollars. Keep them one click
+// away.
+const AMM_TILE_LIMIT = 6;
+let _ammExpanded = false;
+function applyAmmLimit() {
+  const el = document.getElementById('amm-pool-tiles');
+  const btn = document.getElementById('amm-show-all');
+  if (!el || !btn) return;
+  const tiles = Array.from(el.children);
+  tiles.forEach((t, k) => t.classList.toggle('hidden', !_ammExpanded && k >= AMM_TILE_LIMIT));
+  if (tiles.length <= AMM_TILE_LIMIT) { btn.classList.add('hidden'); return; }
+  btn.classList.remove('hidden');
+  btn.textContent = _ammExpanded ? 'Show fewer' : `Show all ${tiles.length} pools`;
+  btn.setAttribute('aria-expanded', String(_ammExpanded));
+}
+document.getElementById('amm-show-all')?.addEventListener('click', () => {
+  _ammExpanded = !_ammExpanded;
+  applyAmmLimit();
+});
 
 // Report a loader's outcome to the stale-data notice (assets/stale-banner.js).
 function markStale(source, good) {
@@ -718,10 +710,9 @@ async function loadAll() {
     _topMoversLastBody = body;
     renderSummary(body);
     applyTopMoversWindow();
+    renderMoversAsOf(body.issuers || []);
     renderIssuerTiles(body.issuers || []);
     renderAmmPools(body.amm_pools || []);
-    renderFlowLog(body.issuers || []);
-    overlayTokenHealth();
   } catch {
     markStale('rwa-summary', false);
   }
@@ -733,7 +724,6 @@ function escapeHtml(s) {
   })[c]);
 }
 
-document.getElementById('flow-refresh')?.addEventListener('click', loadAll);
 loadAll();
 // Poll on a timer so the dashboard stays current without page reload.
 pollWhileVisible(loadAll, 60000);
@@ -996,7 +986,8 @@ function renderUsdPeggedChart(daily, usdClasses, tracked) {
   const ctx = document.getElementById('chart-usd-pegged-flow');
   if (!ctx) return;
   const labels = daily.map(d => d.snapshot_date);
-  const netData = daily.map(d => d.net_usd || 0);
+  // null = a day Vault could not measure; Chart.js leaves a gap, not a zero bar.
+  const netData = daily.map(d => (d.net_usd == null ? null : d.net_usd));
 
   // Headline coverage: how many tracked issuers are USD-pegged vs total.
   const usdCount = tracked.filter(t => t.is_usd_pegged).length;
@@ -1007,16 +998,18 @@ function renderUsdPeggedChart(daily, usdClasses, tracked) {
       `${usdCount} of ${totalCount} issuer${totalCount === 1 ? '' : 's'} included`;
   }
 
-  // Caveat lists the EUR/BRL/AUD/MWh issuers that don't roll up here.
+  // Vault counts dollar stablecoins, treasuries, commercial paper and dollar
+  // money funds here (USD_PEGGED_ASSET_CLASSES). Exchange IOUs and
+  // non-dollar tokens are left out; the names sit behind a toggle.
   const excluded = tracked.filter(t => !t.is_usd_pegged).map(t => t.logical_label).sort();
   const caveatEl = document.getElementById('usd-flow-caveat');
   if (caveatEl) {
-    if (excluded.length) {
-      caveatEl.textContent =
-        `Excluded from dollar aggregate (native unit only): ${excluded.join(', ')}.`;
-    } else {
-      caveatEl.textContent = '';
-    }
+    caveatEl.innerHTML = excluded.length
+      ? 'Counts dollar stablecoins, Treasury and money fund shares and commercial paper. '
+        + 'Exchange IOUs and non-dollar tokens are left out. '
+        + `<details class="inline"><summary class="cursor-pointer text-accent inline">See the ${excluded.length} left out</summary>`
+        + `<span class="block mt-1">${excluded.map(escapeHtml).join(', ')}</span></details>`
+      : '';
   }
 
   if (usdFlowChart) usdFlowChart.destroy();
@@ -1027,7 +1020,7 @@ function renderUsdPeggedChart(daily, usdClasses, tracked) {
       datasets: [{
         label: 'Net USD flow',
         data: netData,
-        backgroundColor: netData.map(v => (v >= 0 ? XRChart.UP : XRChart.DOWN)),
+        backgroundColor: netData.map(v => (v == null || v >= 0 ? XRChart.UP : XRChart.DOWN)),
         borderWidth: 0,
         borderRadius: 2,
       }],
