@@ -57,7 +57,7 @@ const incl = nodes['stat-usd-pegged-incl'];
 check('headline leaves JMWH out ($4.05B - $2.23B)', headline === '$1.82B', headline);
 check('all-in total is shown under it', incl.textContent.startsWith('$4.05B including JMWH at an issuer-stated $60/MWh'), incl.textContent);
 check('all-in line is visible', !incl.classList.contains('hidden'));
-check('issuer count drops JMWH', /^19 issuers converted/.test(nodes['stat-usd-pegged-detail'].textContent), nodes['stat-usd-pegged-detail'].textContent);
+check('issuer count drops JMWH, in plain words', /^19 issuers priced in dollars · 28 counted in their own units$/.test(nodes['stat-usd-pegged-detail'].textContent), nodes['stat-usd-pegged-detail'].textContent);
 
 // Without JMWH in the data the headline is the plain total and the line hides.
 const noJ = JSON.parse(JSON.stringify(body));
@@ -77,6 +77,46 @@ vm.runInContext('renderIssuerTiles', ctx)([tileIssuer({ trustline_count_truncate
 check('capped trustline count renders with a plus', nodes['issuer-tiles'].innerHTML.includes('2,000+'), nodes['issuer-tiles'].innerHTML.slice(0, 200));
 vm.runInContext('renderIssuerTiles', ctx)([tileIssuer({ trustline_count: 412, trustline_count_truncated: false })]);
 check('exact trustline count renders without a plus', nodes['issuer-tiles'].innerHTML.includes('>412<'), '');
+
+// A fresh ledger reading wins over the once-a-day snapshot (2026-10-28:
+// RLUSD showed 1B and "-0" at 18:12 UTC while the ledger read 977.6M).
+vm.runInContext('renderIssuerTiles', ctx)([tileIssuer({
+  circulating: '1001880101.99', net_24h: '-0.000002',
+  live_circulating: '977635475.86', live_change_since_snapshot: '-24244626.13',
+  live_change_since_ts: 1793147476, snapshot_captured_at: 1793147476,
+})]);
+let tileHtml = nodes['issuer-tiles'].innerHTML;
+check('tile shows the live supply', tileHtml.includes('977.64M') && !tileHtml.includes('>1B<'), tileHtml.slice(0, 400));
+check('tile shows the change since the daily reading', tileHtml.includes('-24.24M') && tileHtml.includes('>Today<'), '');
+check('tile says when the daily reading was', tileHtml.includes('00:31 UTC'), '');
+vm.runInContext('renderIssuerTiles', ctx)([tileIssuer({ live_circulating: null, live_change_since_snapshot: null, snapshot_captured_at: 1793147476 })]);
+tileHtml = nodes['issuer-tiles'].innerHTML;
+check('no live reading: snapshot supply labelled as the last day', tileHtml.includes('1,001.88M') === false && tileHtml.includes('1B') && tileHtml.includes('>Last day<'), tileHtml.slice(0, 400));
+
+// A change that rounds to zero is zero, not a red "-0".
+check('tiny negative renders as 0', vm.runInContext("fmtNumber('-0.000002')", ctx) === '0');
+check('tiny negative is not coloured', vm.runInContext("deltaClass('-0.000002')", ctx) === 'delta-zero');
+check('real small change still shows', vm.runInContext("fmtNumber(-0.25)", ctx) === '-0.25');
+
+// Movers carry their dollar value; the 15-class count is not a pool fact.
+vm.runInContext('renderTopMovers', ctx)([{ logical_label: 'Braza BBRL', currency: 'BBRL', asset_class: 'fiat_stable_brl', net_30d: '-44420000', net_30d_usd: -8884000 }], '30d');
+check('mover shows its dollar value', nodes['top-movers-list'].innerHTML.includes('≈ -$8.9M'), nodes['top-movers-list'].innerHTML);
+check('prose says dollar ranking only when Pulse ranks by dollars', vm.runInContext("moverProse('30d', true)", ctx).includes('dollar value') && vm.runInContext("moverProse('30d', false)", ctx).includes("own unit"));
+vm.runInContext('renderSummary', ctx)(body);
+check('AMM denominator is pools holding a tracked token (536), not every pool (31,877)', fs.readFileSync(path.join(repo, 'assets/pages/vault.js'), 'utf8').includes('ledger pools holding a tracked token'));
+check('AMM detail does not count issuer classes as pool classes', !/asset classes/.test(nodes['stat-amm-pools-detail'].textContent), nodes['stat-amm-pools-detail'].textContent);
+check('SGD stablecoin class has a label', vm.runInContext("fmtAssetClass('fiat_stable_sgd')", ctx) === 'SGD STABLE');
+const src = fs.readFileSync(path.join(repo, 'assets/pages/vault.js'), 'utf8');
+check('the stale token-health overlay is gone (crawl dated 2026-05-27, matched by wallet only)', !src.includes('/stats/token-health'));
+
+// AMM pools order by value, not by native RWA units.
+const pools = [
+  { rwa_currency: 'EUR', counterparty_label: 'RLUSD', rwa_amount: '23.69', counterparty_amount: '26.64' },
+  { rwa_currency: 'ETH', counterparty_label: 'XRP', rwa_amount: '4.89', counterparty_amount: '8634.64' },
+  { rwa_currency: 'RLUSD', counterparty_label: 'XRP', rwa_amount: '2410000', counterparty_amount: '1820000' },
+];
+const order = vm.runInContext('sortPoolsByValue', ctx)(pools).map((p) => p.rwa_currency);
+check('pools sort by value', order.join(',') === 'RLUSD,ETH,EUR', order.join(','));
 
 console.log(fails ? `${fails} FAILED` : 'vault headline: ok');
 process.exit(fails ? 1 : 0);
