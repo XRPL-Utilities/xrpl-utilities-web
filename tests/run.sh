@@ -34,6 +34,7 @@ node tests/telemetry_copy_test.mjs
 node tests/flows_copy_test.mjs
 node tests/lineage_copy_test.mjs
 node tests/sentinel_copy_test.mjs
+node tests/start_copy_test.mjs
 python3 tests/python_sample_test.py
 node tests/inline_script_syntax_test.mjs
 node tests/content_rules_test.mjs
