@@ -220,7 +220,7 @@
           </div>
         </div>
         <p class="text-xs text-muted mt-4 leading-relaxed">
-          Click an address above or paste your own. Free from this page. Agents pay $0.10 per scan over the x402 API at <code class="font-mono text-white">sentinel.xrpl-utilities.io</code>.
+          Free on this page. Agents pay $0.10 per scan through the API.
         </p>
       </div>
 
@@ -230,7 +230,7 @@
           <span class="text-[10px] px-2 py-0.5 rounded-full font-mono" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.35);color:#4ade80">free</span>
         </div>
         <p class="text-sm text-muted leading-relaxed mb-5">
-          Before an agent pays an unfamiliar x402 seller, it reads a catalog from that seller&rsquo;s own web server, and the catalog names the payout address. Nothing in the protocol binds the two. This checks the bindings that do exist on the ledger. Paste a domain, or an XRPL address to ask what its claimed identity rests on.
+          Before paying an unfamiliar seller, check that its website and its XRPL payout address name each other. Paste a domain, or an address to see what its claimed identity rests on.
         </p>
         <div class="flex flex-col sm:flex-row gap-3">
           <input
@@ -263,13 +263,13 @@
         <summary class="cursor-pointer px-6 py-4 select-none flex items-center justify-between gap-4 hover:bg-panel/60 rounded-2xl transition">
           <div>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold">Showcase gallery</div>
-            <div class="text-sm text-muted mt-1">A curated set of XRPL wallets that demonstrate distinct on-ledger behaviors. Click any address to scan it.</div>
+            <div class="text-sm text-muted mt-1">Known wallets that show different kinds of behavior. Click one to scan it.</div>
           </div>
           <div class="text-accent shrink-0 text-xl group-open:rotate-90 transition">+</div>
         </summary>
         <div class="px-6 pb-6 pt-2">
           <p class="text-xs text-muted mb-5 leading-relaxed">
-            Operator-curated. Addresses verified against public attribution and live on-chain reads at the dates noted. RWA issuer wallets are point-in-time observations; trustline counts and on-chain obligations move continuously. The gallery is descriptive, not an endorsement.
+            Names checked against public labels and the ledger on 2026-10-28. Listing a wallet is not an endorsement.
           </p>
           <div id="gallery-categories" class="space-y-6"></div>
         </div>
@@ -297,65 +297,44 @@
           <div>
             <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Signal glossary</h2>
             <h3 class="text-2xl md:text-3xl font-bold">What do these signal flags mean?</h3>
-            <p class="text-sm text-muted mt-2">Click to expand. <span id="glossary-count">35 flags</span> in plain English. <span id="glossary-drift" class="text-amber-300 hidden"></span></p>
+            <p class="text-sm text-muted mt-2">Click to expand. <span id="glossary-count">58 flags</span> in plain English. <span id="glossary-drift" class="text-amber-300 hidden"></span></p>
           </div>
           <span class="text-3xl text-accent shrink-0 group-open:rotate-180 transition-transform mt-1">▾</span>
         </summary>
 
         <p class="text-sm text-muted leading-relaxed mt-6 mb-8">
-          XR-Sentinel reports include a <code class="font-mono text-white">signals</code> array. Short flags drawn from a versioned catalog that describe what kind of behavior the on-chain history looks like. <strong class="text-white">None of these are risk, compliance, or sanctions assessments.</strong>
+          Each scan returns a list of these flags. <strong class="text-white">None of them is a risk, compliance or sanctions finding.</strong> The exact rules are in the <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">signal catalog</a>.
         </p>
 
         <h4 class="text-xs uppercase tracking-widest text-accent font-semibold mb-4 mt-10">Behavioral pattern</h4>
         <dl class="space-y-3">
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">OFFER_HEAVY_BOT</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Most of what this wallet does is place and cancel DEX orders. Typical of a market-making bot.
-              <span class="block text-xs mt-2 opacity-70">Fires when: order placement and cancellation make up more than half of in-window activity.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">More than half of its activity is placing and cancelling DEX orders. Typical of a market-making bot.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">MULTI_CURRENCY_GATEWAY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet handles four or more different tokens. Typical of a gateway, issuer, or multi-asset service.
-              <span class="block text-xs mt-2 opacity-70">Fires when: 4+ unique currencies touched in the window.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Touched four or more different currencies. Typical of a gateway, issuer or multi-asset service.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">BURST_ACTIVITY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              A flurry of transactions packed into less than an hour. Automation territory.
-              <span class="block text-xs mt-2 opacity-70">Fires when: 20+ in-window transactions span less than one hour.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">20 or more transactions packed into less than an hour.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">TRUSTLINE_ONLY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Most of what this wallet does is set up trustlines for tokens, not move money. Typical of issuer setup or token-registration wallets.
-              <span class="block text-xs mt-2 opacity-70">Fires when: more than half of in-window transactions are TrustSet operations.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">More than half of its transactions set up trustlines rather than move money. Typical of issuer or token setup.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">NET_OUTBOUND_SWEEP</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Money is leaving this wallet much faster than it's coming in. Looks like a hot wallet distributing funds.
-              <span class="block text-xs mt-2 opacity-70">Fires when: outgoing transactions exceed incoming by 1.5&times; or more on a High-activity wallet.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">A High-activity wallet with more than 1.5 times as many outgoing transactions as incoming. Looks like a hot wallet paying out.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">NET_INBOUND_ACCUMULATION</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Money is piling in faster than it's going out. Accumulation or aggregation pattern.
-              <span class="block text-xs mt-2 opacity-70">Fires when: incoming transactions exceed outgoing by 1.5&times; or more on a Medium- or High-activity wallet.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">A Medium- or High-activity wallet with more than 1.5 times as many incoming transactions as outgoing. An accumulation pattern.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">PASSIVE_COUNTERPARTY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet behaves like an issuer or AMM pool. It sits there receiving from others rather than initiating activity. Suppresses some other signals that don't make sense for passive roles.
-              <span class="block text-xs mt-2 opacity-70">Fires when: label or transaction mix indicates issuer / stablecoin / gateway / AMM-pool role.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Acts like an issuer, gateway or AMM pool that others transact with. Some signals that don't fit those roles are switched off.</dd>
           </div>
         </dl>
 
@@ -363,24 +342,15 @@
         <dl class="space-y-3">
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">DORMANT_REAWAKENING</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet sat silent for at least a month before its recent activity. Just woke up.
-              <span class="block text-xs mt-2 opacity-70">Fires when: 30+ days of silence between the most-recent prior transaction and the oldest in-window transaction.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Silent for 30 days or more before its recent activity.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">SCORE_TRAJECTORY_BOT_ONBOARDING</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The automation score jumped sharply over the last 30 days. Looks like a wallet that was hand-operated or idle and is now running like a bot or service.
-              <span class="block text-xs mt-2 opacity-70">Fires when: score climbed 30+ points within 30 days vs the prior recorded scan and the wallet is now classified High. Requires a prior recorded scan.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">The activity score rose 30 or more points within 30 days of the last scan and is now High. Needs a previous scan.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">CADENCE_TIGHTENING</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The time between transactions has dropped sharply since the last scan. The wallet is speeding up toward bot-typical timings.
-              <span class="block text-xs mt-2 opacity-70">Fires when: median seconds-between-tx halved or more since the prior scan, with the prior cadence at least 30 seconds. Requires a prior recorded scan.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">The typical gap between transactions has at least halved since the last scan. Needs a previous scan.</dd>
           </div>
         </dl>
 
@@ -388,66 +358,39 @@
         <dl class="space-y-3">
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">LABELED_EXCHANGE_COUNTERPARTY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet transacts with a known exchange (per public XRPL label sources). Descriptive flag; says nothing about compliance status.
-              <span class="block text-xs mt-2 opacity-70">Fires when: at least one top counterparty matches an exchange label or domain.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Trades with a wallet publicly labeled as an exchange. Says nothing about compliance.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">COUNTERPARTY_INSTITUTIONAL</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Broader than the exchange-only flag above. The wallet transacts with any labeled institutional entity: exchange, IOU issuer, corporate or foundation treasury, market maker, cross-chain bridge, or institutional custodian. Descriptive context, not a risk verdict.
-              <span class="block text-xs mt-2 opacity-70">Fires when: at least one top counterparty's public label matches a 60+ entry institutional watchlist (covers all six roles).</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Trades with a publicly labeled institution: an exchange, issuer, treasury, market maker, bridge or custodian.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_SCALE_FLOW</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Size-based companion to <code class="font-mono text-white">COUNTERPARTY_INSTITUTIONAL</code>. Catches institutional-scale relationships when the counterparty isn't on the curated watchlist but the volume signature is unmistakable. Behavioral context, not a risk verdict.
-              <span class="block text-xs mt-2 opacity-70">Fires when: aggregate XRP + RLUSD Payment volume with at least one top counterparty clears $10M USD within the scan window. XRP is valued at current spot; RLUSD is added at $1.00 (issuer-pegged stablecoin). Other (non-RLUSD) IOU Payments are excluded.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">$10M or more in XRP and RLUSD payments with a single counterparty in the window, whoever that counterparty is.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">ESCROW_COUNTERPARTY_INSTITUTIONAL</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Escrow-flow sibling of <code class="font-mono text-white">INSTITUTIONAL_SCALE_FLOW</code>. Captures institutional-scale escrow relationships rather than direct Payments; useful for catching the vesting / settlement / DvP pattern where value moves through Escrow ledger entries rather than Payment txs. Behavioral context, not a risk verdict. The two signals can co-occur, and that's meaningful: mixed Payment + escrow flow with one counterparty is a stronger institutional signature than either alone.
-              <span class="block text-xs mt-2 opacity-70">Fires when: aggregate XRP + RLUSD escrow value with at least one top counterparty clears $10M USD within the scan window. Sums <code class="font-mono">EscrowCreate</code> Amount (when the scanned wallet is creator) plus the underlying Escrow ledger object's Amount on <code class="font-mono">EscrowFinish</code> (recovered from <code class="font-mono">meta.AffectedNodes</code>). Other-IOU escrows excluded; no oracle.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">$10M or more in XRP and RLUSD escrows with a single counterparty in the window.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">BRIDGE_INTERACTION</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet has sent to or received from a labeled cross-chain bridge wallet (Wanchain, Allbridge, Axelar, Coreum Bridge, Wrapped XRP, XPR Bridge). Indicates the wallet routes XRP value cross-chain. Behavioral context, not a risk verdict.
-              <span class="block text-xs mt-2 opacity-70">Fires when: at least one top counterparty is on the bridge sub-list of the institutional watchlist.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Has sent to or received from a labeled cross-chain bridge wallet, so value moves to or from other chains.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">SINGLE_COUNTERPARTY_HEAVY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Almost all payments go to or come from a single address. Typical of broker/dealer relationships, dedicated settlement wallets, or merchant-to-acquirer flows.
-              <span class="block text-xs mt-2 opacity-70">Fires when: 80%+ of in-window payments (10+ minimum) flow through one counterparty.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">At least 80% of its payments (10 or more) are with one address. Typical of a dedicated settlement wallet.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">COUNTERPARTY_BURST</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Ten or more counterparties showed up in this scan that weren't there last time. Could be a payout fanout, new market-making relationships, or a distribution event.
-              <span class="block text-xs mt-2 opacity-70">Fires when: 10+ new addresses in the top counterparties list vs the prior recorded scan. Requires a prior recorded scan.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">10 or more new names in its top counterparties since the last scan. Can mean a payout fan-out or new trading relationships. Needs a previous scan.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">COUNTERPARTY_ADVISORY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              A counterparty has been publicly flagged in advisory data (community-reported as hacked, scam, or sanctioned). Worth a closer look.
-              <span class="block text-xs mt-2 opacity-70">Fires when: at least one top counterparty carries a public advisory flag.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">A top counterparty carries a public advisory, such as a community report of a hack or scam. Worth a closer look.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">COUNTERPARTY_ADVISORY_TRUSTED</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              A counterparty's advisory is provider-verified, not just community-reported.
-              <span class="block text-xs mt-2 opacity-70">Fires when: an advisory's <code class="font-mono">trusted</code> flag is true. Not currently observable in upstream advisory data; reserved for forward compatibility.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">A counterparty's advisory is marked verified by the source. No public advisory carries that mark today.</dd>
           </div>
         </dl>
 
@@ -455,66 +398,39 @@
         <dl class="space-y-3">
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">PERMISSIONED_ISSUER_GOVERNANCE</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet is configured as a permissioned IOU issuer: every holder must be operator-authorized before they can hold the token, and the issuer can claw back outstanding balances. Structural pattern of a tokenized treasury, regulated stablecoin, or institutional pilot. Behavioral context, not a risk verdict.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the scanned address has both <code class="font-mono">lsfRequireAuth</code> and <code class="font-mono">lsfAllowTrustLineClawback</code> set on its AccountRoot flags. Surfaced in the response's <code class="font-mono">features.account_flags</code>.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">An issuer that must approve every holder and can claw back balances. Common for tokenized treasuries and regulated stablecoins.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">VERIFIED_INSTITUTIONAL_ENTITY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet is a positively identified institution, by either of two independent sources: a verified public label (reserved for identified businesses and services such as exchanges, issuers, custodians, gateways, and infrastructure), or membership in our curated registry of known real-world-asset and institutional issuer wallets. The registry covers genuine issuers that public label sources do not mark verified, so a real institution is not missed just because it lacks a verified tag. This is the keystone institutional-posture marker: it fires on the wallet's identified-entity status itself, not on any specific on-ledger primitive.
-              <span class="block text-xs mt-2 opacity-70">Identification confirms identity, not conduct.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">The wallet belongs to an identified institution, either through a verified public label or our registry of known asset issuers. Identity, not conduct.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">FIXED_SUPPLY_ISSUER</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              An issuer whose master key is disabled with no usable regular key (blackholed), so no further units of its token can ever be minted. An irreversible, on-chain commitment that the supply cannot be inflated, which serious token issuers make to assure holders.
-              <span class="block text-xs mt-2 opacity-70">Read from the account-flags snapshot resolved for issuer-likely wallets.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">An issuer that has locked its own keys (blackholed), so no more of its token can ever be minted.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_BY_CONFIGURATION</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet's on-chain configuration matches institutional governance posture: large multi-sig signer set, hardware-keyed signers, or an explicit deposit allowlist. These setups carry real cost (signer coordination, reserve per object) so they don't appear on retail wallets by accident.
-              <span class="block text-xs mt-2 opacity-70">Fires when any of: 8 or more entries in the wallet's SignerList; at least one signer entry carries WalletLocator metadata (multi-sig key custody / HSM pattern); or <code class="font-mono">lsfDepositAuth</code> is set AND at least one DepositPreauth object exists. Surfaced in <code class="font-mono">features.wallet_config</code>.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Set up like an institution: a multi-sig with 8 or more signers or with key-custody details on its signers, or an allowlist of who may pay it.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">DEEP_FROZEN_BY_ISSUER</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              At least one of the wallet's trustlines has been deep-frozen by its issuer. Deep-freeze is strictly stronger than the regular freeze flag; the holder can neither send nor receive the IOU. Issuers deep-freeze for many reasons (court order, KYC failure, suspected fraud, internal compliance review); descriptive flag, not a risk verdict.
-              <span class="block text-xs mt-2 opacity-70">Fires when at least one RippleState (trustline) entry owned by the scanned wallet carries <code class="font-mono">lsfHighDeepFreeze</code> or <code class="font-mono">lsfLowDeepFreeze</code>. Detected from the same on-chain object scan as the configuration classifier above.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">An issuer has deep-frozen one of its trustlines, so it can neither send nor receive that token. Issuers do this for many reasons.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">PERMISSIONED_DEX_PARTICIPANT</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet currently has at least one active offer placed inside an XLS-81 permissioned trading venue; i.e. an Offer ledger object that carries a DomainID. The wallet is participating in credentialed institutional liquidity rather than the open DEX. Behavioral context: permissioned-DEX participation is a normal posture for credentialed institutional traders.
-              <span class="block text-xs mt-2 opacity-70">Fires when <code class="font-mono">wallet_config.permissioned_offer_count</code> is at least 1. The owning domain_id(s) are returned alongside so consumers can drill through to the XR-Trust directory.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Has at least one open order inside a permissioned trading venue (XLS-81), open only to credentialed traders.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">OPERATES_PERMISSIONED_DOMAIN</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The scanned wallet operates one or more XLS-70/80 permissioned domains and has issued credentials under them. Detected via cross-product enrichment against XR-Trust's operator directory rather than a direct on-chain probe. Running a permissioned domain requires sustained operational setup (signer coordination, credential issuance pipeline, identity attestation), so this is a strong institutional-posture flag.
-              <span class="block text-xs mt-2 opacity-70">Fires when the scanned address appears in XR-Trust's operator drill-down. The full block (domain count, credentials issued/outstanding, identity markers, deep link to the operator's Trust page) lands on the top-level <code class="font-mono">permissioned_domain</code> field of the same /scan response.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Runs one or more permissioned domains (XLS-80) and has issued credentials under them. Details come from XR-Trust.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">WHALE_RECENT_ACTIVITY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The scanned wallet has been sender or receiver of at least one whale-tier XRPL Payment in the last 30 days. Detected via cross-product enrichment against XR-Pulse's deterministic on-chain whale watcher. Trajectory signal complementing <code class="font-mono">INSTITUTIONAL_SCALE_FLOW</code>: the latter fires from this wallet's own scan window, this one captures whale activity Pulse already saw network-wide.
-              <span class="block text-xs mt-2 opacity-70">Fires when the wallet has at least one event in Pulse's whale stream above the WHALE_MOVE floor ($1M USD) within the last 30 days. The full block (event count, tier counts, direction counts, total USD volume, last-event timestamp, per-event counterparty list) lands on the top-level <code class="font-mono">whale_context</code> field of the same /scan response.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Sent or received at least one whale-sized payment in the last 30 days, as recorded by XR-Pulse.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">ESCROW_LIFE_HEAVY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet's recent activity is escrow-dominated rather than transactional; consistent with a vesting or grants vehicle, an institutional settlement counterparty, or a programmatic escrow pipeline. Says nothing about who the wallet's escrow counterparties are; just describes the activity mix.
-              <span class="block text-xs mt-2 opacity-70">Fires when the in-window count of EscrowCreate + EscrowFinish + EscrowCancel transactions is at least 30% of total in-window activity, with a floor of 3 total transactions (avoids over-firing on dormant wallets with one escrow).</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">At least 30% of its transactions (3 or more in total) are escrow operations. Typical of vesting or settlement wallets.</dd>
           </div>
         </dl>
 
@@ -522,31 +438,19 @@
         <dl class="space-y-3">
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">FRESH_WALLET</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet was created in the last 30 days. Fresh wallets paired with high-value flow or rapidly-developing patterns deserve closer attention than the same patterns on aged wallets.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the genesis block's hop-0 <code class="font-mono">age_days</code> is less than 30.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Activated in the last 30 days.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">WHALE_GENESIS</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet was funded at activation with 50,000+ XRP; institutional-scale setup, not retail dispense. Combined with the activator label (when present) gives clean provenance: known venues seeding institutional users vs. unlabeled large-scale provisioning.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the genesis block's hop-0 initial funding is at least 50,000 XRP.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Funded with 50,000 XRP or more when it was activated. Institutional setup rather than a retail start.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">INSTITUTIONAL_PROVENANCE</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet's lineage traces back to a known exchange or institution within 3 hops. Stronger than just the immediate activator; intermediate operational wallets get walked past so the chain resolves to the original venue.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the genesis chain terminates at a publicly labeled well-known wallet within 3 hops.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Its chain of activating wallets leads back to a publicly labeled exchange or institution within 3 steps.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">LAYERED_PROVENANCE</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet's activator chain runs through 2 or more unlabeled wallets in a row, and every wallet in the chain was itself fresh when it dispensed downstream. Pattern of layered routing through fresh intermediates rather than direct dispense from a known venue. Behavioral context only; legitimate setup pipelines can also produce this shape.
-              <span class="block text-xs mt-2 opacity-70">Fires when: 2+ consecutive unlabeled hops in the chain, every hop's <code class="font-mono">age_days</code> is below 90, and the chain does not terminate at a labeled venue.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Activated through two or more unlabeled wallets in a row, each under 90 days old at the time. Legitimate setups can look like this too.</dd>
           </div>
         </dl>
 
@@ -554,185 +458,107 @@
         <dl class="space-y-3">
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">TARGET_ADVISORY</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The address you scanned has been publicly flagged in advisory data. Look up the address in any public XRPL advisory source before transacting.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the scanned address itself carries a public advisory flag. Higher-priority than COUNTERPARTY_ADVISORY since it concerns the wallet under review directly.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">The scanned address itself carries a public advisory. Check it before you transact.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">TARGET_ADVISORY_TRUSTED</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The advisory on the scanned address is provider-verified, the strongest tier.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the target's advisory has <code class="font-mono">trusted</code> set to true. Not currently observable; reserved for forward compatibility.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">The advisory on the scanned address is marked verified by the source. No public advisory carries that mark today.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">DUST_ONLY_ON_QUIET_WALLET</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Every payment in the window is sub-cent dust on a wallet that's otherwise quiet. Likely an address-poisoning beacon.
-              <span class="block text-xs mt-2 opacity-70">Fires when: all in-window payments are below $0.01 USD on a Low- or Dormant-level wallet.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Every payment is under one cent on an otherwise quiet wallet. Often address poisoning.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">DUST_ON_FRESH_WALLET</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              A nearly-new wallet has at least one sub-cent payment. A common address-poisoning move targeting freshly-activated wallets.
-              <span class="block text-xs mt-2 opacity-70">Fires when: 5 or fewer in-window payments and at least one is below $0.01 USD.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">A wallet with 5 or fewer payments has received at least one under one cent. A common poisoning move on new wallets.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">HIGH_DUST_RATIO</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              More than one in five payments are sub-cent dust amid otherwise active usage. Beacon or poisoning signals mixed into legitimate activity.
-              <span class="block text-xs mt-2 opacity-70">Fires when: dust payments exceed 20% of 10+ in-window payments.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">More than 20% of its payments (10 or more) are under one cent.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">ISSUES_MPT</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet issues a Multi-Purpose Token (XLS-33), the newer fixed-metadata token type used for stablecoins, tokenized real-world assets, and institutional instruments. A different issuance model from classic trustline IOUs.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one MPTokenIssuance object.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Issues a Multi-Purpose Token (XLS-33), the newer token type used for stablecoins and tokenized assets.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">HOLDS_MPT</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet holds a Multi-Purpose Token, placing it as a holder or distribution endpoint rather than the issuer.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one MPToken object.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Holds a Multi-Purpose Token.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">OPERATES_PRICE_ORACLE</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet publishes on-chain price-feed data (XLS-47). An infrastructure and data-provider role rather than a trading or holding wallet.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one Oracle object.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Publishes an on-chain price feed (XLS-47).</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">BRIDGE_OPERATOR</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet operates a side of a cross-chain bridge (XLS-38), not just transacts with one. This is the bridge itself, distinct from BRIDGE_INTERACTION which flags a bridge counterparty.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one Bridge object.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Runs one side of a cross-chain bridge (XLS-38), not just uses one.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">HAS_DID</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet has anchored a decentralized identifier on-chain (XLS-40), often a named or regulated entity that has published verifiable identity.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns a DID object.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Has published a decentralized identifier on the ledger (XLS-40).</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">CREDENTIAL_HOLDER</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet holds an issued credential (XLS-70), meaning it has been verified or whitelisted to participate in permissioned domains and venues. This is the credentialed-holder side of the permissioning stack.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one Credential object.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Holds an issued credential (XLS-70), which lets it take part in permissioned venues.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">HOLDS_CHECKS</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet is party to a deferred or pull-payment settlement using the XRPL Check primitive, a pattern closer to invoicing than spot transfers.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one Check object.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Is party to an XRPL Check, a deferred payment closer to an invoice than a transfer.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">PAYMENT_CHANNEL_OPERATOR</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet runs an XRPL Payment Channel, the rail behind streaming and agent-native micropayments.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns at least one PayChannel object.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Runs an XRPL payment channel, the rail for streaming micropayments.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">TOKEN_ESCROW_USER</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet locks a token (IOU or MPT) in escrow rather than XRP (XLS-85), a pattern used for over-the-counter settlement, vesting, and asset delivery.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet owns an Escrow object whose locked amount is a token rather than XRP.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Has a token, not XRP, locked in escrow (XLS-85). Used for settlement and vesting.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">GLOBAL_FREEZE_ACTIVE</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The issuer has frozen every trustline to its token at once. An incident, wind-down, or migration posture, broader than a single deep-frozen line.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the account has the global-freeze flag set.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">The issuer has frozen every trustline to its token at once.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">NO_FREEZE_COMMITTED</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The issuer has permanently given up its ability to freeze holdings, a credible commitment common on tokens that market decentralization.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the account has the no-freeze flag set.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">The issuer has permanently given up the power to freeze its token.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">PUNITIVE_TRANSFER_RATE</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The issuer charges holders more than 0.5% to transfer its token between each other, a fee-extracting or deliberately illiquid posture.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the account's transfer rate is above 0.5%.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">The issuer charges more than 0.5% when holders transfer its token to each other.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">DIRECT_CLAWBACK_ACTOR</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet has actually reversed a holder's balance with a clawback, an enforcement action rather than just the capability.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the scan window contains at least one Clawback or AMMClawback transaction.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Has actually clawed back a holder's balance in the window, not just kept the option.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">HIGH_FAILURE_RATE</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              More than a third of the wallet's recent transactions failed. Consistent with a testing wallet, a misconfigured automation, or aggressive order placement that keeps hitting rejection thresholds.
-              <span class="block text-xs mt-2 opacity-70">Fires when: failed transactions exceed 30% of the in-window total, with a floor of 10 transactions.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">More than 30% of its transactions (10 or more) failed. Typical of testing, a broken bot, or orders that keep getting rejected.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">AMM_LIQUIDITY_PROVIDER</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet actively provisions automated-market-maker liquidity (deposits, withdrawals, votes, bids). Different from being an AMM pool account itself, which the scan treats as a passive counterparty.
-              <span class="block text-xs mt-2 opacity-70">Fires when: AMM operations are at least 30% of in-window activity, with a floor of 3 such operations, and the wallet is not itself an AMM pool.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">AMM deposits, withdrawals, votes and bids are at least 30% of its activity (3 or more). Supplies liquidity to pools.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">NFT_MARKETPLACE_ACTIVE</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Regular NFT minting or trading activity, consistent with a creator, a marketplace, or NFT automation.
-              <span class="block text-xs mt-2 opacity-70">Fires when: NFT operations number at least 10 and make up at least 20% of in-window activity.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">At least 10 NFT operations, making up 20% or more of its activity.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">MULTI_ASSET_ISSUER</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet issues three or more distinct currencies, consistent with a real-world-asset tokenizer, a multi-stablecoin operator, or an institutional treasury running parallel asset classes.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet is the issuer of record on at least 3 distinct currency codes with outstanding obligations.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Issues three or more different currencies that are in circulation.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">WHALE_ACCUMULATOR</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Most of the wallet's recent whale-scale activity is inbound, so it is building a position at whale scale rather than offloading. Sharpens WHALE_RECENT_ACTIVITY with a direction read.
-              <span class="block text-xs mt-2 opacity-70">Fires when: at least 80% of the wallet's whale-tier events in the last 30 days are inbound, with a floor of 5 events.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">At least 80% of its whale-sized payments in 30 days (5 or more) were inbound.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">WHALE_DISTRIBUTOR</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              Most of the wallet's recent whale-scale activity is outbound, so it is paying out or offloading at whale scale rather than building. The outbound counterpart to WHALE_ACCUMULATOR.
-              <span class="block text-xs mt-2 opacity-70">Fires when: at least 80% of the wallet's whale-tier events in the last 30 days are outbound, with a floor of 5 events.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">At least 80% of its whale-sized payments in 30 days (5 or more) were outbound.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">WHALE_INSTITUTIONAL_TIER</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet has been moving money at the higher institutional tier, not just clearing the whale floor. Distinguishes institutional ticket sizes from plain whale moves.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet has at least 2 institutional-flow-tier events in the last 30 days.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Two or more large payments in 30 days that either involved a known institution or were $10M or more.</dd>
           </div>
           <div class="bg-panel/50 border border-border rounded-lg p-4">
             <dt class="font-mono text-sm text-white mb-1">IDENTITY_ATTESTED_INSTITUTION</dt>
-            <dd class="text-sm text-muted leading-relaxed">
-              The wallet has published an on-chain identity (a decentralized identifier) naming an organization and two or more principals, resolved through its linked domain manifest. A self-attested institutional identity. Note: the attestation is operator-published, not independently verified.
-              <span class="block text-xs mt-2 opacity-70">Fires when: the wallet has a published DID document with an organization name and at least 2 named principals.</span>
-            </dd>
+            <dd class="text-sm text-muted leading-relaxed">Its published identity names an organization and two or more people. Self-published, not independently checked.</dd>
           </div>
         </dl>
       </details>
@@ -747,35 +573,11 @@
           <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
         </summary>
         <div class="px-5 sm:px-6 pb-6 space-y-7">
-<div id="what-is">
-<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-8 text-center">Understanding wallet classification</h2>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What it does</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Sentinel reads a wallet's last 90 days of on-chain activity and tells you what kind of actor it looks like. Bots, retail wallets, exchanges, AMM pools, issuers, and market makers each leave a distinct signature.
-            </p>
-            <p class="text-sm text-muted leading-relaxed mt-3">
-            You get back two separate 0&ndash;100 scores: an activity level (Low / Medium / High / Dormant / Unknown) for how automated the wallet is, and an institutional-posture score for how much institutional sophistication its signals reveal. Plus structured signal flags and a short AI narrative tying it together.
-          </p>
-          <p class="text-sm text-muted leading-relaxed mt-3">
-            The two scores are independent: a busy retail wallet can score high on activity and zero on posture, while a quiet issuer does the reverse. Posture is deterministic and fully traceable, the score is the sum of the institutional-marker signal weights, each shown next to the signal that earned it.
-          </p>
+<div id="what-is" class="space-y-3 text-sm text-muted leading-relaxed">
+          <p>Sentinel reads a wallet's last 90 days on the ledger and returns two separate 0 to 100 scores. The activity score shows how automated the wallet looks, with a level of Low, Medium, High, Dormant or Unknown. The institutional posture score adds up the institutional signals it found, and lists each one with its weight. You also get the signal flags and a short AI-written summary.</p>
+          <p>The two scores are independent. A busy retail bot can score high on activity and zero on posture; a quiet issuer can do the reverse.</p>
+          <p>Neither score is a risk score, sanctions screen, AML finding or credit rating. A High activity level usually means an exchange, market maker or bot, not a warning.</p>
         </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Who reads the output</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Agents pricing OTC trades. Market makers vetting counterparties before quoting. Researchers writing about XRPL flows. Treasuries deciding whether a wallet is shaped like a service they'd integrate with. Anyone who's about to send funds to an address they don't fully recognize and wants 90 seconds of due diligence before clicking send. <span class="text-white">Not</span> compliance officers; see the panel to the right for what this isn't.
-          </p>
-        </div>
-        <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">What it isn't</h3>
-          <p class="text-sm text-muted leading-relaxed">
-            Neither score is a risk score, sanctions screen, AML determination, or credit rating. A "High" activity level usually means an exchange, market maker, or bot, not a warning; a high institutional posture means the wallet is configured like an institution, not that it is safe or unsafe. The full signal catalog is at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white text-xs">/schema</code></a>; consumers set their own thresholds.
-          </p>
-        </div>
-      </div>
-</div>
         </div>
       </details>
     </div>
@@ -799,217 +601,62 @@
           <span class="text-accent text-xs group-open:rotate-180 transition" aria-hidden="true">&#9660;</span>
         </summary>
         <div class="px-5 sm:px-6 pb-6 space-y-7">
-<div id="for-agents">
-<div class="grid md:grid-cols-2 gap-8 md:gap-12">
-        <div class="min-w-0">
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
-          <h3 class="text-3xl font-bold mb-6">Pay $0.10 per scan, no API key</h3>
-          <p class="text-muted leading-relaxed mb-6">
-            XR-Sentinel implements <strong class="text-white">x402 v2</strong> with the
-            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet and USDC on Base.
-            Verification and settlement are delegated to the
-            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator
-            or the Coinbase facilitator (Base).
-          </p>
-          <ol class="space-y-4 text-sm text-muted">
-            <li class="flex gap-4">
-              <span class="text-accent font-mono font-bold">1.</span>
-              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with three options: RLUSD (flat 0.10), USDC on Base (flat 0.10), or XRP (dynamic, ≈ $0.10 at spot).</span>
-            </li>
-            <li class="flex gap-4">
-              <span class="text-accent font-mono font-bold">2.</span>
-              <span>Sign an XRPL Payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
-            </li>
-            <li class="flex gap-4">
-              <span class="text-accent font-mono font-bold">3.</span>
-              <span>Server verifies, runs the classification, then settles. Returns <code class="font-mono text-white">200</code> with the report and a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
-            </li>
-          </ol>
-          <div class="mt-6 border border-accent/30 bg-accent/5 rounded-xl p-5">
-            <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Free &middot; call this before you pay anyone</div>
-            <p class="text-sm text-muted leading-relaxed">
-              <code class="font-mono text-white">GET /verify-origin?url=</code> answers one question: does this web origin actually control the XRPL account it advertises? In x402 an agent reads a catalog from the same server it is about to pay, and that catalog names the payout address. Nothing in the protocol binds the two.
-            </p>
-            <p class="text-sm text-muted leading-relaxed mt-3">
-              It cross-checks four published bindings: the domain&rsquo;s <code class="font-mono text-white">xrp-ledger.toml</code>, each account&rsquo;s own on-chain Domain field (two-way, because either half alone is one party vouching for itself), the XLS-40 DID and whether it carries a real key or is a placeholder, and whether every payout address in the served catalog is one the domain itself declares. That last check is the one a swapped catalog fails, because an attacker cannot edit the toml without already owning the domain.
-            </p>
-            <p class="text-sm text-muted leading-relaxed mt-3">
-              Pass <code class="font-mono text-white">?address=</code> instead to ask it from the other end: what does this account&rsquo;s claimed identity rest on? That is the only way to test a brand asserted inside MPT metadata, which nothing validates today. A document that cannot be fetched returns <code class="font-mono text-white">unreadable</code>, never a negative finding. Verdicts are <code class="font-mono text-white">verified</code>, <code class="font-mono text-white">partial</code>, <code class="font-mono text-white">unverified</code>, <code class="font-mono text-white">unreadable</code> or <code class="font-mono text-white">mismatch</code>.
-            </p>
-            <p class="text-xs text-muted leading-relaxed mt-3">
-              Verifies published identity bindings only. A verified origin means the domain and the account name each other. It is not an endorsement of the operator, the product, or its solvency.
-            </p>
-          </div>
-          <p class="text-sm text-muted leading-relaxed mt-6">
-            <code class="font-mono text-white">POST /scan/history</code> uses the same x402 flow and price. It returns up to 25 prior recorded scans for an address so agents can read trajectory without scanning the wallet N times themselves. Recording began with schema 2.1.0; older paid scans were not persisted.
-          </p>
-          <div class="mt-8 flex flex-wrap gap-3 text-sm">
-            <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI →</a>
-            <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Signal schema (JSON) →</a>
-            <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">agents.json (raw) →</a>
-          </div>
-          <div class="mt-6">
-            <div class="bg-ink border border-border rounded-lg p-4 max-w-md">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">MCP tools (2 paid, 1 free)</div>
-              <ul class="text-xs text-muted leading-relaxed space-y-1">
-                <li><code class="font-mono text-white">xrpl_sentinel_scan</code> &middot; $0.10</li>
-                <li><code class="font-mono text-white">xrpl_sentinel_scan_history</code> &middot; $0.10</li>
-                <li><code class="font-mono text-white">xrpl_sentinel_verify_origin</code> &middot; free</li>
-              </ul>
-            </div>
-          </div>
-          <p class="text-xs text-muted leading-relaxed mt-4">
-            <span class="text-white">Or skip the integration:</span> call either tool above from an
-            <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client (Claude Desktop etc.) via
-            <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a>
-            or the hosted endpoint at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>. Same x402 model, just wrapped as MCP arguments.
-          </p>
-        </div>
-        <div class="min-w-0">
-          <div class="bg-ink border border-border rounded-xl p-4 sm:p-6 font-mono text-xs sm:text-sm overflow-x-auto max-w-full">
-            <div class="text-muted mb-3"># pip install x402-xrpl</div>
-            <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
-<span class="text-accent">from</span> xrpl.wallet <span class="text-accent">import</span> Wallet
-
-<span class="text-accent">def</span> pay_in_xrp(accepts, *_):
-    <span class="text-accent">return</span> next(a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
-                <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span> <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>)
-
-session = X402RequestsSession(
-    wallet=Wallet.from_seed(seed),
-    rpc_url=<span class="text-green-400">"https://YOUR_XRPL_RPC"</span>,
-    payment_requirements_selector=pay_in_xrp,
-)
-
-resp = session.post(
-    <span class="text-green-400">"https://sentinel.xrpl-utilities.io/scan"</span>,
-    json={<span class="text-green-400">"address"</span>: <span class="text-green-400">"r..."</span>},
-)
-resp.raise_for_status()  <span class="text-accent"># a 402 here means the payment did not go through</span>
-report = resp.json()
-
-<span class="text-accent">print</span>(report[<span class="text-green-400">"activity_level"</span>])
-<span class="text-accent">print</span>(report[<span class="text-green-400">"signals"</span>])
-<span class="text-accent">print</span>(report[<span class="text-green-400">"reasoning"</span>])</pre>
+<div id="for-agents" class="space-y-5 text-sm text-muted leading-relaxed">
+          <ul class="space-y-2">
+            <li><code class="font-mono text-white">POST /scan</code> &middot; $0.10 &middot; the full report for one address</li>
+            <li><code class="font-mono text-white">POST /scan/history</code> &middot; $0.10 &middot; up to 25 earlier scans of an address, to see how it changed</li>
+            <li><code class="font-mono text-white">GET /verify-origin</code> &middot; free &middot; does a domain control the XRPL account it advertises</li>
+            <li><a href="/sentinel/bulk/" class="text-accent hover:underline">Bulk scan</a> &middot; up to 50 addresses in one payment</li>
+          </ul>
+          <p>Paid calls use x402: the first request answers 402 with the price, your agent pays, then repeats the request. Pay in RLUSD or XRP on the XRP Ledger, or USDC on Base. No API key.</p>
+          <p>The same calls are MCP tools: <code class="font-mono text-white">xrpl_sentinel_scan</code>, <code class="font-mono text-white">xrpl_sentinel_scan_history</code> and <code class="font-mono text-white">xrpl_sentinel_verify_origin</code> (free), in <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">@xrpl-utilities/mcp</a> or at <code class="font-mono text-white">mcp.xrpl-utilities.io/mcp</code>.</p>
+          <p>A report carries <code class="font-mono text-white">activity_score</code>, <code class="font-mono text-white">activity_level</code>, <code class="font-mono text-white">institutional_posture</code>, <code class="font-mono text-white">confidence</code>, <code class="font-mono text-white">signals</code>, <code class="font-mono text-white">features</code>, <code class="font-mono text-white">genesis</code> (who activated the wallet), <code class="font-mono text-white">top_counterparties</code> (the top 20) and the AI <code class="font-mono text-white">reasoning</code>. When an earlier scan is on record, a <code class="font-mono text-white">_delta</code> block shows what changed.</p>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://sentinel.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Swagger UI</a>
+            <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Signal catalog (JSON)</a>
+            <a href="/pricing/" class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">Code samples</a>
           </div>
         </div>
-      </div>
-</div>
-<div id="output-shape">
-<h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
-      <h3 class="text-3xl font-bold mb-6">What you get back</h3>
-      <ul class="space-y-3 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">activity_score</code>: 0 to 100, scaled to how automated and service-like the wallet behaves</li>
-        <li><code class="font-mono text-white">activity_level</code>: Low / Medium / High / Dormant / Unknown</li>
-        <li><code class="font-mono text-white">institutional_posture</code>: a second, separate score (0 to 100) for how much institutional sophistication the wallet's signals reveal, with a tier (none / minimal / moderate / institutional / core-institutional) and the exact signals that drove it. Deterministic and fully traceable, distinct from the automation score above. Behavioral, not a risk or compliance score.</li>
-        <li><code class="font-mono text-white">confidence</code>: low / medium / high tier based on transaction depth</li>
-        <li><code class="font-mono text-white">signals</code>: array drawn from a published, versioned catalog (56 entries today)</li>
-        <li><code class="font-mono text-white">features</code>: tx types, IN/OUT split, currencies, dust counts, offer churn, time span, TrustSet / AMM / NFT op counts, failed-tx ratio, median seconds between txs, per-currency net flows, and (for issuers) live outstanding-IOU obligations under <code class="font-mono text-white">issuer_summary</code></li>
-        <li><code class="font-mono text-white">genesis</code>: account-genesis block; activator address + public label, initial XRP funded, activation timestamp + age, and the multi-hop activator chain (terminates at first labeled venue or 5 hops)</li>
-        <li><code class="font-mono text-white">top_counterparties</code>: top 20 with verified public labels and direction</li>
-        <li><code class="font-mono text-white">reasoning</code>: AI-generated narrative tying the signals to the score</li>
-        <li><code class="font-mono text-white">_delta</code>: present when XR-Sentinel has a recorded prior paid scan for the same address. Carries score change, level change, tx-count change, cadence change, and hours since prior scan, so agents can track wallet trajectory without scanning N times themselves.</li>
-      </ul>
-      <p class="text-xs text-muted mt-6 leading-relaxed">
-        Full field-level details at <a href="https://sentinel.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://sentinel.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
-      </p>
-</div>
         </div>
       </details>
     </div>
   </section>
 
-  <section class="border-t border-border">
-    <div class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Sister products</h2>
-      <h3 class="text-2xl font-bold mb-6">Also part of the XRPL-Utilities Portfolio</h3>
-      <div class="grid md:grid-cols-2 gap-4">
-        <a href="/telemetry/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-telemetry-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  XRPL macro telemetry: supply, regional liquidity, AMM depth, Active Float, and a utility-floor projection. Free on the web, $0.10 per snapshot over the agent API.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+  <section id="more-tools" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-10 text-center">More from the XRPL-Utilities portfolio</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <a href="/pulse/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/img/xr-pulse-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Pulse</div>
+          <div class="text-center text-[10px] text-muted mt-1">Signal feed</div>
         </a>
-        <a href="/pulse/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-pulse-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Pulse</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  XRPL signal feed: public-source news plus on-chain whale activity, with institutional-watchlist labels and RWA mint/burn events in one normalized stream. Free on the web. $0.10 per query or live WebSocket stream from $0.50/hr.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/telemetry/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/img/xr-telemetry-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Telemetry</div>
+          <div class="text-center text-[10px] text-muted mt-1">Supply + utility</div>
         </a>
-        <a href="/trust/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-trust-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Trust</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  Permissioned-asset stack directory: XLS-70/80 domains and credentials, XLS-81 permissioned DEX, XLS-40 DID identity. The institutional-side index of XRPL. Free on the web, $0.10 per call over the agent API.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/trust/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/img/xr-trust-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Trust</div>
+          <div class="text-center text-[10px] text-muted mt-1">Permissioned domains</div>
         </a>
-        <a href="/vault/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-vault-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Vault</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  Real-world asset tracker: per-issuer mint and burn flow, daily circulating snapshots, AMM-of-RWA pool exposure across tokenized treasuries, stablecoins, commercial paper, MMFs, and energy commodities. Free on the web, $0.10 per scan over the agent API.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/vault/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/img/xr-vault-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Vault</div>
+          <div class="text-center text-[10px] text-muted mt-1">RWA tracker</div>
         </a>
-        <a href="/flows/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-flows-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Flows</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  ETF AUM ↔ XRPL flow correlation across the fifteen XRP-exposure funds. Daily AUM plus on-chain exchange-flow, plotted on one date axis. Free on the web, $0.10 per-ETF deep dive over the agent API.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/flows/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/img/xr-flows-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Flows</div>
+          <div class="text-center text-[10px] text-muted mt-1">ETF AUM vs flow</div>
         </a>
-
-        <a href="/lineage/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-lineage-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Lineage</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  Live lineage tracker for institutional XRPL movement. Fresh RLUSD mint and burn activity, auto-discovered Ripple counterparties, and multi-hop relay-burst detection. Trace the flow, understand the origin.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/lineage/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition group">
+          <img src="/assets/img/xr-lineage-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Lineage</div>
+          <div class="text-center text-[10px] text-muted mt-1">Ripple flow map</div>
         </a>
-</div>
+      </div>
     </div>
   </section>
 

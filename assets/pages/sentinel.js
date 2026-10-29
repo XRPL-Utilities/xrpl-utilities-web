@@ -37,45 +37,45 @@ const SAMPLE_ADDRESSES = {
   escrow:    "rELeasERs3m4inA1UinRLTpXemqyStqzwh",
 };
 
-// Showcase gallery. Operator-curated, organized by what each wallet
-// demonstrates. Verified addresses only; no speculative entries.
-// Verification date in each blurb reflects the last on-chain check.
+// Showcase gallery, grouped by what each wallet shows. Names checked
+// against public labels and the ledger on 2026-10-28. Blurbs carry no
+// counts or balances, which go stale.
 const GALLERY = [
   {
-    label: "Tokenized RWA issuers",
-    blurb: "Real-world-asset tokens issued natively on XRPL. Useful for testing Sentinel's issuer-profile narrative + governance-flag signals (clawback, RequireAuth, blackholed master key, DefaultRipple).",
+    label: "Tokenized asset issuers",
+    blurb: "Issuers of stablecoins and tokenized assets. Good for seeing issuer flags such as holder approval and clawback.",
     wallets: [
-      { address: "rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p", name: "Ondo Finance · OUSG (permissioned)",          blurb: "Tokenized US Treasuries. RequireAuth + clawback. Operator-restricted distribution." },
-      { address: "roUSG6gvxKGBcgGVXhPKHEgy4YyDfiSi3",  name: "Ondo Finance · OUSG (retail/public)",          blurb: "Same token family, Ripple-deployed public-distribution wallet. ~4k trustlines vs the permissioned wallet's ~20." },
-      { address: "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De", name: "Ripple · RLUSD",                               blurb: "USD stablecoin. ~93k trustlines · the largest IOU issuer on XRPL by every measure." },
-      { address: "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK", name: "Schuman Financial · EURØP",                   blurb: "Euro-denominated RWA. Publicly verified issuer, ~600 trustlines." },
-      { address: "rB3y9EPnq1ZrZP3aXgfyfdXQThzdXMrLMc", name: "Braza Group · USDB",                          blurb: "Brazilian-issued USD-denominated RWA. ~95M obligations." },
-      { address: "rH5CJsqvNqZGxrMyGaqLEoMWRYcVTAPZMt", name: "Braza Group · BBRL",                          blurb: "Brazilian-real-denominated RWA. Sibling issuer to USDB." },
-      { address: "rUNaS5sqRuxZz6V7rBGhoSaZiVYA3ut4UL", name: "SG-FORGE · EURCV",                            blurb: "Societe Generale subsidiary, euro stablecoin. Single launch tranche, ~20 trustlines (no retail distribution yet)." },
-      { address: "rnXNUqF8LuXyUdfLdezftTeEUw2UFSLw5i", name: "Guggenheim / Zeconomy · DCP",                 blurb: "Digital Commercial Paper. QIB-only. Currency codes roll forward by maturity (GDCP&lt;YYYYMMDD&gt;)." },
-      { address: "r976xbKc6om7WYTFwZHByvxnYFi1y5hJXH", name: "Justoken · JMWH",                             blurb: "Real-world MWh tokens. Track in native MWh; USD AUM is issuer-stated, not attested." },
-      { address: "rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn", name: "OpenEden · TBL",                              blurb: "T-Bill tokens. Note: gross obligations 9.9B but net circulating ~35M after treasury subtraction." },
-      { address: "rUN5Zxt3K1AnMRJgEWywDJT8QDMMeLH5ok", name: "AUDC · AUDD",                                 blurb: "Australian-dollar stablecoin (audd.digital)." },
-      { address: "rKCu4CucpepQ6N89c8T5GuX2jkxzCST18Q", name: "Archax × abrdn · pre-mint",                   blurb: "Rails-set-up but zero on-chain supply. RequireAuth + clawback + DefaultRipple posture; ~30 trustlines pre-authorized." },
+      { address: "rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p", name: "Ondo Finance · OUSG (permissioned)", blurb: "Tokenized US Treasuries. Holders must be approved; the issuer can claw back." },
+      { address: "roUSG6gvxKGBcgGVXhPKHEgy4YyDfiSi3",  name: "Ondo Finance · OUSG (open)",          blurb: "A second OUSG issuer wallet without holder approval." },
+      { address: "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De", name: "Ripple · RLUSD",                      blurb: "Ripple's US dollar stablecoin." },
+      { address: "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK", name: "Schuman Financial · EURØP",          blurb: "Euro stablecoin." },
+      { address: "rB3y9EPnq1ZrZP3aXgfyfdXQThzdXMrLMc", name: "Braza Group · USDB",                 blurb: "US dollar stablecoin from a Brazilian issuer." },
+      { address: "rH5CJsqvNqZGxrMyGaqLEoMWRYcVTAPZMt", name: "Braza Group · BBRL",                 blurb: "Brazilian real stablecoin." },
+      { address: "rUNaS5sqRuxZz6V7rBGhoSaZiVYA3ut4UL", name: "SG-FORGE · EURCV",                   blurb: "Euro stablecoin from a Societe Generale subsidiary." },
+      { address: "rnXNUqF8LuXyUdfLdezftTeEUw2UFSLw5i", name: "Guggenheim / Zeconomy · DCP",        blurb: "Digital commercial paper. The currency code changes with each maturity." },
+      { address: "r976xbKc6om7WYTFwZHByvxnYFi1y5hJXH", name: "Justoken · JMWH",                    blurb: "Tokens counted in megawatt-hours of energy." },
+      { address: "rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn", name: "OpenEden · TBL",                     blurb: "Tokenized US Treasury bills." },
+      { address: "rUN5Zxt3K1AnMRJgEWywDJT8QDMMeLH5ok", name: "AUDD",                               blurb: "Australian dollar stablecoin." },
+      { address: "rKCu4CucpepQ6N89c8T5GuX2jkxzCST18Q", name: "Archax",                             blurb: "Set up to issue with holder approval and clawback, but nothing issued yet." },
     ],
   },
   {
-    label: "XLS-80 permissioned-domain operators",
-    blurb: "Wallets operating PermissionedDomain ledger objects under the XLS-80 amendment. These are the on-chain hooks that gate XLS-81 permissioned-DEX execution to credentialed subjects.",
+    label: "Permissioned domain operators",
+    blurb: "Wallets that run permissioned domains (XLS-80), which decide who may trade in a permissioned venue.",
     wallets: [
-      { address: "rGKMDUdmquUCvoXxhcJSttnVnr2NYc9fYi", name: "xrp-liquid",                                  blurb: "Early XLS-81 venue operator. On-chain DID, a permissioned domain and resting domain offers for XRP against USDC / RLUSD / EURQ. No activity since June 2026; its website no longer resolves." },
-      { address: "rtaXvxk6mqixCgMETaA5jxgm3ZKB5n3FP", name: "Anonymous operator",                          blurb: "Unlabeled second-mover. 2 domains, 8 credentials issued. No self-identification on chain." },
+      { address: "rGKMDUdmquUCvoXxhcJSttnVnr2NYc9fYi", name: "xrp-liquid",          blurb: "Early permissioned-venue operator with an on-chain identity and open orders inside its domain." },
+      { address: "rtaXvxk6mqixCgMETaA5jxgm3ZKB5n3FP",  name: "Unnamed operator",    blurb: "Runs two permissioned domains with no public identity." },
     ],
   },
   {
-    label: "Service wallets and infrastructure",
-    blurb: "Operator infrastructure, validators, and IOU issuers whose cadence reflects automated services rather than discretionary trading.",
+    label: "Service wallets",
+    blurb: "Infrastructure and service wallets whose timing looks automated.",
     wallets: [
-      { address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz", name: "Sologenic · issuer",                          blurb: "Multi-currency IOU issuer. High cadence; expect High activity classification." },
-      { address: "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe", name: "Bithomp · validator account",                 blurb: "Validator and explorer operator. Service-cadence pattern." },
-      { address: "rELeasERs3m4inA1UinRLTpXemqyStqzwh", name: "EscrowReleasers",                             blurb: "Automated escrow-finish service. Bot-cadence with structured intervals." },
-      { address: "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM", name: "OpenEden · TBL treasury",                     blurb: "Counterpart to the TBL issuer wallet. Holds the un-circulated supply that nets out of obligations." },
-      { address: "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5", name: "XRPL-Utilities · receipt wallet",             blurb: "The wallet your $0.10 scans settle to. Self-referential test case for ledger-receipt patterns." },
+      { address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz", name: "Sologenic · issuer",              blurb: "Issuer of the SOLO token." },
+      { address: "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe", name: "Bithomp · validator account",     blurb: "Validator and explorer operator." },
+      { address: "rELeasERs3m4inA1UinRLTpXemqyStqzwh", name: "Escrow Releaser",                 blurb: "Automated service that finishes escrows." },
+      { address: "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM", name: "OpenEden · TBL treasury",         blurb: "Holds TBL that is not yet in circulation." },
+      { address: "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5", name: "XRPL-Utilities · receipt wallet", blurb: "Where XRPL payments for our APIs land." },
     ],
   },
 ];
