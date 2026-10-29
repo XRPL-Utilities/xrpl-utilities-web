@@ -140,5 +140,20 @@ check('utility page titles share one size', ['pricing', 'tip', 'status', 'contac
 // Trust activity rows quoted full addresses that broke mid-address on phones.
 const trustJs = read('assets/pages/trust-2.js');
 check('Trust activity shortens addresses', (trustJs.match(/= shortAddrs\(esc\(e\.(title|brief)\)\);/g) || []).length === 2);
+// One number style for headline figures: billions to two places, millions
+// to one. The same RLUSD supply read 993.72M on Pulse and $993.7M on
+// Lineage; settled volume read $316.17B on home and $316.3B on Telemetry.
+for (const f of ['home-2', 'pulse', 'lineage', 'telemetry', 'trust-2', 'flows']) {
+  const js = read('assets/pages/' + f + '.js');
+  check(`${f}.js: millions to one place, billions to two`, !/(1e6|1_000_000)\)\.toFixed\(2\)/.test(js) && !/(1e9|1_000_000_000)\)\.toFixed\(1\)/.test(js));
+}
+// Logos shown at 36 to 64 px kept their wordmark, which shrank to specks.
+// Small slots use the icon-only marks cut from the same artwork.
+{
+  const pages = fs.readdirSync(repo, { recursive: true }).filter(f => f.endsWith('.html') && !f.includes('node_modules'));
+  const old = pages.filter(f => /<img src="\/assets\/img\/(xr-[a-z]+-128|logo-96)\.webp"/.test(read(f)));
+  check('small logo slots use icon-only marks', old.length === 0, old.join(', '));
+  check('every mark file exists', [...new Set(pages.flatMap(f => [...read(f).matchAll(/\/assets\/img\/([a-z-]+-mark-128\.webp)/g)].map(m => m[1])))].every(n => fs.existsSync(path.join(repo, 'assets/img', n))));
+}
 console.log(fails ? `${fails} FAILED` : 'review round 2: ok');
 process.exit(fails ? 1 : 0);

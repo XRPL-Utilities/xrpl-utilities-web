@@ -66,7 +66,7 @@ function fmtUsd(n) {
   if (n === null || n === undefined || isNaN(n)) return '-';
   const a = Math.abs(n);
   if (a >= 1_000_000_000) return '$' + (n / 1_000_000_000).toFixed(2) + 'B';
-  if (a >= 1_000_000) return '$' + (n / 1_000_000).toFixed(2) + 'M';
+  if (a >= 1_000_000) return '$' + (n / 1_000_000).toFixed(1) + 'M';
   if (a >= 1_000) return '$' + (n / 1_000).toFixed(1) + 'k';
   return '$' + n.toFixed(0);
 }
@@ -76,7 +76,7 @@ function fmtXrpAmount(n) {
   const a = Math.abs(n);
   const sign = n < 0 ? '-' : '';
   if (a >= 1_000_000_000) return sign + (a / 1_000_000_000).toFixed(2) + 'B XRP';
-  if (a >= 1_000_000) return sign + (a / 1_000_000).toFixed(2) + 'M XRP';
+  if (a >= 1_000_000) return sign + (a / 1_000_000).toFixed(1) + 'M XRP';
   if (a >= 1_000) return sign + (a / 1_000).toFixed(1) + 'k XRP';
   return sign + a.toFixed(0) + ' XRP';
 }
@@ -1331,7 +1331,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
   function formatUsdShort(n) {
     if (typeof n !== 'number' || !isFinite(n)) return '';
     if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
-    if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+    if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
     if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'k';
     return '$' + n.toFixed(0);
   }
@@ -1670,7 +1670,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
   function formatBig(n) {
     if (!isFinite(n)) return '--';
     if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + 'B';
-    if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+    if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + 'M';
     if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(0) + 'k';
     return n.toFixed(0);
   }
@@ -1766,7 +1766,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
   function fmtBig(n) {
     if (!isFinite(n)) return '--';
     if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + 'B';
-    if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+    if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + 'M';
     if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(0) + 'k';
     return n.toFixed(0);
   }
