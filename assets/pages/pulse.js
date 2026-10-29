@@ -1125,11 +1125,11 @@ async function loadPrimitives() {
       // Only show a delta when we actually measured one. A missing count on
       // either side yields null upstream, which must not render as "0".
       const chip = (typeof d === 'number' && d !== 0)
-        ? `<span class="stat-tile-sub ${d > 0 ? 'text-emerald-400' : 'text-rose-400'}">${d > 0 ? '+' : ''}${d}</span>`
+        ? `<span class="stat-tile-sub ${d > 0 ? 'text-emerald-400' : 'text-rose-400'}">${d > 0 ? '+' : '\u2212'}${Math.abs(d)}</span>`
         : '';
       return `<div class="stat-tile p-4">
         <h3 class="stat-tile-label mb-2">${label}</h3>
-        <div class="flex items-baseline gap-2">
+        <div class="flex flex-wrap items-baseline gap-x-2">
           <span class="stat-tile-value">${fmtCount(counts[key])}</span>${chip}
         </div>
         <p class="stat-tile-sub mt-2">${sub}</p>
