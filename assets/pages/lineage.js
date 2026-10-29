@@ -232,6 +232,11 @@ async function loadRlusdToday() {
     fmtSetDelta(document.getElementById('rlusd-delta'), delta);
     document.getElementById('rlusd-prior').textContent = fmtUSD(midnight);
     document.getElementById('rlusd-trustlines').textContent = fmtInt(tlc) + (rlusd.trustline_count_truncated ? '+' : '');
+    // Pulse walks every trustline page once a day. If a walk is cut short the
+    // figure is a floor, and the caption says so instead of a fixed cap.
+    document.getElementById('rlusd-trustlines-sub').textContent = rlusd.trustline_count_truncated
+      ? 'partial count, the real number is higher'
+      : 'wallets holding RLUSD trustlines';
     document.getElementById('rlusd-asof').textContent = `as of ${new Date().toISOString().replace('T',' ').slice(0,19)}Z`;
   } catch (e) {
     console.warn('[lineage] rwa-summary fetch failed', e);

@@ -24,7 +24,10 @@ function check(name, cond) { console.log((cond ? 'PASS ' : 'FAIL ') + name); if 
 
 check('change tile uses the live change since 00:00 UTC', code.includes('live_change_since_snapshot') && !code.includes('obligations_delta_today'));
 check('change tile is labelled as since 00:00 UTC', html.includes('Change since 00:00 UTC') && !html.includes('Supply change (24h)'));
-check('trustline tile says the count is capped', html.includes('our count stops at 2,000'));
+// 2026-10-29: Pulse now counts every RLUSD trustline (101,453), and the tile
+// sat over a fixed "our count stops at 2,000" caption.
+check('trustline caption follows the data, no fixed cap', !html.includes('stops at 2,000')
+  && code.includes("getElementById('rlusd-trustlines-sub')") && /trustline_count_truncated\s*\n?\s*\?/.test(code));
 check('exit cards count attributed wallets without addresses', code.includes('inferred_wallet_count') && code.includes('addresses not shown'));
 check('no catch-all exits card', !code.includes('Additional CEX'));
 check('chain size is the largest hop, not the hop sum', code.includes('largest hop') && !/fmtUSD\(\s*b\.total_usd/.test(code) && !code.includes('top.total_usd'));
