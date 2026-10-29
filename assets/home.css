@@ -1,0 +1,219 @@
+/* Home page layout. The site has no Tailwind build step, so anything the
+   prebuilt tailwind.css lacks for the home page lives here. Colours match
+   the site palette: ink #0a0a0a, panel #111, border #262626, muted #a3a3a3,
+   accent #00b8ff. */
+
+.home-hero {
+  background:
+    radial-gradient(60rem 30rem at 85% 10%, rgba(0, 184, 255, 0.10), transparent 60%),
+    linear-gradient(rgba(0, 184, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 184, 255, 0.035) 1px, transparent 1px);
+  background-size: auto, 64px 64px, 64px 64px;
+}
+.home-hero-grid {
+  display: grid;
+  gap: 3rem;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .home-hero-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 4rem; }
+}
+.home-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #00b8ff;
+}
+.home-h1 {
+  font-size: 2.5rem;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  text-wrap: balance;
+}
+@media (min-width: 640px)  { .home-h1 { font-size: 3.25rem; } }
+@media (min-width: 1280px) { .home-h1 { font-size: 3.75rem; } }
+.home-lede {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: #a3a3a3;
+  max-width: 34rem;
+}
+@media (min-width: 640px) { .home-lede { font-size: 1.25rem; } }
+
+/* Live panel */
+.home-panel {
+  background: linear-gradient(180deg, rgba(20, 20, 20, 0.92), rgba(12, 12, 12, 0.92));
+  border: 1px solid #262626;
+  border-radius: 1.25rem;
+  box-shadow: 0 0 60px rgba(0, 184, 255, 0.08);
+  padding: 1.5rem;
+}
+@media (min-width: 640px) { .home-panel { padding: 1.75rem; } }
+.home-big {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 640px) { .home-big { font-size: 3rem; } }
+
+/* 24 hourly bars. Height is set per bar from the data; min-height keeps an
+   empty hour visible as a sliver so the time axis still reads. */
+.home-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 7.5rem;
+  margin-top: 1.25rem;
+}
+.home-bar {
+  flex: 1 1 0;
+  min-height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, #00b8ff, rgba(0, 184, 255, 0.45));
+}
+.home-bar-skeleton { background: #262626; }
+.home-bar-now { background: linear-gradient(180deg, #7dd8ff, #00b8ff); }
+.home-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #8a8a8a;
+}
+
+.home-facts {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #262626;
+}
+@media (min-width: 640px) { .home-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.home-fact-label {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #a3a3a3;
+}
+.home-fact-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.25rem;
+}
+.home-fact-sub {
+  font-size: 0.75rem;
+  color: #a3a3a3;
+  margin-top: 0.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Section headings */
+.home-kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #00b8ff;
+  margin-bottom: 0.5rem;
+}
+.home-h2 {
+  font-size: 1.875rem;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+@media (min-width: 640px) { .home-h2 { font-size: 2.25rem; } }
+
+/* Pick your path */
+.home-paths {
+  display: grid;
+  gap: 1.25rem;
+}
+@media (min-width: 768px) { .home-paths { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.home-path {
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  border: 1px solid #262626;
+  border-radius: 1rem;
+  padding: 1.75rem;
+}
+.home-path-links { margin-top: auto; padding-top: 1.25rem; }
+.home-path-links a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-top: 1px solid #1f1f1f;
+  color: #fff;
+  font-weight: 500;
+  transition: color 150ms ease;
+}
+.home-path-links a:hover { color: #00b8ff; }
+.home-path-links a span:last-child { color: #00b8ff; }
+
+/* Today on the ledger */
+.home-tiles {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 1024px) { .home-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; } }
+.home-tile-label {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #a3a3a3;
+  font-weight: 500;
+  min-height: 2.05em;
+}
+.home-tile-sub {
+  font-size: 0.75rem;
+  color: #a3a3a3;
+  margin-top: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tile values: smaller on phones so an 8-digit count fits a half-width tile. */
+.home-tile-value { font-size: 1.5rem; }
+@media (min-width: 640px) { .home-tile-value { font-size: 2.25rem; } }
+
+/* Product list */
+.home-products {
+  display: grid;
+  gap: 0.75rem;
+}
+@media (min-width: 640px)  { .home-products { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .home-products { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; } }
+.home-product {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #111;
+  border: 1px solid #262626;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  transition: border-color 150ms ease;
+}
+.home-product:hover { border-color: #00b8ff; }
+.home-product-name { font-size: 1.125rem; font-weight: 700; }
+/* Phones: icon beside the text, so eight cards don't run 1,800 px. */
+@media (max-width: 639px) {
+  .home-product { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: 0.875rem; row-gap: 0.25rem; padding: 1rem; }
+  .home-product > div { display: contents; }
+  .home-product img { grid-row: span 2; width: 2.5rem; height: 2.5rem; }
+  .home-product-name { font-size: 1rem; }
+}
+
+/* Code sample: wraps nothing, scrolls on narrow screens. */
+.home-code { font-size: 0.75rem; }
+@media (min-width: 640px) { .home-code { font-size: 0.875rem; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse { animation: none; }
+  .home-product, .home-path-links a { transition: none; }
+}
