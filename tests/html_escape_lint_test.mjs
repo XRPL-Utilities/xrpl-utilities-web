@@ -31,6 +31,7 @@ const SAFE = {
     'escrowWallets.length',   // local array length
     'linksHtml',              // built from escaped addresses
     'listHtml',               // built from escaped exchange names and counts
+    "hiddenCards.join('')",   // exit cards built above from escaped values
     'hopFlow',                // built from escaped amounts
     'curClass',               // one of three fixed class strings
   ]),

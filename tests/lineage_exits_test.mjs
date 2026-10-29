@@ -58,5 +58,25 @@ if (!/2 more exchanges/.test(html)) fail('exchanges outside our flows must share
 if (!/bitFlyer <span[^>]*>96</.test(html)) fail('grouped card must show each named count');
 if (/<b>Upbit/.test(html)) fail('entity names must be escaped');
 
+// Separators must sit inside the no-wrap span before them, so a wrapped
+// line never starts with a lone dot (seen on the 38-exchange list).
+if (/<span class="text-muted"> · <\/span><span class="whitespace-nowrap">/.test(html)) fail('separator outside the no-wrap span can start a line');
+if (!/96<\/span><span class="text-muted"> ·<\/span><\/span>/.test(html)) fail('separator must close the previous name span');
+if (/<details/.test(html)) fail('a short exits list must not be collapsed');
+
+// A long list shows the first six cards and folds the rest, counting the
+// grouped exchanges one by one.
+const many = [];
+for (let i = 0; i < 8; i++) many.push({ entity: 'Ex' + i, wallet_count: 2, tracked_wallet_count: 1, inferred_wallet_count: 0, wallets: [] });
+for (let i = 0; i < 3; i++) many.push({ entity: 'Other' + i, wallet_count: 4, tracked_wallet_count: 0, inferred_wallet_count: 0, wallets: [] });
+body.exits.entities = many;
+els['topology-exits'] = { innerHTML: '' };
+await run(document, fetch, '', { warn: (...a) => fail('topology threw: ' + a.join(' ')) });
+const long = els['topology-exits'].innerHTML;
+const [shown, folded = ''] = long.split('<details');
+if ((shown.match(/rounded-lg p-3/g) || []).length !== 6) fail('six cards must show before the fold');
+if (!/Show 5 more exchanges/.test(folded)) fail('fold must count 2 hidden cards plus 3 grouped exchanges');
+if (!/Ex7/.test(folded) || !/3 more exchanges/.test(folded)) fail('hidden cards missing from the fold');
+
 console.log('lineage exits: ' + (fails ? fails + ' failure(s)' : 'ok'));
 process.exit(fails ? 1 : 0);

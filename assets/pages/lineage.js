@@ -138,7 +138,10 @@ async function loadTopology() {
     // the rest are publicly named but not yet seen in our flows, and
     // share one card.
     const EXIT_ADDR_SHOWN = 4;
-    let eHtml = '';
+    // The exits list outgrows the other two columns, so only the first
+    // cards show and the rest sit behind a native disclosure.
+    const EXIT_CARDS_SHOWN = 6;
+    const exitCards = [];
     const otherExits = [];
     for (const ent of (j.exits && j.exits.entities) || []) {
       const namedCount = ent.wallet_count || 0;
@@ -158,22 +161,37 @@ async function loadTopology() {
       const lines = [];
       if (namedCount) lines.push(`${fmtInt(namedCount)} publicly named`);
       if (more) lines.push(`${fmtInt(more)} ${namedCount ? 'more ' : ''}we attribute (addresses not shown)`);
-      eHtml += `
+      exitCards.push(`
         <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
           <div class="text-xs font-semibold text-white">${escapeHtml(ent.entity)}</div>
           <div class="text-[10px] text-muted mt-1">${escapeHtml(lines.join(' · '))}</div>
           ${linksHtml ? `<div class="text-[10px] mt-1 break-words">${linksHtml}</div>` : ''}
-        </div>`;
+        </div>`);
     }
     if (otherExits.length) {
-      const listHtml = otherExits.map(e => `<span class="whitespace-nowrap">${escapeHtml(e.entity)} <span class="opacity-70">${escapeHtml(fmtInt(e.wallet_count))}</span></span>`)
-        .join('<span class="text-muted"> · </span>');
-      eHtml += `
+      // The separator sits inside the no-wrap span of the name before it,
+      // so a wrapped line can never start with a lone dot.
+      const listHtml = otherExits.map((e, i) => `<span class="whitespace-nowrap">${escapeHtml(e.entity)} <span class="opacity-70">${escapeHtml(fmtInt(e.wallet_count))}</span>${i < otherExits.length - 1 ? '<span class="text-muted"> ·</span>' : ''}</span>`)
+        .join(' ');
+      exitCards.push(`
         <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
           <div class="text-xs font-semibold text-white">${escapeHtml(fmtInt(otherExits.length))} more exchanges</div>
           <div class="text-[10px] text-muted mt-1">Publicly named wallets, not yet seen in the flows we track</div>
           <div class="text-[10px] text-white mt-2 leading-relaxed">${listHtml}</div>
-        </div>`;
+        </div>`);
+    }
+    let eHtml = exitCards.slice(0, EXIT_CARDS_SHOWN).join('');
+    const hiddenCards = exitCards.slice(EXIT_CARDS_SHOWN);
+    if (hiddenCards.length) {
+      // The grouped card is always last, so it is hidden whenever anything
+      // is, and it stands for otherExits.length exchanges, not one.
+      const trackedHidden = hiddenCards.length - (otherExits.length ? 1 : 0);
+      const hiddenCount = trackedHidden + otherExits.length;
+      eHtml += `
+        <details class="group">
+          <summary class="cursor-pointer text-[11px] text-emerald-400 hover:text-emerald-300 transition">Show ${escapeHtml(fmtInt(hiddenCount))} more exchanges</summary>
+          <div class="space-y-3 mt-3">${hiddenCards.join('')}</div>
+        </details>`;
     }
     if (!eHtml) eHtml = '<div class="text-[11px] text-muted">No exchange wallets returned.</div>';
     exitsEl.innerHTML = eHtml;
