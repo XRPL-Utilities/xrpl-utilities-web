@@ -190,21 +190,15 @@
   <script src="/assets/glossary-tooltip.js?v=m6" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
+  <link rel="stylesheet" href="/assets/home.css?v=2" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
-    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
     .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
     .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
     .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
     .nav-link-active { color: #00b8ff; }
     .accent-gradient { background: linear-gradient(135deg, #00b8ff 0%, #0091cc 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .grid-bg {
-      background-image:
-        linear-gradient(rgba(0, 184, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 184, 255, 0.04) 1px, transparent 1px);
-      background-size: 64px 64px;
-    }
   </style>
   <script src="/assets/api-resilient.js?v=v2"></script>
   <script src="/assets/poll.js?v=1"></script>
@@ -269,291 +263,245 @@
 
   <main id="main">
 
-  <section class="grid-bg">
-    <div class="max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">
-      <img src="/assets/img/logo-512.webp" width="256" height="256" loading="eager" decoding="async" alt="XRPL-Utilities" class="h-64 w-64 mx-auto mb-8 rounded-2xl glow" />
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 leading-tight">
-        XRPL <span class="accent-gradient">Data Infrastructure</span>
-      </h1>
-      <p class="text-lg sm:text-xl text-muted max-w-2xl mx-auto leading-relaxed">
-        Six XRPL data APIs and the free Lineage view, for institutions, developers and AI agents. Free to use on this site. Agents pay per call over <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402</a> in RLUSD or XRP on the XRP Ledger, or USDC on Base. No accounts or API keys.
-      </p>
-      <div class="mt-10 flex flex-wrap gap-3 justify-center">
-        <a href="#tools" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
-          See the services &darr;
-        </a>
-        <a href="/pricing/" class="border border-border hover:border-accent text-white font-semibold px-6 py-3 rounded-lg transition">
-          Pricing
-        </a>
-        <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener" class="border border-border hover:border-accent text-white font-semibold px-6 py-3 rounded-lg transition">
-          MCP server &rarr;
-        </a>
-      </div>
-      <div class="mt-6">
-        <a href="/start/" class="inline-flex items-center gap-2 text-accent hover:bg-accent/10 border border-accent/40 hover:border-accent px-4 py-2 rounded-lg transition text-base font-semibold">
-          New to XRPL? Start here &rarr;
-        </a>
-        <p class="mt-2 text-xs text-muted">5-minute plain-English walkthrough.</p>
-      </div>
-      <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 justify-center text-xs text-muted">
-        <span class="inline-flex items-center gap-2">
-          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-          Most calls $0.10
-        </span>
-        <span class="inline-flex items-center gap-2">
-          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-          Live streams on Pulse
-        </span>
-        <span class="inline-flex items-center gap-2">
-          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-          Machine-readable manifests
-        </span>
-        <span class="inline-flex items-center gap-2">
-          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-          Settled on-chain
-        </span>
-      </div>
-    </div>
-  </section>
-
-  <!-- LIVE NETWORK STATE STRIP. Four free public read endpoints, four
-       boxes. Each box also links to the relevant product page. Skeleton
-       placeholders show while fetches resolve; refreshes automatically.
-       No preview-token needed; every endpoint here is allowed
-       unauthenticated. CSP connect-src already whitelists all 4 hosts. -->
-  <section id="live-state" class="border-t border-border bg-ink">
-    <div class="max-w-6xl mx-auto px-6 py-12">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-          <h2 class="text-xs uppercase tracking-widest text-muted font-semibold">Live network state</h2>
-        </div>
-        <span id="live-state-asof" class="text-[10px] text-muted font-mono">loading&hellip;</span>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-
-        <a href="/telemetry/" class="stat-tile stat-tile-glow p-4 hover:border-accent block">
-          <div class="stat-tile-label mb-1.5">XRPL payment run-rate</div>
-          <div id="ls-runrate" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
-          <div class="stat-tile-sub text-[10px] mt-2">XRP + RLUSD, last 7 days &times; 52</div>
-        </a>
-
-        <a href="/pulse/" class="stat-tile p-4 hover:border-accent block">
-          <div class="stat-tile-label mb-1.5"><span class="gloss" data-term="funded-wallets">Funded wallets</span></div>
-          <div id="ls-wallets" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
-          <div class="stat-tile-sub text-[10px] mt-2"><span id="ls-wallets-delta">network-wide, all funded accounts</span></div>
-        </a>
-
-        <a href="/pulse/" class="stat-tile p-4 hover:border-accent block">
-          <div class="stat-tile-label mb-1.5">Events on file</div>
-          <div id="ls-events" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
-          <div class="stat-tile-sub text-[10px] mt-2">news and on-chain, Pulse</div>
-        </a>
-
-        <a href="/trust/" class="stat-tile stat-tile-gold p-4 hover:border-accent block">
-          <div class="stat-tile-label mb-1.5">Permissioned domains</div>
-          <div id="ls-domains" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
-          <div class="stat-tile-sub text-[10px] mt-2">XLS-80 mainnet, active</div>
-        </a>
-
-        <a href="/sentinel/" class="stat-tile p-4 hover:border-accent block">
-          <div class="stat-tile-label mb-1.5">Sentinel scans</div>
-          <div id="ls-scans" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
-          <div class="stat-tile-sub text-[10px] mt-2">wallet scans run, free and paid</div>
-        </a>
-
-        <a href="/vault/" class="stat-tile stat-tile-muted p-4 hover:border-accent block">
-          <div class="stat-tile-label mb-1.5">RWA issuers tracked</div>
-          <div id="ls-rwa-issuers" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
-          <div class="stat-tile-sub text-[10px] mt-2">on XRPL mainnet</div>
-        </a>
-
-        <a href="/flows/" class="stat-tile stat-tile-gold p-4 hover:border-accent block">
-          <div class="stat-tile-label mb-1.5">XRP fund assets</div>
-          <div id="ls-etf-aum" class="stat-tile-value text-xl sm:text-2xl">&hellip;</div>
-          <div class="stat-tile-sub text-[10px] mt-2"><span id="ls-etf-delta">XRP exposure across reporting funds</span></div>
-        </a>
-
-      </div>
-    </div>
-  </section>
-
-  <section id="tools" class="border-t border-border bg-panel/30">
-    <div class="max-w-6xl mx-auto px-6 py-20">
-      <div class="mb-12">
-        <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-2">Tools</h2>
-        <h3 class="text-4xl font-bold">The portfolio</h3>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        <a href="/sentinel/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
-              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            </div>
-            <img src="/assets/img/xr-sentinel-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg" />
-          </div>
-          <h4 class="text-2xl font-bold mb-3">XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
-          <p class="text-white leading-relaxed mb-3 font-medium">See how automated a wallet looks.</p>
-          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
-            Scores any XRPL address 0 to 100 for automated behavior, plus an institutional posture score, signal flags and an AI summary. Not a risk score.
-          </p>
-          <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; $0.10 per scan for agents</span>
-            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
-          </div>
-        </a>
-
-        <a href="/telemetry/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
-              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            </div>
-            <img src="/assets/img/xr-telemetry-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg" />
-          </div>
-          <h4 class="text-2xl font-bold mb-3">XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
-          <p class="text-white leading-relaxed mb-3 font-medium">Read the network's macro state in one call.</p>
-          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
-            Supply, dormant float, regional liquidity, AMM depth and payment volume, live from the ledger, plus a utility-floor scenario calculator.
-          </p>
-          <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; $0.10 per snapshot for agents</span>
-            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
-          </div>
-        </a>
-
-        <a href="/pulse/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
-              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            </div>
-            <img src="/assets/img/xr-pulse-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg" />
-          </div>
-          <h4 class="text-2xl font-bold mb-3">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
-          <p class="text-white leading-relaxed mb-3 font-medium">One feed for XRPL news and on-chain events.</p>
-          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
-            News, large payments and RWA mints and burns in one time-ordered stream, with wallets labeled where known.
-          </p>
-          <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; $0.10/query or stream from $0.50/hr</span>
-            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
-          </div>
-        </a>
-
-        <a href="/trust/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
-              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            </div>
-            <img src="/assets/img/xr-trust-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg" />
-          </div>
-          <h4 class="text-2xl font-bold mb-3">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
-          <p class="text-white leading-relaxed mb-3 font-medium">Index the XRPL permissioned web.</p>
-          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
-            Every permissioned domain (XLS-80) on mainnet, with its owner, accepted credentials and credential issuers, plus permissioned DEX activity (XLS-81).
-          </p>
-          <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; $0.10 per call for agents</span>
-            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
-          </div>
-        </a>
-
-        <a href="/vault/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
-              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            </div>
-            <img src="/assets/img/xr-vault-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg" />
-          </div>
-          <h4 class="text-2xl font-bold mb-3">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
-          <p class="text-white leading-relaxed mb-3 font-medium">Real-world assets on XRPL, live.</p>
-          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
-            Supply, mints and burns by issuer across stablecoins, treasuries, funds, private credit and commodities.
-          </p>
-          <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; $0.10 per scan for agents</span>
-            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
-          </div>
-        </a>
-
-        <a href="/flows/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
-              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            </div>
-            <img src="/assets/img/xr-flows-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg" />
-          </div>
-          <h4 class="text-2xl font-bold mb-3">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
-          <p class="text-white leading-relaxed mb-3 font-medium">ETF flow meets the ledger.</p>
-          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
-            Daily assets for spot XRP ETFs, basket funds and European ETPs, shown beside XRPL exchange flow. Correlation only, never causation.
-          </p>
-          <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; $0.10 per call for agents</span>
-            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
-          </div>
-        </a>
-
-        <a href="/lineage/" class="group bg-panel border border-border hover:border-accent rounded-2xl p-8 transition flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-xs uppercase tracking-wider text-accent font-semibold">Live</span>
-              <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            </div>
-            <img src="/assets/img/xr-lineage-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg" />
-          </div>
-          <h4 class="text-2xl font-bold mb-3">XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h4>
-          <p class="text-white leading-relaxed mb-3 font-medium">Trace the flow, understand the origin.</p>
-          <p class="text-muted leading-relaxed mb-6 flex-grow text-sm">
-            Live RLUSD supply, Ripple&rsquo;s wallets and counterparties, and large multi-hop payment chains.
-          </p>
-          <div class="flex items-center justify-between text-sm">
-            <span class="text-muted">Free on the web &middot; built on XR-Pulse</span>
-            <span class="text-accent group-hover:translate-x-1 transition">&rarr;</span>
-          </div>
-        </a>
-
-      </div>
-    </div>
-  </section>
-
-  <section id="agents" class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-6 py-20">
-      <div class="grid md:grid-cols-2 gap-12 items-start">
+  <!-- HERO. Copy on the left, the last 24 hours of large transfers on the
+       right. Every number in the panel comes from a free public endpoint
+       (wired in assets/pages/home-2.js); until it loads the panel shows
+       placeholders, never a made-up figure. -->
+  <section class="home-hero">
+    <div class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+      <div class="home-hero-grid">
         <div>
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-4">For AI agents</h2>
-          <h3 class="text-4xl font-bold mb-6">Discover. Pay. Consume.</h3>
-          <p class="text-muted leading-relaxed mb-6">
-            Every paid route answers with an <a href="https://x402.org" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">x402</a>
-            payment request. No API keys or accounts: your agent reads the manifest, pays, and gets JSON back.
+          <p class="home-eyebrow inline-flex items-center gap-2 mb-5">
+            <span class="h-2 w-2 rounded-full bg-accent animate-pulse" aria-hidden="true"></span>
+            Live XRP Ledger data
           </p>
+          <h1 class="home-h1 mb-6">See what&rsquo;s moving on the <span class="accent-gradient">XRP&nbsp;Ledger</span>, right now.</h1>
+          <p class="home-lede">
+            Large payments, exchange flows, real-world assets and XRP fund holdings, read from the ledger. Free to explore on this site, no account needed.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="/pulse/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">
+              Explore live data
+            </a>
+            <a href="#agents" class="border border-border hover:border-accent text-white font-semibold px-6 py-3 rounded-lg transition">
+              Build with the API
+            </a>
+          </div>
+          <p class="mt-6 text-sm text-muted">
+            New to XRPL? <a href="/start/" class="text-accent underline hover:text-white">Start with the 5-minute guide</a>.
+          </p>
+        </div>
+
+        <div class="home-panel" aria-labelledby="pulse-panel-title">
+          <div class="flex items-center justify-between gap-4">
+            <h2 id="pulse-panel-title" class="text-sm font-semibold text-white">Large transfers, last 24 hours</h2>
+            <span id="live-state-asof" class="text-xs text-muted font-mono whitespace-nowrap">loading&hellip;</span>
+          </div>
+          <div class="mt-4 flex items-baseline gap-3 flex-wrap">
+            <span id="hero-large-usd" class="home-big">&hellip;</span>
+            <span id="hero-large-count" class="text-sm text-muted"></span>
+          </div>
+          <p class="text-xs text-muted mt-2">$1M and up, or $50K and up with a named institution on either side.</p>
+          <div id="hero-bars" class="home-bars" aria-hidden="true"></div>
+          <div class="home-axis" aria-hidden="true"><span>24h ago</span><span>12h ago</span><span>now</span></div>
+          <p id="hero-bars-summary" class="sr-only"></p>
+
+          <div class="home-facts">
+            <a href="/telemetry/" class="block hover:text-accent">
+              <div class="home-fact-label">Settled on the ledger, 24h</div>
+              <div id="ls-settled" class="home-fact-value">&hellip;</div>
+              <div id="ls-settled-sub" class="home-fact-sub">XRP and RLUSD payments</div>
+            </a>
+            <a href="/flows/" class="block hover:text-accent">
+              <div id="ls-netflow-label" class="home-fact-label">Net XRP flow, exchanges, 24h</div>
+              <div id="ls-netflow" class="home-fact-value">&hellip;</div>
+              <div id="ls-netflow-sub" class="home-fact-sub">across tracked exchanges</div>
+            </a>
+            <div>
+              <div class="home-fact-label">Next Ripple escrow release</div>
+              <div id="ls-escrow" class="home-fact-value">&hellip;</div>
+              <div id="ls-escrow-sub" class="home-fact-sub">&nbsp;</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PICK YOUR PATH. One column per kind of visitor, so nobody has to read
+       the other two pitches to find theirs. -->
+  <section id="paths" class="border-t border-border bg-ink">
+    <div class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+      <p class="home-kicker">Where to start</p>
+      <h2 class="home-h2 mb-10">Pick what you came for.</h2>
+      <div class="home-paths">
+        <div class="home-path">
+          <h3 class="text-xl font-bold mb-2">Follow the market</h3>
+          <p class="text-muted leading-relaxed">Large payments as they settle, money moving on and off exchanges, and what XRP funds hold.</p>
+          <div class="home-path-links">
+            <a href="/pulse/"><span>XR-Pulse: live event feed</span><span aria-hidden="true">&rarr;</span></a>
+            <a href="/telemetry/"><span>XR-Telemetry: network health</span><span aria-hidden="true">&rarr;</span></a>
+            <a href="/flows/"><span>XR-Flows: XRP funds and flows</span><span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+        <div class="home-path">
+          <h3 class="text-xl font-bold mb-2">Research institutions</h3>
+          <p class="text-muted leading-relaxed">Real-world assets by issuer, permissioned domains, where RLUSD goes, and how any wallet behaves.</p>
+          <div class="home-path-links">
+            <a href="/vault/"><span>XR-Vault: real-world assets</span><span aria-hidden="true">&rarr;</span></a>
+            <a href="/trust/"><span>XR-Trust: permissioned domains</span><span aria-hidden="true">&rarr;</span></a>
+            <a href="/lineage/"><span>XR-Lineage: RLUSD flows</span><span aria-hidden="true">&rarr;</span></a>
+            <a href="/sentinel/"><span>XR-Sentinel: check a wallet</span><span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+        <div class="home-path">
+          <h3 class="text-xl font-bold mb-2">Build an agent</h3>
+          <p class="text-muted leading-relaxed">Every API names its price. Your agent pays per call in RLUSD, XRP or USDC and gets JSON back. No keys, no sign-up.</p>
+          <div class="home-path-links">
+            <a href="#agents"><span>See the code</span><span aria-hidden="true">&rarr;</span></a>
+            <a href="/pricing/"><span>Pricing</span><span aria-hidden="true">&rarr;</span></a>
+            <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer"><span>MCP server</span><span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TODAY ON THE LEDGER. Four network facts, each linking to the page
+       that explains it. Refreshed with the hero by home-2.js. -->
+  <section id="live-state" class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-6 py-16">
+      <p class="home-kicker">Today on the ledger</p>
+      <h2 class="home-h2 mb-10">The numbers behind the dashboards.</h2>
+      <div class="home-tiles">
+
+        <a href="/flows/" class="stat-tile stat-tile-gold p-5 hover:border-accent block">
+          <div class="home-tile-label">XRP fund assets</div>
+          <div id="ls-etf-aum" class="stat-tile-value home-tile-value">&hellip;</div>
+          <div class="home-tile-sub"><span id="ls-etf-delta">XRP exposure across reporting funds</span></div>
+        </a>
+
+        <a href="/vault/" class="stat-tile p-5 hover:border-accent block">
+          <div class="home-tile-label">Real-world asset issuers tracked</div>
+          <div id="ls-rwa-issuers" class="stat-tile-value home-tile-value">&hellip;</div>
+          <div class="home-tile-sub">stablecoins, treasuries, funds, private credit, commodities</div>
+        </a>
+
+        <a href="/pulse/" class="stat-tile p-5 hover:border-accent block">
+          <div class="home-tile-label"><span class="gloss" data-term="funded-wallets">Funded wallets</span></div>
+          <div id="ls-wallets" class="stat-tile-value home-tile-value">&hellip;</div>
+          <div class="home-tile-sub"><span id="ls-wallets-delta">network-wide</span></div>
+        </a>
+
+        <a href="/trust/" class="stat-tile stat-tile-gold p-5 hover:border-accent block">
+          <div class="home-tile-label">Permissioned domains</div>
+          <div id="ls-domains" class="stat-tile-value home-tile-value">&hellip;</div>
+          <div class="home-tile-sub">active on mainnet (XLS-80)</div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="tools" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+      <p class="home-kicker">The tools</p>
+      <h2 class="home-h2 mb-10">Seven views of one ledger.</h2>
+      <div class="home-products">
+        <a href="/pulse/" class="home-product group">
+          <div class="flex items-center gap-3">
+            <img src="/assets/img/xr-pulse-128.webp" width="48" height="48" loading="lazy" decoding="async" alt="" class="h-12 w-12 rounded-lg" />
+            <h3 class="home-product-name">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h3>
+          </div>
+          <p class="text-sm text-muted leading-relaxed">News, large payments and RWA mints and burns in one time-ordered feed.</p>
+        </a>
+        <a href="/telemetry/" class="home-product group">
+          <div class="flex items-center gap-3">
+            <img src="/assets/img/xr-telemetry-128.webp" width="48" height="48" loading="lazy" decoding="async" alt="" class="h-12 w-12 rounded-lg" />
+            <h3 class="home-product-name">XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h3>
+          </div>
+          <p class="text-sm text-muted leading-relaxed">Supply, liquidity and payment volume across the whole network.</p>
+        </a>
+        <a href="/flows/" class="home-product group">
+          <div class="flex items-center gap-3">
+            <img src="/assets/img/xr-flows-128.webp" width="48" height="48" loading="lazy" decoding="async" alt="" class="h-12 w-12 rounded-lg" />
+            <h3 class="home-product-name">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h3>
+          </div>
+          <p class="text-sm text-muted leading-relaxed">XRP ETF and ETP assets next to exchange flow on the ledger. Correlation only.</p>
+        </a>
+        <a href="/vault/" class="home-product group">
+          <div class="flex items-center gap-3">
+            <img src="/assets/img/xr-vault-128.webp" width="48" height="48" loading="lazy" decoding="async" alt="" class="h-12 w-12 rounded-lg" />
+            <h3 class="home-product-name">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h3>
+          </div>
+          <p class="text-sm text-muted leading-relaxed">Supply, mints and burns for stablecoins, treasuries, funds, private credit and commodities.</p>
+        </a>
+        <a href="/trust/" class="home-product group">
+          <div class="flex items-center gap-3">
+            <img src="/assets/img/xr-trust-128.webp" width="48" height="48" loading="lazy" decoding="async" alt="" class="h-12 w-12 rounded-lg" />
+            <h3 class="home-product-name">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h3>
+          </div>
+          <p class="text-sm text-muted leading-relaxed">Every permissioned domain on mainnet, who runs it and which credentials it accepts.</p>
+        </a>
+        <a href="/lineage/" class="home-product group">
+          <div class="flex items-center gap-3">
+            <img src="/assets/img/xr-lineage-128.webp" width="48" height="48" loading="lazy" decoding="async" alt="" class="h-12 w-12 rounded-lg" />
+            <h3 class="home-product-name">XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h3>
+          </div>
+          <p class="text-sm text-muted leading-relaxed">Live RLUSD supply, Ripple&rsquo;s wallets and counterparties, and large multi-hop payments.</p>
+        </a>
+        <a href="/sentinel/" class="home-product group">
+          <div class="flex items-center gap-3">
+            <img src="/assets/img/xr-sentinel-128.webp" width="48" height="48" loading="lazy" decoding="async" alt="" class="h-12 w-12 rounded-lg" />
+            <h3 class="home-product-name">XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h3>
+          </div>
+          <p class="text-sm text-muted leading-relaxed">Paste any address and see how automated it looks, with an institutional posture score. Not a risk score.</p>
+        </a>
+        <a href="/start/" class="home-product group">
+          <div class="flex items-center gap-3">
+            <img src="/assets/img/logo-96.webp" width="48" height="48" loading="lazy" decoding="async" alt="" class="h-12 w-12 rounded-lg" />
+            <h3 class="home-product-name">Start here</h3>
+          </div>
+          <p class="text-sm text-muted leading-relaxed">New to the XRP Ledger? A 5-minute plain-English guide to what these tools show.</p>
+        </a>
+      </div>
+      <p class="mt-6 text-sm text-muted">Every tool is free on this site. Agents pay per call, most calls $0.10. <a href="/pricing/" class="text-accent underline hover:text-white">See pricing</a>.</p>
+    </div>
+  </section>
+
+  <section id="agents" class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+      <div class="grid md:grid-cols-2 gap-12 items-start">
+        <div class="min-w-0">
+          <p class="home-kicker">For AI agents</p>
+          <h2 class="home-h2 mb-6">Discover. Pay. Consume.</h2>
           <p class="text-muted leading-relaxed mb-6">
+            Every paid route answers with an <a href="https://x402.org" target="_blank" rel="noopener noreferrer" class="text-accent underline hover:text-white">x402</a>
+            price. Your agent pays in RLUSD or XRP on the XRP Ledger, or USDC on Base, and gets JSON back. No accounts, no API keys.
+          </p>
+          <p class="text-muted leading-relaxed mb-3">
             <span class="text-white">Or use the MCP server:</span> 46 tools across the seven services (<span class="text-green-400">32 free</span>, 14 paid) for Claude Desktop or any
-            <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">MCP</a> client, with the same payments.
-            Hosted at <code class="font-mono text-sm bg-panel px-2 py-1 rounded">mcp.xrpl-utilities.io/mcp</code> or
-            <code class="font-mono text-sm bg-panel px-2 py-1 rounded">npm i @xrpl-utilities/mcp</code>.
+            <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="text-accent underline hover:text-white">MCP</a> client, with the same payments.
           </p>
-          <ul class="space-y-3 text-muted">
-            <li class="flex gap-3"><span class="text-accent">→</span> <span>Each service: manifest at <code class="font-mono text-sm">/.well-known/agents.json</code></span></li>
-            <li class="flex gap-3"><span class="text-accent">→</span> <span>Plain-text summary at <code class="font-mono text-sm">/llms.txt</code></span></li>
-            <li class="flex gap-3"><span class="text-accent">→</span> <span>OpenAPI spec at <code class="font-mono text-sm">/openapi.json</code></span></li>
-            <li class="flex gap-3"><span class="text-accent">→</span> <span>MCP server at <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">github.com/XRPL-Utilities/xrpl-utilities-mcp</a></span></li>
+          <div class="flex flex-wrap gap-2 mb-8">
+            <code class="font-mono text-sm bg-panel border border-border px-2 py-1 rounded">npm i @xrpl-utilities/mcp</code>
+            <code class="font-mono text-sm bg-panel border border-border px-2 py-1 rounded">mcp.xrpl-utilities.io/mcp</code>
+          </div>
+          <ul class="space-y-3 text-muted text-sm">
+            <li class="flex gap-3"><span class="text-accent" aria-hidden="true">&rarr;</span> <span>Each service publishes <a href="https://sentinel.xrpl-utilities.io/.well-known/agents.json" target="_blank" rel="noopener noreferrer" class="font-mono text-accent underline hover:text-white">/.well-known/agents.json</a>, <a href="https://sentinel.xrpl-utilities.io/llms.txt" target="_blank" rel="noopener noreferrer" class="font-mono text-accent underline hover:text-white">/llms.txt</a> and <a href="https://sentinel.xrpl-utilities.io/openapi.json" target="_blank" rel="noopener noreferrer" class="font-mono text-accent underline hover:text-white">/openapi.json</a></span></li>
+            <li class="flex gap-3"><span class="text-accent" aria-hidden="true">&rarr;</span> <span>MCP source on <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent underline hover:text-white">GitHub</a></span></li>
           </ul>
         </div>
-        <div class="bg-panel border border-border rounded-xl p-6 font-mono text-sm overflow-x-auto">
+        <div class="bg-panel border border-border rounded-xl p-5 sm:p-6 font-mono home-code overflow-x-auto min-w-0" tabindex="0" role="region" aria-label="Python example: pay for a Sentinel scan in XRP">
           <div class="text-muted mb-3"># Pay per call in XRP with x402-xrpl</div>
           <pre class="text-white leading-relaxed"><span class="text-accent">from</span> x402_xrpl <span class="text-accent">import</span> X402RequestsSession
 
 <span class="text-accent">def</span> pay_in_xrp(accepts, *_):
-    <span class="text-accent">return</span> next(a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
-                <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span> <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>)
+    <span class="text-accent">return</span> next(
+        a <span class="text-accent">for</span> a <span class="text-accent">in</span> accepts
+        <span class="text-accent">if</span> a[<span class="text-green-400">"network"</span>] == <span class="text-green-400">"xrpl:0"</span>
+        <span class="text-accent">and</span> a[<span class="text-green-400">"asset"</span>] == <span class="text-green-400">"XRP"</span>
+    )
 
 session = X402RequestsSession(
     wallet=wallet,
@@ -565,9 +513,21 @@ resp = session.post(
     <span class="text-green-400">"https://sentinel.xrpl-utilities.io/scan"</span>,
     json={<span class="text-green-400">"address"</span>: target},
 )
-resp.raise_for_status()  <span class="text-accent"># a 402 here means the payment did not go through</span>
+<span class="text-accent"># a 402 here means the payment did not go through</span>
+resp.raise_for_status()
 report = resp.json()</pre>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border home-hero">
+    <div class="max-w-4xl mx-auto px-6 py-16 md:py-20 text-center">
+      <h2 class="home-h2 mb-4">The ledger is public. Now it&rsquo;s readable.</h2>
+      <p class="text-muted text-lg mb-8">Open any dashboard free, or point your agent at the API.</p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a href="/pulse/" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-6 py-3 rounded-lg transition">Explore live data</a>
+        <a href="/pricing/" class="border border-border hover:border-accent text-white font-semibold px-6 py-3 rounded-lg transition">See pricing</a>
       </div>
     </div>
   </section>
@@ -630,11 +590,11 @@ report = resp.json()</pre>
 
   <script src="/assets/pages/home-1.js?v=1"></script>
 
-  <!-- LIVE NETWORK STATE wiring. Four parallel fetches, all free + public.
-       Skeleton ellipses persist on fetch failure (intentional: better to
-       show nothing than fake a number). 60s refresh cadence matches the
-       Telemetry oracle TTL so we don't burn upstream cache budget. -->
-  <script src="/assets/pages/home-2.js?v=3"></script>
+  <!-- Live numbers for the hero panel and the "Today on the ledger" tiles.
+       All sources are free and public. Placeholders stay on a failed fetch
+       (better to show nothing than a made-up number) and the stale notice
+       says so. -->
+  <script src="/assets/pages/home-2.js?v=4"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>

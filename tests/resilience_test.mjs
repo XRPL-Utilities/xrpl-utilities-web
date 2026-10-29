@@ -199,7 +199,7 @@ for (const [name, file, start] of [['sentinel', 'assets/scan-flow.js', startSent
   vm.runInContext(read('assets/pages/home-2.js'), ctx);
   await tick();
   check('home: a failed refresh keeps the old "as of"', asOf.textContent === 'as of 09:00 UTC', asOf.textContent);
-  check('home: every failed source reaches the stale notice', ctx.XRStale.failing().length === 7, JSON.stringify(ctx.XRStale.failing()));
+  check('home: every failed source reaches the stale notice', ctx.XRStale.failing().length === 8, JSON.stringify(ctx.XRStale.failing()));
 }
 
 // ---- pages load the notice and report to it ----------------------------------------
