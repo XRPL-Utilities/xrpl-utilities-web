@@ -39,7 +39,7 @@ const unescape = (s) => s.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replac
 // ---- pricing: first call ------------------------------------------------------
 {
   const html = read('pricing/index.html');
-  const section = html.slice(html.indexOf('id="first-call"'), html.indexOf('<!-- HOW PAYMENT WORKS -->'));
+  const section = html.slice(html.indexOf('id="first-call"'), html.indexOf('<!-- LEGAL -->'));
   check('pricing has the first-call section', section.length > 100);
   const pres = [...section.matchAll(/<pre[^>]*>([\s\S]*?)<\/pre>/g)].map((m) => unescape(m[1]));
   check('free curl call', pres.some((p) => /^curl https:\/\/pulse\.xrpl-utilities\.io\/stats\/rwa-summary$/m.test(p)));
