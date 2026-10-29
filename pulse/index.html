@@ -768,97 +768,42 @@ feed = resp.json()
     </div>
   </section>
 
-  <section class="border-t border-border">
-    <div class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Sister products</h2>
-      <h3 class="text-2xl font-bold mb-6">Also part of the XRPL-Utilities Portfolio</h3>
-      <div class="grid md:grid-cols-2 gap-4">
-        <a href="/sentinel/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-sentinel-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Sentinel</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  Paste any XRPL address to see what kind of wallet it is.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+  <!-- MORE PRODUCTS: same block on every product page (tests/more_products_test.mjs) -->
+  <section id="more-tools" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-10 text-center">More from XRPL-Utilities</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <a href="/sentinel/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-sentinel-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Sentinel</div>
+          <div class="text-center text-[10px] text-muted mt-1">Wallet behavior</div>
         </a>
-        <a href="/telemetry/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-telemetry-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Telemetry</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  Supply, liquidity and flow across the whole XRP Ledger.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/telemetry/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-telemetry-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Telemetry</div>
+          <div class="text-center text-[10px] text-muted mt-1">Network supply and liquidity</div>
         </a>
-        <a href="/trust/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-trust-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Trust</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  Directory of permissioned domains and credentials on XRPL.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/trust/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-trust-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Trust</div>
+          <div class="text-center text-[10px] text-muted mt-1">Permissioned domains</div>
         </a>
-        <a href="/vault/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-vault-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Vault</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  Supply and flow for every tracked real-world asset on XRPL.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/vault/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-vault-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Vault</div>
+          <div class="text-center text-[10px] text-muted mt-1">Real-world assets</div>
         </a>
-        <a href="/flows/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-flows-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Flows</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  The 15 XRP funds' assets next to on-chain flows.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/flows/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-flows-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Flows</div>
+          <div class="text-center text-[10px] text-muted mt-1">ETF assets and flows</div>
         </a>
-
-        <a href="/lineage/" class="block bg-panel border border-accent/40 hover:border-accent hover:bg-accent/5 rounded-2xl p-6 transition group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-4">
-              <img src="/assets/img/xr-lineage-128.webp" width="56" height="56" loading="lazy" decoding="async" alt="" class="h-14 w-14 rounded-lg shrink-0" />
-              <div>
-                <div class="font-bold text-xl text-white mb-1">XR-Lineage</div>
-                <div class="text-sm text-muted leading-relaxed">
-                  Where new RLUSD comes from and where it goes.
-                </div>
-              </div>
-            </div>
-            <div class="text-3xl text-accent shrink-0 group-hover:translate-x-1 transition">&rarr;</div>
-          </div>
+        <a href="/lineage/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-lineage-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Lineage</div>
+          <div class="text-center text-[10px] text-muted mt-1">RLUSD and Ripple flows</div>
         </a>
-</div>
+      </div>
     </div>
   </section>
 
