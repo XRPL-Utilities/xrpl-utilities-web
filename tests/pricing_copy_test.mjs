@@ -23,8 +23,8 @@ const slice = (from, to) => {
   const i = html.indexOf(from);
   return i < 0 ? '' : html.slice(i, html.indexOf(to, i + from.length));
 };
-const paid = slice('<!-- PAID ENDPOINTS MATRIX -->', '<!-- FIRST CALL -->');
-const free = slice('<!-- FREE ENDPOINTS -->', '<!-- LEGAL -->');
+const paid = slice('<!-- PAID ENDPOINTS MATRIX -->', '<!-- FREE ENDPOINTS -->');
+const free = slice('<!-- FREE ENDPOINTS -->', '<!-- CODE SAMPLES.');
 
 const PAID_ROUTES = [
   'POST /scan', 'POST /scan/history',
@@ -42,5 +42,32 @@ for (const r of ['/domains<', '/credentials/issuers<', '/permissioned-domains/op
 }
 check('MCP tool counts match the server', html.includes('46 across all seven services (32 free, 14 paid)'));
 check('page says seven APIs, not six', !/Six agent-payable/.test(html));
+
+
+// 2026-10-29: Aaron found the page "way too much": below the prices sat a
+// three-step curl section, a three-card protocol walkthrough naming the
+// payment facilitators and headers, and four code blocks, two of them MCP.
+// Prices and a plain three-step strip stay up top; the code lives in one
+// closed "Code samples" panel.
+check('paid list is still there', paid.length > 1000);
+check('free list is still there', free.length > 500);
+check('no protocol walkthrough section', !html.includes('<!-- HOW PAYMENT WORKS -->') && !html.includes('PAYMENT-SIGNATURE'));
+for (const leak of ['t54', 'facilitator', 'x402 v2', 'verify-then-work-then-settle', 'EIP-3009']) {
+  check(`no "${leak}"`, !html.includes(leak));
+}
+const samples = slice('<!-- CODE SAMPLES.', '<!-- LEGAL -->');
+check('code samples sit in one closed panel', /<details id="first-call" class="[^"]*">/.test(samples) && !/<details id="first-call"[^>]*\bopen\b/.test(samples));
+check('every code block is inside that panel', (html.match(/<pre/g) || []).length === (samples.match(/<pre/g) || []).length);
+check('one MCP block, not two', (html.match(/@xrpl-utilities\/mcp/g) || []).length === 1);
+
+// Second pass the same day: the paid cards still carried method detail and
+// two wrong facts (a 30-day Sentinel window, the real one is 90; Pulse listing
+// permissioned-domain events, which moved to Trust). The free list named the
+// toml and DID checks behind /verify-origin.
+check('free endpoints sit in a closed panel', /<details id="free-endpoints" class="[^"]*">/.test(free) && !/<details id="free-endpoints"[^>]*\bopen\b/.test(free));
+check('Sentinel window says 90 days', paid.includes('last 90 days') && !paid.includes('30-day'));
+for (const leak of ['xrp-ledger.toml', 'XLS-40', 'curated', 'v2 (planned)', 'fabricated', 'JWT', 'Pearson', 'EDGAR', 'XLS-70']) {
+  check(`no "${leak}"`, !html.includes(leak));
+}
 
 process.exit(fails ? 1 : 0);
