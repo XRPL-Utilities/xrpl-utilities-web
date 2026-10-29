@@ -430,34 +430,6 @@
     </div>
   </section>
 
-  <!-- INSTITUTIONAL CHOREOGRAPHIES (24h): top cross-signal clusters -->
-  <section id="choreographies" class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
-        <div class="flex items-center justify-between gap-4 mb-3">
-          <h2 class="text-sm uppercase tracking-widest text-accent font-semibold">Institutional choreographies (24h)</h2>
-          <span id="choreo-count" class="text-[11px] text-muted font-mono">&hellip;</span>
-        </div>
-        <p class="text-xs text-muted leading-relaxed mb-5 max-w-3xl">
-          Wallets tied to three or more different kinds of signal within an hour, such as a mint, a large transfer and a multi-hop relay, or to two kinds within 15 minutes of a relay chain or a token supply change. One signal alone shows part of a move; together they show the whole operation. The dollar figure is the money that passed through the wallet, counted once. Largest first.
-        </p>
-        <div id="choreo-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="skeleton-bar h-4 w-2/3 mb-3"></div>
-            <div class="skeleton-bar h-3 w-1/2 mb-2"></div>
-            <div class="skeleton-bar h-3 w-3/4"></div>
-          </div>
-          <div class="bg-ink border border-border rounded-lg p-4">
-            <div class="skeleton-bar h-4 w-3/4 mb-3"></div>
-            <div class="skeleton-bar h-3 w-1/2 mb-2"></div>
-            <div class="skeleton-bar h-3 w-2/3"></div>
-          </div>
-        </div>
-        <p id="choreo-empty" class="text-[11px] text-muted mt-3 hidden">No wallet was tied to three or more kinds of signal within an hour in the last 24 hours.</p>
-      </div>
-    </div>
-  </section>
-
   <section id="feed">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
       <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 md:p-8">
@@ -875,7 +847,7 @@ feed = resp.json()
     </div>
   </footer>
 
-  <script src="/assets/pages/pulse.js?v=m9"></script>
+  <script src="/assets/pages/pulse.js?v=m10"></script>
   <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

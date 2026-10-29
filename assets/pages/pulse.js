@@ -101,13 +101,9 @@ async function _hydrateTrackedIssuers() {
 const _trackedIssuersReady = _hydrateTrackedIssuers();
 
 function renderEvent(e) {
-  // Choreography events already get their own dedicated dashboard
-  // section above the live feed (Institutional choreographies 24h),
-  // sorted by attributable USD with the full context line. Showing
-  // them ALSO in the chronological feed duplicates content without
-  // adding signal. Filter at the renderer so MCP/agent consumers
-  // querying /events/recent server-side still see them, but the
-  // human-facing live feed stays focused on per-event chronology.
+  // Choreography events restate whale, relay and supply events that
+  // are already in the feed, so the page leaves them out. Agents
+  // querying /events/recent still get them.
   if ((e.source_appearances || []).includes('choreography_watcher')) {
     return '';
   }
@@ -759,140 +755,6 @@ async function loadStats() {
 }
 loadStats();
 
-// -- INSTITUTIONAL CHOREOGRAPHIES (24h) ---------------------------
-// Fetches /stats/recent-choreographies (free) and renders the top
-// clusters as cards. Each cluster shows hub label/address, the
-// distinct signal kinds as badges, the attributable USD figure,
-// and the server-side context string.
-function _fmtUsdShort(v) {
-  if (!v || v <= 0) return '';
-  if (v >= 1_000_000_000) return '$' + (v / 1_000_000_000).toFixed(1) + 'B';
-  if (v >= 1_000_000) return '$' + (v / 1_000_000).toFixed(1) + 'M';
-  if (v >= 1_000) return '$' + (v / 1_000).toFixed(0) + 'K';
-  return '$' + v.toFixed(0);
-}
-function _fmtSpan(seconds) {
-  if (!seconds || seconds <= 0) return '';
-  if (seconds < 3600) return Math.round(seconds / 60) + 'm';
-  const h = Math.floor(seconds / 3600);
-  const m = Math.round((seconds % 3600) / 60);
-  return h + 'h' + (m ? ' ' + m + 'm' : '');
-}
-function _shortAddr(addr) {
-  if (!addr || typeof addr !== 'string') return '';
-  // For addresses shorter than the standard XRPL r-prefix length,
-  // return the full string instead of an empty placeholder - a
-  // malformed-but-present address is more useful to surface than
-  // a blank card title.
-  if (addr.length < 10) return addr;
-  return addr.slice(0, 8) + '…';
-}
-// Operator-curated watchlist labels can be verbose (e.g. the
-// "Cross-cluster XRP holder" label is ~370 chars). Truncate for
-// display; full text goes in the title attribute so hover reveals it.
-function _truncLabel(label, max) {
-  if (!label) return '';
-  max = max || 70;
-  const s = String(label);
-  if (s.length <= max) return s;
-  return s.slice(0, max - 1).trimEnd() + '…';
-}
-// Watchlist labels carry research notes in parentheses and wallet
-// prefixes (e.g. "Ripple RLUSD issuer (RLUSD stablecoin; inbound =
-// RLUSD burn/redemption)"). Public cards show the plain name only.
-function _plainLabel(label) {
-  let s = String(label || '');
-  let prev;
-  do { prev = s; s = s.replace(/\s*\([^()]*\)/g, ''); } while (s !== prev);
-  s = s.replace(/\s*[()]/g, ' ');
-  s = s.split(/\s+/).filter(w => !(/^r[1-9A-HJ-NP-Za-km-z]{5,}[.,;:]?$/.test(w) && /[A-Z0-9]/.test(w.slice(1)))).join(' ');
-  return s.replace(/\s+([,;:])/g, '$1').replace(/[\s,;:]+$/, '').trim();
-}
-// One card per hub wallet: the API can return several overlapping
-// windows for the same hub, which read as duplicates.
-function _dedupeByHub(rows) {
-  const seen = new Set();
-  return rows.filter(r => {
-    const key = r.hub_wallet || r.hub_label || '';
-    if (!key) return true;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-async function loadChoreographies() {
-  const grid = document.getElementById('choreo-grid');
-  const countEl = document.getElementById('choreo-count');
-  const emptyEl = document.getElementById('choreo-empty');
-  try {
-    const r = await fetch(API_BASE + '/stats/recent-choreographies?window_hours=24&limit=10');
-    if (!r.ok) throw new Error('http ' + r.status);
-    const body = await r.json();
-    const rows = _dedupeByHub(body.choreographies || []);
-    countEl.textContent = (rows.length || 0) + ' cluster' + (rows.length === 1 ? '' : 's');
-    if (rows.length === 0) {
-      grid.innerHTML = '';
-      emptyEl.classList.remove('hidden');
-      return;
-    }
-    emptyEl.classList.add('hidden');
-    grid.innerHTML = rows.map(r => {
-      // Truncate long watchlist labels for display; full text in title.
-      const hubPlain = _truncLabel(_plainLabel(r.hub_label), 70);
-      const hub = hubPlain
-        ? `<span class="text-white">${escapeHtml(hubPlain)}</span>`
-        : `<span class="font-mono">${escapeHtml(_shortAddr(r.hub_wallet))}</span>`;
-      // Use human-readable signal labels from the server (1.69.0+).
-      // Falls back to the raw kind name if the server didn't translate.
-      const labelMap = r.signal_labels || {};
-      const kindSeen = new Set();
-      const kinds = (r.signal_kinds || []).map(k => labelMap[k] || k.replace(/_/g, ' '))
-        .filter(h => { const key = h.toLowerCase(); if (kindSeen.has(key)) return false; kindSeen.add(key); return true; })
-        .map(human => `<span class="text-[10px] px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-300 bg-sky-500/5">${escapeHtml(human)}</span>`)
-        .join(' ');
-      const usd = r.total_usd_estimate ? _fmtUsdShort(r.total_usd_estimate) : '';
-      const span = _fmtSpan(r.span_seconds);
-      const xrpscanUrl = r.hub_wallet
-        ? `https://xrpscan.com/account/${escapeHtml(r.hub_wallet)}`
-        : null;
-      // Top counterparties (server-extracted from constituent events).
-      // Each carries label + count + usd_total + roles.
-      const cps = (r.counterparties || []).slice(0, 3).map(c => {
-        const cpFull = c.address || '';
-        const cpLabelRaw = _plainLabel(c.label) || (c.address ? c.address.slice(0, 8) + '…' : '?');
-        const cpLabel = _truncLabel(cpLabelRaw, 60);
-        const role = (c.roles || []).join('/') || '?';
-        const usdSub = c.usd_total && c.usd_total > 0 ? ' · ' + _fmtUsdShort(c.usd_total) : '';
-        return `<div class="text-[11px] text-muted leading-snug"><span class="text-white" title="${escapeHtml(cpFull)}">${escapeHtml(cpLabel)}</span> <span class="opacity-70">(${escapeHtml(role)} · ${escapeHtml(String(c.count || 0))}x${usdSub})</span></div>`;
-      }).join('');
-      // Asset summary.
-      const assets = (r.assets || []).slice(0, 3).map(a =>
-        `<span class="text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/5 font-mono">${escapeHtml(a.currency)}</span>`
-      ).join(' ');
-      return `
-        <div class="bg-ink border border-border rounded-lg p-4 hover:border-accent/40 transition">
-          <div class="flex items-baseline justify-between gap-3 mb-2">
-            <div class="text-sm font-semibold text-white break-words">${hub}</div>
-            ${usd ? `<div class="text-lg font-bold text-emerald-300 tabular-nums shrink-0">${escapeHtml(usd)}</div>` : ''}
-          </div>
-          <div class="text-[11px] text-muted font-mono mb-3 break-all">${r.hub_wallet ? escapeHtml(r.hub_wallet) : ''}</div>
-          ${assets ? `<div class="flex flex-wrap gap-1.5 mb-2">${assets}</div>` : ''}
-          <div class="flex flex-wrap gap-1.5 mb-3">${kinds}</div>
-          ${cps ? `<div class="border-t border-border pt-2 mb-2 space-y-1"><div class="text-[10px] uppercase tracking-wider text-muted mb-1">Top counterparties</div>${cps}</div>` : ''}
-          <div class="text-[10px] text-muted font-mono flex items-center justify-between">
-            <span>${escapeHtml(String(r.event_count || 0))} events &middot; ${escapeHtml(span)} span</span>
-            ${xrpscanUrl ? `<a href="${xrpscanUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition">xrpscan &rarr;</a>` : ''}
-          </div>
-        </div>
-      `;
-    }).join('');
-  } catch (e) {
-    grid.innerHTML = '<div class="text-xs text-muted col-span-2">Could not load choreographies (' + (e && e.message ? escapeHtml(e.message) : 'fetch error') + ').</div>';
-    countEl.textContent = '';
-  }
-}
-loadChoreographies();
-
 // Show-more pagination. Each column shows INITIAL_VISIBLE events on
 // load and reveals REVEAL_BATCH more on each click. Behind the button,
 // a cursor-based fetch transparently extends the local cache when it
@@ -977,7 +839,7 @@ async function fetchEvents({ kind, before_iso, since_iso, limit }) {
 function isRenderableActivityEvent(e) {
   const srcs = e.source_appearances || [];
   const au = e.active_utility || {};
-  // Choreographies have their own dashboard section above the feed.
+  // Choreographies restate events already in the feed.
   if (srcs.includes('choreography_watcher')) return false;
   // Once-per-UTC-day AMM state captures, not transactional activity.
   if (au.signal === 'rwa_amm_pool_state') return false;
