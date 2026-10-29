@@ -55,13 +55,6 @@
     return e;
   }
 
-  // Reject any URL scheme other than http(s) / xrpl so a malicious backend
-  // response can't smuggle a javascript: URI into a link href.
-  function safeUrl(u) {
-    const s = String(u || '').trim();
-    return /^(?:https?|xrpl):/i.test(s) ? s : '#';
-  }
-
   function fmtXrp(drops) {
     const xrp = Number(drops) / DROPS_PER_XRP;
     return xrp.toLocaleString(undefined, { maximumFractionDigits: 6 }) + ' XRP';
@@ -591,147 +584,6 @@
     return card;
   }
 
-  function renderAmmCard(amm) {
-    const card = sectionCard('AMM');
-    const wrap = el('div', 'grid md:grid-cols-2 gap-6');
-
-    // Pairs column: stacked pair cards, mobile-friendly. Header row is the
-    // pair name + APR (most useful at a glance); body is a 3-up grid of
-    // TVL / 1% depth / fee_pct so nothing overflows on a 375px viewport.
-    const pairsCol = el('div');
-    // Top pairs header row: title + (when applicable) the XR-Vault cross-link.
-    // The cross-link lives here rather than buried inside the first pair card
-    // so a reader doesn't miss it.
-    const pairsHeader = el('div', 'flex items-center justify-between gap-2 mb-1 flex-wrap');
-    pairsHeader.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted', 'Top pairs'));
-    const headerVaultPair = (amm.pairs || []).find(
-      p => p && p.cross_references && p.cross_references.xr_vault_url,
-    );
-    if (headerVaultPair) {
-      const link = document.createElement('a');
-      link.href = safeUrl(headerVaultPair.cross_references.xr_vault_url);
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.className = 'inline-flex items-center gap-1 text-[11px] text-accent hover:underline';
-      link.textContent = headerVaultPair.cross_references.xr_vault_issuer
-        ? `${headerVaultPair.cross_references.xr_vault_issuer} → XR-Vault →`
-        : 'Also tracked in XR-Vault →';
-      pairsHeader.appendChild(link);
-    }
-    pairsCol.appendChild(pairsHeader);
-    // Compact column explainer so a lay reader doesn't have to decode
-    // TVL / 1% depth / fee / APR.
-    pairsCol.appendChild(el(
-      'p',
-      'text-[10px] text-muted leading-snug mb-2',
-      'TVL: total value locked in the pool, USD. 1% depth: how much XRP you can swap before moving the pool price 1%. Fee: pool trading fee. APR: estimated annualized return for liquidity providers (fee × volume ÷ TVL).',
-    ));
-    const pairsList = el('div', 'space-y-2');
-    (amm.pairs || []).forEach(p => {
-      const r = el('div', 'bg-ink border border-border rounded-lg p-3');
-      const header = el('div', 'flex items-baseline justify-between gap-3 mb-2');
-      header.appendChild(el('div', 'font-mono font-semibold text-sm', p.pair));
-      header.appendChild(el('div', 'text-sm text-white font-medium', fmtPctRaw(p.apr_pct) + ' APR'));
-      r.appendChild(header);
-
-      // `pair` is a DISPLAY string built from a third-party name and is not
-      // unique: three different tokens from one issuer can share the
-      // display name "Axelar Bridge". Identity is quote_currency + quote_issuer, so show
-      // the issuer (and its entity name when known) rather than leaving two
-      // different tokens indistinguishable on screen.
-      if (p.quote_issuer) {
-        const idRow = el('div', 'flex items-center gap-1.5 mb-2 text-[10px] text-muted flex-wrap');
-        if (p.quote_issuer_name) {
-          idRow.appendChild(el('span', 'text-white/70', p.quote_issuer_name));
-          idRow.appendChild(el('span', '', '·'));
-        }
-        const addr = el('span', 'font-mono break-all', p.quote_issuer);
-        addr.title = 'Issuer of the quote asset, the identity behind the pair label';
-        idRow.appendChild(addr);
-        r.appendChild(idRow);
-      }
-
-      const grid = el('div', 'grid grid-cols-3 gap-2');
-      const cells = [
-        ['TVL',       fmtUsd(p.tvl_usd, 0)],
-        ['1% depth',  fmtXrpAmount(p.depth_1pct_xrp)],
-        ['Fee',       fmtPctRaw(p.fee_pct)],
-      ];
-      cells.forEach(([k, v]) => {
-        const c = el('div');
-        c.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-0.5', k));
-        c.appendChild(el('div', 'font-mono text-xs text-white break-all', v));
-        grid.appendChild(c);
-      });
-      r.appendChild(grid);
-
-      pairsList.appendChild(r);
-    });
-    // How supply.amm_locked_xrp was measured on this refresh. It is a
-    // ledger-wide aggregate, deliberately NOT a sum of the pairs above -- a
-    // reader who assumes otherwise will not be able to reconcile the two.
-    if (amm.locked_xrp_basis || amm.locked_xrp_measured === false) {
-      const basis = amm.locked_xrp_basis;
-      const note =
-        amm.locked_xrp_measured === false
-          ? 'AMM-locked XRP was not measured this refresh (upstream unreadable). Not zero.'
-          : basis === 'ledger_wide'
-            ? 'AMM-locked XRP counts every pool on the ledger (~30,350), not just the pairs above.'
-            : basis === 'curated_pools'
-              ? 'AMM-locked XRP is on the fallback curated basis this refresh. It understates the ledger-wide total.'
-              : 'AMM-locked XRP basis: ' + String(basis);
-      pairsCol.appendChild(el(
-        'div',
-        'mt-2 text-[10px] text-muted leading-relaxed',
-        note + (amm.locked_xrp_stale ? ' Carried forward from the last good reading.' : ''),
-      ));
-    }
-    if (!(amm.pairs || []).length) {
-      pairsList.appendChild(el('div', 'bg-ink border border-border rounded-lg p-3 text-xs text-muted', 'No pair data this snapshot.'));
-    }
-    pairsCol.appendChild(pairsList);
-    wrap.appendChild(pairsCol);
-
-    // Vaults column: same stacked-card pattern. When empty, show an explicit
-    // placeholder so the column does not look broken (vault tracking is
-    // gated on the SingleAssetVault amendment which is not yet active).
-    const vaultsCol = el('div');
-    vaultsCol.appendChild(el('div', 'text-xs uppercase tracking-wider text-muted mb-2', 'Vaults'));
-    const vaultsList = el('div', 'space-y-2');
-    (amm.vaults || []).forEach(v => {
-      const r = el('div', 'bg-ink border border-border rounded-lg p-3');
-      const header = el('div', 'flex items-baseline justify-between gap-3 mb-2');
-      header.appendChild(el('div', 'font-mono font-semibold text-sm', v.asset));
-      header.appendChild(el('div', 'text-sm text-white font-medium', fmtPctRaw(v.supply_apy_pct) + ' APY'));
-      r.appendChild(header);
-
-      const grid = el('div', 'grid grid-cols-2 gap-2');
-      const cells = [
-        ['TVL',  fmtXrpAmount(v.tvl_xrp_equivalent)],
-        ['Util', fmtPctRaw(v.utilization_pct)],
-      ];
-      cells.forEach(([k, val]) => {
-        const c = el('div');
-        c.appendChild(el('div', 'text-[10px] uppercase tracking-wider text-muted mb-0.5', k));
-        c.appendChild(el('div', 'font-mono text-xs text-white break-all', val));
-        grid.appendChild(c);
-      });
-      r.appendChild(grid);
-      vaultsList.appendChild(r);
-    });
-    if (!(amm.vaults || []).length) {
-      const empty = el('div', 'bg-ink border border-border border-dashed rounded-lg p-4 text-xs text-muted leading-relaxed');
-      empty.appendChild(el('div', 'text-white font-semibold mb-1', 'No active vaults yet'));
-      empty.appendChild(el('div', null, 'XRPL single-asset vaults are gated on the SingleAssetVault amendment. This card auto-populates once vaults go live on-chain.'));
-      vaultsList.appendChild(empty);
-    }
-    vaultsCol.appendChild(vaultsList);
-    wrap.appendChild(vaultsCol);
-
-    card.appendChild(wrap);
-    return card;
-  }
-
   function renderUtilityFloorCard(uf, payload) {
     const card = sectionCard('Required equilibrium price');
     const hasSpot = typeof uf.current_price_usd === 'number';
@@ -816,7 +668,6 @@
       if (bridgeCard) stack.appendChild(bridgeCard);
     }
     if (payload.liquidity)     stack.appendChild(renderLiquidityCard(payload.liquidity));
-    if (payload.amm)           stack.appendChild(renderAmmCard(payload.amm));
     if (payload.utility_floor) stack.appendChild(renderUtilityFloorCard(payload.utility_floor, payload));
     target.appendChild(stack);
 
