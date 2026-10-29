@@ -9,7 +9,7 @@
   closeBtn.addEventListener('click', close);
   overlay.querySelectorAll('a[href]').forEach(a => a.addEventListener('click', close));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display !== 'none') close(); });
-  window.addEventListener('resize', () => { if (window.innerWidth >= 768) close(); });
+  window.addEventListener('resize', () => { if (window.innerWidth >= 1024) close(); });
 })();
 
 // Hide the hero image if it fails to load. Replaces an inline onerror

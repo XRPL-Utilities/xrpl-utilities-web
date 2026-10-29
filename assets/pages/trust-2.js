@@ -1,5 +1,12 @@
 const API_BASE = 'https://trust.xrpl-utilities.io';
 
+// Plain message for a failed free call. The wording lives in
+// preview-token.js so Pulse and Trust say the same thing.
+function failureText(status) {
+  return window.PreviewToken && window.PreviewToken.failureMessage
+    ? window.PreviewToken.failureMessage(status)
+    : 'Live data didn\u2019t load. Reload the page to try again.';
+}
 function el(tag, cls, text) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -110,7 +117,7 @@ function renderEmpty(target, walkStatus) {
 function renderError(target, msg) {
   target.innerHTML = '';
   const wrap = el('div', 'p-4 sm:p-6 md:p-8');
-  wrap.appendChild(el('div', 'text-red-400 font-semibold mb-2', 'Couldn’t reach the directory'));
+  wrap.appendChild(el('div', 'text-white font-semibold mb-2', 'The directory didn’t load'));
   wrap.appendChild(el('div', 'text-muted text-sm leading-relaxed', msg));
   target.appendChild(wrap);
 }
@@ -747,8 +754,8 @@ async function loadDirectory() {
       : Promise.resolve({}));
     const r = await fetch(API_BASE + '/domains?limit=200&offset=0', { headers: previewHeaders });
     if (!r.ok) {
-      renderError(target, 'The directory is temporarily unreachable. Try refreshing in a moment. (HTTP ' + r.status + ')');
-      status.textContent = 'Error.';
+      renderError(target, failureText(r.status));
+      status.textContent = 'Not loaded.';
       setStat('stat-domains', '\u2013');
       setStat('stat-issuers', '\u2013');
       return;
@@ -773,8 +780,8 @@ async function loadDirectory() {
     renderTable(target, _allDomains, ws);
     loadOperatorBreakdown();
   } catch (e) {
-    renderError(target, 'Couldn’t reach trust.xrpl-utilities.io. The service may be undergoing initial deployment. Try refreshing.');
-    status.textContent = 'Error.';
+    renderError(target, failureText(0));
+    status.textContent = 'Not loaded.';
     setStat('stat-domains', '\u2013');
     setStat('stat-issuers', '\u2013');
   }
@@ -860,7 +867,7 @@ async function loadOperators() {
       : Promise.resolve({}));
     const r = await fetch(API_BASE + '/permissioned-domains/operators?status=active&limit=50', { headers: previewHeaders });
     if (!r.ok) {
-      grid.innerHTML = '<span class="text-xs text-muted">Couldn’t load.</span>';
+      grid.innerHTML = '<span class="text-xs text-muted">Not loaded. Reload the page to try again.</span>';
       return;
     }
     const data = await r.json();
@@ -927,7 +934,7 @@ async function loadOperators() {
       );
     }).join('');
   } catch (e) {
-    grid.innerHTML = '<span class="text-xs text-muted">Couldn’t reach the operators endpoint.</span>';
+    grid.innerHTML = '<span class="text-xs text-muted">Not loaded. Reload the page to try again.</span>';
   }
 }
 
@@ -941,7 +948,7 @@ async function loadJurisdictions() {
       : Promise.resolve({}));
     const r = await fetch(API_BASE + '/jurisdictions', { headers: previewHeaders });
     if (!r.ok) {
-      grid.innerHTML = '<span class="text-xs text-muted">Couldn’t load.</span>';
+      grid.innerHTML = '<span class="text-xs text-muted">Not loaded. Reload the page to try again.</span>';
       return;
     }
     const data = await r.json();
@@ -966,7 +973,7 @@ async function loadJurisdictions() {
       unattrib.textContent = '';
     }
   } catch (e) {
-    grid.innerHTML = '<span class="text-xs text-muted">Couldn’t reach the rollup endpoint.</span>';
+    grid.innerHTML = '<span class="text-xs text-muted">Not loaded. Reload the page to try again.</span>';
   }
 }
 

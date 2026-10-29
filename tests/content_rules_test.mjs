@@ -93,11 +93,12 @@ for (const f of [...pages, ...ownScripts, ...extra]) {
 }
 
 // Same nav on every page: the 404, bulk, status, terms and tip pages had
-// lost Foundation and Lineage.
+// lost Foundation and Lineage. Pricing joined the nav on 2026-10-29, and
+// the desktop nav now starts at lg so nine links never squeeze the logo.
 const navLinks = (html, re) => { const m = html.match(re); return m ? [...m[0].matchAll(/href="([^"]+)"/g)].map((x) => x[1]).join(' ') : ''; };
-const DESK = /<nav class="hidden md:flex[\s\S]*?<\/nav>/;
+const DESK = /<nav class="hidden lg:flex[\s\S]*?<\/nav>/;
 const MOB = /<nav class="flex-1 flex flex-col[\s\S]*?<\/nav>/;
-const NAV = '/start/ /sentinel/ /telemetry/ /pulse/ /trust/ /vault/ /flows/ /lineage/';
+const NAV = '/start/ /sentinel/ /telemetry/ /pulse/ /trust/ /vault/ /flows/ /lineage/ /pricing/';
 for (const f of pages) {
   const html = fs.readFileSync(f, 'utf8');
   if (navLinks(html, DESK) !== NAV) fail(`${path.relative(repo, f)}: desktop nav differs from the standard links`);

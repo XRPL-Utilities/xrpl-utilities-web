@@ -39,8 +39,8 @@
         <img src="/assets/img/logo-96.webp" width="36" height="36" loading="eager" decoding="async" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
         <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
       </a>
-      <nav class="hidden md:flex items-center gap-x-8 lg:gap-x-10 nav-link whitespace-nowrap">
-        <a href="/start/"     class="text-muted hover:text-white transition">Foundation</a>
+      <nav class="hidden lg:flex items-center gap-x-6 xl:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/start/"     class="text-muted hover:text-white transition">Start here</a>
         <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
         <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
         <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
@@ -48,8 +48,9 @@
         <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
         <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
         <a href="/lineage/"   class="text-muted hover:text-white transition">Lineage</a>
+        <a href="/pricing/"   class="text-muted hover:text-white transition">Pricing</a>
       </nav>
-      <button id="nav-open" class="md:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+      <button id="nav-open" class="lg:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
@@ -60,7 +61,7 @@
   <!-- Mobile slide-in nav. Same dark palette as desktop; opens on hamburger
        tap. Body scroll locks while open; Escape, overlay tap, link tap, or
        resize past md all close it. -->
-  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col md:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col lg:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
     <div class="flex items-center justify-between px-6 py-5 border-b border-border">
       <a href="/" class="flex items-center gap-3">
         <img src="/assets/img/logo-96.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
@@ -73,7 +74,7 @@
       </button>
     </div>
     <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
-      <a href="/start/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Foundation</a>
+      <a href="/start/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Start here</a>
       <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
       <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
       <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
@@ -81,6 +82,7 @@
       <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
       <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
       <a href="/lineage/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Lineage</a>
+      <a href="/pricing/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pricing</a>
     </nav>
     <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
       XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
@@ -104,11 +106,11 @@
         <div>
           <h2 class="text-xl font-bold mb-2">1. Scope of Service</h2>
           <p class="text-white leading-relaxed">
-            XRPL-Utilities operates a dual-infrastructure ecosystem: a human-facing research terminal
-            (<a href="https://xrpl-utilities.com" class="underline hover:text-accent">xrpl-utilities.com</a>)
-            and a machine-to-machine API execution layer
-            (<a href="https://xrpl-utilities.io" class="underline hover:text-accent">xrpl-utilities.io</a>).
-            The Company provides a "Reputation Oracle" suite including, but not limited to,
+            XRPL-Utilities runs data services for the XRP Ledger. They are free to use on
+            <a href="https://xrpl-utilities.com" class="underline hover:text-accent">xrpl-utilities.com</a>
+            and paid per call through the APIs on
+            <a href="https://xrpl-utilities.io" class="underline hover:text-accent">xrpl-utilities.io</a>.
+            The services include, but are not limited to,
             XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
             XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
             XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
@@ -142,15 +144,15 @@
           </p>
           <p class="text-white leading-relaxed mb-2">
             <strong class="text-white">Real-world asset figures.</strong>
-            XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> reports on-chain mint, burn, and circulating supply for tokenized real-world assets in their native unit-of-account only. We do not fabricate a USD valuation for non-fiat-pegged tokens. Issuer-stated metrics (marketed AUM, off-chain redemption status, NAV, yield) are not surfaced unless operator-attested and labeled as such. Inclusion of an issuer is not an endorsement of the underlying real-world asset or its custodian. Always do your own research and independently verify any RWA issuer before allocating capital.
+            XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> reports on-chain mint, burn, and circulating supply for tokenized real-world assets in each token's own unit. Dollar totals on the dashboard cover dollar-denominated tokens only, valued at their peg or the issuer-stated price per unit; tokens in other currencies and commodity tokens stay in their own units and are left out of dollar totals. Other issuer-stated metrics (marketed AUM, off-chain redemption status, NAV, yield) are not surfaced unless operator-attested and labeled as such. Inclusion of an issuer is not an endorsement of the underlying real-world asset or its custodian. Always do your own research and independently verify any RWA issuer before allocating capital.
           </p>
           <p class="text-white leading-relaxed mb-2">
             <strong class="text-white">Unverified RWA candidates.</strong>
-            The XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> dashboard surfaces a "Recently discovered" section listing wallets that fingerprint as regulated RWA issuers on XRPL (AllowTrustLineClawback flag set, non-zero issued obligations) but have not yet been operator-reviewed. Candidates are auto-detected from public on-chain signals and an operator-curated well-known label list. Candidate rows show chain-derived fields only (wallet, label, domain, currency, obligations, trustline count, on-chain flags); the asset class, the marketing-friendly name, and any per-issuer caveats are deliberately not auto-populated. Inclusion as a candidate is not an endorsement, certification, verification, or compliance verdict on any wallet, issuer, asset, or counterparty. A candidate may be removed from the dashboard at any time, including if operator review determines the wallet is not a real-world asset issuer. The "Unverified" badge and the candidate-specific tile styling exist to make this distinction visible at a glance; consumers should treat the canonical tracked-issuer set and the candidate set as categorically different.
+            The XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> dashboard surfaces a "Recently discovered" section listing wallets whose public on-chain settings and issued supply look like a regulated RWA issuer but that we have not yet reviewed. Candidates are detected automatically from public ledger data and public wallet labels. Candidate rows show chain-derived fields only (wallet, label, domain, currency, obligations, trustline count, on-chain flags); the asset class, the marketing-friendly name, and any per-issuer caveats are deliberately not auto-populated. Inclusion as a candidate is not an endorsement, certification, verification, or compliance verdict on any wallet, issuer, asset, or counterparty. A candidate may be removed from the dashboard at any time, including if operator review determines the wallet is not a real-world asset issuer. The "Unverified" badge and the candidate-specific tile styling exist to make this distinction visible at a glance; consumers should treat the canonical tracked-issuer set and the candidate set as categorically different.
           </p>
           <p class="text-white leading-relaxed">
             <strong class="text-white">ETF flow figures.</strong>
-            XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> tracks US-listed XRP-exposure ETFs across spot and indirect-basket tiers. Net Assets values are sourced from each issuer's public dashboard or public-source aggregators on a daily cadence; We do not cross-validate issuer-reported AUM against on-chain spot price, custodian attestations, or third-party fund administrators, and per-source freshness is exposed on each /scan response so consumers can audit lineage. ETFs hold XRP through pooled institutional custodians, so on-chain wallet activity cannot be cleanly attributed to a specific fund; correlation between ETF AUM movement and XRPL exchange-flow delta is a directional measurement, not a causal claim. Inclusion of an ETF in the tracked registry is not investment advice, an endorsement, or a recommendation. The auto-discovery surface at /stats/etf-candidates is the same kind of pre-review queue as XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>'s unverified candidates: visibility into pipeline, not endorsement.
+            XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> tracks XRP exchange-traded funds and products listed in the US and Europe, both spot funds and baskets that hold XRP alongside other assets. Net asset values come from each issuer's public figures, updated daily. We do not cross-validate issuer-reported AUM against on-chain spot price, custodian attestations, or third-party fund administrators, and per-source freshness is exposed on each /scan response so consumers can audit lineage. ETFs hold XRP through pooled institutional custodians, so on-chain wallet activity cannot be cleanly attributed to a specific fund; correlation between ETF AUM movement and XRPL exchange-flow delta is a directional measurement, not a causal claim. Inclusion of an ETF in the tracked registry is not investment advice, an endorsement, or a recommendation. The auto-discovery surface at /stats/etf-candidates is the same kind of pre-review queue as XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>'s unverified candidates: visibility into pipeline, not endorsement.
           </p>
         </div>
 
@@ -164,7 +166,7 @@
             executed by any AI agent, bot, or script that uses Our data payloads.
           </p>
           <p class="text-white leading-relaxed mb-2">
-            <strong class="text-white">Decision support only.</strong> Our data is intended as a "Reputation Signal" for decision support.
+            <strong class="text-white">Decision support only.</strong> Our data supports your own decisions.
             It is not an instruction to trade, move capital, or interact with specific ledger objects.
           </p>
           <p class="text-white leading-relaxed">
@@ -174,19 +176,24 @@
         </div>
 
         <div>
-          <h2 class="text-xl font-bold mb-2">4. x402 Protocol &amp; Payments</h2>
+          <h2 class="text-xl font-bold mb-2" id="fees">4. Fees, Payments &amp; Refunds</h2>
           <p class="text-white leading-relaxed mb-3">
             Access to specific data payloads is gated by the x402 (HTTP 402 "Payment Required") protocol.
+          </p>
+          <p class="text-white leading-relaxed mb-2">
+            <strong class="text-white">Fees.</strong> Most paid calls cost $0.10. Bulk XR-Sentinel&trade; scans cost $0.10 per address.
+            XR-Pulse&trade; live streams cost $0.50 for 1 hour, $2.50 for 6 hours and $7.50 for 24 hours.
+            Every paid route states its exact price in its 402 response, and the full list is on the
+            <a href="/pricing/" class="underline hover:text-accent">Pricing</a> page. Using the websites is free.
           </p>
           <p class="text-white leading-relaxed mb-2">
             <strong class="text-white">Finality.</strong> Payments made via native XRP or RLUSD on XRPL, or USDC on Base mainnet, are settled on-chain
             and are final once the payload is delivered.
           </p>
           <p class="text-white leading-relaxed mb-2">
-            <strong class="text-white">Technical guarantee (verify-then-work-then-settle).</strong>
-            Our system follows a deterministic execution pipeline. If a data request fails or encounters a
-            system error prior to settlement, the presigned transaction is never broadcast to the ledger.
-            Users are only charged upon successful generation of the cryptographic data signal.
+            <strong class="text-white">Refunds.</strong>
+            You pay only for data that is delivered. If a paid request fails before settlement, the signed
+            payment is never submitted and you are not charged. Settled payments are final and are not refunded.
           </p>
           <p class="text-white leading-relaxed">
             <strong class="text-white">Non-custodial.</strong> XRPL-Utilities LLC never requests, stores, or interacts
@@ -220,7 +227,7 @@
             XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and
             XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are proprietary marks of XRPL-Utilities LLC.
             Users are granted a limited, non-exclusive license to ingest Our data for internal research or
-            agentic operation but may not scrape, mirror, or resell Our "Reputation Signals" without express written consent.
+            agentic operation but may not scrape, mirror, or resell Our data without express written consent.
           </p>
         </div>
 
@@ -295,7 +302,7 @@
         <div>
           <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
           <ul class="space-y-3 text-sm">
-            <li><a href="/start/"     class="text-muted hover:text-white transition">XR-Foundation</a></li>
+            <li><a href="/start/"     class="text-muted hover:text-white transition">Start here</a></li>
             <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
             <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
             <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>

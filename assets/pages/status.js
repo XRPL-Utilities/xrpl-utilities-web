@@ -23,7 +23,7 @@
     if (e.key === 'Escape' && overlay.style.display !== 'none') close();
   });
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) close();
+    if (window.innerWidth >= 1024) close();
   });
 })();
 
@@ -31,23 +31,37 @@
 // key as the name so we don't drop fields when /healthz adds new
 // subsystems faster than this label dict is updated.
 const SUBSYSTEM_LABELS = {
-  quicknode:  { name: "XRPL RPC node",            desc: "Ledger data source" },
-  facilitator:{ name: "x402 Facilitator",         desc: "Payment verify + settle" },
-  xrp_price:  { name: "XRP/USD price oracle",     desc: "Drives dynamic XRP pricing per scan" },
-  slow_tasks: { name: "Slow-task cache",          desc: "Background metric refreshers (Telemetry)" },
-  db_path:    { name: "SQLite cache path",        desc: "Persistent metric cache (Telemetry)" },
-  snapshot_age_seconds: { name: "Snapshot age",   desc: "Seconds since last full payload rebuild (Telemetry)" },
+  quicknode:  { name: "Ledger connection",        desc: "Reads live data from the XRP Ledger" },
+  rpc:        { name: "Ledger connection",        desc: "Reads live data from the XRP Ledger" },
+  xrpl_node:  { name: "Ledger connection",        desc: "Reads live data from the XRP Ledger" },
+  facilitator:{ name: "Payments",                 desc: "Checks and settles agent payments" },
+  xrp_price:  { name: "XRP price",                desc: "Sets the XRP price of each paid call" },
+  slow_tasks: { name: "Background jobs",          desc: "Keep the slower metrics up to date" },
+  db_path:    { name: "Storage",                  desc: "Where this service keeps its data" },
+  snapshot_age_seconds: { name: "Data age",       desc: "Time since the last full refresh" },
   db:         { name: "Database",                 desc: "Stored data for this service" },
   ai:         { name: "AI summaries",             desc: "Writes the plain-English scan summary" },
-  rpc:        { name: "XRPL RPC node",            desc: "Ledger data source" },
-  xrpl_node:  { name: "XRPL RPC node",            desc: "Ledger data source" },
   whale_watcher:  { name: "Large-payment watcher", desc: "Scans each new ledger for big transfers" },
   xls85_backfill: { name: "Token escrow history",  desc: "One-time load of past token escrows" },
   ripple_counterparty_second_hop: { name: "Counterparty discovery", desc: "Finds new wallets linked to Ripple flows" },
+  ripple_counterparty_discovery:  { name: "Counterparty discovery", desc: "Finds new wallets linked to Ripple flows" },
   pulse_upstream: { name: "XR-Pulse feed",         desc: "Source of this service's asset data" },
   flows_upstream: { name: "XR-Flows feed",         desc: "ETF data used by this service" },
   vault_upstream: { name: "XR-Vault feed",         desc: "Asset data used by this service" },
 };
+
+// A key with no label above still gets a readable name instead of the raw
+// snake_case key.
+function utcNow() {
+  const d = new Date();
+  return String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0") + " UTC";
+}
+
+function labelFor(key) {
+  if (SUBSYSTEM_LABELS[key]) return SUBSYSTEM_LABELS[key];
+  const words = String(key).replace(/_/g, " ").trim();
+  return { name: words.charAt(0).toUpperCase() + words.slice(1), desc: "" };
+}
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -91,14 +105,16 @@ function renderOverall(targetId, status, productName) {
 
 function renderCheck(check) {
   const key = check.key, payload = check.value;
-  const meta = SUBSYSTEM_LABELS[key] || { name: key, desc: "" };
+  const meta = labelFor(key);
   const card = el("div", "bg-panel border border-border rounded-2xl p-6 flex items-center gap-4");
   card.appendChild(dot(check.state));
-  const left = el("div", "flex-grow");
+  const left = el("div", "flex-grow min-w-0");
   left.appendChild(el("div", "font-semibold", meta.name));
   left.appendChild(el("div", "text-xs text-muted mt-0.5", meta.desc));
   card.appendChild(left);
-  const right = el("div", "text-right");
+  // Wraps at spaces (max half the card) but never splits a word.
+  const right = el("div", "text-right shrink-0");
+  right.style.maxWidth = "50%";
   const tone = { good: "text-good", bad: "text-bad", warn: "text-warn" }[check.state] || "text-muted";
   right.appendChild(el("div", "text-sm font-medium " + tone, check.label));
   if (payload && payload.latency_ms != null) {
@@ -128,11 +144,11 @@ async function refreshOne(url, overallId, checksId, lastCheckedId, productName) 
     const list = document.getElementById(checksId);
     list.innerHTML = "";
     summary.checks.forEach(c => list.appendChild(renderCheck(c)));
-    document.getElementById(lastCheckedId).textContent = "Last checked " + new Date().toLocaleTimeString();
+    document.getElementById(lastCheckedId).textContent = "Last checked " + utcNow();
   } catch (e) {
     renderOverall(overallId, "unknown", productName);
     document.getElementById(checksId).innerHTML = "";
-    document.getElementById(lastCheckedId).textContent = "Last checked " + new Date().toLocaleTimeString() + " (fetch failed)";
+    document.getElementById(lastCheckedId).textContent = "Last checked " + utcNow() + " (fetch failed)";
   }
 }
 

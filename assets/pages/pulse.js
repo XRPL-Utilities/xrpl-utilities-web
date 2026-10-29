@@ -23,7 +23,7 @@
     if (e.key === 'Escape' && overlay.style.display !== 'none') close();
   });
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) close();
+    if (window.innerWidth >= 1024) close();
   });
 })();
 
@@ -36,6 +36,13 @@ function fmtAgo(ts) {
   return Math.floor(secs / 86400) + 'd ago';
 }
 
+// Plain message for a failed free call. The wording lives in
+// preview-token.js so Pulse and Trust say the same thing.
+function failureText(status) {
+  return window.PreviewToken && window.PreviewToken.failureMessage
+    ? window.PreviewToken.failureMessage(status)
+    : 'Live data didn\u2019t load. Reload the page to try again.';
+}
 function escapeHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -821,7 +828,11 @@ async function fetchEvents({ kind, before_iso, since_iso, limit }) {
       body: JSON.stringify(body),
       signal: ctl.signal,
     });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (!r.ok) {
+      const err = new Error(`HTTP ${r.status}`);
+      err.status = r.status;
+      throw err;
+    }
     const data = await r.json();
     return data.events || [];
   } finally {
@@ -977,7 +988,7 @@ async function loadColumnInitial(key) {
     annotateCrossLinks();
     renderColumn(key);
   } catch (e) {
-    col.error = (e && e.message) || 'fetch failed';
+    col.error = failureText(e && e.status);
     renderColumn(key);
   }
 }
@@ -1017,7 +1028,7 @@ function renderColumn(key) {
         <div class="skeleton-bar h-3 w-1/3"></div>
       </div>`;
   } else if (col.error) {
-    body = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">Couldn't load this column (${col.error}). <button data-nav="retry" data-col="${key}" class="text-accent hover:underline ml-1">Retry</button></div>`;
+    body = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">${escapeHtml(col.error)} <button data-nav="retry" data-col="${key}" class="text-accent hover:underline ml-1">Retry</button></div>`;
   } else if (col.shown === 0) {
     body = `<div class="bg-ink border border-border rounded-lg p-4 text-sm text-muted">${col.emptyMsg}</div>`;
   } else {
@@ -1029,8 +1040,8 @@ function renderColumn(key) {
   // by a muted End-of-feed marker once the server reports exhausted.
   const moreAvailable = !col.exhausted || col.events.length > col.shown;
   nav.className = 'mt-3';
-  if (col.shown === 0 && !col.error) {
-    nav.innerHTML = '';  // skeleton/empty state; no button needed
+  if (col.error || col.shown === 0) {
+    nav.innerHTML = '';  // error, skeleton or empty state; no button needed
   } else if (!moreAvailable) {
     nav.innerHTML = `<div class="text-center text-xs text-muted py-3 border-t border-border">End of feed</div>`;
   } else {
@@ -1388,7 +1399,11 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
           min_whale_usd: MIN_USD,
         }),
       });
-      if (!r.ok) throw new Error('http ' + r.status);
+      if (!r.ok) {
+        const err = new Error('http ' + r.status);
+        err.status = r.status;
+        throw err;
+      }
       const data  = await r.json();
       const all   = data.events || [];
       // Filter to whale_xrpl rows only; the activity bucket also
@@ -1402,6 +1417,7 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
       if (whales.length === 0) {
         listEl.innerHTML = '<div class="py-8 text-center text-sm text-muted">No XRPL transfers above $1M in the last 24 hours.</div>';
         metaEl.textContent = '0 whales';
+        listEl.dataset.loaded = '1';
         return;
       }
 
@@ -1410,11 +1426,19 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
       metaEl.textContent = whales.length + ' whales · ' + formatUsdShort(totalUsd) + ' total';
 
       listEl.innerHTML = whales.map(rowHtml).join('');
+      listEl.dataset.loaded = '1';
     } catch (e) {
-      // Soft-fail: leave whatever was last rendered in place. metaEl
-      // shows the stale state so the visitor knows the count may be
-      // out of date.
-      if (metaEl && !metaEl.textContent.includes('stale')) {
+      // Soft-fail: a list that loaded before stays in place, marked as
+      // possibly out of date. A list that never loaded swaps its
+      // skeleton for a plain message instead of shimmering forever.
+      if (!listEl.dataset.loaded) {
+        listEl.textContent = '';
+        const msg = document.createElement('div');
+        msg.className = 'py-8 text-center text-sm text-muted';
+        msg.textContent = failureText(e && e.status);
+        listEl.appendChild(msg);
+        if (metaEl) metaEl.textContent = 'paused';
+      } else if (metaEl && !metaEl.textContent.includes('stale')) {
         metaEl.textContent = (metaEl.textContent || '') + ' (stale)';
       }
     }
