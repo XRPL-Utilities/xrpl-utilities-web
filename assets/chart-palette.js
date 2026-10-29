@@ -38,4 +38,17 @@
   }
 
   window.XRChart = { SERIES, OTHER, UP, DOWN, GAP, topN, compact };
+
+  // Visitors who ask for reduced motion get charts that draw without
+  // animating. Chart.js may load after this file (deferred), so apply the
+  // default now and again once deferred scripts have run.
+  function respectReducedMotion() {
+    if (window.Chart && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.Chart.defaults.animation = false;
+    }
+  }
+  respectReducedMotion();
+  if (typeof document !== 'undefined' && document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', respectReducedMotion);
+  }
 })();

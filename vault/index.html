@@ -247,9 +247,11 @@
               <span class="inline-block h-9 w-32 bg-border rounded animate-pulse align-middle"></span>
             </div>
             <div id="stat-usd-pegged-incl" class="hidden text-[11px] text-amber-300 mt-2 max-w-md leading-relaxed"></div>
-            <div id="stat-usd-pegged-detail" class="stat-tile-sub mt-2">&hellip;</div>
+            <div id="stat-usd-pegged-detail" class="stat-tile-sub mt-2 min-h-[2.6em] sm:min-h-0">&hellip;</div>
           </div>
-          <div class="text-right text-[11px] text-muted max-w-md leading-relaxed">
+          <!-- min-height on phones holds the room the excluded-token list
+               fills once data loads, so the tiles below don't jump. -->
+          <div class="text-right text-[11px] text-muted max-w-md leading-relaxed min-h-[7.75rem] sm:min-h-0">
             Dollar tokens at $1, fund and Treasury shares at their latest published price, and euro, pound, Australian dollar, Singapore dollar and Brazilian real tokens at recent exchange rates. These are estimates, not on-chain prices. Tokens with no price are counted in their own units. <span id="stat-usd-pegged-excluded-summary"></span>
           </div>
         </div>
