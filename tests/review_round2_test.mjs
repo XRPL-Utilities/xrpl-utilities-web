@@ -115,5 +115,20 @@ const csp = (read('_headers').match(/connect-src[^;]*/) || [''])[0];
 const hosts = [...status.matchAll(/\["([a-z]+)",\s+"XR-/g)].map(m => `https://${m[1]}.xrpl-utilities.io`);
 check('Status checks 7 services', hosts.length === 7);
 check('CSP allows every host Status checks', hosts.every(h => csp.split(/\s+/).includes(h)));
+// Footer polish: headings skipped from h2 to h4, "Tip the maker" was the
+// only coloured link, the trademark line carried seven tiny marks, and the
+// columns stacked into 900 px on a phone.
+for (const p of ['index.html', 'status/index.html', 'flows/index.html', 'trust/index.html']) {
+  const ft = read(p).split('<footer')[1] || '';
+  check(`${p}: footer headings are h2`, !/<h4/.test(ft) && /<h2[^>]*>Products<\/h2>/.test(ft));
+  check(`${p}: Tip link styled like the others`, /href="\/tip\/"\s+class="text-muted/.test(ft));
+  check(`${p}: trademark line has no marks`, !/<sup[^>]*>&trade;<\/sup>[^<]*(?:<sup[^>]*>&trade;<\/sup>[^<]*)*are trademarks/.test(ft) && /grid-cols-2 gap-x-6/.test(ft));
+}
+// Code blocks scroll sideways, so each scroll box takes keyboard focus.
+for (const p of ['index.html', 'pricing/index.html', 'pulse/index.html', 'trust/index.html', 'telemetry/index.html']) {
+  const html = read(p);
+  const boxes = [...html.matchAll(/<(?:div|pre)\b[^>]*overflow-x-auto[^>]*>(?=\s*(?:<div[^>]*>[^<]*<\/div>\s*)?<pre|[^<]*)/g)].filter(m => /<pre/.test(html.slice(m.index, m.index + 400)));
+  check(`${p}: code scroll boxes are focusable`, boxes.length > 0 && boxes.every(m => /tabindex="0"/.test(m[0])));
+}
 console.log(fails ? `${fails} FAILED` : 'review round 2: ok');
 process.exit(fails ? 1 : 0);

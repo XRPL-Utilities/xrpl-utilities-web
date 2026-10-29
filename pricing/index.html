@@ -422,14 +422,14 @@
         <div class="px-6 pb-6 grid md:grid-cols-2 gap-4">
           <div class="min-w-0">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Free call</div>
-            <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl https://pulse.xrpl-utilities.io/stats/rwa-summary</pre>
+            <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl https://pulse.xrpl-utilities.io/stats/rwa-summary</pre>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mt-5 mb-2">See a price (answers 402)</div>
-            <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl -i -X POST https://sentinel.xrpl-utilities.io/scan \
+            <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl -i -X POST https://sentinel.xrpl-utilities.io/scan \
   -H 'Content-Type: application/json' \
   -d '{"address":"rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"}'</pre>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mt-5 mb-2">Claude Desktop (MCP)</div>
             <p class="text-xs text-muted leading-relaxed mb-2">Add to <code class="font-mono text-white">claude_desktop_config.json</code>. Tools published: 46 across all seven services (32 free, 14 paid). Remote clients can use <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code>.</p>
-            <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">{
+            <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">{
   "mcpServers": {
     "xrpl-utilities": {
       "command": "npx",
@@ -440,7 +440,7 @@
           </div>
           <div class="min-w-0">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Python, pay in XRP</div>
-            <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">pip install x402-xrpl
+            <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">pip install x402-xrpl
 
 from x402_xrpl import X402RequestsSession
 from xrpl.wallet import Wallet
@@ -462,7 +462,7 @@ resp = session.post(
 resp.raise_for_status()  # a 402 here means the payment did not go through
 r = resp.json()</pre>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mt-5 mb-2">Node.js, pay in USDC on Base</div>
-            <pre class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">npm install @x402/fetch @x402/evm viem
+            <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">npm install @x402/fetch @x402/evm viem
 
 import { wrapFetchWithPaymentFromConfig } from "@x402/fetch";
 import { ExactEvmScheme } from "@x402/evm";
@@ -499,8 +499,8 @@ console.log(await res.json());</pre>
 
   <footer class="border-t border-border bg-ink mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12">
-      <div class="grid gap-10 md:grid-cols-4 mb-10">
-        <div class="md:col-span-1">
+      <div class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 mb-10">
+        <div class="col-span-2 md:col-span-1">
           <div class="flex items-center gap-3 mb-3">
             <img src="/assets/img/logo-96.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
             <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
@@ -508,7 +508,7 @@ console.log(await res.json());</pre>
           <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
         </div>
         <div>
-          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h4>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h2>
           <ul class="space-y-3 text-sm">
             <li><a href="/start/"     class="text-muted hover:text-white transition">Start here</a></li>
             <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
@@ -521,7 +521,7 @@ console.log(await res.json());</pre>
           </ul>
         </div>
         <div>
-          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h4>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h2>
           <ul class="space-y-3 text-sm">
             <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
             <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
@@ -534,18 +534,18 @@ console.log(await res.json());</pre>
           </ul>
         </div>
         <div>
-          <h4 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h4>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h2>
           <ul class="space-y-3 text-sm">
             <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
             <li><a href="/status/"  class="text-muted hover:text-white transition">Service status</a></li>
             <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
-            <li><a href="/tip/"     class="text-accent hover:text-white transition">Tip the maker</a></li>
+            <li><a href="/tip/"     class="text-muted hover:text-white transition">Tip the maker</a></li>
           </ul>
         </div>
       </div>
       <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
         <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
-        <div>XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> are trademarks of XRPL-Utilities LLC.</div>
+        <div>XR-Sentinel, XR-Pulse, XR-Telemetry, XR-Trust, XR-Vault, XR-Flows, and XR-Lineage are trademarks of XRPL-Utilities LLC.</div>
         <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
       </div>
     </div>
