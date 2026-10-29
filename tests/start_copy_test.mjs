@@ -31,5 +31,12 @@ check('price is not claimed flat everywhere', !html.includes('Same $0.10 USD pri
 for (const leak of ['t54', 'facilitator', 'x402 v2', 'moat', 'by every measure']) {
   check(`no "${leak}"`, !html.includes(leak));
 }
+// 2026-10-29: Start said Pulse follows payments of $50,000 and up; the feed
+// and the Pulse page use $1 million (smaller ones only on request). It also
+// said Sentinel names the kind of actor; Sentinel rates how automated the
+// last 90 days look.
+check('Pulse threshold matches the Pulse page', !html.includes('$50,000 and up') && html.includes('$1 million and up'));
+check('Sentinel card does not promise an actor type', !html.includes('what kind of actor') && html.includes('last 90 days'));
+
 console.log(fails ? `${fails} FAILED` : 'start copy: ok');
 process.exit(fails ? 1 : 0);

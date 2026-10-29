@@ -37,4 +37,11 @@ check('Lineage does not name the toml file', !read('assets/pages/lineage.js').in
 const tjs = read('assets/pages/telemetry.js');
 check('uptime banner tolerates a full rolling window', /days_observed \|\| 0\) >= \(w30\.window_days \|\| 30\) - slack/.test(tjs));
 
+// The live feed list had 23 sources; 11 had no display name and showed as
+// "fca uk" or "google news xrp institutional". Every feed Pulse reported on
+// 2026-10-29 now has one.
+for (const id of ['sec_press','federal_reserve','bis_speeches','ecb_press','bank_of_england','rba_australia','bank_of_japan','bank_of_canada','fca_uk','esma_eu','fsb','google_news_xrp_institutional','cointelegraph_xrp','crypto_news_xrp','coinspeaker_xrp','theblock','decrypt','utoday','cryptobriefing','ambcrypto','beincrypto','bitcoinist','coindesk']) {
+  check(`Pulse has a display name for ${id}`, new RegExp(`\\n  ${id}:\\s+\\['`).test(srcBlock));
+}
+
 process.exit(fails ? 1 : 0);
