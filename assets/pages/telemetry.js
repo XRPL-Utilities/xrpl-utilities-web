@@ -27,6 +27,13 @@
   });
 })();
 
+// Reduced motion: charts draw without animating. Chart.js loads in <head>
+// on this page, so it is already defined here.
+if (window.Chart && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  Chart.defaults.animation = false;
+}
+
+
 // Initial values reflect Telemetry's live state as of 2026-04-28 (the
 // launch day; all Tier-2 fields flipped to live, payments enabled).
 // /healthz fetch on page load overwrites current_price_usd with the

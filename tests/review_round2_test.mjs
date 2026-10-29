@@ -81,5 +81,24 @@ for (const phrase of ['dual-infrastructure', 'Reputation Oracle', 'Reputation Si
   check(`Terms has no "${phrase}"`, !terms.includes(phrase));
 }
 
+// ---- consistency pass ------------------------------------------------------
+// No reduced-motion rule anywhere (8 animations kept running on the home
+// page); Vault and Lineage jumped by 0.10 and 0.16 CLS on phones when data
+// loaded; Sentinel, Trust and Telemetry used narrower hero containers, so
+// the logo sat at a different x on each product page.
+const input = read('tools/tailwind/input.css');
+check('reduced-motion rule in the Tailwind source', /prefers-reduced-motion: reduce[\s\S]*animation-duration/.test(input));
+check('reduced-motion rule in the built CSS', /prefers-reduced-motion:reduce\)\{\*,:after,:before\{animation-duration/.test(css));
+check('charts skip animation under reduced motion', /prefers-reduced-motion: reduce[\s\S]*Chart\.defaults\.animation = false/.test(read('assets/chart-palette.js')) && /Chart\.defaults\.animation = false/.test(read('assets/pages/telemetry.js')));
+check('Lineage as-of keeps its own line on phones', read('lineage/index.html').includes('id="rlusd-asof" class="text-[10px] text-muted font-mono w-full sm:w-auto"'));
+check('Vault summary reserves its loaded height on phones', /id="stat-usd-pegged-detail" class="[^"]*min-h-\[2\.6em\]/.test(read('vault/index.html')) && read('vault/index.html').includes('min-h-[7.75rem] sm:min-h-0'));
+check('built CSS has the reserved-height classes', css.includes('min-h-\\[7\\.75rem\\]') && css.includes('sm\\:w-auto'));
+for (const slug of ['sentinel', 'telemetry', 'pulse', 'trust', 'vault', 'flows', 'lineage']) {
+  check(`${slug}: hero uses the 6xl container`, read(slug + '/index.html').includes('<div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-8">'));
+}
+for (const slug of ['trust', 'telemetry']) {
+  check(`${slug}: no 4xl or 5xl sections left`, !/max-w-(4|5)xl mx-auto px-/.test(read(slug + '/index.html')));
+}
+
 console.log(fails ? `${fails} FAILED` : 'review round 2: ok');
 process.exit(fails ? 1 : 0);
