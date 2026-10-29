@@ -998,21 +998,46 @@ pollWhileVisible(loadTrackedEtfsGrid, 3600 * 1000);
     refresh(currentWindow);
     pollWhileVisible(() => refresh(currentWindow), 5 * 60 * 1000);
   }
-  const waitStarted = Date.now();
-  const startInterval = setInterval(() => {
-    if (mapLibsReady()) {
-      clearInterval(startInterval);
-      start();
-    } else if (Date.now() - waitStarted > MAP_WAIT_MS) {
-      clearInterval(startInterval);
-      const note = document.createElement('div');
-      note.id = 'xb-map-unavailable';
-      note.className = 'absolute inset-0 flex items-center justify-center text-xs text-muted text-center px-4';
-      note.textContent = 'The map could not load in this browser. The corridor list is still live.';
-      mapEl?.parentElement?.appendChild(note);
-      start();
+  // d3 and topojson (about 300 KB) load only when the map is close to the
+  // screen; the map sits far down the page. Same pinned URLs and SRI
+  // hashes as before, and the CSP script-src already lists both.
+  const MAP_LIBS = [
+    ['https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js', 'sha384-su5kReKyYlIFrI62mbQRKXHzFobMa7BHp1cK6julLPbnYcCW9NIZKJiTODjLPeDh'],
+    ['https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js', 'sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67'],
+  ];
+  function loadMapLibs() {
+    for (const [src, sri] of MAP_LIBS) {
+      const s = document.createElement('script');
+      s.src = src; s.integrity = sri; s.crossOrigin = 'anonymous';
+      document.head.appendChild(s);
     }
-  }, 200);
+    waitForLibs();
+  }
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { io.disconnect(); loadMapLibs(); }
+    }, { rootMargin: '800px 0px' });
+    io.observe(mapEl);
+  } else {
+    loadMapLibs();
+  }
+  function waitForLibs() {
+    const waitStarted = Date.now();
+    const startInterval = setInterval(() => {
+      if (mapLibsReady()) {
+        clearInterval(startInterval);
+        start();
+      } else if (Date.now() - waitStarted > MAP_WAIT_MS) {
+        clearInterval(startInterval);
+        const note = document.createElement('div');
+        note.id = 'xb-map-unavailable';
+        note.className = 'absolute inset-0 flex items-center justify-center text-xs text-muted text-center px-4';
+        note.textContent = 'The map could not load in this browser. The corridor list is still live.';
+        mapEl?.parentElement?.appendChild(note);
+        start();
+      }
+    }, 200);
+  }
 })();
 
 (function setupMobileNav() {

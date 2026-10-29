@@ -75,8 +75,6 @@
        generates the .min alias with a banner, so its bytes can change
        under a pinned version and break the hash. -->
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" integrity="sha384-FcQlsUOd0TJjROrBxhJdUhXTUgNJQxTMcxZe6nHbaEfFL1zjQ+bq/uRoBQxb0KMo" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js" integrity="sha384-su5kReKyYlIFrI62mbQRKXHzFobMa7BHp1cK6julLPbnYcCW9NIZKJiTODjLPeDh" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
@@ -225,7 +223,7 @@
             <span id="aum-total-headline" class="text-[10px] text-muted font-mono"></span>
           </div>
           <div class="relative bg-ink border border-border rounded-lg p-3" style="height: 280px;">
-            <canvas id="chart-etf-aum" role="img" aria-label="Stacked area chart of net assets in US dollars for each tracked XRP ETF, by day. The latest totals are shown in the figures above."></canvas>
+            <canvas id="chart-etf-aum" role="img" aria-label="Stacked bar chart of net assets in US dollars for each tracked XRP ETF, by day. The latest totals are shown in the figures above."></canvas>
           </div>
           <p id="aum-coverage-caveat" class="text-[10px] text-muted mt-2"></p>
         </div>
@@ -596,7 +594,7 @@
   </footer>
 
   <script src="/assets/chart-palette.js?v=2"></script>
-  <script src="/assets/pages/flows.js?v=6"></script>
+  <script src="/assets/pages/flows.js?v=7"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>
