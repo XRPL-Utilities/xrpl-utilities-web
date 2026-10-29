@@ -8,7 +8,7 @@
   <title>Pricing | XRPL-Utilities</title>
   <meta name="description" content="Every XRPL-Utilities paid endpoint and how to call it: $0.10 per call over x402 in XRP, RLUSD or USDC on Base. Pulse live streams from $0.50 per hour." />
   <meta property="og:title" content="XRPL-Utilities Pricing" />
-  <meta property="og:description" content="Six agent-payable XRPL APIs at $0.10 per call via x402. Live WebSocket subscriptions on Pulse from $0.50/hr. Wallet classification, normalized signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation." />
+  <meta property="og:description" content="Seven agent-payable XRPL APIs at $0.10 per call via x402. Live WebSocket subscriptions on Pulse from $0.50/hr. Wallet classification, normalized signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation, account statements." />
   <meta property="og:url" content="https://xrpl-utilities.com/pricing/" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
@@ -21,7 +21,7 @@
         "@type": "WebPage",
         "@id": "https://xrpl-utilities.com/pricing/#page",
         "name": "XRPL-Utilities Pricing",
-        "description": "Six agent-payable XRPL APIs at $0.10 USD per call via x402 v2: XR-Sentinel (wallet classification), XR-Pulse (normalized signal feed), XR-Telemetry (network snapshot), XR-Trust (XLS-80 directory), XR-Vault (real-world asset tracker), XR-Flows (ETF flow correlation). Pay in XRP or RLUSD on XRPL mainnet, or USDC on Base. No account, no subscription. Live WebSocket streaming on Pulse from $0.50/hour.",
+        "description": "Seven agent-payable XRPL APIs at $0.10 USD per call via x402 v2: XR-Sentinel (wallet classification), XR-Pulse (normalized signal feed), XR-Telemetry (network snapshot), XR-Trust (XLS-80 directory), XR-Vault (real-world asset tracker), XR-Flows (ETF flow correlation), XR-Ledger (account statements). Pay in XRP or RLUSD on XRPL mainnet, or USDC on Base. No account, no subscription. Live WebSocket streaming on Pulse from $0.50/hour.",
         "url": "https://xrpl-utilities.com/pricing/",
         "isPartOf": { "@id": "https://xrpl-utilities.com/#org" }
       },
@@ -44,7 +44,7 @@
   </script>
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="XRPL-Utilities Pricing" />
-  <meta name="twitter:description" content="Six agent-payable XRPL APIs at $0.10 per call via x402. Live WebSocket subscriptions on Pulse from $0.50/hr. Wallet classification, signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation." />
+  <meta name="twitter:description" content="Seven agent-payable XRPL APIs at $0.10 per call via x402. Live WebSocket subscriptions on Pulse from $0.50/hr. Wallet classification, signal feed, network telemetry, XLS-80 directory, RWA tracker, ETF flow correlation, account statements." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -120,7 +120,7 @@
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-4">Pricing</h1>
-      <p class="text-xl text-muted">Six agent-payable APIs. $0.10 per call, or stream live from $0.50/hour.</p>
+      <p class="text-xl text-muted">Seven agent-payable APIs. $0.10 per call, or stream live from $0.50/hour.</p>
       <p class="text-base text-muted mt-4 max-w-2xl mx-auto leading-relaxed">
         Every paid endpoint speaks <a href="https://x402.org" target="_blank" rel="noopener" class="text-accent hover:underline">x402 v2</a>. Pay in XRP or RLUSD on XRPL mainnet, or USDC on Base. Same $0.10 USD price across all rails. No API key, no account, no subscription. Pay per call for snapshot queries, or buy a time-boxed WebSocket window on Pulse to receive events as they fire. The free dashboards on this site are powered by the free endpoints listed below; the deep dives are paid.
       </p>
@@ -143,12 +143,15 @@
           <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
             <div class="flex items-center gap-3 min-w-0">
               <a href="/sentinel/" class="font-bold text-lg text-white hover:text-accent transition">XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
-              <code class="font-mono text-sm text-muted">POST /scan</code>
             </div>
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
+          <div class="flex flex-wrap gap-3 mb-3 break-all">
+            <code class="font-mono text-sm text-muted">POST /scan</code>
+            <code class="font-mono text-sm text-muted">POST /scan/history</code>
+          </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Behavioral classification for any XRPL address. Returns an activity-level tier, signal flags, watchlist labels, DID credentials when present, and a 30-day behavior summary. Pattern detection over public ledger data; no risk score, no AML verdict.
+            Behavioral classification for any XRPL address. Returns an activity-level tier, signal flags, watchlist labels, DID credentials when present, and a 30-day behavior summary. Pattern detection over public ledger data; no risk score, no AML verdict. <code class="font-mono text-white/80">/scan/history</code> returns up to 25 earlier scans of the same wallet so you can see how its profile has changed.
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">sentinel.xrpl-utilities.io</span>
@@ -164,12 +167,15 @@
           <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
             <div class="flex items-center gap-3 min-w-0">
               <a href="/pulse/" class="font-bold text-lg text-white hover:text-accent transition">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
-              <code class="font-mono text-sm text-muted">POST /events/recent</code>
             </div>
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
+          <div class="flex flex-wrap gap-3 mb-3 break-all">
+            <code class="font-mono text-sm text-muted">POST /events/recent</code>
+            <code class="font-mono text-sm text-muted">POST /events/by-address</code>
+          </div>
           <p class="text-sm text-muted leading-relaxed mb-4">
-            Six streams in one time-ordered feed: regulatory and central-bank news, on-chain whale activity, XLS-70/80/81 permissioned-domain events, Sentinel state-changes, real-world-asset mints and burns, and DID credentials. Every event carries source provenance.
+            Six streams in one time-ordered feed: regulatory and central-bank news, on-chain whale activity, XLS-70/80/81 permissioned-domain events, Sentinel state-changes, real-world-asset mints and burns, and DID credentials. Every event carries source provenance. <code class="font-mono text-white/80">/events/by-address</code> returns every event that mentions one XRPL address.
           </p>
           <div class="border-t border-border/60 pt-4 mt-3">
             <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
@@ -219,14 +225,19 @@
           <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
             <div class="flex items-center gap-3 min-w-0">
               <a href="/trust/" class="font-bold text-lg text-white hover:text-accent transition">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></a>
-              <code class="font-mono text-sm text-muted">GET /domain/{domain_id}</code>
-              <code class="font-mono text-sm text-muted">POST /scan</code>
-              <code class="font-mono text-sm text-muted">GET /permissioned-domains/operators/{addr}</code>
             </div>
             <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
           </div>
+          <div class="flex flex-wrap gap-3 mb-3 break-all">
+            <code class="font-mono text-sm text-muted">GET /domains</code>
+            <code class="font-mono text-sm text-muted">GET /domain/{domain_id}</code>
+            <code class="font-mono text-sm text-muted">GET /credentials/issuers</code>
+            <code class="font-mono text-sm text-muted">GET /permissioned-domains/operators</code>
+            <code class="font-mono text-sm text-muted">GET /permissioned-domains/operators/{addr}</code>
+            <code class="font-mono text-sm text-muted">POST /scan</code>
+          </div>
           <p class="text-sm text-muted leading-relaxed mb-3">
-            Permissioned-domain directory and explorer. Drill into a domain for credentials, issuers, lifecycle, identity, and on-chain trading activity. Scan by domain ID or owner address. Operator rollups across domains, subjects, and 24h activity. Browsing the directory is free; drill-downs are paid. <span class="text-white/80">Paid calls accept XRP or USDC on Base on this service (RLUSD not offered).</span>
+            Permissioned-domain directory and explorer. Drill into a domain for credentials, issuers, lifecycle, identity, and on-chain trading activity. Scan by domain ID or owner address. Operator rollups across domains, subjects, and 24h activity. Browsing the directory on this site is free. Through the API, the domain list, the credential-issuer list and the operator rollup are paid at the same $0.10 as the drill-downs.
           </p>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">trust.xrpl-utilities.io</span>
@@ -276,6 +287,27 @@
             <a href="https://flows.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
             <span>&middot;</span>
             <a href="https://flows.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="text-accent hover:underline">agents.json</a>
+          </div>
+        </div>
+
+        <!-- Ledger -->
+        <div class="bg-panel border border-border rounded-2xl p-6">
+          <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="font-bold text-lg text-white">XR-Ledger</span>
+              <code class="font-mono text-sm text-muted">POST /statement</code>
+            </div>
+            <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / call</span>
+          </div>
+          <p class="text-sm text-muted leading-relaxed mb-3">
+            Account statement for up to 10 XRPL addresses in one call, rolled into monthly periods: XRP in, out and net, fees, activity by type, and the net change in every token held. One price covers the whole list of addresses.
+          </p>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
+            <span class="font-mono">ledger.xrpl-utilities.io</span>
+            <span>&middot;</span>
+            <a href="https://ledger.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
+            <span>&middot;</span>
+            <a href="https://ledger.xrpl-utilities.io/agents.json" target="_blank" rel="noopener" class="text-accent hover:underline">agents.json</a>
           </div>
         </div>
       </div>
@@ -414,7 +446,7 @@ r = resp.json()</pre>
 # or use the hosted endpoint:
 # mcp.xrpl-utilities.io/mcp
 
-# Tools published: 44 across all six services (29 free, 15 paid).
+# Tools published: 46 across all seven services (32 free, 14 paid).
 # Full, always-current list:
 #   GET mcp.xrpl-utilities.io/llms.txt   (or call tools/list)</pre>
         </div>
@@ -470,11 +502,12 @@ r = resp.json()</pre>
         <div class="bg-panel border border-border rounded-2xl p-6">
           <div class="flex items-center gap-3 mb-3">
             <span class="font-bold text-white">XR-Trust</span>
-            <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free until data available</span>
+            <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
           </div>
           <ul class="space-y-2 text-sm text-muted">
-            <li><code class="font-mono text-white">/domains</code> &middot; live XLS-80 permissioned domain directory</li>
-            <li><code class="font-mono text-white">/credentials/issuers</code> &middot; aggregated credential-issuer registry</li>
+            <li><code class="font-mono text-white">/activity</code> &middot; permissioned-domain ledger activity, newest first</li>
+            <li><code class="font-mono text-white">/permissioned-domains/operators/index</code> &middot; light list of every domain operator</li>
+            <li><code class="font-mono text-white">/permissioned-domains/usage-summary</code> &middot; ecosystem totals over a chosen window</li>
             <li><code class="font-mono text-white">/jurisdictions</code> &middot; per-country rollup of operators and issuers</li>
             <li><code class="font-mono text-white">/events</code> &middot; XLS-70/80/81 lifecycle event stream</li>
           </ul>
