@@ -23,7 +23,7 @@
     if (e.key === 'Escape' && overlay.style.display !== 'none') close();
   });
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) close();
+    if (window.innerWidth >= 1024) close();
   });
 })();
 

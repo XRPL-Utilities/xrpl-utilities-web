@@ -22,5 +22,5 @@ document.addEventListener('keydown', (e) => {
 });
 mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
 window.addEventListener('resize', () => {
-  if (window.innerWidth >= 768 && mobileNav.style.display === 'flex') closeNav();
+  if (window.innerWidth >= 1024 && mobileNav.style.display === 'flex') closeNav();
 });

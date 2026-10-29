@@ -1027,5 +1027,5 @@ pollWhileVisible(loadTrackedEtfsGrid, 3600 * 1000);
   overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
   overlay.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
-  window.addEventListener('resize', () => { if (window.innerWidth >= 768) close(); });
+  window.addEventListener('resize', () => { if (window.innerWidth >= 1024) close(); });
 })();

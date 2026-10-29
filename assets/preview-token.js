@@ -184,9 +184,21 @@
     return { 'Authorization': 'Bearer ' + token };
   }
 
+  // What a visitor reads when a free call fails. A 401/402/403 here means
+  // the browser check never produced a token (often a blocker stopping
+  // the challenge), not that the service is down, so say that instead of
+  // showing an HTTP code.
+  function failureMessage(status) {
+    if (status === 401 || status === 402 || status === 403) {
+      return 'The browser check didn\u2019t finish, so live data is paused. Reload the page to try again. Some ad or script blockers stop the check.';
+    }
+    return 'Live data didn\u2019t load. Reload the page to try again.';
+  }
+
   global.PreviewToken = {
     getToken: getToken,
     authHeaders: authHeaders,
+    failureMessage: failureMessage,
     // Exposed for debugging; not part of the public contract.
     _clear: clearCached,
   };
