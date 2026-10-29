@@ -29,5 +29,8 @@ check('floor grid panels can shrink on phones', html.includes('lg:col-span-2 min
 // RLUSD settlement is counted at $1, not at the XRP price (settlement_walker.py).
 check('RLUSD volume is not described as valued at the XRP price', !html.includes('RLUSD payment on the XRP Ledger, valued at the XRP price') && html.includes('RLUSD at $1'));
 check('a delta that rounds to 0.00% is not shown in red', js.includes('Math.abs(deltaPct) < 0.005'));
+// 2026-10-29: the service offers no SLA; the uptime panel reads /uptime.
+check('uptime panel reads /uptime, not /sla', js.includes("'/uptime?days=30'") && !js.includes("'/sla"));
+check('page never calls uptime an SLA', !/\bSLA\b/.test(html));
 console.log(fails ? `${fails} FAILED` : 'telemetry copy: ok');
 process.exit(fails ? 1 : 0);

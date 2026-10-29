@@ -500,8 +500,8 @@ const dpvBootstrap = document.getElementById('dpv-bootstrap');
 dpv24h.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
 dpvAnnual.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
 
-// ---- Operational SLA (schema 1.13.0+) ----
-// Pulls /sla?days=30 and renders the 30d + 24h uptime aggregates.
+// ---- Uptime (schema 1.13.0+) ----
+// Pulls /uptime?days=30 and renders the 30d + 24h uptime aggregates.
 // Honest bootstrap state: if backend reports bootstrap=true, the
 // yellow banner surfaces with days_observed; the headline figure
 // is shown as-is (possibly null on day-zero).
@@ -524,7 +524,7 @@ const fmtSamples = w => {
 sla30Pct.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
 sla24Pct.innerHTML = '<span class="inline-block h-12 w-32 bg-border rounded animate-pulse align-middle"></span>';
 
-fetch(TELEMETRY_API + '/sla?days=30')
+fetch(TELEMETRY_API + '/uptime?days=30')
   .then(r => r.ok ? r.json() : null)
   .then(d => {
     if (!d) {
