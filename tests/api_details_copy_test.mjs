@@ -44,4 +44,10 @@ for (const id of ['sec_press','federal_reserve','bis_speeches','ecb_press','bank
   check(`Pulse has a display name for ${id}`, new RegExp(`\\n  ${id}:\\s+\\['`).test(srcBlock));
 }
 
+// The six-across ledger-object tiles clipped a delta beside a five-digit
+// count ("15,661 -4" lost the 4). The value row wraps now.
+check('ledger-object tile row wraps its delta', pulse.includes('<div class="flex flex-wrap items-baseline gap-x-2">'));
+// At 1024 px six across clipped the count itself; six columns start at xl.
+check('ledger-object tiles go six across only from xl', read('pulse/index.html').includes('id="primitives-grid" class="mt-6 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3"'));
+
 process.exit(fails ? 1 : 0);
