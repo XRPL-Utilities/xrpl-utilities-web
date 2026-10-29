@@ -545,7 +545,14 @@ fetch(TELEMETRY_API + '/uptime?days=30')
     sla24Meta.textContent = fmtSamples(d.uptime_window_24h);
     const secs = Number(d.sample_interval_seconds);
     slaInterval.textContent = secs > 0 ? Math.round(secs / 60) + ' min' : '-';
-    if (d.uptime_window_30d && d.uptime_window_30d.bootstrap) {
+    // The service flags bootstrap whenever first-to-last sample spans less
+    // than the window, which a rolling window never fully reaches (29.99 of
+    // 30 days at a 5-minute interval). Treat anything within two sample
+    // intervals of the full window as complete, plus 0.01 day because
+    // days_observed arrives rounded to two places.
+    const w30 = d.uptime_window_30d;
+    const slack = 0.01 + 2 * (secs > 0 ? secs : 300) / 86400;
+    if (w30 && w30.bootstrap && !((w30.days_observed || 0) >= (w30.window_days || 30) - slack)) {
       slaBootstrap.classList.remove('hidden');
       slaDaysObserved.textContent = (d.uptime_window_30d.days_observed || 0).toFixed(2);
     }
