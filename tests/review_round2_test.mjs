@@ -76,7 +76,7 @@ check('tailwind.css has lg:flex and lg:hidden', css.includes('.lg\\:flex{') && c
 const terms = read('terms/index.html');
 check('Terms has a refunds paragraph', /<strong class="text-white">Refunds\.<\/strong>/.test(terms) && /Fees, Payments &amp; Refunds/.test(terms));
 check('Terms lists the fees', terms.includes('Most paid calls cost $0.10') && terms.includes('$7.50 for 24 hours'));
-check('Terms matches Vault dollar totals', !terms.includes('native unit-of-account only') && terms.includes('Dollar totals on the dashboard'));
+check('Terms matches Vault dollar totals', !terms.includes('native unit-of-account only') && terms.includes('Dollar totals on the dashboard are estimates') && terms.includes('tokens in other currencies at recent exchange rates') && !terms.includes('dollar-denominated tokens only'));
 for (const phrase of ['dual-infrastructure', 'Reputation Oracle', 'Reputation Signal', 'execution layer', 'US-listed', 'AllowTrustLineClawback', 'operator-curated', 'verify-then-work-then-settle']) {
   check(`Terms has no "${phrase}"`, !terms.includes(phrase));
 }
