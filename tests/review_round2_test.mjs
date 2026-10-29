@@ -100,5 +100,14 @@ for (const slug of ['trust', 'telemetry']) {
   check(`${slug}: no 4xl or 5xl sections left`, !/max-w-(4|5)xl mx-auto px-/.test(read(slug + '/index.html')));
 }
 
+// Polish 2026-10-29: Status was six large banners, 4,700 px tall, and left out
+// XR-Ledger. Now one row per service, folded while operational.
+const statusHtml = read('status/index.html');
+check('Status lists XR-Ledger', /\["ledger",\s+"XR-Ledger"\]/.test(status) && statusHtml.includes('XR-Ledger'));
+check('Status rows fold while operational', /det\.open = status !== "active"/.test(status));
+check('Status has no per-service banner blocks', !/id="overall-sentinel"/.test(statusHtml));
+
+check('one price noun: per call', ['sentinel','telemetry','pulse','trust'].every(p => !/\$0\.10 per (scan|snapshot|query)/.test(read(p + '/index.html'))));
+check('Tip copy has no internal accounting note', !read('tip/index.html').includes('operator accounting'));
 console.log(fails ? `${fails} FAILED` : 'review round 2: ok');
 process.exit(fails ? 1 : 0);
