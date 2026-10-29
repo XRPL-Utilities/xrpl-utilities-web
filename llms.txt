@@ -7,7 +7,7 @@ Provider: XRPL-Utilities LLC. Independent project not affiliated with Ripple Lab
 ## Start here
 
 - [Pricing and first call](https://xrpl-utilities.com/pricing/): every paid route, free endpoints, a copy-paste curl call, Python and Node.js payment samples, Claude Desktop setup
-- [Payment catalog](https://xrpl-utilities.com/.well-known/x402): x402 resources across all six services in one document
+- [Payment catalog](https://xrpl-utilities.com/.well-known/x402): x402 resources across all seven services in one document
 - [Service status](https://xrpl-utilities.com/status/)
 
 ## Services

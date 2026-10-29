@@ -10,7 +10,7 @@
  * the functions/ directory is not auto-detected.
  *
  * Routes:
- *   GET  /.well-known/x402   - merged x402 catalog of all six API hosts.
+ *   GET  /.well-known/x402   - merged x402 catalog of all seven API hosts.
  *   POST /api/preview-token  - mint a Turnstile-gated short-TTL JWT for
  *                              the marketing site to attach to API calls
  *                              against XR-* services.
@@ -566,13 +566,20 @@ async function handleApiProxy(request, url, env) {
 // ---- /.well-known/x402: one catalog for the whole site ---------------------
 //
 // Agent directories crawl a domain's /.well-known/x402 to find what it sells.
-// Each API host already publishes its own; this merges the six into one
+// Each API host already publishes its own; this merges the seven into one
 // document so a crawler that starts at xrpl-utilities.com finds every paid
 // route. Built live from the services so it can never drift from them, and
 // cached in the isolate so a crawler burst is one upstream round per service.
 const CATALOG_TTL_MS = 10 * 60 * 1000;
 const CATALOG_UPSTREAM_TIMEOUT_MS = 5000;
 let catalogCache = null; // { at, body }
+
+// Every paid API host. XR-Ledger has no browser panel behind /api/x/*, so it
+// is listed here rather than in PROXY_TARGETS, which would open a proxy route.
+const CATALOG_TARGETS = {
+  ...PROXY_TARGETS,
+  ledger: "https://ledger.xrpl-utilities.io",
+};
 
 async function fetchServiceCatalog(service, origin) {
   const ctrl = new AbortController();
@@ -610,7 +617,7 @@ async function handleX402Catalog() {
   if (catalogCache && now - catalogCache.at < CATALOG_TTL_MS) {
     return catalogResponse(catalogCache.body);
   }
-  const entries = Object.entries(PROXY_TARGETS);
+  const entries = Object.entries(CATALOG_TARGETS);
   const results = await Promise.all(entries.map(([svc, origin]) => fetchServiceCatalog(svc, origin)));
   const services = results.filter(Boolean);
   if (!services.length) {
