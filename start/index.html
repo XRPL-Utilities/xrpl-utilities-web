@@ -8,14 +8,14 @@
   <title>Start here | XRPL-Utilities</title>
   <meta name="description" content="New to the XRP Ledger? A plain-English guide to accounts, tokens, permissioned domains and agent-payable APIs, then where to go next." />
   <meta property="og:title" content="Start here | XRPL-Utilities" />
-  <meta property="og:description" content="A plain-English on-ramp to the XRP Ledger and the six XRPL-Utilities services. For readers who've never touched XRPL." />
+  <meta property="og:description" content="A plain-English guide to the XRP Ledger and the XRPL-Utilities services, for readers new to XRPL." />
   <meta property="og:url" content="https://xrpl-utilities.com/start/" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
   <link rel="canonical" href="https://xrpl-utilities.com/start/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Start here | XRPL-Utilities" />
-  <meta name="twitter:description" content="A plain-English on-ramp to the XRP Ledger and the six XRPL-Utilities services. For readers who've never touched XRPL." />
+  <meta name="twitter:description" content="A plain-English guide to the XRP Ledger and the XRPL-Utilities services, for readers new to XRPL." />
   <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -118,7 +118,7 @@
       <span class="inline-block text-[10px] uppercase tracking-[0.25em] text-accent font-semibold mb-4">Start here</span>
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">New to XRPL? Read this first.</h1>
       <p class="text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-        A 5-minute on-ramp for readers who've never touched the XRP Ledger. Plain English, no jargon hand-waving. By the end you'll know what XRPL is, what tokens on it look like, what makes it different for institutions, and which of our six services answers what you came here for.
+        A five-minute guide for anyone new to the XRP Ledger: what it is, what its tokens look like, why institutions use it, and which of our services answers your question.
       </p>
     </div>
   </section>
@@ -132,13 +132,13 @@
       </div>
       <div class="space-y-4 text-muted leading-relaxed">
         <p>
-          The <span class="gloss" data-term="xrpl">XRP Ledger</span> (XRPL) is an open-source public blockchain that's been running continuously since 2012. It settles transactions every 3 to 5 seconds, has a built-in DEX (decentralized exchange), and natively supports issuing your own tokens. No mining, no proof-of-work; it uses a consensus protocol run by independent validators.
+          The <span class="gloss" data-term="xrpl">XRP Ledger</span> (XRPL) is an open-source public blockchain that's been running since 2012. It settles transactions in 3 to 5 seconds, has a built-in exchange (the DEX), and lets anyone issue tokens. There is no mining; independent validators agree on each ledger.
         </p>
         <p>
-          The native token is <span class="gloss" data-term="xrp">XRP</span>, a fixed 100-billion-supply asset used to pay tiny transaction fees (a fraction of a cent each). Anyone can read every transaction that's ever happened on XRPL by querying a public node. No accounts, no API keys, no gatekeepers.
+          The native token is <span class="gloss" data-term="xrp">XRP</span>, of which 100 billion were created at launch. Each transaction burns a tiny fee, a fraction of a cent, so the total slowly shrinks. Anyone can read every transaction ever made from a public node, with no account or key.
         </p>
         <p>
-          <strong class="text-white">Why it matters for finance.</strong> XRPL was designed from day one for moving value, not running smart contracts. Settlement is fast and final (no probabilistic confirmations), fees are predictable, and the protocol has native support for issued assets, trust limits, escrow, and on-ledger trading. Banks, custodians, and stablecoin issuers have been quietly building on it for years.
+          <strong class="text-white">Why it matters for finance.</strong> XRPL was built for moving value. Settlement is final once a ledger closes, fees are predictable, and tokens, escrow and trading are part of the protocol itself.
         </p>
       </div>
     </div>
@@ -153,13 +153,13 @@
       </div>
       <div class="space-y-4 text-muted leading-relaxed">
         <p>
-          An XRPL <strong class="text-white">wallet</strong> is just a key pair. The public side is your <strong class="text-white">address</strong>: a 25-34 character string that starts with the letter <code class="font-mono text-white">r</code>. Example: <code class="font-mono text-white">rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5</code>. Anything sent to that address shows up on the ledger immediately and stays there permanently.
+          An XRPL <strong class="text-white">wallet</strong> is just a key pair. The public side is your <strong class="text-white">address</strong>: a 25 to 35 character string that starts with the letter <code class="font-mono text-white">r</code>. Example: <code class="font-mono text-white">rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5</code>. Anything sent to it shows up on the ledger within seconds and stays there for good.
         </p>
         <p>
-          You'll see addresses everywhere on this site. Some belong to exchanges (Bitstamp, Kraken, Coinbase). Some belong to issuers (Ripple, Ondo, OpenEden, Société Générale). Some belong to bots, market makers, and anonymous holders. The behavior visible on the ledger is what tells you which is which.
+          Some addresses belong to exchanges, some to issuers such as Ripple or Ondo, and many to bots, market makers and private holders. What an address does on the ledger is often the best clue to which it is.
         </p>
         <p>
-          To receive any token other than XRP, an address has to first set up a <span class="gloss" data-term="trustline">trustline</span> to the issuer of that token. This is XRPL's way of saying "I'm willing to hold this asset from this specific issuer." Most retail wallets only hold XRP and have no trustlines; institutional wallets often have dozens.
+          To receive any token other than XRP, an address has to first set up a <span class="gloss" data-term="trustline">trustline</span> to the issuer of that token. It says "I am willing to hold this token from this issuer."
         </p>
       </div>
     </div>
@@ -174,13 +174,13 @@
       </div>
       <div class="space-y-4 text-muted leading-relaxed">
         <p>
-          XRPL supports issued assets natively. Any address can issue a token; trustlines determine who's willing to hold it. The most-watched issued asset is <span class="gloss" data-term="rlusd">RLUSD</span>, Ripple's regulated USD stablecoin (~93,000 trustlines, the largest IOU on XRPL by every measure).
+          Any address can issue a token, and trustlines decide who holds it. The most-watched one is <span class="gloss" data-term="rlusd">RLUSD</span>, Ripple's US dollar stablecoin.
         </p>
         <p>
-          A growing class of tokens are <span class="gloss" data-term="rwa">real-world assets</span> (RWAs): on-chain representations of off-chain financial instruments. Examples currently live on XRPL include Ondo's tokenized US Treasuries (OUSG), OpenEden's T-Bill tokens (TBL), Société Générale's euro stablecoin (EURCV), Guggenheim's Digital Commercial Paper (DCP), and Justoken's megawatt-hour tokens (JMWH). When you see a headline like "BlackRock tokenizes a money-market fund," XRPL is one of the chains where that kind of thing actually settles.
+          A growing class of tokens are <span class="gloss" data-term="rwa">real-world assets</span> (RWAs): on-chain representations of off-chain financial instruments. Examples currently live on XRPL include Ondo's tokenized US Treasuries (OUSG), OpenEden's T-Bill tokens (TBL), Société Générale's euro stablecoin (EURCV), Guggenheim's Digital Commercial Paper (DCP), and Justoken's megawatt-hour tokens (JMWH).
         </p>
         <p>
-          <strong class="text-white">Why this matters.</strong> If finance is moving on-chain, it's moving as tokenized assets that look like the ones above. Watching that activity in real time is what <a href="/vault/" class="text-accent hover:underline">XR-Vault</a> does for RWAs and what <a href="/pulse/" class="text-accent hover:underline">XR-Pulse</a> does for every $50k+ payment on the ledger.
+          <a href="/vault/" class="text-accent hover:underline">XR-Vault</a> tracks these assets, and <a href="/pulse/" class="text-accent hover:underline">XR-Pulse</a> follows large payments of $50,000 and up as they happen.
         </p>
       </div>
     </div>
@@ -195,13 +195,13 @@
       </div>
       <div class="space-y-4 text-muted leading-relaxed">
         <p>
-          A <span class="gloss" data-term="permissioned-domain">permissioned domain</span> is XRPL's mechanism for letting institutions run regulated trading venues on the same public ledger as the open DEX. An owner address declares which on-chain credentials are required to join (e.g., "must hold an accredited-investor credential issued by Wallet X"), and other addresses join by holding any accepted credential. Trades inside the domain are visible on the public ledger, but only credentialed counterparties can fill them.
+          A <span class="gloss" data-term="permissioned-domain">permissioned domain</span> lets an institution run a members-only trading venue on the public ledger. The owner lists which credentials it accepts, for example "an accredited-investor credential from issuer X", and only holders of one can trade inside. The trades are still public.
         </p>
         <p>
-          This is the standard the industry has been waiting for. Compliance is on-chain, settlement is on-chain, but access is gated by real institutional identity. The standard is called <strong class="text-white">XLS-80</strong> (PermissionedDomains); the trading layer that runs inside one is <strong class="text-white">XLS-81</strong> (Permissioned DEX).
+          The domain standard is <strong class="text-white">XLS-80</strong>; the trading layer inside one is <strong class="text-white">XLS-81</strong> (the permissioned DEX).
         </p>
         <p>
-          <a href="/trust/" class="text-accent hover:underline">XR-Trust</a> is the public directory of every permissioned domain on XRPL, surfaces the credentials each requires, and ties owner addresses to operator-signed institutional identity where available.
+          <a href="/trust/" class="text-accent hover:underline">XR-Trust</a> lists every permissioned domain on XRPL, the credentials each accepts, and who runs it where that is published.
         </p>
       </div>
     </div>
@@ -216,23 +216,23 @@
       </div>
       <div class="space-y-4 text-muted leading-relaxed">
         <p>
-          <span class="gloss" data-term="x402">x402</span> is an open standard for machine-payable APIs. When an agent calls an x402 endpoint, the server returns HTTP 402 with payment options. The agent signs an on-chain payment matching one of those options, re-sends the request with a payment-signature header, and the server verifies + runs + settles. No accounts, no API keys, no monthly invoices. An AI agent with an XRPL wallet can discover an API, pay it, and consume the response inside a single request cycle.
+          <span class="gloss" data-term="x402">x402</span> is an open standard for APIs that machines pay for. The server answers the first request with HTTP 402 and a price; the agent signs a payment, sends the request again, and gets the data. No account, API key or invoice.
         </p>
         <p>
-          Every paid endpoint on this site speaks x402 v2. Pay in XRP or RLUSD on XRPL, or USDC on Base. Same $0.10 USD price across rails. XRPL rails settle through the t54 facilitator; the Base rail settles through the Coinbase x402 facilitator. Pricing is per-call or per-time-window (XR-Pulse also sells live WebSocket subscriptions from $0.50/hour).
+          Every paid call here uses x402. Pay in RLUSD or XRP on the XRP Ledger, or USDC on Base. Most calls cost $0.10; XR-Pulse also sells live streams from $0.50 an hour.
         </p>
         <p>
-          <strong class="text-white">Why this matters.</strong> AI agents are starting to do real economic work (price queries, data lookups, transaction routing) and they need a payment standard that doesn't require an account setup with every vendor. x402 + XRPL settlement is one of the cleanest answers to that, and it's the moat under every paid endpoint here.
+          <strong class="text-white">Why this matters.</strong> AI agents now buy data on their own, and they cannot open an account with every vendor. x402 lets them pay per call instead.
         </p>
         <div class="bg-panel border border-accent/40 rounded-xl p-5 mt-2">
-          <div class="text-sm font-semibold text-white mb-2">Live proof: our reference agent did this</div>
+          <div class="text-sm font-semibold text-white mb-2">Proof: our own agent did this</div>
           <p class="text-sm text-muted leading-relaxed">
-            On the same t54 x402 rails Ripple's <a href="https://ripple.com/insights/xrpl-ai-starter-kit/" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">XRPL AI Starter Kit</a> ships, our reference agent, an autonomous wallet we run, paid <span class="text-white">0.0877 XRP</span> for an XR-Sentinel wallet scan and got the signals back, settled on-chain inside one request. No account, no API key, no human in the loop.
+            This was our reference agent, a test wallet we run. It paid <span class="text-white">0.0877 XRP</span> for an XR-Sentinel wallet scan and got the result back in one request, with no account, no API key and no person involved.
           </p>
           <p class="text-sm mt-3">
             <a href="https://xrpscan.com/tx/08AF105FB1EB2CDD189843AAB14B1E059252DCA0EC46715FD0070ABFBA5D6D6D" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">See the settlement on XRPScan</a>
             <span class="text-muted"> &middot; </span>
-            <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp/tree/main/examples" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">run it yourself (30-line example)</a>
+            <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp/tree/main/examples" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">run it yourself (example script)</a>
           </p>
         </div>
       </div>
@@ -248,10 +248,10 @@
       </div>
       <div class="space-y-4 text-muted leading-relaxed">
         <p>
-          Six on-chain data services plus the free Lineage view, reading the XRP Ledger so you don't have to run your own node. Each one answers a different question about what's happening on XRPL. The same backend that serves the public dashboards on this site is exposed as a paid x402 API for AI agents and integrators.
+          Six data services that read the XRP Ledger so you don't have to, plus the free Lineage view. Each answers a different question about XRPL.
         </p>
         <p>
-          <strong class="text-white">Two surfaces, one backend.</strong> The dashboards here are free; agents pay per call or stream live. Everything is on-chain settled. No accounts, no API keys, no onboarding calls. The full pricing table is at <a href="/pricing/" class="text-accent hover:underline">/pricing/</a>.
+          The dashboards on this site are free. AI agents and developers get the same data as paid APIs, settled on-chain, with no sign-up. See <a href="/pricing/" class="text-accent hover:underline">pricing</a>.
         </p>
       </div>
     </div>
@@ -270,7 +270,7 @@
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Sentinel</span>
           </div>
           <h4 class="text-lg font-bold mb-2">Classify any XRPL wallet's behavior</h4>
-          <p class="text-sm text-muted leading-relaxed flex-grow">Type any XRPL address, get back what kind of actor it looks like: bot, exchange, market maker, retail, issuer. Plus a behavioral signal catalog and a one-paragraph plain-English summary. Descriptive classification, not a risk score or safety verdict.</p>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Paste any address and see what kind of actor it looks like: bot, exchange, market maker, issuer or person, with the signals behind it and a short summary. Not a risk score.</p>
           <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Sentinel &rarr;</span>
         </a>
 
@@ -280,7 +280,7 @@
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Telemetry</span>
           </div>
           <h4 class="text-lg font-bold mb-2">Read the XRPL network's macro state</h4>
-          <p class="text-sm text-muted leading-relaxed flex-grow">Total settlement volume, supply available for trade, regional liquidity flows, AMM depth, and an algebraic price-floor calculator. Useful for traders quoting and analysts modeling.</p>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Settlement volume, supply available to trade, regional liquidity, AMM depth and a what-if price model.</p>
           <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Telemetry &rarr;</span>
         </a>
 
@@ -290,7 +290,7 @@
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Pulse</span>
           </div>
           <h4 class="text-lg font-bold mb-2">See what's moving right now</h4>
-          <p class="text-sm text-muted leading-relaxed flex-grow">Live feed of public-source news plus every XRPL payment over $50,000, with sender + receiver labels. Whale moves, regulatory headlines, and RWA mints in one time-ordered stream.</p>
+          <p class="text-sm text-muted leading-relaxed flex-grow">News and large XRPL payments ($50,000 and up) in one live feed, with known wallets named, plus token mints and burns.</p>
           <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Pulse &rarr;</span>
         </a>
 
@@ -300,7 +300,7 @@
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Trust</span>
           </div>
           <h4 class="text-lg font-bold mb-2">Find institutional venues on XRPL</h4>
-          <p class="text-sm text-muted leading-relaxed flex-grow">Public directory of every permissioned domain (XLS-80) and permissioned-DEX trading venue (XLS-81) on XRPL. Drills into accepted credentials, owner identity, and on-chain trading activity.</p>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Every permissioned domain and permissioned trading venue on XRPL, with the credentials each accepts, who runs it and its trading activity.</p>
           <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Trust &rarr;</span>
         </a>
 
@@ -310,7 +310,7 @@
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Vault</span>
           </div>
           <h4 class="text-lg font-bold mb-2">Track real-world assets on XRPL</h4>
-          <p class="text-sm text-muted leading-relaxed flex-grow">Live per-issuer dashboard for tokenized treasuries, stablecoins, money-market funds, commercial paper, and energy commodities. Native units, no fabricated USD numbers.</p>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Tokenized assets by issuer: stablecoins, treasuries, money-market funds, private credit, commodities and more, each in its own unit.</p>
           <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Vault &rarr;</span>
         </a>
 
@@ -320,7 +320,7 @@
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Flows</span>
           </div>
           <h4 class="text-lg font-bold mb-2">Watch XRP ETF flow vs the ledger</h4>
-          <p class="text-sm text-muted leading-relaxed flex-grow">Daily AUM for every US-listed XRP-exposure ETF (spot and indirect-basket) plotted against XRPL exchange-flow delta. Two independent measurements on one date axis. Correlation, never causation.</p>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Daily XRP ETF assets beside on-chain exchange flows on one timeline. Correlation only, never causation.</p>
           <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Flows &rarr;</span>
         </a>
 
@@ -330,7 +330,7 @@
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Lineage</span>
           </div>
           <h4 class="text-lg font-bold mb-2">Trace the flow, understand the origin</h4>
-          <p class="text-sm text-muted leading-relaxed flex-grow">Live lineage tracker for institutional XRPL movement. Watch fresh RLUSD mint and burn activity, see auto-discovered Ripple counterparties as they're onboarded, and catch multi-hop relay bursts the moment they fire on-chain.</p>
+          <p class="text-sm text-muted leading-relaxed flex-grow">Live RLUSD supply, the wallets Ripple deals with, and large multi-hop payment chains.</p>
           <span class="text-sm text-accent mt-4 group-hover:translate-x-1 transition">Open Lineage &rarr;</span>
         </a>
 
@@ -338,8 +338,7 @@
 
       <div class="mt-10 text-center">
         <p class="text-sm text-muted">
-          Or skip the per-service split and read all of them as one machine-payable API at
-          <a href="/pricing/" class="text-accent hover:underline">pricing</a>.
+          The six services are also paid APIs for agents and developers. See <a href="/pricing/" class="text-accent hover:underline">pricing</a>.
         </p>
       </div>
     </div>
@@ -353,19 +352,19 @@
       <ul class="space-y-3 text-sm text-muted leading-relaxed">
         <li class="flex gap-3">
           <span class="text-accent shrink-0">&rarr;</span>
-          <span><strong class="text-white">Not investment advice.</strong> The data here is on-chain measurement and public-source aggregation. We surface what happened. We do not tell you whether to buy or sell anything.</span>
+          <span><strong class="text-white">Not investment advice.</strong> We show what happened on the ledger and in public news. We never tell you to buy or sell.</span>
         </li>
         <li class="flex gap-3">
           <span class="text-accent shrink-0">&rarr;</span>
-          <span><strong class="text-white">Not a risk score or compliance product.</strong> XR-Sentinel classifies wallet behavior; it doesn't tell you a wallet is safe or unsafe. XR-Trust lists permissioned domains; it doesn't endorse the entities running them.</span>
+          <span><strong class="text-white">Not a risk score or compliance product.</strong> XR-Sentinel describes wallet behavior; it does not say a wallet is safe. XR-Trust lists permissioned domains; it does not endorse who runs them.</span>
         </li>
         <li class="flex gap-3">
           <span class="text-accent shrink-0">&rarr;</span>
-          <span><strong class="text-white">Not a wallet, exchange, or custodian.</strong> We read the public XRP Ledger. We never custody your funds or ask for your private keys.</span>
+          <span><strong class="text-white">Not a wallet, exchange, or custodian.</strong> We only read the public ledger. We never hold funds or ask for keys.</span>
         </li>
         <li class="flex gap-3">
           <span class="text-accent shrink-0">&rarr;</span>
-          <span><strong class="text-white">Not affiliated with Ripple Labs.</strong> XRPL is a public open-source protocol. We are an independent project building on top of it.</span>
+          <span><strong class="text-white">Not affiliated with Ripple Labs.</strong> We are an independent company building on the open XRP Ledger.</span>
         </li>
       </ul>
     </div>
@@ -378,19 +377,19 @@
       <div class="grid sm:grid-cols-2 gap-3 mt-6">
         <a href="https://xrpl.org" target="_blank" rel="noopener noreferrer" class="bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
           <div class="text-sm font-semibold text-white mb-1">xrpl.org</div>
-          <div class="text-xs text-muted">The XRPL Foundation's official documentation. Protocol specs, developer tutorials, validator list.</div>
+          <div class="text-xs text-muted">The XRP Ledger documentation: how it works, developer guides and tutorials.</div>
         </a>
         <a href="https://xrpscan.com" target="_blank" rel="noopener noreferrer" class="bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
           <div class="text-sm font-semibold text-white mb-1">xrpscan.com</div>
-          <div class="text-xs text-muted">XRPL block explorer. Look up any transaction or address; see balances, history, trustlines.</div>
+          <div class="text-xs text-muted">A ledger explorer. Look up any transaction or address.</div>
         </a>
         <a href="https://x402.org" target="_blank" rel="noopener noreferrer" class="bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
           <div class="text-sm font-semibold text-white mb-1">x402.org</div>
-          <div class="text-xs text-muted">The agent-payable API standard. Specification, supported facilitators, client libraries.</div>
+          <div class="text-xs text-muted">The x402 standard: specification and client libraries.</div>
         </a>
         <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" class="bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
           <div class="text-sm font-semibold text-white mb-1">modelcontextprotocol.io</div>
-          <div class="text-xs text-muted">Anthropic's MCP standard for connecting AI assistants to external tools. The XRPL-Utilities MCP server speaks this.</div>
+          <div class="text-xs text-muted">The Model Context Protocol, an open standard for connecting AI assistants to tools. Our MCP server uses it.</div>
         </a>
       </div>
     </div>
