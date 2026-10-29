@@ -109,5 +109,11 @@ check('Status has no per-service banner blocks', !/id="overall-sentinel"/.test(s
 
 check('one price noun: per call', ['sentinel','telemetry','pulse','trust'].every(p => !/\$0\.10 per (scan|snapshot|query)/.test(read(p + '/index.html'))));
 check('Tip copy has no internal accounting note', !read('tip/index.html').includes('operator accounting'));
+// #54 added XR-Ledger to Status but the CSP blocked the fetch, so it read
+// "Unknown" live. Every host Status checks must be in connect-src.
+const csp = (read('_headers').match(/connect-src[^;]*/) || [''])[0];
+const hosts = [...status.matchAll(/\["([a-z]+)",\s+"XR-/g)].map(m => `https://${m[1]}.xrpl-utilities.io`);
+check('Status checks 7 services', hosts.length === 7);
+check('CSP allows every host Status checks', hosts.every(h => csp.split(/\s+/).includes(h)));
 console.log(fails ? `${fails} FAILED` : 'review round 2: ok');
 process.exit(fails ? 1 : 0);
