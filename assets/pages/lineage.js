@@ -166,7 +166,7 @@ async function loadTopology() {
         </div>`;
     }
     if (otherExits.length) {
-      const listHtml = otherExits.map(e => `${escapeHtml(e.entity)} <span class="opacity-70">${escapeHtml(fmtInt(e.wallet_count))}</span>`)
+      const listHtml = otherExits.map(e => `<span class="whitespace-nowrap">${escapeHtml(e.entity)} <span class="opacity-70">${escapeHtml(fmtInt(e.wallet_count))}</span></span>`)
         .join('<span class="text-muted"> · </span>');
       eHtml += `
         <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
