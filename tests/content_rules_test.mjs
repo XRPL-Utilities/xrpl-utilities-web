@@ -134,7 +134,7 @@ if (!start.includes('our reference agent')) fail('start: the live-proof settleme
 // MCP link). Every page's Products, Developers and Legal columns must match
 // the home page's.
 const footerCol = (html, h) => {
-  const m = html.match(new RegExp('>' + h + '</h4>\\s*<ul[^>]*>([\\s\\S]*?)</ul>'));
+  const m = html.match(new RegExp('>' + h + '</h2>\\s*<ul[^>]*>([\\s\\S]*?)</ul>'));
   return m ? [...m[1].matchAll(/href="([^"]+)"/g)].map((x) => x[1]).join(' ') : null;
 };
 const home = fs.readFileSync(path.join(repo, 'index.html'), 'utf8');
