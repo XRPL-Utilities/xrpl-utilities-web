@@ -118,12 +118,20 @@
           elEtfDelta.textContent = sign + dollarStr + ' since prior day';
         } else if (elEtfDelta) {
           elEtfDelta.className = 'text-muted';
-          // Pull live tracked count from the same response so the
-          // subtitle stays in sync when new ETFs surface upstream.
-          const n = Array.isArray(flowsCorr.tracked_etfs) ? flowsCorr.tracked_etfs.length : null;
+          // Count only funds with a figure on the latest day. Some
+          // tracked tickers are listed but not yet reporting, so the
+          // registry size would overstate what the total covers.
+          const perTicker = flowsCorr.etf_aum_per_ticker_daily;
+          let n = 0;
+          if (perTicker && typeof perTicker === 'object') {
+            for (const rowsT of Object.values(perTicker)) {
+              const last = Array.isArray(rowsT) ? rowsT[rowsT.length - 1] : null;
+              if (last && last.snapshot_date === latest.snapshot_date && typeof last.aum_usd === 'number') n++;
+            }
+          }
           elEtfDelta.textContent = n
-            ? `XRP-attributable across ${n} tracked ETFs`
-            : 'XRP-attributable across tracked ETFs';
+            ? `XRP exposure across ${n} reporting funds`
+            : 'XRP exposure across reporting funds';
         }
       }
     }
