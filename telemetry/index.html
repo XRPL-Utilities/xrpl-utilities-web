@@ -556,22 +556,21 @@
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
           <h3 class="text-3xl font-bold mb-6">Pay $0.10 per snapshot, no API key</h3>
           <p class="text-muted leading-relaxed mb-6">
-            XR-Telemetry uses <strong class="text-white">x402 v2</strong> with the
-            <code class="font-mono text-white">exact</code> scheme: <code class="font-mono text-white">POST /scan</code> accepts RLUSD or XRP on the XRP Ledger, or USDC on Base.
-            Or use the invoice flow below with any XRPL wallet.
+            <code class="font-mono text-white">POST /scan</code> takes RLUSD or XRP on the XRP Ledger, or USDC on Base.
+            Or pay an invoice from any XRPL wallet, as below.
           </p>
           <ol class="space-y-4 text-sm text-muted">
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">1.</span>
-              <span><code class="font-mono text-white">POST /quote</code> returns an invoice with amount in drops, recipient, deep link, and QR code.</span>
+              <span><code class="font-mono text-white">POST /quote</code> returns an invoice with the amount, a wallet link and a QR code.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">2.</span>
-              <span>Pay the XRPL Payment from any wallet. Poll <code class="font-mono text-white">GET /status/{invoice_id}</code> until <code class="font-mono text-white">paid: true</code>.</span>
+              <span>Pay it from any XRPL wallet. <code class="font-mono text-white">GET /status/{invoice_id}</code> shows <code class="font-mono text-white">paid: true</code> once it lands.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">3.</span>
-              <span><code class="font-mono text-white">GET /results/{invoice_id}</code> returns the full TelemetryPayload: supply, liquidity, AMM, utility floor.</span>
+              <span><code class="font-mono text-white">GET /results/{invoice_id}</code> returns the full snapshot.</span>
             </li>
           </ol>
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
@@ -636,12 +635,12 @@ payload = requests.get(
 <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-3 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">supply</code>: total / circulating / escrowed / dormant XRP, AMM-locked, exchange omnibus + venue/address counts, DEX orderbook depth, HODL wave %, 24h exchange outflow, escrow release&divide;relock ratio</li>
-        <li><code class="font-mono text-white">liquidity</code>: per-region inflow / outflow / net flow over 24h, with a list of top venues</li>
-        <li><code class="font-mono text-white">amm</code>: top pairs (TVL USD, 1% depth XRP, APR%); vault metrics (TVL XRP-equivalent, utilization%, supply APY%) ship once the XLS-Vaults amendment activates on mainnet</li>
-        <li><code class="font-mono text-white">derived_models</code>: <strong class="text-white">on_ledger_liquidity</strong> (measured: AMM reserves plus funded order-book offers), <strong class="text-white">modeled_exchange_depth</strong> (estimated from exchange balances and <strong class="text-white">proxy_ratio</strong>), and <strong class="text-white">active_float</strong>, their sum, with a 24h change and each component</li>
-        <li><code class="font-mono text-white">utility_floor</code>: baseline (= P at the assumed Q, V, and Active Float as M), current spot, premium ratio, plus an ETF-flow-biased secondary P with provenance block</li>
-        <li><code class="font-mono text-white">generated_at</code>: ISO timestamp the snapshot was computed</li>
+        <li><code class="font-mono text-white">supply</code>: total, circulating, escrowed, dormant and AMM-locked XRP, XRP on exchanges, and 24-hour exchange outflow</li>
+        <li><code class="font-mono text-white">liquidity</code>: XRP in, out and net by region over 24 hours, with the top venues</li>
+        <li><code class="font-mono text-white">amm</code>: the largest AMM pools with their size, depth and yield</li>
+        <li><code class="font-mono text-white">derived_models</code>: XRP available to trade, split into what sits on the ledger and an estimate for exchanges</li>
+        <li><code class="font-mono text-white">utility_floor</code>: the price-floor calculator&rsquo;s result from stated assumptions, next to the current price</li>
+        <li><code class="font-mono text-white">generated_at</code>: when the snapshot was built</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
         Full field-level details at <a href="https://telemetry.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://telemetry.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
@@ -651,7 +650,7 @@ payload = requests.get(
 <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Uptime</h2>
       <h3 class="text-3xl font-bold mb-2">30-day uptime, measured</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-2xl">
-        Live aggregate from <code class="font-mono text-white">/uptime?days=30</code>. The recorder probes our upstream dependencies on a recurring cadence and counts each sample as healthy only if all succeed. Same liveness assertion <code class="font-mono text-white">/healthz</code> returns. No external monitoring; data is what we see from inside the service.
+        Live aggregate from <code class="font-mono text-white">/uptime?days=30</code>. The service checks itself at a fixed interval and counts a check as healthy only if everything it depends on answers. These are its own checks, not an outside monitor.
       </p>
 
       <div class="grid sm:grid-cols-3 gap-4">
@@ -679,10 +678,10 @@ payload = requests.get(
       <div class="mt-6 bg-panel border border-border rounded-2xl p-6 text-sm text-muted leading-relaxed">
         <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-3">What this number covers</div>
         <p class="mb-3">
-          <strong class="text-white">Covered:</strong> backend liveness of the XRPL RPC dependency and the x402 facilitator. If either probe fails at sample time, that sample counts as unhealthy and is attributed to its component.
+          <strong class="text-white">Covered:</strong> whether the service can read the XRP Ledger and take payments. If either fails during a check, that check counts as down.
         </p>
         <p>
-          <strong class="text-white">Not covered:</strong> external network latency between you and the service, individual endpoint correctness (only liveness), and data freshness inside the snapshot cache. For data freshness, see <code class="font-mono text-white">/healthz</code> <code class="font-mono text-white">checks.slow_tasks</code>.
+          <strong class="text-white">Not covered:</strong> the network between you and the service, whether each answer is correct, and how fresh the data is. For freshness, see the <a href="/status/" class="text-accent hover:underline">Status page</a>.
         </p>
       </div>
 </div>
@@ -798,7 +797,7 @@ payload = requests.get(
     </div>
   </footer>
 
-  <script src="/assets/pages/telemetry.js?v=m6"></script>
+  <script src="/assets/pages/telemetry.js?v=m7"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>

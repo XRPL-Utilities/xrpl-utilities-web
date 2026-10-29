@@ -408,21 +408,20 @@
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
           <h3 class="text-3xl font-bold mb-6">Pay $0.10 per query, no API key</h3>
           <p class="text-muted leading-relaxed mb-6">
-            XR-Trust uses <strong class="text-white">x402 v2</strong> with the
-            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme. Pay in RLUSD or XRP on the XRP Ledger, or USDC on Base.
+            Every paid call accepts RLUSD, XRP and USDC on Base.
           </p>
-          <ol class="space-y-4 text-sm text-muted">
+          <ol class="space-y-3 text-sm text-muted">
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">1.</span>
-              <span><code class="font-mono text-white">POST /scan</code> returns <code class="font-mono text-white">402 Payment Required</code> with three payment options: RLUSD, XRP and USDC on Base.</span>
+              <span>Call a paid route, such as <code class="font-mono text-white">POST /scan</code>. It answers with its price instead of the data.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">2.</span>
-              <span>Sign a payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
+              <span>Your agent pays in RLUSD or XRP on the XRP Ledger, or USDC on Base. The quote is good for 10 minutes.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">3.</span>
-              <span>Server verifies, looks up the domain or owner, then settles. Returns <code class="font-mono text-white">200</code> with the JSON and a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
+              <span>You get the domain or operator record. If the call fails, the payment is never sent.</span>
             </li>
           </ol>
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
@@ -497,20 +496,15 @@ record = resp.json()
 <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-2 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">domains[]</code>: one normalized record per PermissionedDomain ledger object</li>
-        <li><code class="font-mono text-white">domain_id</code>, <code class="font-mono text-white">owner_address</code>, <code class="font-mono text-white">sequence</code>, <code class="font-mono text-white">flags</code>, <code class="font-mono text-white">previous_txn_id</code>, <code class="font-mono text-white">previous_txn_lgr_seq</code>: full XLS-80 ledger-object metadata</li>
-        <li><code class="font-mono text-white">owner_label</code>: external label when available (<code class="font-mono text-white">{name, desc, domain, verified, twitter}</code>), else <code class="font-mono text-white">null</code></li>
-        <li><code class="font-mono text-white">accepted_credentials[]</code>: each entry carries <code class="font-mono text-white">{issuer, credential_type, credential_type_decoded, issuer_label}</code>. Hex types are decoded to ASCII when printable (e.g. <code class="font-mono text-white">4B5943</code> → <code class="font-mono text-white">KYC</code>).</li>
-        <li><code class="font-mono text-white">institutional_issuer_count</code> + <code class="font-mono text-white">institutional_issuers[]</code>: count and display names of distinct externally-labeled, non-self credential issuers accepted by the domain</li>
-        <li><code class="font-mono text-white">identity_tier</code>: one of <code class="font-mono text-white">institutional</code> (TOML + DID published), <code class="font-mono text-white">named_entity</code> (TOML or DID only), <code class="font-mono text-white">funder_attributed</code> (no TOML/DID, but parent funder is a labeled entity), <code class="font-mono text-white">credential_attributed</code> (subject linked to a labeled issuer via accepted credential), <code class="font-mono text-white">did_only</code> (XLS-40 DID present), or <code class="font-mono text-white">anonymous</code>. Six-tier ladder, populated on every directory row.</li>
-        <li><strong class="text-white">Drill-down only</strong> (single-domain lookup): <code class="font-mono text-white">lifecycle</code> (creation + last-modified meta walked from <code class="font-mono text-white">PreviousTxnID</code>), <code class="font-mono text-white">permissioned_market</code> (XLS-81 owner-side offers + AMMs), and <code class="font-mono text-white">identity</code> (XLS-40 DID + parsed <code class="font-mono text-white">.well-known/xrp-ledger.toml</code> when published)</li>
-        <li><strong class="text-white">Operator attribution</strong> (free <code class="font-mono text-white">GET /permissioned-domains/operators/{addr}/attribution</code>): the auto-walker output. <code class="font-mono text-white">funder</code> (parent + well-known label), <code class="font-mono text-white">domains[]</code> with decoded credential types, <code class="font-mono text-white">credentialed_subjects[]</code> with trustline-implied asset gating, <code class="font-mono text-white">retail_signals</code> (self-issued-only, minimal DID, NFT objects on operator wallet, etc.), <code class="font-mono text-white">likely_retail</code> boolean, <code class="font-mono text-white">attribution_confidence</code> (<code class="font-mono text-white">high</code>/<code class="font-mono text-white">medium</code>/<code class="font-mono text-white">low</code>), and a <code class="font-mono text-white">summary_one_line</code> server-generated narrative. Backfilled on every walker revision bump.</li>
-        <li><strong class="text-white">Ecosystem usage</strong> (free <code class="font-mono text-white">GET /permissioned-domains/usage-summary</code>): rolled-up onboarding activity over a configurable window: new operators, new credentials, new credentialed subjects, deletes. Right for tracking institutional adoption pace without paying per row.</li>
-        <li><code class="font-mono text-white">total</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">offset</code>, <code class="font-mono text-white">next_offset</code>, <code class="font-mono text-white">schema_version</code>, <code class="font-mono text-white">generated_at</code>: pagination + envelope</li>
-        <li><code class="font-mono text-white">/credentials/issuers</code> returns <code class="font-mono text-white">issuers[]</code> with <code class="font-mono text-white">{issuer_address, issuer_label, domains_referencing, credential_types_issued}</code></li>
+        <li><code class="font-mono text-white">domains[]</code>: one record per permissioned domain, with its ID and owner wallet</li>
+        <li><code class="font-mono text-white">owner_label</code>: the operator&rsquo;s public name and website when known</li>
+        <li><code class="font-mono text-white">accepted_credentials[]</code>: each credential the domain accepts, who issues it, and its type in plain text (for example KYC)</li>
+        <li><code class="font-mono text-white">identity_tier</code>: how much the operator has published about who it is, from <code class="font-mono text-white">institutional</code> down to <code class="font-mono text-white">anonymous</code></li>
+        <li>A single-domain lookup adds when it was created and last changed, its trading activity, and the operator&rsquo;s published identity</li>
+        <li><code class="font-mono text-white">/credentials/issuers</code> returns each issuer, the domains that accept it, and the credential types it has issued</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
-        Reserved fields surfaced as <code class="font-mono text-white">null</code> in v1, populated later: <code class="font-mono text-white">member_count_estimate</code>, <code class="font-mono text-white">verified_attestation</code>, <code class="font-mono text-white">health_score</code>. Full field-level details at <a href="https://trust.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>.
+        Full field-level details at <a href="https://trust.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>.
       </p>
 </div>
         </div>

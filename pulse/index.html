@@ -613,39 +613,34 @@
           <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">For developers &amp; AI agents</h2>
           <h3 class="text-3xl font-bold mb-6">Pay per query or stream live, no API key</h3>
           <p class="text-muted leading-relaxed mb-6">
-            XR-Pulse implements <strong class="text-white">x402 v2</strong> with the
-            <code class="font-mono text-sm bg-ink px-2 py-0.5 rounded">exact</code> scheme on XRPL mainnet.
-            Verification and settlement are delegated to the
-            <a href="https://t54.ai" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">t54</a> XRPL facilitator.
-            Two ways to consume the feed: pay per snapshot, or buy a time-boxed WebSocket window
-            and receive events as they fire.
+            Two ways to use the feed: pay for a snapshot, or buy a live stream and get events as they happen.
           </p>
           <div class="grid sm:grid-cols-2 gap-3 mb-6">
             <div class="bg-ink border border-border rounded-lg p-4">
               <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Per query &middot; $0.10</div>
               <div class="text-sm text-muted leading-relaxed">
-                <code class="font-mono text-white">POST /events/recent</code> returns a snapshot of the most recent matched events. One payment, one response. Right for polling agents and one-off lookups.
+                <code class="font-mono text-white">POST /events/recent</code> returns the latest matching events. One payment, one response.
               </div>
             </div>
             <div class="bg-ink border border-border rounded-lg p-4">
               <div class="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mb-2">Live stream &middot; from $0.50/hr</div>
               <div class="text-sm text-muted leading-relaxed">
-                <code class="font-mono text-white">POST /stream/purchase</code> mints a JWT that opens a long-lived WebSocket at <code class="font-mono text-white">wss://pulse&hellip;/stream</code>. Events arrive as they fire. 1h $0.50, 6h $2.50, 24h $7.50.
+                <code class="font-mono text-white">POST /stream/purchase</code> opens a live connection. Events arrive as they happen. 1 hour $0.50, 6 hours $2.50, 24 hours $7.50.
               </div>
             </div>
           </div>
           <ol class="space-y-3 text-sm text-muted">
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">1.</span>
-              <span>Hit either paid endpoint. It returns <code class="font-mono text-white">402 Payment Required</code> with three options: XRP, RLUSD, or USDC on Base.</span>
+              <span>Call either paid route. It answers with its price instead of the data.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">2.</span>
-              <span>Sign a payment matching one option, base64-JSON-encode it, send as <code class="font-mono text-white">PAYMENT-SIGNATURE</code>.</span>
+              <span>Your agent pays in RLUSD or XRP on the XRP Ledger, or USDC on Base. The quote is good for 10 minutes.</span>
             </li>
             <li class="flex gap-4">
               <span class="text-accent font-mono font-bold">3.</span>
-              <span>Server verifies, runs the work (or mints a stream token), then settles. Returns <code class="font-mono text-white">200</code> with a <code class="font-mono text-white">PAYMENT-RESPONSE</code> header.</span>
+              <span>You get the data, or a stream token for the window you bought. If the call fails, the payment is never sent.</span>
             </li>
           </ol>
           <div class="mt-8 flex flex-wrap gap-3 text-sm">
@@ -724,15 +719,12 @@ feed = resp.json()
 <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Output shape</h2>
       <h3 class="text-3xl font-bold mb-6">What you get back</h3>
       <ul class="space-y-2 text-muted leading-relaxed">
-        <li><code class="font-mono text-white">events[]</code>: normalized records, newest-first; mixes news + on-chain activity (whale, focus-watch, relay-burst, RWA obligations, cross-signal choreographies, institutional dispersion) in one stream</li>
-        <li><code class="font-mono text-white">title</code>, <code class="font-mono text-white">primary_url</code>, <code class="font-mono text-white">brief</code>, <code class="font-mono text-white">published_at</code> (UNIX seconds)</li>
-        <li><code class="font-mono text-white">source_appearances[]</code>: which feed produced the event. News sources (e.g. <code class="font-mono text-white">coindesk</code>, <code class="font-mono text-white">sec_press</code>) plus on-chain sources: <code class="font-mono text-white">whale_xrpl</code>, <code class="font-mono text-white">focus_watch</code>, <code class="font-mono text-white">relay_burst</code>, <code class="font-mono text-white">rwa_obligations_delta</code>, <code class="font-mono text-white">rwa_issuer_flow</code>, <code class="font-mono text-white">sentinel_signal</code>, <code class="font-mono text-white">choreography_watcher</code>, <code class="font-mono text-white">institutional_dispersion</code></li>
-        <li><code class="font-mono text-white">appearance_count</code> + <code class="font-mono text-white">cross_verified</code>: number of independent sources covering the same story; flag set when 2+ within the dedupe window. On-chain events are single-source by design.</li>
-        <li><code class="font-mono text-white">correlation</code> (news only): XRPL price at ingestion and at +4h with delta percent. Pure measurement, no causal claim.</li>
-        <li><code class="font-mono text-white">active_utility</code>: signal payload, shape varies by source. News carries <code class="font-mono text-white">{active, signals[]}</code>; on-chain rows carry a top-level <code class="font-mono text-white">signal</code> field identifying the kind (e.g. <code class="font-mono text-white">whale_transfer</code>, <code class="font-mono text-white">focus_outflow</code>, <code class="font-mono text-white">relay_burst_detected</code>, <code class="font-mono text-white">rwa_obligations_spike</code>/<code class="font-mono text-white">drop</code>, <code class="font-mono text-white">institutional_choreography_detected</code>, <code class="font-mono text-white">institutional_dispersion_detected</code>) with per-signal fields. Most signal kinds also carry an optional <code class="font-mono text-white">tldr</code> string (server-generated plain-English summary). See <code class="font-mono text-white">/schema</code> for the full per-signal field list.</li>
-        <li><code class="font-mono text-white">target_addresses[]</code>, <code class="font-mono text-white">sentinel_context</code>: XRPL addresses attached to the event + best-effort XR-Sentinel cross-reference</li>
-        <li><code class="font-mono text-white">row_count</code>, <code class="font-mono text-white">limit</code>, <code class="font-mono text-white">min_whale_usd</code>, <code class="font-mono text-white">kind</code> (<code class="font-mono text-white">news</code> | <code class="font-mono text-white">activity</code> filter), <code class="font-mono text-white">schema_url</code>: response envelope. <code class="font-mono text-white">min_whale_usd</code> reflects the floor applied (default $1M; pass 0 to see every stored payment of $50k or more).</li>
-        <li><code class="font-mono text-white">high_rate_escrow_issuers_excluded[]</code>: XLS-85 token-escrow issuers dropped from this response. An issuer whose peak single-day escrow count clears the high-rate threshold is automated repetition on its own token, not adoption, and one such bot can be 99% of the stored escrow record. They are excluded by default and always named here. Send <code class="font-mono text-white">include_high_rate_escrows: true</code> for the raw stream.</li>
+        <li><code class="font-mono text-white">events[]</code>: news and on-chain activity in one list, newest first</li>
+        <li>Each event has a title, link, short summary and time</li>
+        <li><code class="font-mono text-white">source_appearances[]</code> and <code class="font-mono text-white">appearance_count</code>: which outlets or on-chain feeds reported it, and how many</li>
+        <li>News events carry the XRP price when the story landed and 4 hours later. A measurement, not a claim that one caused the other.</li>
+        <li><code class="font-mono text-white">target_addresses[]</code>: the wallets involved, with XR-Sentinel context where it has some</li>
+        <li><code class="font-mono text-white">min_whale_usd</code>: the smallest payment included (default $1M; pass 0 to see every stored payment of $50,000 or more).</li>
       </ul>
       <p class="text-xs text-muted mt-6 leading-relaxed">
         Full field-level details at <a href="https://pulse.xrpl-utilities.io/schema" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/schema</code></a>. Live manifest at <a href="https://pulse.xrpl-utilities.io/agents.json" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline"><code class="font-mono text-white">/agents.json</code></a>.
@@ -850,7 +842,7 @@ feed = resp.json()
     </div>
   </footer>
 
-  <script src="/assets/pages/pulse.js?v=m11"></script>
+  <script src="/assets/pages/pulse.js?v=m12"></script>
   <script src="/assets/a11y.js?v=1"></script>
 </body>
 </html>

@@ -124,10 +124,10 @@ function renderEvent(e) {
   const sources = isWhaleSrc
     ? ''
     : (e.source_appearances || []).map(s =>
-        `<span class="text-xs px-2 py-0.5 rounded source-${escapeHtml(s)} border">${escapeHtml(s)}</span>`
+        `<span class="text-xs px-2 py-0.5 rounded source-${escapeHtml(s)} border">${escapeHtml(sourceName(s))}</span>`
       ).join(' ');
   const verifiedPill = e.cross_verified
-    ? `<span class="text-xs px-2 py-0.5 rounded verified-pill border">cross_verified</span>`
+    ? `<span class="text-xs px-2 py-0.5 rounded verified-pill border">reported by 2+ sources</span>`
     : '';
   const utilityPill = e.active_utility && e.active_utility.active
     ? `<span class="text-xs px-2 py-0.5 rounded utility-pill border">● active utility</span>`
@@ -632,20 +632,25 @@ function renderEvent(e) {
   `;
 }
 
-const SOURCE_DESCRIPTIONS = {
-  sec_press: 'U.S. Securities and Exchange Commission press releases. Regulatory press.',
-  federal_reserve: 'U.S. Federal Reserve press releases. Central bank.',
-  bis_speeches: 'Bank for International Settlements central-bank speeches. Central bank.',
-  ecb_press: 'European Central Bank press releases. Central bank.',
-  bank_of_england: 'Bank of England news RSS. Central bank.',
-  rba_australia: 'Reserve Bank of Australia media releases. Central bank.',
-  bank_of_japan: 'Bank of Japan English-language news RSS. Central bank.',
-  bank_of_canada: 'Bank of Canada news RSS. Central bank.',
-  coindesk: 'CoinDesk outbound feed. Crypto press, broad coverage filtered to Ripple/XRP/RLUSD/XRPL mentions.',
-  cointelegraph_xrp: "Cointelegraph's XRP tag RSS. Crypto press, source-side tag-filtered.",
-  crypto_news_xrp: "crypto.news XRP tag RSS. Crypto press, ~94% XRP-relevant on probe.",
-  coinspeaker_xrp: "Coinspeaker XRP search RSS. Crypto press, ~50% XRP-relevant on probe.",
+// Display name and one plain line per news source. The raw ids stay in the
+// API; the page shows people the outlet's own name.
+const SOURCES = {
+  sec_press:         ['SEC', 'U.S. Securities and Exchange Commission press releases.'],
+  federal_reserve:   ['Federal Reserve', 'U.S. Federal Reserve press releases.'],
+  bis_speeches:      ['BIS', 'Central-bank speeches collected by the Bank for International Settlements.'],
+  ecb_press:         ['ECB', 'European Central Bank press releases.'],
+  bank_of_england:   ['Bank of England', 'Bank of England news.'],
+  rba_australia:     ['Reserve Bank of Australia', 'Reserve Bank of Australia media releases.'],
+  bank_of_japan:     ['Bank of Japan', 'Bank of Japan news in English.'],
+  bank_of_canada:    ['Bank of Canada', 'Bank of Canada news.'],
+  coindesk:          ['CoinDesk', 'CoinDesk stories that mention Ripple, XRP, RLUSD or the XRP Ledger.'],
+  cointelegraph_xrp: ['Cointelegraph', 'Cointelegraph stories about XRP.'],
+  crypto_news_xrp:   ['crypto.news', 'crypto.news stories about XRP.'],
+  coinspeaker_xrp:   ['Coinspeaker', 'Coinspeaker stories about XRP.'],
 };
+function sourceName(id) {
+  return SOURCES[id] ? SOURCES[id][0] : String(id).replace(/_/g, ' ');
+}
 
 function fmtCount(n) {
   if (typeof n !== 'number') return '-';
@@ -690,10 +695,10 @@ function renderSourceGrid(stats) {
   const cards = Object.entries(feeds)
     .filter(([_, f]) => f.is_active || (f.last_status && f.last_status.error === null))
     .map(([name, _]) => {
-      const desc = SOURCE_DESCRIPTIONS[name] || '';
+      const desc = SOURCES[name] ? SOURCES[name][1] : '';
       return `<div class="flex-shrink-0 w-full md:w-1/3 px-2">
         <div class="bg-panel border border-border rounded-lg p-5 h-full">
-          <div class="text-xs uppercase tracking-wider mb-2 source-${escapeHtml(name)} inline-block px-2 py-1 rounded border">${escapeHtml(name)}</div>
+          <div class="text-xs uppercase tracking-wider mb-2 source-${escapeHtml(name)} inline-block px-2 py-1 rounded border">${escapeHtml(sourceName(name))}</div>
           <p class="text-sm text-muted leading-relaxed mt-3">${escapeHtml(desc)}</p>
         </div>
       </div>`;
@@ -795,7 +800,7 @@ const _columns = {
     listId: 'news-list',
     countId: 'news-count',
     navId: 'news-nav',
-    emptyMsg: 'No news events stored yet. Ingestion runs on a recurring cadence; check back shortly.',
+    emptyMsg: 'No news yet. New stories are added through the day; check back shortly.',
   },
   activity: {
     kind: 'activity',

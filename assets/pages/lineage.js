@@ -108,7 +108,7 @@ async function loadTopology() {
         <div class="bg-ink border border-amber-500/30 rounded-lg p-3">
           <div class="text-xs font-semibold text-white">Ripple Escrow Wallets</div>
           <div class="text-[10px] text-muted mt-1">${escrowWallets.length} wallets</div>
-          <div class="text-[10px] text-amber-400 mt-1">named in Ripple's xrp-ledger.toml</div>
+          <div class="text-[10px] text-amber-400 mt-1">published by Ripple itself</div>
         </div>`;
     }
     sourceEl.innerHTML = html || '<div class="text-[11px] text-muted">No source wallets returned.</div>';
