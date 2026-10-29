@@ -509,7 +509,7 @@ const sla30Pct = document.getElementById('sla-30d-pct');
 const sla30Meta = document.getElementById('sla-30d-meta');
 const sla24Pct = document.getElementById('sla-24h-pct');
 const sla24Meta = document.getElementById('sla-24h-meta');
-const slaTarget = document.getElementById('sla-target');
+const slaInterval = document.getElementById('sla-interval');
 const slaBootstrap = document.getElementById('sla-bootstrap');
 const slaDaysObserved = document.getElementById('sla-days-observed');
 
@@ -536,7 +536,8 @@ fetch(TELEMETRY_API + '/uptime?days=30')
     sla30Meta.textContent = fmtSamples(d.uptime_window_30d);
     sla24Pct.textContent = fmtPct(d.uptime_window_24h.uptime_pct);
     sla24Meta.textContent = fmtSamples(d.uptime_window_24h);
-    slaTarget.textContent = (d.target_uptime_pct || 99.0).toFixed(1) + '%';
+    const secs = Number(d.sample_interval_seconds);
+    slaInterval.textContent = secs > 0 ? Math.round(secs / 60) + ' min' : '-';
     if (d.uptime_window_30d && d.uptime_window_30d.bootstrap) {
       slaBootstrap.classList.remove('hidden');
       slaDaysObserved.textContent = (d.uptime_window_30d.days_observed || 0).toFixed(2);

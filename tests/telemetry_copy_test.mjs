@@ -32,5 +32,7 @@ check('a delta that rounds to 0.00% is not shown in red', js.includes('Math.abs(
 // 2026-10-29: the service offers no SLA; the uptime panel reads /uptime.
 check('uptime panel reads /uptime, not /sla', js.includes("'/uptime?days=30'") && !js.includes("'/sla"));
 check('page never calls uptime an SLA', !/\bSLA\b/.test(html));
+// 2026-10-29: no published uptime target either; it read like an SLA.
+check('uptime panel shows no target', !js.includes('target_uptime') && !html.includes('sla-target') && !/>\s*Target\s*</.test(html));
 console.log(fails ? `${fails} FAILED` : 'telemetry copy: ok');
 process.exit(fails ? 1 : 0);
