@@ -132,23 +132,47 @@ async function loadTopology() {
     pipelineEl.innerHTML = pHtml;
 
     // ===== EXITS COLUMN =====
-    // wallets[] holds only XRPScan-named addresses; inferred_wallet_count
-    // is our own attribution and has no addresses.
+    // wallets[] holds up to 10 publicly named addresses (wallet_count is
+    // the full count); inferred_wallet_count is our own attribution and
+    // has no addresses. Exchanges our tracked wallets reach get a card;
+    // the rest are publicly named but not yet seen in our flows, and
+    // share one card.
+    const EXIT_ADDR_SHOWN = 4;
     let eHtml = '';
+    const otherExits = [];
     for (const ent of (j.exits && j.exits.entities) || []) {
-      const named = ent.wallets || [];
+      const namedCount = ent.wallet_count || 0;
       const more = ent.inferred_wallet_count || 0;
-      const linksHtml = named.map(w =>
+      const tracked = ent.tracked_wallet_count || 0;
+      if (!tracked && !more) {
+        if (namedCount) otherExits.push(ent);
+        continue;
+      }
+      const shown = (ent.wallets || []).slice(0, EXIT_ADDR_SHOWN);
+      let linksHtml = shown.map(w =>
         `<a href="https://xrpscan.com/account/${escapeHtml(w.address)}" target="_blank" rel="noopener noreferrer" class="font-mono text-[10px] text-muted hover:text-emerald-400 transition">${escapeHtml(truncAddr(w.address))}</a>`
       ).join('<span class="text-muted">, </span>');
+      if (linksHtml && namedCount > shown.length) {
+        linksHtml += `<span class="text-muted">, and ${escapeHtml(fmtInt(namedCount - shown.length))} more</span>`;
+      }
       const lines = [];
-      if (named.length) lines.push(`${fmtInt(named.length)} publicly named`);
-      if (more) lines.push(`${fmtInt(more)} ${named.length ? 'more ' : ''}we attribute (addresses not shown)`);
+      if (namedCount) lines.push(`${fmtInt(namedCount)} publicly named`);
+      if (more) lines.push(`${fmtInt(more)} ${namedCount ? 'more ' : ''}we attribute (addresses not shown)`);
       eHtml += `
         <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
           <div class="text-xs font-semibold text-white">${escapeHtml(ent.entity)}</div>
           <div class="text-[10px] text-muted mt-1">${escapeHtml(lines.join(' · '))}</div>
-          ${linksHtml ? `<div class="text-[10px] mt-1">${linksHtml}</div>` : ''}
+          ${linksHtml ? `<div class="text-[10px] mt-1 break-words">${linksHtml}</div>` : ''}
+        </div>`;
+    }
+    if (otherExits.length) {
+      const listHtml = otherExits.map(e => `${escapeHtml(e.entity)} <span class="opacity-70">${escapeHtml(fmtInt(e.wallet_count))}</span>`)
+        .join('<span class="text-muted"> · </span>');
+      eHtml += `
+        <div class="bg-ink border border-emerald-500/30 rounded-lg p-3">
+          <div class="text-xs font-semibold text-white">${escapeHtml(fmtInt(otherExits.length))} more exchanges</div>
+          <div class="text-[10px] text-muted mt-1">Publicly named wallets, not yet seen in the flows we track</div>
+          <div class="text-[10px] text-white mt-2 leading-relaxed">${listHtml}</div>
         </div>`;
     }
     if (!eHtml) eHtml = '<div class="text-[11px] text-muted">No exchange wallets returned.</div>';

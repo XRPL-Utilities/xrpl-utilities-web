@@ -30,6 +30,7 @@ const SAFE = {
   'assets/pages/lineage.js': new Set([
     'escrowWallets.length',   // local array length
     'linksHtml',              // built from escaped addresses
+    'listHtml',               // built from escaped exchange names and counts
     'hopFlow',                // built from escaped amounts
     'curClass',               // one of three fixed class strings
   ]),
