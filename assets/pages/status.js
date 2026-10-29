@@ -72,41 +72,40 @@ function el(tag, cls, text) {
 
 function dot(state) {
   const colors = { good: "bg-good", bad: "bg-bad", warn: "bg-warn", unknown: "bg-muted" };
-  return el("span", "h-3 w-3 rounded-full inline-block " + (colors[state] || colors.unknown));
+  return el("span", "h-3 w-3 rounded-full inline-block shrink-0 " + (colors[state] || colors.unknown));
 }
 
-function renderOverall(targetId, status, productName) {
-  const t = document.getElementById(targetId);
-  t.innerHTML = "";
-  let label, color, sub;
-  if (status === "active") {
-    label = "All systems operational"; color = "text-good"; sub = productName + " is serving live traffic.";
-  } else if (status === "preview") {
-    // XR-Flows answers 'preview' by design until its ETF scrapers have
-    // produced real data. Without this branch a healthy service renders
-    // "Status unknown" to visitors.
-    label = "Preview data"; color = "text-warn"; sub = productName + " is up; the figures it serves are preview data, not live.";
-  } else if (status === "starting") {
-    // XR-Vault answers 'starting' for ~4min after a redeploy, while its
-    // upstream cache is still cold. HTTP 200, service reachable.
-    label = "Starting up"; color = "text-warn"; sub = productName + " is up; upstream data is still warming.";
-  } else if (status === "attention") {
-    label = "Running, with a warning"; color = "text-warn"; sub = productName + " is serving live traffic. A background job reported a problem; details below.";
-  } else if (status === "degraded") {
-    label = "Partially degraded"; color = "text-warn"; sub = "One or more upstream subsystems are reporting issues. Requests may fail.";
-  } else if (status === "down") {
-    label = "Major outage"; color = "text-bad"; sub = "Critical subsystems are unavailable.";
-  } else {
-    label = "Status unknown"; color = "text-muted"; sub = "Could not reach the " + productName + " health endpoint.";
+const SERVICES = [
+  ["sentinel",  "XR-Sentinel"],
+  ["telemetry", "XR-Telemetry"],
+  ["pulse",     "XR-Pulse"],
+  ["trust",     "XR-Trust"],
+  ["vault",     "XR-Vault"],
+  ["flows",     "XR-Flows"],
+  ["ledger",    "XR-Ledger"],
+];
+
+// Overall state -> [short label, tone, one-line explanation].
+function describe(status, productName) {
+  switch (status) {
+    case "active":    return ["Operational", "good", productName + " is serving live traffic."];
+    // XR-Flows answers 'preview' by design until its ETF sources have
+    // produced real data; without this a healthy service reads "unknown".
+    case "preview":   return ["Preview data", "warn", productName + " is up; the figures it serves are preview data, not live."];
+    // XR-Vault answers 'starting' for a few minutes after a redeploy while
+    // its upstream cache is still cold.
+    case "starting":  return ["Starting up", "warn", productName + " is up; its data is still loading."];
+    case "attention": return ["Running, with a warning", "warn", productName + " is serving live traffic. A background job reported a problem."];
+    case "degraded":  return ["Partly degraded", "warn", "Some parts are reporting problems. Requests may fail."];
+    case "down":      return ["Outage", "bad", "Critical parts are unavailable."];
+    default:          return ["Unknown", "unknown", "Could not reach the " + productName + " health check."];
   }
-  t.appendChild(el("div", "text-3xl font-bold mb-2 " + color, label));
-  t.appendChild(el("div", "text-muted", sub));
 }
 
 function renderCheck(check) {
   const key = check.key, payload = check.value;
   const meta = labelFor(key);
-  const card = el("div", "bg-panel border border-border rounded-2xl p-6 flex items-center gap-4");
+  const card = el("div", "border border-border rounded-xl p-4 flex items-center gap-4");
   card.appendChild(dot(check.state));
   const left = el("div", "flex-grow min-w-0");
   left.appendChild(el("div", "font-semibold", meta.name));
@@ -128,43 +127,64 @@ function renderCheck(check) {
   return card;
 }
 
-async function refreshOne(url, overallId, checksId, lastCheckedId, productName) {
+// One row per service. Details stay folded while a service is operational
+// and open on their own when it is not, so a healthy page is one screen.
+function renderService(name, productName, status, checks) {
+  const [label, tone, sub] = describe(status, productName);
+  const toneText = { good: "text-good", bad: "text-bad", warn: "text-warn" }[tone] || "text-muted";
+  const li = el("li", "bg-panel border border-border rounded-2xl");
+  const det = el("details", "group");
+  det.open = status !== "active";
+  const sum = el("summary", "cursor-pointer list-none px-5 py-4 flex items-center gap-4");
+  sum.appendChild(dot(tone));
+  sum.appendChild(el("span", "font-semibold", productName));
+  const right = el("span", "ml-auto text-sm font-medium text-right " + toneText, label);
+  sum.appendChild(right);
+  sum.appendChild(el("span", "text-muted text-xs group-open:rotate-180 transition", "\u25BE"));
+  // Remember a row the visitor opened or closed, so the minute refresh
+  // does not undo it.
+  sum.addEventListener("click", () => { det.dataset.touched = "1"; });
+  det.appendChild(sum);
+  const body = el("div", "px-5 pb-5 space-y-3");
+  body.appendChild(el("p", "text-sm text-muted", sub));
+  checks.forEach(c => body.appendChild(renderCheck(c)));
+  det.appendChild(body);
+  li.appendChild(det);
+  li.dataset.state = status;
+  return li;
+}
+
+async function checkOne(name, productName) {
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 15000);
     let res;
-    try { res = await fetch(url, { signal: ctrl.signal }); } finally { clearTimeout(timer); }
+    try { res = await fetch("https://" + name + ".xrpl-utilities.io/healthz", { signal: ctrl.signal }); } finally { clearTimeout(timer); }
     // Read the body whatever the HTTP code: a degraded service answers 503
     // with a JSON body that says which subsystem is down.
     let data = null;
     try { data = await res.json(); } catch (_) { data = null; }
     const summary = StatusModel.summarize(res.status, data);
-    if (summary.overall === "unknown") throw new Error("HTTP " + res.status);
-    renderOverall(overallId, summary.overall, productName);
-    const list = document.getElementById(checksId);
-    list.innerHTML = "";
-    summary.checks.forEach(c => list.appendChild(renderCheck(c)));
-    document.getElementById(lastCheckedId).textContent = "Last checked " + utcNow();
+    return renderService(name, productName, summary.overall, summary.checks);
   } catch (e) {
-    renderOverall(overallId, "unknown", productName);
-    document.getElementById(checksId).innerHTML = "";
-    document.getElementById(lastCheckedId).textContent = "Last checked " + utcNow() + " (fetch failed)";
+    return renderService(name, productName, "unknown", []);
   }
 }
 
-function refresh() {
-  refreshOne("https://sentinel.xrpl-utilities.io/healthz",
-             "overall-sentinel", "checks-sentinel", "last-checked-sentinel", "XR-Sentinel");
-  refreshOne("https://telemetry.xrpl-utilities.io/healthz",
-             "overall-telemetry", "checks-telemetry", "last-checked-telemetry", "XR-Telemetry");
-  refreshOne("https://pulse.xrpl-utilities.io/healthz",
-             "overall-pulse", "checks-pulse", "last-checked-pulse", "XR-Pulse");
-  refreshOne("https://trust.xrpl-utilities.io/healthz",
-             "overall-trust", "checks-trust", "last-checked-trust", "XR-Trust");
-  refreshOne("https://vault.xrpl-utilities.io/healthz",
-             "overall-vault", "checks-vault", "last-checked-vault", "XR-Vault");
-  refreshOne("https://flows.xrpl-utilities.io/healthz",
-             "overall-flows", "checks-flows", "last-checked-flows", "XR-Flows");
+async function refresh() {
+  const rows = await Promise.all(SERVICES.map(([n, p]) => checkOne(n, p)));
+  const list = document.getElementById("services");
+  // Keep a row the visitor opened or closed in the state they left it.
+  const prev = {};
+  list.querySelectorAll("details").forEach((d, i) => { if (d.dataset.touched) prev[i] = d.open; });
+  list.replaceChildren(...rows);
+  list.querySelectorAll("details").forEach((d, i) => {
+    if (i in prev) { d.open = prev[i]; d.dataset.touched = "1"; }
+  });
+  const ok = rows.filter(r => r.dataset.state === "active").length;
+  document.getElementById("status-summary").textContent =
+    (ok === rows.length ? "All " + rows.length + " services operational." : ok + " of " + rows.length + " services fully operational.") +
+    " Last checked " + utcNow() + ".";
 }
 
 refresh();

@@ -95,152 +95,52 @@
   <section>
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-12">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">System status</h1>
-      <p class="text-muted">Live operational status of XR-Sentinel, XR-Telemetry, XR-Pulse, XR-Trust, XR-Vault, and XR-Flows. Updates automatically.</p>
+      <p class="text-muted">Live status of each service behind this site. Checked every minute while the page is open. A service with a problem opens to show which part is affected.</p>
     </div>
   </section>
 
   <section>
-    <div class="max-w-3xl mx-auto px-6 pb-24 space-y-10">
-      <div>
-        <h2 class="text-2xl font-bold mb-4">XR-Sentinel<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
-        <div id="overall-sentinel" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
-          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
-          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
-        </div>
-        <div id="checks-sentinel" class="space-y-4">
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-52 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-56 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-48 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-72 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-        </div>
-        <p id="last-checked-sentinel" class="text-xs text-muted text-center mt-4"></p>
-      </div>
-      <div>
-        <h2 class="text-2xl font-bold mb-4">XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
-        <div id="overall-telemetry" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
-          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
-          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
-        </div>
-        <div id="checks-telemetry" class="space-y-4">
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-52 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-56 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-48 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-72 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-        </div>
-        <p id="last-checked-telemetry" class="text-xs text-muted text-center mt-4"></p>
-      </div>
-      <div>
-        <h2 class="text-2xl font-bold mb-4">XR-Pulse<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
-        <div id="overall-pulse" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
-          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
-          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
-        </div>
-        <div id="checks-pulse" class="space-y-4">
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-        </div>
-        <p id="last-checked-pulse" class="text-xs text-muted text-center mt-4"></p>
-      </div>
-      <div>
-        <h2 class="text-2xl font-bold mb-4">XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
-        <div id="overall-trust" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
-          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
-          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
-        </div>
-        <div id="checks-trust" class="space-y-4">
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-        </div>
-        <p id="last-checked-trust" class="text-xs text-muted text-center mt-4"></p>
-      </div>
-      <div>
-        <h2 class="text-2xl font-bold mb-4">XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
-        <div id="overall-vault" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
-          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
-          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
-        </div>
-        <div id="checks-vault" class="space-y-4">
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-        </div>
-        <p id="last-checked-vault" class="text-xs text-muted text-center mt-4"></p>
-      </div>
-      <div>
-        <h2 class="text-2xl font-bold mb-4">XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></h2>
-        <div id="overall-flows" class="bg-panel border border-border rounded-2xl p-8 mb-4 text-center">
-          <div class="h-9 bg-border rounded animate-pulse mx-auto w-72 mb-3"></div>
-          <div class="h-4 bg-border rounded animate-pulse mx-auto w-96 max-w-full"></div>
-        </div>
-        <div id="checks-flows" class="space-y-4">
-          <div class="bg-panel border border-border rounded-2xl p-6 flex items-center gap-4">
-            <div class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></div>
-            <div class="flex-grow">
-              <div class="h-4 bg-border rounded animate-pulse w-44 mb-2"></div>
-              <div class="h-3 bg-border rounded animate-pulse w-64 max-w-full"></div>
-            </div>
-            <div class="h-4 bg-border rounded animate-pulse w-20 shrink-0"></div>
-          </div>
-        </div>
-        <p id="last-checked-flows" class="text-xs text-muted text-center mt-4"></p>
-      </div>
+    <div class="max-w-3xl mx-auto px-6 pb-24">
+      <p id="status-summary" class="text-sm text-muted mb-4">Checking&hellip;</p>
+      <!-- Filled by assets/pages/status.js; these rows are the loading state. -->
+      <ul id="services" class="space-y-3">
+        <li class="bg-panel border border-border rounded-2xl px-5 py-4 flex items-center gap-4">
+          <span class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></span>
+          <span class="font-semibold">XR-Sentinel</span>
+          <span class="ml-auto h-4 bg-border rounded animate-pulse w-24"></span>
+        </li>
+        <li class="bg-panel border border-border rounded-2xl px-5 py-4 flex items-center gap-4">
+          <span class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></span>
+          <span class="font-semibold">XR-Telemetry</span>
+          <span class="ml-auto h-4 bg-border rounded animate-pulse w-24"></span>
+        </li>
+        <li class="bg-panel border border-border rounded-2xl px-5 py-4 flex items-center gap-4">
+          <span class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></span>
+          <span class="font-semibold">XR-Pulse</span>
+          <span class="ml-auto h-4 bg-border rounded animate-pulse w-24"></span>
+        </li>
+        <li class="bg-panel border border-border rounded-2xl px-5 py-4 flex items-center gap-4">
+          <span class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></span>
+          <span class="font-semibold">XR-Trust</span>
+          <span class="ml-auto h-4 bg-border rounded animate-pulse w-24"></span>
+        </li>
+        <li class="bg-panel border border-border rounded-2xl px-5 py-4 flex items-center gap-4">
+          <span class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></span>
+          <span class="font-semibold">XR-Vault</span>
+          <span class="ml-auto h-4 bg-border rounded animate-pulse w-24"></span>
+        </li>
+        <li class="bg-panel border border-border rounded-2xl px-5 py-4 flex items-center gap-4">
+          <span class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></span>
+          <span class="font-semibold">XR-Flows</span>
+          <span class="ml-auto h-4 bg-border rounded animate-pulse w-24"></span>
+        </li>
+        <li class="bg-panel border border-border rounded-2xl px-5 py-4 flex items-center gap-4">
+          <span class="h-3 w-3 rounded-full bg-border animate-pulse shrink-0"></span>
+          <span class="font-semibold">XR-Ledger</span>
+          <span class="ml-auto h-4 bg-border rounded animate-pulse w-24"></span>
+        </li>
+      </ul>
+      <p class="text-xs text-muted mt-6">XR-Lineage reads from XR-Pulse, so it is up when XR-Pulse is.</p>
     </div>
   </section>
 
@@ -301,7 +201,7 @@
   </footer>
 
   <script src="/assets/status-model.js?v=3"></script>
-  <script src="/assets/pages/status.js?v=4"></script>
+  <script src="/assets/pages/status.js?v=5"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>
