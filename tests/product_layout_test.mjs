@@ -41,7 +41,7 @@ for (const p of pages) {
   if (!/<p class="hero-tag[^"]*"/.test(main)) fail(`${p}: one-line promise missing`);
 
   // Explainers and API notes are folded, never ahead of the data.
-  for (const id of ['what-is', 'for-agents', 'output-shape', 'methodology', 'why', 'sla']) {
+  for (const id of ['what-is', 'for-agents', 'output-shape', 'methodology', 'why', 'sla', 'uptime']) {
     if (at(id) !== -1) fail(`${p}: #${id} is a full section again; it belongs folded under How this works or API details`);
   }
   const dev = at('developers');
