@@ -130,5 +130,15 @@ for (const p of ['index.html', 'pricing/index.html', 'pulse/index.html', 'trust/
   const boxes = [...html.matchAll(/<(?:div|pre)\b[^>]*overflow-x-auto[^>]*>(?=\s*(?:<div[^>]*>[^<]*<\/div>\s*)?<pre|[^<]*)/g)].filter(m => /<pre/.test(html.slice(m.index, m.index + 400)));
   check(`${p}: code scroll boxes are focusable`, boxes.length > 0 && boxes.every(m => /tabindex="0"/.test(m[0])));
 }
+// Flows loaded d3 and topojson (about 300 KB) on every visit for a map far
+// down the page; they now load when the map nears the screen, with SRI.
+const flowsHtml = read('flows/index.html'), flowsJs = read('assets/pages/flows.js');
+check('Flows head does not load d3 or topojson', !/<script[^>]*(d3@|topojson-client@)/.test(flowsHtml));
+check('Flows loads map libraries lazily with SRI', /IntersectionObserver/.test(flowsJs) && (flowsJs.match(/'sha384-[A-Za-z0-9+\/=]+'/g) || []).length === 2 && /s\.integrity = sri/.test(flowsJs));
+check('Flows AUM chart label matches its bars', flowsHtml.includes('Stacked bar chart of net assets'));
+check('utility page titles share one size', ['pricing', 'tip', 'status', 'contact', 'terms'].every(p => /<h1 class="text-4xl md:text-5xl font-bold tracking-tight/.test(read(p + '/index.html'))));
+// Trust activity rows quoted full addresses that broke mid-address on phones.
+const trustJs = read('assets/pages/trust-2.js');
+check('Trust activity shortens addresses', (trustJs.match(/= shortAddrs\(esc\(e\.(title|brief)\)\);/g) || []).length === 2);
 console.log(fails ? `${fails} FAILED` : 'review round 2: ok');
 process.exit(fails ? 1 : 0);

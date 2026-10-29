@@ -58,6 +58,8 @@ const SAFE = {
     'jurBadge',               // escaped just above its use
     'meta.c',                 // colour from the fixed CAT map or a constant
     'badge',                  // built from an escaped count
+    'title',                  // activity title: escaped, then short addresses wrapped
+    'brief',                  // activity brief: same as title
     'fmtAmountShort(top.gets_value, top.gets_currency)', // escapes internally
     'fmtAmountShort(top.pays_value, top.pays_currency)',
   ]),

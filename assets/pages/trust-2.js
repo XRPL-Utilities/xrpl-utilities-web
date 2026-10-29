@@ -1062,8 +1062,20 @@ async function loadEcosystemUsage() {
     return Math.floor(s / 86400) + 'd ago';
   };
 
+  // Titles and briefs quote full 25 to 35 character addresses, which broke
+  // mid-address on phones. Show them short and unbreakable; the tx link has
+  // the full detail. Runs on already-escaped text, and a match is base58
+  // only, so the span wraps nothing a feed could inject.
+  const shortAddrs = (html) => html
+    .replace(/\br[1-9A-HJ-NP-Za-km-z]{24,34}\b/g, (a) => {
+      const shown = a.slice(0, 8) + '\u2026' + a.slice(-4);
+      return '<span class="whitespace-nowrap">' + esc(shown) + '</span>';
+    });
+
   function row(e) {
     const meta = CAT[e.category] || { c: '#94a3b8', t: e.category };
+    const title = shortAddrs(esc(e.title));
+    const brief = shortAddrs(esc(e.brief));
     const badge = e.count > 1
       ? '<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-ink border border-border text-muted">x' + esc(e.count) + '</span>'
       : '';
@@ -1073,9 +1085,9 @@ async function loadEcosystemUsage() {
           '<div class="flex items-center gap-2 flex-wrap">' +
             '<span class="text-[10px] uppercase tracking-wider font-semibold" style="color:' + meta.c + '">' + esc(meta.t) + '</span>' +
             badge +
-            '<span class="text-sm text-white break-words min-w-0 max-w-full">' + esc(e.title) + '</span>' +
+            '<span class="text-sm text-white break-words min-w-0 max-w-full">' + title + '</span>' +
           '</div>' +
-          '<div class="text-xs text-muted leading-relaxed mt-1 break-words">' + esc(e.brief) + '</div>' +
+          '<div class="text-xs text-muted leading-relaxed mt-1 break-words">' + brief + '</div>' +
         '</div>' +
         '<a href="https://xrpscan.com/tx/' + esc(e.tx_hash) + '" target="_blank" rel="noopener noreferrer" ' +
           'class="text-[11px] text-muted hover:text-accent whitespace-nowrap shrink-0">' + esc(ago(e.date_unix)) + ' &rarr;</a>' +
