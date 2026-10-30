@@ -157,5 +157,29 @@ for (const f of ['home-2', 'pulse', 'lineage', 'telemetry', 'trust-2', 'flows'])
 }
 check('Flows map legend shows dollar values', /id="xb-legend-mid"/.test(read('flows/index.html')) && /fmtUsdCompact\(legend\[k\]\)/.test(read('assets/pages/flows.js')));
 check('Telemetry formats numbers and dates in one locale', !/toLocale(String|DateString)\((undefined)?[,)]/.test(read('assets/pages/telemetry.js')));
+// 2026-10-30: four Sentinel showcase wallets had been quiet longer than
+// the 90-day scan window and came back "Inactive". Every quick button must
+// point at a real entry, and the quiet ones stay out. (A weekly check in
+// XR-Sentinel, demo-wallet-watch, catches the next one that goes quiet.)
+{
+  const sjs = read('assets/pages/sentinel.js'), shtml = read('sentinel/index.html');
+  const keys = Object.keys(Function('return ' + sjs.match(/const SAMPLE_ADDRESSES = (\{[\s\S]*?\});/)[1])());
+  const btns = [...shtml.matchAll(/data-sample="([a-z]+)"/g)].map(m => m[1]);
+  check('Sentinel quick buttons match the sample list', btns.length === keys.length && btns.every(b => keys.includes(b)));
+  const quiet = ['rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe', 'rnXNUqF8LuXyUdfLdezftTeEUw2UFSLw5i', 'rKCu4CucpepQ6N89c8T5GuX2jkxzCST18Q', 'rGKMDUdmquUCvoXxhcJSttnVnr2NYc9fYi'];
+  check('quiet showcase wallets stay out', quiet.every(a => !sjs.includes(a) && !read('sentinel/bulk/index.html').includes(a)));
+}
+// 2026-10-30: the permissioned card read $0 / 0 for the last 24h while the
+// venue had 273 trades over 30 days. It now opens on the first window with
+// any activity and has a 24h / 7d / 30d switch.
+{
+  const tjs = read('assets/pages/telemetry.js');
+  check('Telemetry permissioned card has a window switch', (read('telemetry/index.html').match(/data-perm-window="(24h|7d|30d)"/g) || []).length === 3);
+  check('Telemetry permissioned card reads no fixed 24h field', !/d\.(permissioned_share_24h_pct|volume_24h_permissioned|permissioned_dex_24h)/.test(tjs));
+  const src = tjs.match(/const PERM_WINDOWS[\s\S]*?\nfunction firstActiveWindow[\s\S]*?\n\}/)[0];
+  const pick = Function(src + '; return firstActiveWindow;')();
+  const z = { permissioned_dex_24h_fill_count: 0, permissioned_dex_7d_fill_count: 0, permissioned_dex_30d_fill_count: 273 };
+  check('permissioned card opens on the first active window', pick(z) === '30d' && pick({ ...z, permissioned_dex_24h_fill_count: 2 }) === '24h' && pick({}) === '24h');
+}
 console.log(fails ? `${fails} FAILED` : 'review round 2: ok');
 process.exit(fails ? 1 : 0);

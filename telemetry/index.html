@@ -363,10 +363,18 @@
            trading happened. The Permissioned-DEX block below is the one
            that measures crossings (Telemetry schema 1.26.0). -->
       <div id="sv-permissioned" class="mt-6 bg-panel border border-border rounded-2xl p-6">
+        <div class="flex items-center justify-between gap-3 mb-5 flex-wrap">
+          <p id="sv-perm-quiet" class="hidden text-xs text-muted leading-relaxed"></p>
+          <div class="flex gap-1 ml-auto" role="group" aria-label="Time window">
+            <button data-perm-window="24h" class="perm-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-accent text-white transition" aria-pressed="true">24h</button>
+            <button data-perm-window="7d" class="perm-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">7d</button>
+            <button data-perm-window="30d" class="perm-window-btn px-2.5 py-1 text-[11px] uppercase tracking-wider rounded border border-border text-muted hover:text-white transition">30d</button>
+          </div>
+        </div>
         <div class="flex items-baseline justify-between mb-4 flex-wrap gap-2">
           <div>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold">Permissioned vs open-market</div>
-            <div class="text-xs text-muted mt-1">Share of last-24h settlement routed through XLS-81 permissioned venues</div>
+            <div class="text-xs text-muted mt-1">Share of settlement in the <span class="sv-perm-window-label">last 24h</span> routed through XLS-81 permissioned venues</div>
           </div>
           <div id="sv-perm-pct" class="text-3xl sm:text-4xl font-bold tracking-tight font-mono text-white">&hellip;</div>
         </div>
@@ -394,7 +402,7 @@
           <div class="flex items-baseline justify-between mb-3 flex-wrap gap-2">
             <div>
               <div class="text-xs uppercase tracking-widest text-accent font-semibold">Permissioned DEX crossings</div>
-              <div class="text-xs text-muted mt-1">Fills on permissioned order books in the last 24h, counted apart from settlement.</div>
+              <div class="text-xs text-muted mt-1">Fills on permissioned order books in the <span class="sv-perm-window-label">last 24h</span>, counted apart from settlement.</div>
             </div>
             <div id="sv-pdex-fills" class="text-3xl sm:text-4xl font-bold tracking-tight font-mono text-white">&hellip;</div>
           </div>
@@ -797,7 +805,7 @@ payload = requests.get(
     </div>
   </footer>
 
-  <script src="/assets/pages/telemetry.js?v=m9"></script>
+  <script src="/assets/pages/telemetry.js?v=m10"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>

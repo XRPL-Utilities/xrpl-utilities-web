@@ -33,13 +33,15 @@
 const SAMPLE_ADDRESSES = {
   ondo:      "rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p",
   sologenic: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz",
-  bithomp:   "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe",
+  rlusd:     "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De",
   escrow:    "rELeasERs3m4inA1UinRLTpXemqyStqzwh",
 };
 
 // Showcase gallery, grouped by what each wallet shows. Names checked
-// against public labels and the ledger on 2026-10-28. Blurbs carry no
-// counts or balances, which go stale.
+// against public labels and the ledger on 2026-10-28; quiet wallets swapped
+// out 2026-10-30. Every wallet here must stay active inside the scan window
+// (a weekly check fails when one goes quiet). Blurbs carry no counts or
+// balances, which go stale.
 const GALLERY = [
   {
     label: "Tokenized asset issuers",
@@ -52,18 +54,16 @@ const GALLERY = [
       { address: "rB3y9EPnq1ZrZP3aXgfyfdXQThzdXMrLMc", name: "Braza Group · USDB",                 blurb: "US dollar stablecoin from a Brazilian issuer." },
       { address: "rH5CJsqvNqZGxrMyGaqLEoMWRYcVTAPZMt", name: "Braza Group · BBRL",                 blurb: "Brazilian real stablecoin." },
       { address: "rUNaS5sqRuxZz6V7rBGhoSaZiVYA3ut4UL", name: "SG-FORGE · EURCV",                   blurb: "Euro stablecoin from a Societe Generale subsidiary." },
-      { address: "rnXNUqF8LuXyUdfLdezftTeEUw2UFSLw5i", name: "Guggenheim / Zeconomy · DCP",        blurb: "Digital commercial paper. The currency code changes with each maturity." },
       { address: "r976xbKc6om7WYTFwZHByvxnYFi1y5hJXH", name: "Justoken · JMWH",                    blurb: "Tokens counted in megawatt-hours of energy." },
       { address: "rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn", name: "OpenEden · TBL",                     blurb: "Tokenized US Treasury bills." },
       { address: "rUN5Zxt3K1AnMRJgEWywDJT8QDMMeLH5ok", name: "AUDD",                               blurb: "Australian dollar stablecoin." },
-      { address: "rKCu4CucpepQ6N89c8T5GuX2jkxzCST18Q", name: "Archax",                             blurb: "Set up to issue with holder approval and clawback, but nothing issued yet." },
     ],
   },
   {
-    label: "Permissioned domain operators",
-    blurb: "Wallets that run permissioned domains (XLS-80), which decide who may trade in a permissioned venue.",
+    label: "Permissioned domains",
+    blurb: "Wallets that run or trade inside permissioned domains (XLS-80), the gated venues where only approved accounts may trade.",
     wallets: [
-      { address: "rGKMDUdmquUCvoXxhcJSttnVnr2NYc9fYi", name: "xrp-liquid",          blurb: "Early permissioned-venue operator with an on-chain identity and open orders inside its domain." },
+      { address: "rURtT5MMFzSUR54MAq9MKfzBoezTBZbKns", name: "EURØP venue market maker", blurb: "Quotes EURØP around the clock inside a permissioned domain." },
       { address: "rtaXvxk6mqixCgMETaA5jxgm3ZKB5n3FP",  name: "Unnamed operator",    blurb: "Runs two permissioned domains with no public identity." },
     ],
   },
@@ -72,7 +72,6 @@ const GALLERY = [
     blurb: "Infrastructure and service wallets whose timing looks automated.",
     wallets: [
       { address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz", name: "Sologenic · issuer",              blurb: "Issuer of the SOLO token." },
-      { address: "rKontEGtDju5MCEJCwtrvTWQQqVAw5juXe", name: "Bithomp · validator account",     blurb: "Validator and explorer operator." },
       { address: "rELeasERs3m4inA1UinRLTpXemqyStqzwh", name: "Escrow Releaser",                 blurb: "Automated service that finishes escrows." },
       { address: "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM", name: "OpenEden · TBL treasury",         blurb: "Holds TBL that is not yet in circulation." },
       { address: "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5", name: "XRPL-Utilities · receipt wallet", blurb: "Where XRPL payments for our APIs land." },
