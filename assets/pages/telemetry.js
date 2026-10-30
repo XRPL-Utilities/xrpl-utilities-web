@@ -345,6 +345,116 @@ const fmtBucketLabel = (ts, bucket) => {
   return d.toLocaleString('en-US', { month: 'short', day: '2-digit', timeZone: 'UTC' });
 };
 
+// Permissioned card (payments split + DEX crossings), drawn for one window.
+// The venue can be quiet for days, so the card opens on the shortest window
+// that has any activity and says why; the buttons switch windows.
+let permTotals = null;
+const PERM_WINDOWS = ['24h', '7d', '30d'];
+const PERM_WINDOW_LABEL = { '24h': 'last 24h', '7d': 'last 7 days', '30d': 'last 30 days' };
+const permActivity = (d, w) =>
+  (Number(d['permissioned_dex_' + w + '_fill_count']) || 0)
+  + (Number(d['permissioned_dex_' + w + '_unpriced_fill_count']) || 0)
+  + (Number(d['volume_' + w + '_permissioned_payments_count']) || 0);
+function firstActiveWindow(d) {
+  return PERM_WINDOWS.find((w) => permActivity(d, w) > 0) || '24h';
+}
+function renderPermissioned(d, w) {
+  document.querySelectorAll('.sv-perm-window-label').forEach((el) => { el.textContent = PERM_WINDOW_LABEL[w]; });
+  document.querySelectorAll('.perm-window-btn').forEach((b) => {
+    const on = b.dataset.permWindow === w;
+    b.classList.toggle('border-accent', on);
+    b.classList.toggle('text-white', on);
+    b.classList.toggle('border-border', !on);
+    b.classList.toggle('text-muted', !on);
+    if (on) b.setAttribute('aria-pressed', 'true'); else b.removeAttribute('aria-pressed');
+  });
+  const quiet = document.getElementById('sv-perm-quiet');
+  if (quiet) {
+    const skipped = PERM_WINDOWS.slice(0, PERM_WINDOWS.indexOf(w));
+    const allQuiet = skipped.length > 0 && skipped.every((x) => typeof d['permissioned_dex_' + x + '_fill_count'] === 'number' && permActivity(d, x) === 0);
+    quiet.textContent = allQuiet
+      ? 'No permissioned activity in the ' + PERM_WINDOW_LABEL[skipped[skipped.length - 1]] + ', so this shows the ' + PERM_WINDOW_LABEL[w] + '.'
+      : '';
+    quiet.classList.toggle('hidden', !allQuiet);
+  }
+  // Permissioned vs open-market split (schema 1.5.0+). Honest
+  // rendering: when the backend hasn't shipped these fields yet
+  // (older deploy), the section keeps its skeleton placeholders.
+  // When share is 0%, the caveat block surfaces so a visitor
+  // doesn't read "0%" as bug or stale data.
+  const permPct = d['permissioned_share_' + w + '_pct'];
+  const permUsd = d['volume_' + w + '_permissioned_usd'];
+  const openUsd = d['volume_' + w + '_open_market_usd'];
+  const permCount = d['volume_' + w + '_permissioned_payments_count'];
+  const elPermPct = document.getElementById('sv-perm-pct');
+  const elPermUsd = document.getElementById('sv-perm-usd');
+  const elOpenUsd = document.getElementById('sv-open-usd');
+  const elPermCount = document.getElementById('sv-perm-count');
+  const elOpenPct = document.getElementById('sv-open-pct');
+  const elPermCaveat = document.getElementById('sv-perm-caveat');
+  if (typeof permPct === 'number' && elPermPct) {
+    elPermPct.textContent = permPct.toFixed(2) + '%';
+    elPermCaveat?.classList.toggle('hidden', permPct >= 0.01);
+  } else if (elPermPct) {
+    elPermPct.textContent = '–';
+  }
+  if (typeof permUsd === 'number' && elPermUsd) {
+    elPermUsd.textContent = fmtUsdShort(permUsd);
+  }
+  if (typeof openUsd === 'number' && elOpenUsd) {
+    elOpenUsd.textContent = fmtUsdShort(openUsd);
+  }
+  if (typeof permCount === 'number' && elPermCount) {
+    elPermCount.textContent = permCount.toLocaleString('en-US') + ' payments';
+  }
+
+  // Permissioned DEX crossings (Telemetry 1.26.0). Rendered only when
+  // the backend actually ships the fields, so an older deploy keeps its
+  // skeleton rather than showing a fabricated zero.
+  const pdexFills = d['permissioned_dex_' + w + '_fill_count'];
+  const pdexUsd = d['permissioned_dex_' + w + '_usd'];
+  const pdexUnpriced = d['permissioned_dex_' + w + '_unpriced_fill_count'];
+  const pdexSince = d.permissioned_dex_measured_since_hour;
+  const elPdexFills = document.getElementById('sv-pdex-fills');
+  const elPdexUsd = document.getElementById('sv-pdex-usd');
+  const elPdexUnpriced = document.getElementById('sv-pdex-unpriced');
+  const elPdexCoverage = document.getElementById('sv-pdex-coverage');
+  if (typeof pdexFills === 'number' && elPdexFills) {
+    elPdexFills.textContent = pdexFills.toLocaleString('en-US');
+  }
+  if (typeof pdexUsd === 'number' && elPdexUsd) {
+    elPdexUsd.textContent = fmtUsdShort(pdexUsd);
+  }
+  if (typeof pdexUnpriced === 'number' && elPdexUnpriced) {
+    elPdexUnpriced.textContent = pdexUnpriced.toLocaleString('en-US')
+      + (pdexUnpriced === 1 ? ' crossing' : ' crossings');
+  }
+  // A watermark means earlier hours were walked before this parser
+  // existed. Their zeros are unmeasured, not measured zero, and saying
+  // so is the whole reason the watermark is published.
+  if (typeof pdexSince === 'number' && pdexSince > 0 && elPdexCoverage) {
+    const since = new Date(pdexSince * 1000)
+      .toISOString().replace('T', ' ').slice(0, 16);
+    elPdexCoverage.textContent =
+      'Crossing measurement begins ' + since + ' UTC. Hours before that were '
+      + 'processed before this metric existed, so they are unmeasured rather '
+      + 'than zero, and history earlier than that point is not comparable.';
+    elPdexCoverage.classList.remove('hidden');
+  }
+  if (typeof permPct === 'number' && elOpenPct) {
+    const openPctVal = Math.max(0, 100 - permPct);
+    elOpenPct.textContent = openPctVal.toFixed(2) + '% of total';
+  }
+}
+document.querySelectorAll('.perm-window-btn').forEach((b) => {
+  b.addEventListener('click', () => {
+    if (!permTotals) return;
+    renderPermissioned(permTotals, b.dataset.permWindow);
+    // The "no trades lately" note explains the default window only.
+    document.getElementById('sv-perm-quiet')?.classList.add('hidden');
+  });
+});
+
 sv24h.innerHTML = '<span class="inline-block h-10 w-24 bg-border rounded animate-pulse align-middle"></span>';
 sv7d.innerHTML = '<span class="inline-block h-10 w-24 bg-border rounded animate-pulse align-middle"></span>';
 sv30d.innerHTML = '<span class="inline-block h-10 w-24 bg-border rounded animate-pulse align-middle"></span>';
@@ -399,74 +509,8 @@ fetch(TELEMETRY_API + '/settlement/totals')
       svBootstrap30d.classList.remove('hidden');
     }
 
-    // Permissioned vs open-market split (schema 1.5.0+). Honest
-    // rendering: when the backend hasn't shipped these fields yet
-    // (older deploy), the section keeps its skeleton placeholders.
-    // When share is 0%, the caveat block surfaces so a visitor
-    // doesn't read "0%" as bug or stale data.
-    const permPct = d.permissioned_share_24h_pct;
-    const permUsd = d.volume_24h_permissioned_usd;
-    const openUsd = d.volume_24h_open_market_usd;
-    const permCount = d.volume_24h_permissioned_payments_count;
-    const elPermPct = document.getElementById('sv-perm-pct');
-    const elPermUsd = document.getElementById('sv-perm-usd');
-    const elOpenUsd = document.getElementById('sv-open-usd');
-    const elPermCount = document.getElementById('sv-perm-count');
-    const elOpenPct = document.getElementById('sv-open-pct');
-    const elPermCaveat = document.getElementById('sv-perm-caveat');
-    if (typeof permPct === 'number' && elPermPct) {
-      elPermPct.textContent = permPct.toFixed(2) + '%';
-      if (permPct < 0.01) elPermCaveat?.classList.remove('hidden');
-    } else if (elPermPct) {
-      elPermPct.textContent = '–';
-    }
-    if (typeof permUsd === 'number' && elPermUsd) {
-      elPermUsd.textContent = fmtUsdShort(permUsd);
-    }
-    if (typeof openUsd === 'number' && elOpenUsd) {
-      elOpenUsd.textContent = fmtUsdShort(openUsd);
-    }
-    if (typeof permCount === 'number' && elPermCount) {
-      elPermCount.textContent = permCount.toLocaleString('en-US') + ' payments';
-    }
-
-    // Permissioned DEX crossings (Telemetry 1.26.0). Rendered only when
-    // the backend actually ships the fields, so an older deploy keeps its
-    // skeleton rather than showing a fabricated zero.
-    const pdexFills = d.permissioned_dex_24h_fill_count;
-    const pdexUsd = d.permissioned_dex_24h_usd;
-    const pdexUnpriced = d.permissioned_dex_24h_unpriced_fill_count;
-    const pdexSince = d.permissioned_dex_measured_since_hour;
-    const elPdexFills = document.getElementById('sv-pdex-fills');
-    const elPdexUsd = document.getElementById('sv-pdex-usd');
-    const elPdexUnpriced = document.getElementById('sv-pdex-unpriced');
-    const elPdexCoverage = document.getElementById('sv-pdex-coverage');
-    if (typeof pdexFills === 'number' && elPdexFills) {
-      elPdexFills.textContent = pdexFills.toLocaleString('en-US');
-    }
-    if (typeof pdexUsd === 'number' && elPdexUsd) {
-      elPdexUsd.textContent = fmtUsdShort(pdexUsd);
-    }
-    if (typeof pdexUnpriced === 'number' && elPdexUnpriced) {
-      elPdexUnpriced.textContent = pdexUnpriced.toLocaleString('en-US')
-        + (pdexUnpriced === 1 ? ' crossing' : ' crossings');
-    }
-    // A watermark means earlier hours were walked before this parser
-    // existed. Their zeros are unmeasured, not measured zero, and saying
-    // so is the whole reason the watermark is published.
-    if (typeof pdexSince === 'number' && pdexSince > 0 && elPdexCoverage) {
-      const since = new Date(pdexSince * 1000)
-        .toISOString().replace('T', ' ').slice(0, 16);
-      elPdexCoverage.textContent =
-        'Crossing measurement begins ' + since + ' UTC. Hours before that were '
-        + 'processed before this metric existed, so they are unmeasured rather '
-        + 'than zero, and history earlier than that point is not comparable.';
-      elPdexCoverage.classList.remove('hidden');
-    }
-    if (typeof permPct === 'number' && elOpenPct) {
-      const openPctVal = Math.max(0, 100 - permPct);
-      elOpenPct.textContent = openPctVal.toFixed(2) + '% of total';
-    }
+    permTotals = d;
+    renderPermissioned(d, firstActiveWindow(d));
 
     // Use the XRP-only annualized run-rate for Burst Math's Q (floor-honest).
     // Fall back to combined if backend doesn't ship the split (older deploy).
