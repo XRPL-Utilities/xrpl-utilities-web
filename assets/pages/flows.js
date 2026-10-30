@@ -779,13 +779,24 @@ pollWhileVisible(loadTrackedEtfsGrid, 3600 * 1000);
     const totals = new Map();
     (perCountry || []).forEach(c => totals.set(c.iso_country, c.total_usd || 0));
     const maxUsd = Math.max(1, ...Array.from(totals.values()));
+    const positive = Array.from(totals.values()).filter(v => v > 0);
+    const minUsd = positive.length ? Math.min(maxUsd, ...positive) : 1;
     // Sequential color scale: dark slate (no data) -> orange-700 (low)
     // -> orange-500 (mid) -> yellow-300 (high). Log scale so small
-    // corridors are still visible alongside outliers.
+    // corridors are still visible alongside outliers. The legend shows the
+    // dollar value at each stop, from the smallest country to the largest.
     const colorScale = d3.scaleLog()
-      .domain([1, maxUsd])
+      .domain(minUsd < maxUsd ? [minUsd, maxUsd] : [1, maxUsd])
       .range(['#7c2d12', '#fde047'])
       .clamp(true);
+    const legend = { low: minUsd, mid: Math.sqrt(minUsd * maxUsd), high: maxUsd };
+    for (const k of Object.keys(legend)) {
+      const el = document.getElementById('xb-legend-' + k);
+      if (!el) continue;
+      el.textContent = positive.length ? fmtUsdCompact(legend[k]) : k;
+      // Swatch shows the colour the map actually draws for that value.
+      if (positive.length && el.previousElementSibling) el.previousElementSibling.style.background = colorScale(legend[k]);
+    }
 
     const svg = d3.select(mapEl);
     const bbox = mapEl.getBoundingClientRect();

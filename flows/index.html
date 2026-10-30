@@ -294,11 +294,11 @@
             <div id="xb-tooltip" class="hidden absolute bg-panel border border-border rounded px-2 py-1 text-[10px] font-mono text-white pointer-events-none shadow-lg" style="z-index:10;"></div>
           </div>
           <div class="flex flex-wrap items-center gap-3 mt-2 text-[10px] text-muted font-mono">
-            <span>scale:</span>
+            <span>scale (log):</span>
             <span class="inline-block w-3 h-3 rounded-sm" style="background:#1f2937;"></span><span>none</span>
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#7c2d12;"></span><span>low</span>
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#ea580c;"></span><span>mid</span>
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#fde047;"></span><span>high</span>
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#7c2d12;"></span><span id="xb-legend-low">low</span>
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#ea580c;"></span><span id="xb-legend-mid">mid</span>
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#fde047;"></span><span id="xb-legend-high">high</span>
           </div>
         </div>
 
@@ -594,7 +594,7 @@
   </footer>
 
   <script src="/assets/chart-palette.js?v=2"></script>
-  <script src="/assets/pages/flows.js?v=7"></script>
+  <script src="/assets/pages/flows.js?v=8"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>

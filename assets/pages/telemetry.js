@@ -63,7 +63,7 @@ const DEFAULTS = { Q: 10_000_000_000, V: 6 }; // $10B settlement window, velocit
 const SNAPSHOT_AS_OF = '2026-04-28';
 
 // ---- Burst Math ----
-const fmtXrp = n => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' XRP';
+const fmtXrp = n => Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' XRP';
 // Standard USD display. 2 decimals once the value reaches a dollar
 // (where sub-cent precision is rounding noise), up to 4 decimals for
 // sub-dollar values where extra digits are real. Used everywhere the
@@ -75,7 +75,7 @@ const fmtUsd4 = n => {
   const opts = Math.abs(num) >= 1
     ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
     : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
-  return '$' + num.toLocaleString(undefined, opts);
+  return '$' + num.toLocaleString('en-US', opts);
 };
 // Equilibrium-price display. Looser threshold so the third/fourth
 // decimal survives at the $1-$10 range where it carries meaning -
@@ -89,7 +89,7 @@ const fmtUsdEq = n => {
   const opts = Math.abs(num) >= 10
     ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
     : { minimumFractionDigits: 2, maximumFractionDigits: 4 };
-  return '$' + num.toLocaleString(undefined, opts);
+  return '$' + num.toLocaleString('en-US', opts);
 };
 
 const bmQ = document.getElementById('bm-q');
@@ -120,7 +120,7 @@ function fmtXrpCompactInline(xrp) {
   if (abs >= 1e9) return (n / 1e9).toFixed(2) + 'B XRP';
   if (abs >= 1e6) return (n / 1e6).toFixed(1) + 'M XRP';
   if (abs >= 1e3) return Math.round(n / 1e3) + 'k XRP';
-  return Math.round(n).toLocaleString() + ' XRP';
+  return Math.round(n).toLocaleString('en-US') + ' XRP';
 }
 
 function populateActiveFloatCard() {
@@ -340,9 +340,9 @@ const fmtUsdShort = n => {
 const fmtBucketLabel = (ts, bucket) => {
   const d = new Date(ts * 1000);
   if (bucket === 'monthly') {
-    return d.toLocaleString(undefined, { month: 'short', year: '2-digit', timeZone: 'UTC' });
+    return d.toLocaleString('en-US', { month: 'short', year: '2-digit', timeZone: 'UTC' });
   }
-  return d.toLocaleString(undefined, { month: 'short', day: '2-digit', timeZone: 'UTC' });
+  return d.toLocaleString('en-US', { month: 'short', day: '2-digit', timeZone: 'UTC' });
 };
 
 sv24h.innerHTML = '<span class="inline-block h-10 w-24 bg-border rounded animate-pulse align-middle"></span>';
@@ -993,7 +993,7 @@ function reanchorFromPayload(payload) {
 
   if (payload.generated_at) {
     const stamp = new Date(payload.generated_at);
-    if (!isNaN(stamp.getTime())) bmSpotAsOf.textContent = 'live · ' + stamp.toLocaleDateString();
+    if (!isNaN(stamp.getTime())) bmSpotAsOf.textContent = 'live · ' + stamp.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }) + ' UTC';
   }
   if (touched) recompute();
 }
