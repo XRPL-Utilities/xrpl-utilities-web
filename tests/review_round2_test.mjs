@@ -155,5 +155,7 @@ for (const f of ['home-2', 'pulse', 'lineage', 'telemetry', 'trust-2', 'flows'])
   check('small logo slots use icon-only marks', old.length === 0, old.join(', '));
   check('every mark file exists', [...new Set(pages.flatMap(f => [...read(f).matchAll(/\/assets\/img\/([a-z-]+-mark-128\.webp)/g)].map(m => m[1])))].every(n => fs.existsSync(path.join(repo, 'assets/img', n))));
 }
+check('Flows map legend shows dollar values', /id="xb-legend-mid"/.test(read('flows/index.html')) && /fmtUsdCompact\(legend\[k\]\)/.test(read('assets/pages/flows.js')));
+check('Telemetry formats numbers and dates in one locale', !/toLocale(String|DateString)\((undefined)?[,)]/.test(read('assets/pages/telemetry.js')));
 console.log(fails ? `${fails} FAILED` : 'review round 2: ok');
 process.exit(fails ? 1 : 0);
