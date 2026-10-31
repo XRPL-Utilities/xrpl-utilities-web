@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <title>XR-Flows | ETF flow meets the ledger</title>
-  <meta name="description" content="Daily AUM for spot XRP ETFs and European XRP ETPs, plotted against XRPL exchange flow. Correlation only, never causation. Free on the web." />
+  <meta name="description" content="Daily AUM for spot XRP funds in the US, Europe, Canada and Brazil, plotted against XRPL exchange flow. Correlation only, never causation. Free on the web." />
   <meta property="og:title" content="XR-Flows" />
   <meta property="og:description" content="ETF flow meets the ledger. Spot XRP ETF AUM and XRPL on-chain flow plotted side by side, daily. Correlation, not causation." />
   <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
@@ -23,7 +23,7 @@
         "name": "XR-Flows",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any (HTTP)",
-        "description": "ETF AUM and XRPL on-chain flow correlation across US spot XRP ETFs, indirect-basket funds, and European XRP ETPs. Daily AUM overlaid with XRPL exchange-flow delta from XR-Pulse.",
+        "description": "ETF AUM and XRPL on-chain flow correlation across US spot XRP ETFs, indirect-basket funds, and spot XRP funds in Europe, Canada and Brazil. Daily AUM overlaid with XRPL exchange-flow delta from XR-Pulse.",
         "url": "https://xrpl-utilities.com/flows/",
         "image": "https://xrpl-utilities.com/assets/xr-flows.png",
         "publisher": {
@@ -180,7 +180,7 @@
         <div class="stat-tile stat-tile-glow p-4">
           <div class="stat-tile-label mb-2">Total tracked AUM</div>
           <div id="stat-flows-aum" class="stat-tile-value"><span class="inline-block h-7 w-12 bg-border rounded animate-pulse align-middle"></span></div>
-          <div class="stat-tile-sub mt-2">USD: US spot, US basket and European funds</div>
+          <div class="stat-tile-sub mt-2">USD: US spot, US basket and non-US funds</div>
           <div id="stat-flows-aum-european" class="stat-tile-sub text-[10px] mt-0.5"></div>
         </div>
         <div class="stat-tile stat-tile-gold p-4">
@@ -319,7 +319,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Tracked ETFs</h2>
       <p class="text-muted text-sm leading-relaxed mb-3 max-w-3xl">
-        Three groups: US spot funds, US basket funds that hold XRP alongside other large crypto assets, and European spot products. XRPR holds part of its XRP through another XRP fund. Futures-only XRP funds are left out. New US funds are added after review.
+        Four groups: US spot funds, US basket funds that hold XRP alongside other large crypto assets, European spot products, and spot funds in Canada and Brazil. XRPR holds part of its XRP through another XRP fund. Futures-only XRP funds are left out. A fund shows no figure until its issuer publishes one we can check. New funds are added after review.
       </p>
       <p class="text-[11px] text-muted mb-6 max-w-3xl">
         <span class="text-white">Expense ratio</span> is the yearly fee the fund pays its issuer, as a percent of assets. It comes out of the fund's value, so lower is cheaper to hold.
@@ -360,9 +360,9 @@
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
-          <h3 class="text-lg font-bold mb-3 text-white">Who issues them on US exchanges</h3>
+          <h3 class="text-lg font-bold mb-3 text-white">Who issues them</h3>
           <p class="text-sm text-muted leading-relaxed">
-            In the US: Bitwise, Canary Capital, Franklin Templeton, Grayscale, 21Shares and REX-Osprey, plus basket funds from Bitwise, Grayscale, Franklin Templeton, Hashdex and 21Shares. In Europe: 21Shares, WisdomTree and Bitwise Europe.
+            In the US: Bitwise, Canary Capital, Franklin Templeton, Grayscale, 21Shares and REX-Osprey, plus basket funds from Bitwise, Grayscale, Franklin Templeton, Hashdex and 21Shares. In Europe: 21Shares, WisdomTree, Bitwise Europe, CoinShares, Virtune and Valour. In Canada: 3iQ, Purpose and Evolve. In Brazil: Hashdex.
           </p>
         </div>
         <div class="bg-panel border border-border rounded-2xl p-6">
