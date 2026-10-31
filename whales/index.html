@@ -111,14 +111,14 @@
           <div class="stat-tile-sub mt-1">Accounts holding 1M+ XRP</div>
         </div>
         <div class="stat-tile p-5">
-          <div class="stat-tile-label mb-2">Excluding Ripple</div>
-          <div id="stat-ex-ripple" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
-          <div id="stat-ex-ripple-sub" class="stat-tile-sub mt-1">Whale wallets not run by Ripple</div>
-        </div>
-        <div class="stat-tile p-5">
           <div class="stat-tile-label mb-2">XRP held by whales</div>
           <div id="stat-total" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
           <div class="stat-tile-sub mt-1">Spendable balance, escrow not counted</div>
+        </div>
+        <div class="stat-tile p-5">
+          <div class="stat-tile-label mb-2">XRP held by whales, excluding Ripple</div>
+          <div id="stat-total-ex-ripple" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-total-ex-ripple-sub" class="stat-tile-sub mt-1">Whale XRP outside Ripple's wallets</div>
         </div>
       </div>
       <div id="bands" class="grid grid-cols-2 md:grid-cols-4 gap-3" aria-live="polite"></div>
@@ -212,7 +212,7 @@
 
   <script src="/assets/poll.js?v=1"></script>
   <script src="/assets/stale-banner.js?v=1"></script>
-  <script src="/assets/pages/whales.js?v=2"></script>
+  <script src="/assets/pages/whales.js?v=3"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>
