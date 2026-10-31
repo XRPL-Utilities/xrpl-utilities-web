@@ -345,6 +345,54 @@ const fmtBucketLabel = (ts, bucket) => {
   return d.toLocaleString('en-US', { month: 'short', day: '2-digit', timeZone: 'UTC' });
 };
 
+// Payment size card (Telemetry 1.30.0). Hours walked before the split
+// shipped are not measured, so the card shows the longest window that is
+// fully measured, or the measured part of the shortest one with its start
+// date. Hidden when the service does not return the block.
+const SIZE_WINDOWS = [['window_7d', 'last 7 days'], ['window_24h', 'last 24 hours']];
+function pickSizeWindow(sb) {
+  for (const [key, label] of SIZE_WINDOWS) {
+    const w = sb[key];
+    if (w && w.complete === true && w.hours_covered > 0) return { w, label, partial: false };
+  }
+  const w = sb.window_24h;
+  if (w && w.hours_covered > 0) return { w, label: null, partial: true };
+  return null;
+}
+const fmtPct1 = n => (typeof n === 'number' && isFinite(n)) ? n.toFixed(1) + '%' : '-';
+function renderSizeBands(sb) {
+  const card = document.getElementById('sv-sizes');
+  if (!card || !sb || typeof sb !== 'object' || sb.unavailable_reason) return;
+  const pick = pickSizeWindow(sb);
+  if (!pick) return;
+  const w = pick.w;
+  const priced = ['under_10k', '10k_to_1m', '1m_plus']
+    .reduce((t, k) => t + (w[k] && typeof w[k].usd === 'number' ? w[k].usd : 0), 0);
+  const rows = [['small', 'under_10k'], ['mid', '10k_to_1m'], ['large', '1m_plus']];
+  for (const [id, key] of rows) {
+    const band = w[key] || {};
+    document.getElementById('sv-size-' + id + '-usd').textContent = fmtUsdShort(band.usd);
+    const share = priced > 0 && typeof band.usd === 'number' ? band.usd / priced * 100 : null;
+    const count = typeof band.count === 'number' ? band.count.toLocaleString('en-US') : '-';
+    document.getElementById('sv-size-' + id + '-meta').textContent =
+      fmtPct1(share) + ' of volume · ' + count + ' payments';
+  }
+  document.getElementById('sv-sizes-wholesale').textContent = fmtPct1(w.wholesale_share_pct);
+  const windowEl = document.getElementById('sv-sizes-window');
+  const since = typeof w.measured_from_hour === 'number' ? new Date(w.measured_from_hour * 1000) : null;
+  windowEl.textContent = pick.partial && since
+    ? 'Settlement volume by the size of each payment, measured since '
+      + since.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }) + ' UTC.'
+    : 'Settlement volume by the size of each payment, ' + pick.label + '.';
+  const cov = document.getElementById('sv-sizes-coverage');
+  if (typeof w.unpriced_count === 'number' && w.unpriced_count > 0) {
+    cov.textContent = w.unpriced_count.toLocaleString('en-US')
+      + ' XRP payments came in hours with no reliable XRP price. They are counted in the totals above but not placed in a size band.';
+    cov.classList.remove('hidden');
+  }
+  card.classList.remove('hidden');
+}
+
 // Permissioned card (payments split + DEX crossings), drawn for one window.
 // The venue can be quiet for days, so the card opens on the shortest window
 // that has any activity and says why; the buttons switch windows.
@@ -511,6 +559,7 @@ fetch(TELEMETRY_API + '/settlement/totals')
 
     permTotals = d;
     renderPermissioned(d, firstActiveWindow(d));
+    renderSizeBands(d.size_bands);
 
     // Use the XRP-only annualized run-rate for Burst Math's Q (floor-honest).
     // Fall back to combined if backend doesn't ship the split (older deploy).
@@ -1055,9 +1104,91 @@ function liquidityToPayload(d) {
   if (!fallback.has('total_xrp') && !fallback.has('escrowed_xrp')) payload.supply = d.supply || {};
   return payload;
 }
+// Measured free float tile and the execution-cost table (Telemetry 1.30.0).
+// Both render with textContent only: every value comes from the API.
+const ffValueEl = document.getElementById('ff-value');
+function renderFreeFloat(ff) {
+  if (!ffValueEl) return;
+  if (ff && typeof ff.value_xrp === 'number' && ff.value_xrp > 0) {
+    ffValueEl.textContent = (ff.value_xrp / 1e9).toFixed(2) + 'B XRP';
+  } else {
+    ffValueEl.textContent = '-';
+  }
+}
+const EC_PAIR_LABEL = { 'XRP/RLUSD': 'XRP/RLUSD', 'XRP/USD-Gatehub': 'XRP/USD (Gatehub)', 'XRP/USD-Bitstamp': 'XRP/USD (Bitstamp)' };
+const EC_SIZES = [1e6, 1e7, 1e8];
+function fmtImpact(bps) {
+  if (typeof bps !== 'number' || !isFinite(bps)) return '-';
+  const pct = bps / 100;
+  // One decimal below 10% and just under 100%, so a 99.8% sell never rounds
+  // up to read as a total loss.
+  const oneDp = pct < 10 || (pct >= 99 && pct < 100);
+  return (oneDp ? pct.toFixed(1) : Math.round(pct).toLocaleString('en-US')) + '%';
+}
+function ecCell(row) {
+  const td = document.createElement('td');
+  td.className = 'py-3 pl-4 text-right whitespace-nowrap';
+  if (!row) { td.textContent = '-'; return td; }
+  td.textContent = fmtImpact(row.slippage_bps);
+  if (typeof row.avg_price_usd === 'number' && typeof row.best_price_usd === 'number') {
+    td.title = 'Average $' + row.avg_price_usd.toFixed(4) + ' against a best price of $' + row.best_price_usd.toFixed(4);
+  }
+  return td;
+}
+function rowFor(rows, size) {
+  return (Array.isArray(rows) ? rows : []).find(r => r && r.size_usd === size) || null;
+}
+function renderExecutionCost(ec) {
+  const body = document.getElementById('ec-rows');
+  const notes = document.getElementById('ec-notes');
+  const asOf = document.getElementById('ec-as-of');
+  if (!body) return;
+  const pairs = ec && Array.isArray(ec.pairs) ? ec.pairs : null;
+  body.replaceChildren();
+  if (!pairs || !pairs.length) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 7; td.className = 'py-3 text-muted';
+    td.textContent = 'Not available right now.';
+    tr.appendChild(td); body.appendChild(tr);
+    return;
+  }
+  const fees = [];
+  const deep = [];
+  for (const p of pairs) {
+    const name = EC_PAIR_LABEL[p.pair] || String(p.pair || '');
+    const tr = document.createElement('tr');
+    tr.className = 'border-b border-border last:border-0';
+    const th = document.createElement('th');
+    th.scope = 'row';
+    th.className = 'py-3 pr-3 text-left font-normal whitespace-nowrap';
+    th.textContent = name;
+    tr.appendChild(th);
+    const measured = p.measured === true;
+    for (const size of EC_SIZES) tr.appendChild(ecCell(measured ? rowFor(p.sell_xrp, size) : null));
+    for (const size of EC_SIZES) tr.appendChild(ecCell(measured ? rowFor(p.buy_xrp, size) : null));
+    if (!measured) tr.title = 'This market could not be read on the latest pass.';
+    body.appendChild(tr);
+    if (typeof p.issuer_transfer_fee_pct === 'number' && p.issuer_transfer_fee_pct > 0) {
+      fees.push(name + ' ' + p.issuer_transfer_fee_pct + '%');
+    }
+    if (measured && p.book_possibly_truncated === true) deep.push(name);
+  }
+  const parts = ['Percent of the best price given up. A sell can lose at most 100%; a buy on a thin market can cost many times the best price.'];
+  if (fees.length) parts.push('Issuer transfer fees are not included: ' + fees.join(', ') + '.');
+  if (deep.length) parts.push(deep.join(', ') + ' has more resting offers than were counted, so its figures may overstate the cost.');
+  notes.textContent = parts.join(' ');
+  const t = typeof ec.measured_at === 'number' ? new Date(ec.measured_at * 1000) : null;
+  asOf.textContent = t && !isNaN(t.getTime())
+    ? 'Measured ' + t.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }) + ' UTC.'
+    : '';
+}
+
 fetch(TELEMETRY_API + '/stats/liquidity')
   .then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))))
   .then(d => {
+    renderFreeFloat(d.free_float_measured);
+    renderExecutionCost(d.execution_slippage);
     const payload = liquidityToPayload(d);
     reanchorFromPayload(payload);
     const live = payload.supply && typeof (d.active_float || {}).value_xrp === 'number';
@@ -1070,6 +1201,7 @@ fetch(TELEMETRY_API + '/stats/liquidity')
   })
   .catch(() => {
     if (afAsOfEl) afAsOfEl.textContent = 'Live figures unavailable right now. Showing figures as of ' + SNAPSHOT_AS_OF + '.';
+    renderExecutionCost(null);
   });
 
 document.getElementById('snap-btn').addEventListener('click', () => {

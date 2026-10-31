@@ -34,5 +34,19 @@ check('uptime panel reads /uptime, not /sla', js.includes("'/uptime?days=30'") &
 check('page never calls uptime an SLA', !/\bSLA\b/.test(html));
 // 2026-10-29: no published uptime target either; it read like an SLA.
 check('uptime panel shows no target', !js.includes('target_uptime') && !html.includes('sla-target') && !/>\s*Target\s*</.test(html));
+// 2026-10-31 (Telemetry 1.30.0): three measured blocks. Values come from the
+// API, so they render with textContent and never through innerHTML.
+check('free float tile is wired', html.includes('id="ff-value"') && js.includes('renderFreeFloat(d.free_float_measured)'));
+check('execution cost table is wired', html.includes('id="ec-rows"') && js.includes('renderExecutionCost(d.execution_slippage)'));
+check('payment size card is wired', html.includes('id="sv-sizes"') && js.includes('renderSizeBands(d.size_bands)'));
+const newCode = js.slice(js.indexOf('// Payment size card'), js.indexOf('// Permissioned card'))
+  + js.slice(js.indexOf('// Measured free float tile'), js.indexOf("fetch(TELEMETRY_API + '/stats/liquidity')"));
+check('new blocks never use innerHTML', newCode.length > 500 && !/innerHTML/.test(newCode));
+// A size split that reaches back before the split existed would compare a
+// few hours of bands against a full week. Only complete windows are shown
+// as such; a partial one says when measuring started.
+check('size card only labels complete windows as full windows', js.includes('w.complete === true') && js.includes('measured since '));
+// Free float is a ceiling, and the page must say so.
+check('free float is described as a ceiling', /Treat it as a ceiling/.test(html));
 console.log(fails ? `${fails} FAILED` : 'telemetry copy: ok');
 process.exit(fails ? 1 : 0);
