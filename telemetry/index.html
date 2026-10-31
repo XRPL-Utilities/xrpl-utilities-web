@@ -191,10 +191,10 @@
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Active Float</h2>
       <h3 class="text-3xl font-bold mb-2">3-second settlement supply</h3>
       <p class="text-muted leading-relaxed mb-8 max-w-3xl">
-        <strong class="text-white">Circulating supply</strong> is all XRP outside Ripple's escrow. <strong class="text-white">Modeled Active Float</strong> estimates how much of it could trade within one ledger close of 3 to 5 seconds. Most XRP at exchanges sits in customer balances rather than on the order book, so the active slice is far smaller.
+        <strong class="text-white">Circulating supply</strong> is all XRP outside Ripple's escrow. <strong class="text-white">Modeled Active Float</strong> estimates how much of it could trade within one ledger close of 3 to 5 seconds. Most XRP at exchanges sits in customer balances rather than on the order book, so the active slice is far smaller. <strong class="text-white">Measured free float</strong> is circulating supply minus the XRP that large holders have not moved in about a year.
       </p>
 
-      <div class="grid sm:grid-cols-2 gap-4">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="stat-tile stat-tile-muted p-6">
           <div class="stat-tile-label mb-3">Total Circulating Supply</div>
           <div id="af-circulating" class="stat-tile-value text-4xl sm:text-5xl">-</div>
@@ -208,6 +208,12 @@
           <div class="stat-tile-sub mt-3 leading-relaxed">
             <span id="af-ratio-label">10%</span> of exchange-held XRP (an estimate), plus XRP in AMM pools and in funded offers on the XRPL order book (both measured).
           </div>
+        </div>
+
+        <div class="stat-tile stat-tile-muted p-6">
+          <div class="stat-tile-label mb-3">Measured free float</div>
+          <div id="ff-value" class="stat-tile-value text-4xl sm:text-5xl">-</div>
+          <div id="ff-sub" class="stat-tile-sub mt-3 leading-relaxed">Circulating supply minus XRP in large wallets that have sent nothing for about a year. Read from the ledger. Treat it as a ceiling: smaller idle wallets still count as free.</div>
         </div>
       </div>
       <p id="af-as-of" class="text-xs text-muted mt-3">Loading the latest snapshot&hellip;</p>
@@ -425,6 +431,43 @@
         </div>
       </div>
 
+      <!-- Payment size bands (Telemetry 1.30.0). The same payments as the
+           totals above, split by the USD size of each single payment.
+           Hidden until the service returns the block. -->
+      <div id="sv-sizes" class="hidden mt-6 bg-panel border border-border rounded-2xl p-6">
+        <div class="flex items-start justify-between mb-5 flex-wrap gap-3">
+          <div class="min-w-0">
+            <div class="text-xs uppercase tracking-widest text-accent font-semibold">Payment size</div>
+            <div id="sv-sizes-window" class="text-xs text-muted mt-1">Settlement volume by the size of each payment.</div>
+          </div>
+          <div class="sm:text-right">
+            <div id="sv-sizes-wholesale" class="text-3xl sm:text-4xl font-bold tracking-tight font-mono text-white">&hellip;</div>
+            <div class="text-[10px] text-muted mt-1">of volume moved in payments of $1M or more</div>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-3 text-sm">
+          <div class="bg-ink border border-border rounded-lg px-4 py-3">
+            <div class="text-[10px] uppercase tracking-wider text-muted mb-1">Under $10K</div>
+            <div id="sv-size-small-usd" class="font-mono">&hellip;</div>
+            <div id="sv-size-small-meta" class="text-[10px] text-muted mt-1 font-mono">&nbsp;</div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg px-4 py-3">
+            <div class="text-[10px] uppercase tracking-wider text-muted mb-1">$10K to $1M</div>
+            <div id="sv-size-mid-usd" class="font-mono">&hellip;</div>
+            <div id="sv-size-mid-meta" class="text-[10px] text-muted mt-1 font-mono">&nbsp;</div>
+          </div>
+          <div class="bg-ink border border-border rounded-lg px-4 py-3">
+            <div class="text-[10px] uppercase tracking-wider text-muted mb-1">$1M or more</div>
+            <div id="sv-size-large-usd" class="font-mono">&hellip;</div>
+            <div id="sv-size-large-meta" class="text-[10px] text-muted mt-1 font-mono">&nbsp;</div>
+          </div>
+        </div>
+        <p class="text-xs text-muted leading-relaxed mt-4">
+          A large payment is not always an institution. Exchanges also move funds between their own wallets in single large payments.
+        </p>
+        <p id="sv-sizes-coverage" class="hidden text-xs text-muted leading-relaxed mt-2"></p>
+      </div>
+
       <div class="mt-8 bg-panel border border-border rounded-2xl p-6">
         <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div class="text-xs uppercase tracking-widest text-accent font-semibold">Historical volume</div>
@@ -477,6 +520,42 @@
       <p class="text-sm text-muted leading-relaxed mt-6 max-w-3xl">
         This is a different measure from settlement above. A payment routed through the order book counts once there and its fill counts again here. Both sides of each fill are added, XRP at the hourly price and RLUSD at $1.
       </p>
+    </div>
+  </section>
+
+  <section id="execution-cost" class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Execution cost</h2>
+      <h3 class="text-3xl font-bold mb-2">What a large trade costs on the XRPL</h3>
+      <p class="text-muted leading-relaxed mb-8 max-w-3xl">
+        How far below or above the best price you would trade if you sold or bought that much XRP in one go on a single XRPL market, filling from its order book and AMM pool together. Splitting an order across markets or over time costs less. Exchanges off the XRPL are not included.
+      </p>
+      <p class="text-xs text-muted mb-2 sm:hidden">Swipe the table sideways to see the buy side.</p>
+      <div class="bg-panel border border-border rounded-2xl p-4 sm:p-6 overflow-x-auto" tabindex="0" role="region" aria-label="Execution cost table">
+        <table class="w-full text-sm font-mono min-w-[36rem]">
+          <caption class="sr-only">Price impact in percent for selling and buying $1M, $10M and $100M of XRP on each XRPL market</caption>
+          <thead>
+            <tr class="text-[10px] uppercase tracking-wider text-muted">
+              <th scope="col" rowspan="2" class="text-left font-normal pb-2 pr-3 align-bottom">Market</th>
+              <th scope="colgroup" colspan="3" class="font-normal pb-1 pl-4 text-right">Sell XRP</th>
+              <th scope="colgroup" colspan="3" class="font-normal pb-1 pl-4 text-right">Buy XRP</th>
+            </tr>
+            <tr class="text-[10px] uppercase tracking-wider text-muted border-b border-border">
+              <th scope="col" class="font-normal pb-2 pl-4 text-right">$1M</th>
+              <th scope="col" class="font-normal pb-2 pl-4 text-right">$10M</th>
+              <th scope="col" class="font-normal pb-2 pl-4 text-right">$100M</th>
+              <th scope="col" class="font-normal pb-2 pl-4 text-right">$1M</th>
+              <th scope="col" class="font-normal pb-2 pl-4 text-right">$10M</th>
+              <th scope="col" class="font-normal pb-2 pl-4 text-right">$100M</th>
+            </tr>
+          </thead>
+          <tbody id="ec-rows">
+            <tr><td colspan="7" class="py-3 text-muted">Loading&hellip;</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="ec-notes" class="text-xs text-muted leading-relaxed mt-3"></p>
+      <p id="ec-as-of" class="text-xs text-muted mt-1"></p>
     </div>
   </section>
 
@@ -646,7 +725,8 @@ payload = requests.get(
         <li><code class="font-mono text-white">supply</code>: total, circulating, escrowed, dormant and AMM-locked XRP, XRP on exchanges, and 24-hour exchange outflow</li>
         <li><code class="font-mono text-white">liquidity</code>: XRP in, out and net by region over 24 hours, with the top venues</li>
         <li><code class="font-mono text-white">amm</code>: the largest AMM pools with their size, depth and yield</li>
-        <li><code class="font-mono text-white">derived_models</code>: XRP available to trade, split into what sits on the ledger and an estimate for exchanges</li>
+        <li><code class="font-mono text-white">derived_models</code>: XRP available to trade, split into what sits on the ledger and an estimate for exchanges, plus the measured free float and the cost of a $1M, $10M or $100M trade on each XRPL market</li>
+        <li><code class="font-mono text-white">settlement</code>: XRP and RLUSD payment volume over 24 hours, 7 days and 30 days, split by payment size</li>
         <li><code class="font-mono text-white">utility_floor</code>: the price-floor calculator&rsquo;s result from stated assumptions, next to the current price</li>
         <li><code class="font-mono text-white">generated_at</code>: when the snapshot was built</li>
       </ul>
