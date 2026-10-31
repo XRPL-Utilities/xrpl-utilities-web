@@ -657,7 +657,7 @@ function catalogResponse(body) {
 // checks both against the pages in the repo.
 const PAGE_DIRS = new Set([
   "/start", "/sentinel", "/sentinel/bulk", "/telemetry", "/pulse", "/trust",
-  "/vault", "/flows", "/lineage", "/pricing", "/status", "/contact", "/tip", "/terms",
+  "/vault", "/flows", "/lineage", "/pricing", "/status", "/contact", "/tip", "/terms", "/whales",
 ]);
 
 export default {
