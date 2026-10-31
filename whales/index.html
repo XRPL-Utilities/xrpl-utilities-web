@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <title>XRP Whale Wallets: Live Count of 1M+ XRP Holders | XRPL-Utilities</title>
+  <meta name="description" content="Live count of XRP whale wallets holding 1 million XRP or more, with size bands, who holds them and the 10 largest. Updated every 6 hours." />
+  <meta property="og:title" content="XRP Whale Wallets | XRPL-Utilities" />
+  <meta property="og:description" content="Every XRP Ledger account holding 1 million XRP or more: how many there are, how much they hold, who holds it and the 10 largest wallets. Updated every 6 hours." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/whales/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="XRP Whale Wallets | XRPL-Utilities" />
+  <meta name="twitter:description" content="Every XRP Ledger account holding 1 million XRP or more: how many there are, how much they hold, who holds it and the 10 largest wallets. Updated every 6 hours." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/whales/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+  </style>
+  <script src="/assets/api-resilient.js?v=v2"></script>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="eager" decoding="async" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-x-6 xl:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/start/"     class="text-muted hover:text-white transition">Start here</a>
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
+        <a href="/lineage/"   class="text-muted hover:text-white transition">Lineage</a>
+        <a href="/pricing/"   class="text-muted hover:text-white transition">Pricing</a>
+      </nav>
+      <button id="nav-open" class="lg:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile slide-in nav. Same dark palette as desktop; opens on hamburger
+       tap. Body scroll locks while open; Escape, overlay tap, link tap, or
+       resize past md all close it. -->
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col lg:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/start/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Start here</a>
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
+      <a href="/lineage/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Lineage</a>
+      <a href="/pricing/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pricing</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <main id="main">
+
+  <section>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-8">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">XRP whale wallets</h1>
+      <p class="text-muted max-w-3xl">A whale is any XRP Ledger account holding at least 1 million XRP, the line most market data firms use. This page counts every one of them and shows who holds that XRP. It updates every 6 hours.</p>
+      <p id="whales-updated" class="text-xs text-muted mt-3">Loading&hellip;</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="whales-headline">
+    <h2 id="whales-headline" class="sr-only">Whale count</h2>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+        <div class="stat-tile stat-tile-glow p-5">
+          <div class="stat-tile-label mb-2">Whale wallets</div>
+          <div id="stat-count" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="stat-tile-sub mt-1">Accounts holding 1M+ XRP</div>
+        </div>
+        <div class="stat-tile p-5">
+          <div class="stat-tile-label mb-2">Excluding Ripple</div>
+          <div id="stat-ex-ripple" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
+          <div id="stat-ex-ripple-sub" class="stat-tile-sub mt-1">Whale wallets not run by Ripple</div>
+        </div>
+        <div class="stat-tile p-5">
+          <div class="stat-tile-label mb-2">XRP held by whales</div>
+          <div id="stat-total" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
+          <div class="stat-tile-sub mt-1">Spendable balance, escrow not counted</div>
+        </div>
+      </div>
+      <div id="bands" class="grid grid-cols-2 md:grid-cols-4 gap-3" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="holders-title">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-8">
+      <h2 id="holders-title" class="text-xl font-semibold mb-1">Who holds it</h2>
+      <p class="text-sm text-muted mb-4">XRP held by whale wallets, grouped by who runs them. Exchange wallets hold customers' XRP, so one exchange wallet is not one whale.</p>
+      <div id="holders" class="space-y-2"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="top-title">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+      <h2 id="top-title" class="text-xl font-semibold mb-4">The 10 largest whale wallets</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-[10px] uppercase tracking-[0.2em] text-muted">
+              <th scope="col" class="pb-2 pr-3 font-normal">#</th>
+              <th scope="col" class="hidden sm:table-cell pb-2 pr-3 font-normal">Account</th>
+              <th scope="col" class="pb-2 pr-3 font-normal text-right">XRP</th>
+              <th scope="col" class="pb-2 pr-3 font-normal">Type</th>
+              <th scope="col" class="pb-2 font-normal">Name</th>
+            </tr>
+          </thead>
+          <tbody id="top"></tbody>
+        </table>
+      </div>
+      <p class="text-xs text-muted mt-6">Free JSON for developers and agents: <a href="https://pulse.xrpl-utilities.io/stats/whales" class="underline hover:text-white" target="_blank" rel="noopener noreferrer">pulse.xrpl-utilities.io/stats/whales</a>. Live whale transfers are on <a href="/pulse/" class="underline hover:text-white">XR-Pulse</a>.</p>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 mb-10">
+        <div class="col-span-2 md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/start/"     class="text-muted hover:text-white transition">Start here</a></li>
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
+            <li><a href="/lineage/"   class="text-muted hover:text-white transition">XR-Lineage</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
+            <li><a href="https://vault.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Vault API</a></li>
+            <li><a href="https://flows.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Flows API</a></li>
+            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">MCP server</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/status/"  class="text-muted hover:text-white transition">Service status</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+            <li><a href="/tip/"     class="text-muted hover:text-white transition">Tip the maker</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel, XR-Pulse, XR-Telemetry, XR-Trust, XR-Vault, XR-Flows, and XR-Lineage are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/poll.js?v=1"></script>
+  <script src="/assets/stale-banner.js?v=1"></script>
+  <script src="/assets/pages/whales.js?v=2"></script>
+
+  <script src="/assets/a11y.js?v=1"></script>
+</body>
+</html>
