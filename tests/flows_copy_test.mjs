@@ -42,6 +42,20 @@ check('issuer list names the non-US issuers', ['Virtune', 'CoinShares', 'Valour'
     { snapshot_date: '2026-11-01', aum_usd_total: null },
   ]));
 }
+// 2026-10-31: the day-over-day tile read +$545M on the day the non-US
+// funds got issuer figures, because it subtracted yesterday's total from
+// today's. It must sum each fund's own change instead.
+check('day-over-day tile sums per-fund deltas', js.includes('sumTickerDeltas(series, latest.snapshot_date)') && !js.includes('latest.aum_usd_total - prior.aum_usd_total'));
+{
+  const src = js.match(/function sumTickerDeltas[\s\S]*?\n}\n/)[0];
+  const f = new Function(src + '; return sumTickerDeltas;')();
+  const series = {
+    OLD: [{ snapshot_date: '2026-10-30', aum_delta_usd: null }, { snapshot_date: '2026-10-31', aum_delta_usd: -2 }],
+    NEW: [{ snapshot_date: '2026-10-31', aum_usd: 300, aum_delta_usd: null }],
+  };
+  check('a fund with no prior figure adds nothing to the change', f(series, '2026-10-31') === -2);
+  check('no deltas at all gives null', f({ NEW: series.NEW }, '2026-10-31') === null);
+}
 for (const leak of ['aggregator', 'discovery loop', "SEC's", 'public-source', 'scraper', 'static HTML']) {
   check(`no "${leak}" in page copy`, !html.includes(leak) && !js.replace(/\/\/.*$/gm, '').includes(leak));
 }
