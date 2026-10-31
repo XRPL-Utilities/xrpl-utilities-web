@@ -114,10 +114,13 @@ async function loadWhales() {
     const s = d && d.latest;
     if (!s || typeof s.wallet_count !== 'number') throw new Error('no snapshot');
     setText('stat-count', fmtInt(s.wallet_count));
-    const ex = s.excluding_ripple || {};
-    setText('stat-ex-ripple', fmtInt(ex.wallet_count));
-    setText('stat-ex-ripple-sub', 'Whale wallets not run by Ripple, holding ' + fmtXrp(ex.total_xrp) + ' XRP');
     setText('stat-total', fmtXrp(s.total_xrp));
+    const ex = s.excluding_ripple || {};
+    setText('stat-total-ex-ripple', fmtXrp(ex.total_xrp));
+    if (typeof ex.total_xrp === 'number' && s.total_xrp > 0) {
+      const ripple = s.total_xrp - ex.total_xrp;
+      setText('stat-total-ex-ripple-sub', 'Leaves out ' + fmtXrp(ripple) + ' XRP in Ripple\u2019s wallets');
+    }
     renderBands(s.bands);
     renderHolders(s.categories);
     renderTop(s.top);
