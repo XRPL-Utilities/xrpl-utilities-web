@@ -12,6 +12,23 @@ function fmtUsd(n) {
   return '$' + n.toFixed(2);
 }
 
+// Fixed labels for the non-US region field. Looked up, never echoed,
+// so an unexpected value from the API renders as nothing.
+const REGION_LABEL = { europe: 'Europe', canada: 'Canada', brazil: 'Brazil' };
+
+// Add two daily {snapshot_date, aum_usd_total} series by date. A date
+// is null only when neither series has a number for it.
+function sumSeries(a, b) {
+  const byDate = new Map();
+  for (const r of [...(a || []), ...(b || [])]) {
+    if (!r || !r.snapshot_date) continue;
+    const prev = byDate.get(r.snapshot_date);
+    const v = typeof r.aum_usd_total === 'number' ? r.aum_usd_total : null;
+    byDate.set(r.snapshot_date, prev == null ? v : (v == null ? prev : prev + v));
+  }
+  return [...byDate.keys()].sort().map(d => ({ snapshot_date: d, aum_usd_total: byDate.get(d) }));
+}
+
 // Escape backend strings before injecting via innerHTML. Mirrors
 // the helper used on sibling pages.
 function escapeHtml(s) {
@@ -63,7 +80,11 @@ async function loadCorrelation(days) {
     emptyEl?.classList.add('hidden');
   }
 
-  const euTotals = body.etf_european_total_aum_daily || [];
+  // Non-US subline: European ETPs plus Canada and Brazil (schema 1.30.0).
+  const euTotals = sumSeries(
+    body.etf_european_total_aum_daily || [],
+    body.etf_international_total_aum_daily || [],
+  );
 
   renderEtfAumChart(series, totals, tracked);
   renderEtfAumDeltaChart(series, totals, tracked);
@@ -171,7 +192,7 @@ async function renderSummaryTiles(series, totals, tracked, euTotals) {
     elAum.textContent = fmtUsd(latest.aum_usd_total);
     if (elAumEu) {
       elAumEu.textContent = latestEu
-        ? `includes ${fmtUsd(latestEu.aum_usd_total)} from European products`
+        ? `includes ${fmtUsd(latestEu.aum_usd_total)} from funds outside the US`
         : '';
     }
     if (nonNull.length >= 2 && elDelta) {
@@ -610,16 +631,17 @@ async function loadTrackedEtfsGrid() {
   // Group spot before indirect-basket so the headline tier stays
   // visually first; within tier keep registry order so featured
   // funds (highest-AUM, oldest) lead.
-  const tierOrder = { spot_xrp_etf: 0, indirect_basket_exposure: 1 };
+  const tierOrder = { spot_xrp_etf: 0, indirect_basket_exposure: 1, european_spot_xrp_etp: 2, international_spot_xrp_etf: 3 };
   const ordered = [...launches].sort((a, b) => {
     const ta = tierOrder[a.asset_class] ?? 2;
     const tb = tierOrder[b.asset_class] ?? 2;
     return ta - tb;
   });
   grid.innerHTML = ordered.map(etf => {
+    const region = REGION_LABEL[etf.region] ? ' · ' + REGION_LABEL[etf.region] : '';
     const tier = etf.asset_class === 'indirect_basket_exposure'
       ? '<span class="text-[9px] uppercase tracking-wider text-amber-300/80">Indirect</span>'
-      : '<span class="text-[9px] uppercase tracking-wider text-emerald-300/80">Spot</span>';
+      : `<span class="text-[9px] uppercase tracking-wider text-emerald-300/80">Spot${escapeHtml(region)}</span>`;
     const exp = etf.expense_ratio != null
       ? (etf.expense_ratio * 100).toFixed(2).replace(/\.?0+$/, '') + '%'
       : 'not disclosed';

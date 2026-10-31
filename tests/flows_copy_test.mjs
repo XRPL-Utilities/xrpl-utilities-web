@@ -22,6 +22,26 @@ function check(name, cond) { console.log((cond ? 'PASS ' : 'FAIL ') + name); if 
 check('MOEX value matches the change it is shown with', js.includes('snap.current_value ?? snap.last_value'));
 check('futures show the contract code and say previous settlement', js.includes('f.short_name') && !js.includes('f.sec_name') && js.includes('previous settlement'));
 check('European subline does not name a fund with no figure', !js.includes('AXRP / WXRP / GXRP.DE'));
+// 2026-10-31: funds outside the US. The subline must include Canada and
+// Brazil (the international series), not just the European one, and the
+// region label must come from a fixed map, never straight from the API.
+check('non-US subline sums the European and international series',
+  js.includes('body.etf_international_total_aum_daily') && js.includes('from funds outside the US'));
+check('region label is looked up, not echoed', js.includes('REGION_LABEL[etf.region]') && !js.includes('${etf.region}'));
+check('issuer list names the non-US issuers', ['Virtune', 'CoinShares', 'Valour', '3iQ', 'Purpose', 'Evolve', 'In Brazil: Hashdex'].every(n => html.includes(n)));
+{
+  const src = js.match(/function sumSeries[\s\S]*?\n}\n/)[0];
+  const sumSeries = new Function(src + '; return sumSeries;')();
+  const out = sumSeries(
+    [{ snapshot_date: '2026-10-30', aum_usd_total: 10 }, { snapshot_date: '2026-10-31', aum_usd_total: null }],
+    [{ snapshot_date: '2026-10-31', aum_usd_total: 5 }, { snapshot_date: '2026-11-01', aum_usd_total: null }],
+  );
+  check('sumSeries adds by date and keeps all-null days null', JSON.stringify(out) === JSON.stringify([
+    { snapshot_date: '2026-10-30', aum_usd_total: 10 },
+    { snapshot_date: '2026-10-31', aum_usd_total: 5 },
+    { snapshot_date: '2026-11-01', aum_usd_total: null },
+  ]));
+}
 for (const leak of ['aggregator', 'discovery loop', "SEC's", 'public-source', 'scraper', 'static HTML']) {
   check(`no "${leak}" in page copy`, !html.includes(leak) && !js.replace(/\/\/.*$/gm, '').includes(leak));
 }
