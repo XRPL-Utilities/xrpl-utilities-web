@@ -29,6 +29,10 @@
     .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
     .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
     .nav-link-active { color: #00b8ff; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .whale-art { width: 128px; height: 128px; }
+    @media (min-width: 640px) { .whale-art { width: 176px; height: 176px; } }
+    @media (min-width: 1024px) { .whale-art { width: 224px; height: 224px; } }
   </style>
   <script src="/assets/api-resilient.js?v=v2"></script>
 </head>
@@ -94,10 +98,13 @@
   <main id="main">
 
   <section>
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-8">
-      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">XRP whale wallets</h1>
-      <p class="text-muted max-w-3xl">A whale is any XRP Ledger account holding at least 1 million XRP, the line most market data firms use. This page counts every one of them and shows who holds that XRP. It updates every 6 hours.</p>
-      <p id="whales-updated" class="text-xs text-muted mt-3">Loading&hellip;</p>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-8 flex flex-col-reverse sm:flex-row sm:items-center gap-6 sm:gap-10">
+      <div class="min-w-0 flex-1">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">XRP whale wallets</h1>
+        <p class="text-muted max-w-3xl">A whale is any XRP Ledger account holding at least 1 million XRP, the line most market data firms use. This page counts every one of them and shows who holds that XRP. It updates every 6 hours.</p>
+        <p id="whales-updated" class="text-xs text-muted mt-3">Loading&hellip;</p>
+      </div>
+      <img src="/assets/img/xr-whales-512.webp" width="224" height="224" loading="eager" decoding="async" alt="XRP Whales" class="whale-art rounded-2xl glow shrink-0" />
     </div>
   </section>
 
@@ -109,16 +116,19 @@
           <div class="stat-tile-label mb-2">Whale wallets</div>
           <div id="stat-count" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
           <div class="stat-tile-sub mt-1">Accounts holding 1M+ XRP</div>
+          <div id="stat-count-delta" class="text-sm mt-2 flex flex-wrap gap-x-1.5" aria-live="polite"></div>
         </div>
         <div class="stat-tile p-5">
           <div class="stat-tile-label mb-2">XRP held by whales</div>
           <div id="stat-total" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
           <div class="stat-tile-sub mt-1">Spendable balance, escrow not counted</div>
+          <div id="stat-total-delta" class="text-sm mt-2 flex flex-wrap gap-x-1.5" aria-live="polite"></div>
         </div>
         <div class="stat-tile p-5">
           <div class="stat-tile-label mb-2">XRP held by whales, excluding Ripple</div>
           <div id="stat-total-ex-ripple" class="stat-tile-value tabular-nums"><span class="inline-block h-9 w-24 bg-border rounded animate-pulse align-middle"></span></div>
           <div id="stat-total-ex-ripple-sub" class="stat-tile-sub mt-1">Whale XRP outside Ripple's wallets</div>
+          <div id="stat-total-ex-ripple-delta" class="text-sm mt-2 flex flex-wrap gap-x-1.5" aria-live="polite"></div>
         </div>
       </div>
       <div id="bands" class="grid grid-cols-2 md:grid-cols-4 gap-3" aria-live="polite"></div>
@@ -141,10 +151,10 @@
           <thead>
             <tr class="text-left text-[10px] uppercase tracking-[0.2em] text-muted">
               <th scope="col" class="pb-2 pr-3 font-normal">#</th>
+              <th scope="col" class="pb-2 pr-3 font-normal">Owner</th>
               <th scope="col" class="hidden sm:table-cell pb-2 pr-3 font-normal">Account</th>
               <th scope="col" class="pb-2 pr-3 font-normal text-right">XRP</th>
-              <th scope="col" class="pb-2 pr-3 font-normal">Type</th>
-              <th scope="col" class="pb-2 font-normal">Name</th>
+              <th scope="col" class="hidden sm:table-cell pb-2 font-normal">Type</th>
             </tr>
           </thead>
           <tbody id="top"></tbody>
@@ -212,7 +222,7 @@
 
   <script src="/assets/poll.js?v=1"></script>
   <script src="/assets/stale-banner.js?v=1"></script>
-  <script src="/assets/pages/whales.js?v=3"></script>
+  <script src="/assets/pages/whales.js?v=4"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>

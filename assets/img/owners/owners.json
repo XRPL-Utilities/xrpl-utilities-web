@@ -1,0 +1,22 @@
+{
+ "_note": "Owner icons for the whale page top 10. Key = owner name in lower case; a name matches when it equals the key or starts with the key and a space. The health monitor flags a top-10 name with no icon here.",
+ "icons": {
+  "binance": "binance.webp",
+  "bitbank": "bitbank.webp",
+  "bithumb": "bithumb.webp",
+  "bitso": "bitso.webp",
+  "bitstamp": "bitstamp.webp",
+  "coinbase": "coinbase.webp",
+  "coincheck": "coincheck.webp",
+  "coinone": "coinone.webp",
+  "crypto.com": "cryptocom.webp",
+  "etoro": "etoro.webp",
+  "gemini": "gemini.webp",
+  "kraken": "kraken.webp",
+  "okx": "okx.webp",
+  "ripple": "ripple.webp",
+  "robinhood": "robinhood.webp",
+  "upbit": "upbit.webp",
+  "uphold": "uphold.webp"
+ }
+}
