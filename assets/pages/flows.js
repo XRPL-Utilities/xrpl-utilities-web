@@ -29,6 +29,18 @@ function sumSeries(a, b) {
   return [...byDate.keys()].sort().map(d => ({ snapshot_date: d, aum_usd_total: byDate.get(d) }));
 }
 
+// Sum of per-fund aum_delta_usd on one date. Funds with no prior figure
+// carry a null delta and are left out. Null when no fund has a delta.
+function sumTickerDeltas(series, date) {
+  let sum = 0, any = false;
+  for (const rows of Object.values(series || {})) {
+    if (!Array.isArray(rows)) continue;
+    const row = rows.find(r => r && r.snapshot_date === date);
+    if (row && typeof row.aum_delta_usd === 'number') { sum += row.aum_delta_usd; any = true; }
+  }
+  return any ? sum : null;
+}
+
 // Escape backend strings before injecting via innerHTML. Mirrors
 // the helper used on sibling pages.
 function escapeHtml(s) {
@@ -195,9 +207,14 @@ async function renderSummaryTiles(series, totals, tracked, euTotals) {
         ? `includes ${fmtUsd(latestEu.aum_usd_total)} from funds outside the US`
         : '';
     }
-    if (nonNull.length >= 2 && elDelta) {
+    // Day-over-day change is the sum of each fund's own change, never
+    // latest total minus prior total: a fund that gains its first figure
+    // today (a new listing, or a switch to an issuer source) would show
+    // its whole AUM as one day's inflow. Same basis as the delta chart.
+    const dayDelta = sumTickerDeltas(series, latest.snapshot_date);
+    if (nonNull.length >= 2 && elDelta && dayDelta != null) {
       const prior = nonNull[nonNull.length - 2];
-      const delta = latest.aum_usd_total - prior.aum_usd_total;
+      const delta = dayDelta;
       const sign = delta >= 0 ? '+' : '-';
       const cls = delta >= 0 ? 'text-emerald-400' : 'text-rose-400';
       elDelta.className = `text-2xl font-bold font-mono ${cls}`;
