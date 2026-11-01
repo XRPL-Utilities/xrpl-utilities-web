@@ -70,4 +70,28 @@ for (const leak of ['xrp-ledger.toml', 'XLS-40', 'curated', 'v2 (planned)', 'fab
   check(`no "${leak}"`, !html.includes(leak));
 }
 
+
+
+// 2026-11-01: each paid card names the MCP tool that calls it, so agent
+// builders can go from a price to a tool. Names checked against the live
+// tools/list that day. Routes with no MCP tool (Trust operators rollup and
+// POST /scan) are left out on purpose.
+const MCP = {
+  sentinel: ['xrpl_sentinel_scan', 'xrpl_sentinel_scan_history'],
+  pulse: ['xrpl_pulse_recent_events', 'xrpl_pulse_events_by_address', 'xrpl_pulse_stream_purchase'],
+  telemetry: ['xrpl_telemetry_snapshot'],
+  trust: ['xrpl_trust_list_domains', 'xrpl_trust_get_domain', 'xrpl_trust_credential_issuers', 'xrpl_trust_operator_drilldown'],
+  vault: ['xrpl_vault_scan'],
+  flows: ['xrpl_flows_scan'],
+  ledger: ['xrpl_ledger_statement'],
+};
+for (const [svc, tools] of Object.entries(MCP)) {
+  const i = paid.indexOf(`data-mcp="${svc}"`);
+  const row = i < 0 ? '' : paid.slice(i, paid.indexOf('</div>', i));
+  check(`${svc} card has an MCP tool row`, i >= 0);
+  for (const t of tools) check(`${svc} card names ${t}`, row.includes(`>${t}<`));
+  const host = paid.indexOf(`>${svc}.xrpl-utilities.io<`);
+  check(`${svc} MCP row sits in its own card`, i >= 0 && host > i && paid.lastIndexOf('data-mcp=', host) === i);
+}
+check('no MCP tool row offers a free poll step as paid', !paid.includes('xrpl_telemetry_get_status') && !paid.includes('xrpl_telemetry_get_results'));
 process.exit(fails ? 1 : 0);
