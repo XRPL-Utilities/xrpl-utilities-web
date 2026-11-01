@@ -38,6 +38,9 @@ check('uptime panel shows no target', !js.includes('target_uptime') && !html.inc
 // API, so they render with textContent and never through innerHTML.
 check('free float tile is wired', html.includes('id="ff-value"') && js.includes('renderFreeFloat(d.free_float_measured)'));
 check('execution cost table is wired', html.includes('id="ec-rows"') && js.includes('renderExecutionCost(d.execution_slippage)'));
+// 2026-11-01: Aaron could not tell what the execution cost table was for.
+// The intro must say it plainly and say how often it updates.
+check('execution cost intro says what the table is for', html.includes('If a fund sold or bought this much XRP in one go on the XRP Ledger') && html.includes('A low number means the market can take a big order') && html.includes('Updated every 4 hours') && !html.includes('How far below or above the best price you would trade'));
 check('payment size card is wired', html.includes('id="sv-sizes"') && js.includes('renderSizeBands(d.size_bands)'));
 const newCode = js.slice(js.indexOf('// Payment size card'), js.indexOf('// Permissioned card'))
   + js.slice(js.indexOf('// Measured free float tile'), js.indexOf("fetch(TELEMETRY_API + '/stats/liquidity')"));
