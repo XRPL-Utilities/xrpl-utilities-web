@@ -160,6 +160,11 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             What any XRPL wallet has been doing over the last 90 days: how automated it looks and how institutional, each scored 0 to 100, plus signal flags, known labels and a plain-English summary. Not a risk or compliance verdict. <code class="font-mono text-white/80">/scan/history</code> returns up to 25 earlier scans of the same wallet.
           </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="sentinel">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
+            <code class="font-mono text-white/80">xrpl_sentinel_scan</code>
+            <code class="font-mono text-white/80">xrpl_sentinel_scan_history</code>
+          </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">sentinel.xrpl-utilities.io</span>
             <span>&middot;</span>
@@ -197,7 +202,13 @@
               One payment opens a live connection for 1, 6 or 24 hours. Events arrive as they happen, filtered by source, signal or minimum dollar value.
             </p>
           </div>
-          <div class="flex items-center gap-3 text-xs text-muted flex-wrap mt-4">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mt-4 break-all" data-mcp="pulse">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
+            <code class="font-mono text-white/80">xrpl_pulse_recent_events</code>
+            <code class="font-mono text-white/80">xrpl_pulse_events_by_address</code>
+            <code class="font-mono text-white/80">xrpl_pulse_stream_purchase</code>
+          </div>
+          <div class="flex items-center gap-3 text-xs text-muted flex-wrap mt-3">
             <span class="font-mono">pulse.xrpl-utilities.io</span>
             <span>&middot;</span>
             <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener" class="text-accent hover:underline">Swagger</a>
@@ -218,6 +229,10 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             A network snapshot in one call: total, dormant, escrowed and AMM-locked XRP, liquidity by region, settlement volume, and the XRP held by funds.
           </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="telemetry">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
+            <code class="font-mono text-white/80">xrpl_telemetry_snapshot</code>
+          </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">telemetry.xrpl-utilities.io</span>
             <span>&middot;</span>
@@ -246,6 +261,13 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             The permissioned-domain directory: every domain, who runs it, which credentials it accepts and who issues them, and recent trading. Free to browse on this site; each API call is $0.10.
           </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="trust">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
+            <code class="font-mono text-white/80">xrpl_trust_list_domains</code>
+            <code class="font-mono text-white/80">xrpl_trust_get_domain</code>
+            <code class="font-mono text-white/80">xrpl_trust_credential_issuers</code>
+            <code class="font-mono text-white/80">xrpl_trust_operator_drilldown</code>
+          </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">trust.xrpl-utilities.io</span>
             <span>&middot;</span>
@@ -267,6 +289,10 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             A deep dive on any real-world-asset issuer, looked up by wallet, name or currency: supply in circulation, the last 24 hours of mints and burns, AMM pools and number of holders. Figures are in the token&rsquo;s own units.
           </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="vault">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
+            <code class="font-mono text-white/80">xrpl_vault_scan</code>
+          </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">vault.xrpl-utilities.io</span>
             <span>&middot;</span>
@@ -288,6 +314,10 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             A deep dive on any of the 22 tracked XRP funds in the US, Europe, Canada and Brazil: assets today and over time, how much of it is XRP, recent filings, and exchange flows on the ledger over the same days.
           </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="flows">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
+            <code class="font-mono text-white/80">xrpl_flows_scan</code>
+          </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">flows.xrpl-utilities.io</span>
             <span>&middot;</span>
@@ -309,6 +339,10 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             Account statement for up to 10 XRPL addresses in one call, rolled into monthly periods: XRP in, out and net, fees, activity by type, and the net change in every token held. One price covers the whole list of addresses.
           </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="ledger">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
+            <code class="font-mono text-white/80">xrpl_ledger_statement</code>
+          </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">ledger.xrpl-utilities.io</span>
             <span>&middot;</span>
