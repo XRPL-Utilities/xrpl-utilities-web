@@ -122,7 +122,7 @@
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Pricing</h1>
-      <p class="text-xl text-muted">Free on this site. Agents pay per call: Pulse data calls $0.01, deep dives and feeds $0.10, Pulse live streams from $0.50 an hour.</p>
+      <p class="text-xl text-muted">Free on this site. Agents pay per call: data calls $0.01, deep dives and feeds $0.10, Pulse live streams from $0.50 an hour.</p>
       <div class="mt-6 flex flex-wrap justify-center gap-2 text-xs text-muted">
         <span class="px-3 py-1.5 border border-border rounded-full">Pay in RLUSD, XRP or USDC on Base</span>
         <span class="px-3 py-1.5 border border-border rounded-full">No account or API key</span>
@@ -244,9 +244,24 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             A network snapshot in one call: total, dormant, escrowed and AMM-locked XRP, liquidity by region, settlement volume, and the XRP held by funds.
           </p>
+          <div class="border-t border-border/60 pt-4 mb-3">
+            <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+              <div class="flex items-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">Also &middot; data calls</span>
+                <code class="font-mono text-sm text-muted">GET /settlement/series</code>
+                <code class="font-mono text-sm text-muted">GET /stats/&hellip;</code>
+              </div>
+              <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.01 / call</span>
+            </div>
+            <p class="text-sm text-muted leading-relaxed">
+              The numbers behind this site&rsquo;s Telemetry page: settlement volume by day, week or month, liquidity and slippage, order-book volume and exchange flows by venue. 4 routes, listed in <code class="font-mono text-white/80">/agents.json</code>.
+            </p>
+          </div>
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="telemetry">
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
             <code class="font-mono text-white/80">xrpl_telemetry_snapshot</code>
+            <code class="font-mono text-white/80">xrpl_telemetry_settlement_series</code>
+            <code class="font-mono text-white/80">xrpl_telemetry_dex_pair_volume</code>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">telemetry.xrpl-utilities.io</span>
@@ -276,12 +291,27 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             The permissioned-domain directory: every domain, who runs it, which credentials it accepts and who issues them, and recent trading. Free to browse on this site; each API call is $0.10.
           </p>
+          <div class="border-t border-border/60 pt-4 mb-3">
+            <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+              <div class="flex items-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">Also &middot; data calls</span>
+                <code class="font-mono text-sm text-muted">GET /activity</code>
+                <code class="font-mono text-sm text-muted">GET /events</code>
+                <code class="font-mono text-sm text-muted">&hellip;</code>
+              </div>
+              <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.01 / call</span>
+            </div>
+            <p class="text-sm text-muted leading-relaxed">
+              Domain activity and changes as they happen, operators by country, totals across all domains, and who is behind each operator. 5 routes, listed in <code class="font-mono text-white/80">/agents.json</code>.
+            </p>
+          </div>
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="trust">
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
             <code class="font-mono text-white/80">xrpl_trust_list_domains</code>
             <code class="font-mono text-white/80">xrpl_trust_get_domain</code>
             <code class="font-mono text-white/80">xrpl_trust_credential_issuers</code>
             <code class="font-mono text-white/80">xrpl_trust_operator_drilldown</code>
+            <span>and 5 more data tools</span>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">trust.xrpl-utilities.io</span>
@@ -329,9 +359,24 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             A deep dive on any of the 22 tracked XRP funds in the US, Europe, Canada and Brazil: assets today and over time, how much of it is XRP, recent filings, and exchange flows on the ledger over the same days.
           </p>
+          <div class="border-t border-border/60 pt-4 mb-3">
+            <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+              <div class="flex items-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">Also &middot; data calls</span>
+                <code class="font-mono text-sm text-muted">GET /stats/correlation</code>
+                <code class="font-mono text-sm text-muted">GET /stats/&hellip;</code>
+              </div>
+              <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.01 / call</span>
+            </div>
+            <p class="text-sm text-muted leading-relaxed">
+              The numbers behind this site&rsquo;s Flows page: fund assets next to exchange flows, daily fund flows, launch-week activity, cross-border flow and possible new funds. 5 routes, listed in <code class="font-mono text-white/80">/agents.json</code>.
+            </p>
+          </div>
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="flows">
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
             <code class="font-mono text-white/80">xrpl_flows_scan</code>
+            <code class="font-mono text-white/80">xrpl_flows_correlation</code>
+            <span>and 3 more data tools</span>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">flows.xrpl-utilities.io</span>
@@ -403,14 +448,20 @@
           </div>
           <div class="border border-border rounded-xl p-5">
             <div class="flex items-center gap-3 mb-3">
+              <span class="font-bold text-white">XR-Telemetry</span>
+              <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
+            </div>
+            <ul class="space-y-2 text-sm text-muted">
+            <li><code class="font-mono text-white">/settlement/totals</code> &middot; XRP and RLUSD payment volume over 24 hours, 7 days and 30 days</li>
+            </ul>
+          </div>
+          <div class="border border-border rounded-xl p-5">
+            <div class="flex items-center gap-3 mb-3">
               <span class="font-bold text-white">XR-Flows</span>
               <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
             </div>
             <ul class="space-y-2 text-sm text-muted">
-            <li><code class="font-mono text-white">/stats/correlation</code> &middot; fund assets next to exchange flows, by day</li>
-            <li><code class="font-mono text-white">/stats/launch-impact</code> &middot; large-transfer activity before and after each fund launch</li>
             <li><code class="font-mono text-white">/stats/etf-aggregate-xrp-held</code> &middot; total XRP held by funds</li>
-            <li><code class="font-mono text-white">/stats/etf-candidates</code> &middot; possible new XRP funds not yet tracked</li>
             </ul>
           </div>
           <div class="border border-border rounded-xl p-5">
@@ -419,11 +470,7 @@
               <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
             </div>
             <ul class="space-y-2 text-sm text-muted">
-            <li><code class="font-mono text-white">/activity</code> &middot; recent permissioned-domain activity, newest first</li>
             <li><code class="font-mono text-white">/permissioned-domains/operators/index</code> &middot; every domain operator</li>
-            <li><code class="font-mono text-white">/permissioned-domains/usage-summary</code> &middot; totals across all domains</li>
-            <li><code class="font-mono text-white">/jurisdictions</code> &middot; operators and issuers by country</li>
-            <li><code class="font-mono text-white">/events</code> &middot; domain and credential changes as they happen</li>
             </ul>
           </div>
           <div class="border border-border rounded-xl p-5">
@@ -474,7 +521,7 @@
   -H 'Content-Type: application/json' \
   -d '{"address":"rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"}'</pre>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mt-5 mb-2">Claude Desktop (MCP)</div>
-            <p class="text-xs text-muted leading-relaxed mb-2">Add to <code class="font-mono text-white">claude_desktop_config.json</code>. Tools published: 46 across all seven services (19 free, 27 paid). Remote clients can use <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code>.</p>
+            <p class="text-xs text-muted leading-relaxed mb-2">Add to <code class="font-mono text-white">claude_desktop_config.json</code>. Tools published: 46 across all seven services (8 free, 38 paid). Remote clients can use <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code>.</p>
             <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">{
   "mcpServers": {
     "xrpl-utilities": {
