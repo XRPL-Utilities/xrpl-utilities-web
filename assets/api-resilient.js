@@ -128,6 +128,80 @@
     return body == null || typeof body === 'string';
   }
 
+  // Data routes on the API hosts are becoming paid for outside agents, and
+  // free for this site's visitors who carry the visitor pass (the preview
+  // token). Plain GETs go out without it, so nothing changes and no browser
+  // check runs while a route is still open. When a plain GET comes back 402,
+  // fetch the pass (loading the token script on pages that don't have it),
+  // retry once with it, and send it up front for the rest of the visit.
+  var PASS_STICKY_KEY = 'xru_send_pass_v1';
+  var TURNSTILE_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+  var PREVIEW_TOKEN_SRC = '/assets/preview-token.js?v=v2';
+  var sendPass = false;
+  try { sendPass = sessionStorage.getItem(PASS_STICKY_KEY) === '1'; } catch (_) {}
+
+  function isPlainGet(input, init) {
+    if (input instanceof Request) return false;
+    var method = (init && init.method) || 'GET';
+    if (String(method).toUpperCase() !== 'GET') return false;
+    var h = init && init.headers;
+    return !headerValue(h, 'authorization') && !headerValue(h, 'payment-signature') &&
+      !headerValue(h, 'x-payment');
+  }
+
+  function loadScript(src) {
+    return new Promise(function (resolve) {
+      var existing = document.querySelector('script[src="' + src + '"]');
+      if (existing) { resolve(); return; }
+      var el = document.createElement('script');
+      el.src = src;
+      el.async = true;
+      el.onload = function () { resolve(); };
+      el.onerror = function () { resolve(); };
+      document.head.appendChild(el);
+    });
+  }
+
+  var tokenLib = null;
+  function previewTokenLib() {
+    if (global.PreviewToken) return Promise.resolve(global.PreviewToken);
+    if (!tokenLib) {
+      tokenLib = Promise.all([loadScript(TURNSTILE_SRC), loadScript(PREVIEW_TOKEN_SRC)])
+        .then(function () { return global.PreviewToken || null; });
+    }
+    return tokenLib;
+  }
+
+  function withPass(init, auth) {
+    var out = {};
+    if (init) for (var k in init) if (Object.prototype.hasOwnProperty.call(init, k)) out[k] = init[k];
+    var headers = {};
+    var src = init && init.headers;
+    if (src && typeof src.forEach === 'function') {
+      src.forEach(function (v, name) { headers[name] = v; });
+    } else if (src) {
+      for (var n in src) if (Object.prototype.hasOwnProperty.call(src, n)) headers[n] = src[n];
+    }
+    headers.Authorization = auth;
+    out.headers = headers;
+    return out;
+  }
+
+  // Resolves to init with the pass attached, or null when no pass could be had.
+  function passInit(init) {
+    return previewTokenLib().then(function (lib) {
+      if (!lib || typeof lib.authHeaders !== 'function') return null;
+      return lib.authHeaders().then(function (h) {
+        return h && h.Authorization ? withPass(init, h.Authorization) : null;
+      });
+    }).catch(function () { return null; });
+  }
+
+  function markSendPass() {
+    sendPass = true;
+    try { sessionStorage.setItem(PASS_STICKY_KEY, '1'); } catch (_) {}
+  }
+
   function markPreviewViaProxy() {
     previewViaProxy = true;
     try { sessionStorage.setItem(PREVIEW_STICKY_KEY, '1'); } catch (_) {}
@@ -138,7 +212,7 @@
     try { sessionStorage.setItem(STICKY_KEY, '1'); } catch (_) {}
   }
 
-  global.fetch = function (input, init) {
+  function resilientFetch(input, init) {
     var url = requestUrl(input);
     var proxied = url ? proxyUrlFor(url) : null;
 
@@ -177,6 +251,26 @@
       }
       return sendTo(proxied, input, init);
     });
+  }
+
+  global.fetch = function (input, init) {
+    var url = requestUrl(input);
+    if (!url || !proxyUrlFor(url) || !isPlainGet(input, init)) return resilientFetch(input, init);
+    if (sendPass) {
+      return passInit(init).then(function (withToken) {
+        return resilientFetch(input, withToken || init);
+      });
+    }
+    return resilientFetch(input, init).then(function (res) {
+      if (res.status !== 402 || isAbort(null, input, init)) return res;
+      return passInit(init).then(function (withToken) {
+        if (!withToken) return res;
+        return resilientFetch(input, withToken).then(function (again) {
+          if (again.status !== 402) markSendPass();
+          return again;
+        }, function () { return res; });
+      });
+    });
   };
 
   // Exposed for debugging and for the tests; not a public contract.
@@ -184,9 +278,13 @@
     proxyUrlFor: proxyUrlFor,
     isProxyMode: function () { return proxyMode; },
     isPreviewViaProxy: function () { return previewViaProxy; },
+    isSendingPass: function () { return sendPass; },
     _reset: function () {
       proxyMode = false;
       previewViaProxy = false;
+      sendPass = false;
+      tokenLib = null;
+      try { sessionStorage.removeItem(PASS_STICKY_KEY); } catch (_) {}
       try { sessionStorage.removeItem(STICKY_KEY); } catch (_) {}
       try { sessionStorage.removeItem(PREVIEW_STICKY_KEY); } catch (_) {}
     },

@@ -23,6 +23,7 @@ node tests/worker_proxy_test.mjs
 node tests/qr_render_test.mjs
 node tests/payment_pin_test.mjs
 node tests/resilience_test.mjs
+node tests/visitor_pass_test.mjs
 node tests/a11y_test.mjs
 node tests/buyer_path_test.mjs
 node tests/seo_test.mjs
