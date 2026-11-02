@@ -119,3 +119,7 @@ check('hero whale art exists and is on the page', fs.existsSync(path.join(repo, 
 
 if (fails) { console.error(`${fails} whales check(s) failed`); process.exit(1); }
 console.log('whales checks passed');
+
+// The census route charges agents $0.01 since 2026-11-02; the page must not call it free.
+check('whales page does not call the paid JSON route free', !html.includes('Free JSON for developers and agents'));
+check('whales page states the agent price', html.includes('as JSON for $0.01 a call'));
