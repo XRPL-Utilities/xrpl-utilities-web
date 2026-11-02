@@ -40,7 +40,7 @@ check('no "free until data available" label', !html.includes('free until data av
 for (const r of ['/domains<', '/credentials/issuers<', '/permissioned-domains/operators<']) {
   check(`free list does not offer paid ${r.slice(0, -1)}`, !free.includes(`>${r}`));
 }
-check('MCP tool counts match the server', html.includes('46 across all seven services (19 free, 27 paid)'));
+check('MCP tool counts match the server', html.includes('46 across all seven services (8 free, 38 paid)'));
 
 // 2026-11-02: Pulse's /stats data routes cost agents $0.01 per call (free on
 // this site). The free list and the free curl sample named four of them.
@@ -48,6 +48,18 @@ check('Pulse data calls priced at $0.01', paid.includes('Also &middot; data call
 for (const r of ['/stats/whale-flow-24h', '/stats/whale-flow-history', '/stats/rwa-summary', '/stats/exchange-flow-delta']) {
   check(`free list does not offer paid ${r}`, !free.includes(`>${r}<`));
 }
+// Same day: Telemetry, Trust and Flows data routes went to $0.01 as well.
+for (const r of ['/stats/correlation', '/stats/launch-impact', '/stats/etf-candidates', '/activity',
+                 '/permissioned-domains/usage-summary', '/jurisdictions', '/events',
+                 '/settlement/series', '/stats/liquidity']) {
+  check(`free list does not offer paid ${r}`, !free.includes(`>${r}<`));
+}
+for (const r of ['GET /settlement/series', 'GET /activity', 'GET /stats/correlation']) {
+  check(`paid list prices ${r} as a data call`, paid.includes(`>${r}<`));
+}
+check('free samples stay listed', ['/settlement/totals', '/permissioned-domains/operators/index',
+  '/stats/etf-aggregate-xrp-held', '/stats/network'].every((r) => free.includes(`>${r}<`)));
+check('hero names data calls for every service', html.includes('Agents pay per call: data calls $0.01,'));
 check('free curl sample uses a free route', html.includes('curl https://pulse.xrpl-utilities.io/stats/network<'));
 check('page says seven APIs, not six', !/Six agent-payable/.test(html));
 
