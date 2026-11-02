@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '..');
-const TEXT = 'xrpl:rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5?dt=90210&amount=10';
+const TEXT = 'xrpl:r9sr13PJ4u6ZvmkCWEQCs5AEenBo4zU3xF?dt=90210&amount=10';
 
 let fails = 0;
 function check(name, cond, extra = '') {
@@ -155,7 +155,7 @@ check('throws when the encoder is absent', threw);
   vm.createContext(rev);
   vm.runInContext(fs.readFileSync(path.join(repo, 'assets/qr-code.js'), 'utf8'), rev);
   vm.runInContext(fs.readFileSync(path.join(repo, 'assets/vendor/qrcode-generator.min.js'), 'utf8'), rev);
-  rev.NONASCII = 'xrpl:rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5?dt=1&label=café';
+  rev.NONASCII = 'xrpl:r9sr13PJ4u6ZvmkCWEQCs5AEenBo4zU3xF?dt=1&label=café';
   vm.runInContext('XRQr.toCanvas(NONASCII, 192)', rev);
   const utf8 = vm.runInContext(
     'JSON.stringify(qrcode.stringToBytes("caf\\u00e9"))', rev);

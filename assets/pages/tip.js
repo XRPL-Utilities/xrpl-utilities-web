@@ -1,4 +1,4 @@
-const ADDR = "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5";
+const ADDR = "r9sr13PJ4u6ZvmkCWEQCs5AEenBo4zU3xF";
 const DT = 90210;
 const XAMAN_BASE = "https://xaman.app/detect/request:";
 

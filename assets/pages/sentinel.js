@@ -74,7 +74,7 @@ const GALLERY = [
       { address: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz", name: "Sologenic · issuer",              blurb: "Issuer of the SOLO token." },
       { address: "rELeasERs3m4inA1UinRLTpXemqyStqzwh", name: "Escrow Releaser",                 blurb: "Automated service that finishes escrows." },
       { address: "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM", name: "OpenEden · TBL treasury",         blurb: "Holds TBL that is not yet in circulation." },
-      { address: "rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5", name: "XRPL-Utilities · receipt wallet", blurb: "Where XRPL payments for our APIs land." },
+      { address: "r9sr13PJ4u6ZvmkCWEQCs5AEenBo4zU3xF", name: "XRPL-Utilities · receipt wallet", blurb: "Where XRPL payments for our APIs land." },
     ],
   },
 ];

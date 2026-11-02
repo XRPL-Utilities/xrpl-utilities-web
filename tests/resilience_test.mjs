@@ -150,12 +150,12 @@ async function runFlow(file, start, fetchImpl, opts = {}) {
   await tick();
   return { text: target.textContent, cleared };
 }
-const startSentinel = (ctx, t) => ctx.XRSentinelScan.startSingle(t, 'rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5');
+const startSentinel = (ctx, t) => ctx.XRSentinelScan.startSingle(t, 'r9sr13PJ4u6ZvmkCWEQCs5AEenBo4zU3xF');
 const startTelemetry = (ctx, t) => ctx.XRTelemetryScan.startPreview(t);
 const hang = (url, init) => new Promise((_, reject) => {
   init.signal.addEventListener('abort', () => { const e = new Error('aborted'); e.name = 'AbortError'; reject(e); });
 });
-const envelope = { x402Version: 1, error: 'payment required', accepts: [{ scheme: 'exact', network: 'xrpl', payTo: 'rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5' }] };
+const envelope = { x402Version: 1, error: 'payment required', accepts: [{ scheme: 'exact', network: 'xrpl', payTo: 'r9sr13PJ4u6ZvmkCWEQCs5AEenBo4zU3xF' }] };
 const respond = (status, body) => async () => ({ ok: status < 400, status, json: async () => body });
 
 for (const [name, file, start] of [['sentinel', 'assets/scan-flow.js', startSentinel], ['telemetry', 'assets/telemetry-flow.js', startTelemetry]]) {
