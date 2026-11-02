@@ -40,7 +40,10 @@ check('no "free until data available" label', !html.includes('free until data av
 for (const r of ['/domains<', '/credentials/issuers<', '/permissioned-domains/operators<']) {
   check(`free list does not offer paid ${r.slice(0, -1)}`, !free.includes(`>${r}`));
 }
-check('MCP tool counts match the server', html.includes('46 across all seven services (8 free, 38 paid)'));
+// 2026-11-02: server lists 64 tools (8 free, 56 paid: 55 x402 plus the
+// Telemetry invoice quote). The page still said 46 (8 free, 38 paid).
+check('MCP tool counts match the server', html.includes('64 across all seven services (8 free, 56 paid)'));
+check('old MCP count is gone', !html.includes('46 across all seven services'));
 
 // 2026-11-02: Pulse's /stats data routes cost agents $0.01 per call (free on
 // this site). The free list and the free curl sample named four of them.
@@ -115,4 +118,25 @@ for (const [svc, tools] of Object.entries(MCP)) {
 }
 check('multi-tool MCP rows say "MCP tools"', !/MCP tool<\/span>\s*<code[^>]*>[^<]+<\/code>\s*<(code|span)/.test(paid));
 check('no MCP tool row offers a free poll step as paid', !paid.includes('xrpl_telemetry_get_status') && !paid.includes('xrpl_telemetry_get_results'));
+
+// 2026-11-02 pricing matrix check: the six Pulse bundles (live since that day)
+// and Sentinel bulk scans were missing from the page. Prices from live 402s.
+const BUNDLES = {
+  'wallet-check': '$0.25', 'rwa-token-report': '$0.15', 'fund-flow-report': '$0.10',
+  'permissioned-venue-report': '$0.10', 'xrpl-network-snapshot': '$0.10', 'xrp-market-briefing': '$0.05',
+};
+const b = paid.indexOf('data-bundles');
+const bundleBlock = b < 0 ? '' : paid.slice(b, paid.indexOf('</ul>', b));
+check('Pulse card has a bundles block', b >= 0 && b < paid.indexOf('>pulse.xrpl-utilities.io<'));
+for (const [name, price] of Object.entries(BUNDLES)) {
+  const li = bundleBlock.indexOf(`>GET /bundles/${name}<`);
+  const line = li < 0 ? '' : bundleBlock.slice(li, bundleBlock.indexOf('</li>', li));
+  check(`bundle ${name} listed at ${price}`, line.includes(`&middot; ${price} &middot;`));
+}
+check('headline range reaches the $0.25 bundle', paid.includes('$0.01 to $0.25 USD per call') && html.includes('bundles $0.05 to $0.25'));
+check('Sentinel bulk scans listed at $0.10 per wallet', paid.includes('>POST /bulk/quote<') && paid.includes('$0.10 / wallet'));
+const pulseRow = paid.slice(paid.indexOf('data-mcp="pulse"'), paid.indexOf('</div>', paid.indexOf('data-mcp="pulse"')));
+check('Pulse MCP row names the bundle tools', pulseRow.includes('>xrpl_wallet_check<') && pulseRow.includes('>xrpl_xrp_market_briefing<'));
+// 5 named Pulse tools + 2 bundle tools + 23 more = 30 paid Pulse tools.
+check('Pulse MCP row count adds up to 30', pulseRow.includes('and 23 more data and bundle tools'));
 process.exit(fails ? 1 : 0);
