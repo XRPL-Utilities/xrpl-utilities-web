@@ -221,7 +221,7 @@
             <code class="font-mono text-white/80">xrpl_pulse_stream_purchase</code>
             <code class="font-mono text-white/80">xrpl_pulse_rwa_summary</code>
             <code class="font-mono text-white/80">xrpl_desk_briefing</code>
-            <span>and 11 more data tools</span>
+            <span>and 19 more data tools</span>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap mt-3">
             <span class="font-mono">pulse.xrpl-utilities.io</span>
@@ -258,10 +258,11 @@
             </p>
           </div>
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="telemetry">
-            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
             <code class="font-mono text-white/80">xrpl_telemetry_snapshot</code>
             <code class="font-mono text-white/80">xrpl_telemetry_settlement_series</code>
             <code class="font-mono text-white/80">xrpl_telemetry_dex_pair_volume</code>
+            <span>and 2 more data tools</span>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">telemetry.xrpl-utilities.io</span>
@@ -334,9 +335,22 @@
           <p class="text-sm text-muted leading-relaxed mb-3">
             A deep dive on any real-world-asset issuer, looked up by wallet, name or currency: supply in circulation, the last 24 hours of mints and burns, AMM pools and number of holders. Figures are in the token&rsquo;s own units.
           </p>
+          <div class="border-t border-border/60 pt-4 mb-3">
+            <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+              <div class="flex items-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">Also &middot; data call</span>
+                <code class="font-mono text-sm text-muted">GET /stats/daily-flow-history</code>
+              </div>
+              <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.01 / call</span>
+            </div>
+            <p class="text-sm text-muted leading-relaxed">
+              The numbers behind this site&rsquo;s Vault charts: mints, burns and dollar flow per issuer by day for up to 90 days, with each issuer&rsquo;s wallets and newly found issuers.
+            </p>
+          </div>
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="vault">
-            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
             <code class="font-mono text-white/80">xrpl_vault_scan</code>
+            <code class="font-mono text-white/80">xrpl_vault_daily_flow_history</code>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">vault.xrpl-utilities.io</span>
@@ -373,10 +387,10 @@
             </p>
           </div>
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 break-all" data-mcp="flows">
-            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tool</span>
+            <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
             <code class="font-mono text-white/80">xrpl_flows_scan</code>
             <code class="font-mono text-white/80">xrpl_flows_correlation</code>
-            <span>and 3 more data tools</span>
+            <span>and 4 more data tools</span>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">flows.xrpl-utilities.io</span>
@@ -479,7 +493,7 @@
               <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
             </div>
             <ul class="space-y-2 text-sm text-muted">
-            <li><code class="font-mono text-white">/stats/daily-flow</code> &middot; real-world-asset activity across issuers, by day</li>
+            <li><code class="font-mono text-white">/stats/daily-flow</code> &middot; the last 7 days of real-world-asset activity across issuers</li>
             </ul>
           </div>
           <div class="border border-border rounded-xl p-5 md:col-span-2">
