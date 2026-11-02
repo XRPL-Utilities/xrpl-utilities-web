@@ -101,7 +101,7 @@ const MCP = {
   pulse: ['xrpl_pulse_recent_events', 'xrpl_pulse_events_by_address', 'xrpl_pulse_stream_purchase'],
   telemetry: ['xrpl_telemetry_snapshot'],
   trust: ['xrpl_trust_list_domains', 'xrpl_trust_get_domain', 'xrpl_trust_credential_issuers', 'xrpl_trust_operator_drilldown'],
-  vault: ['xrpl_vault_scan'],
+  vault: ['xrpl_vault_scan', 'xrpl_vault_daily_flow_history'],
   flows: ['xrpl_flows_scan'],
   ledger: ['xrpl_ledger_statement'],
 };
@@ -113,5 +113,6 @@ for (const [svc, tools] of Object.entries(MCP)) {
   const host = paid.indexOf(`>${svc}.xrpl-utilities.io<`);
   check(`${svc} MCP row sits in its own card`, i >= 0 && host > i && paid.lastIndexOf('data-mcp=', host) === i);
 }
+check('multi-tool MCP rows say "MCP tools"', !/MCP tool<\/span>\s*<code[^>]*>[^<]+<\/code>\s*<(code|span)/.test(paid));
 check('no MCP tool row offers a free poll step as paid', !paid.includes('xrpl_telemetry_get_status') && !paid.includes('xrpl_telemetry_get_results'));
 process.exit(fails ? 1 : 0);

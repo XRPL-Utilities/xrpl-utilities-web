@@ -577,7 +577,7 @@ function renderCandidates(candidates) {
   const provisional = [];
   const noise = [];
   for (const c of candidates) {
-    // Prefer server-side tier when present (Vault /stats/daily-flow);
+    // Prefer server-side tier when present (Vault /stats/daily-flow-history);
     // fall back to client classification when reading raw Pulse data.
     const tier = c.tier || classifyCandidate(c);
     (tier === 'noise' ? noise : provisional).push(c);
@@ -814,7 +814,10 @@ let usdFlowChart = null;
 let currentFlowRange = 30;
 
 async function loadDailyFlow(days) {
-  const url = `${VAULT_API}/stats/daily-flow?days=${encodeURIComponent(days)}`;
+  // The full window is the agent-paid route; this site reads it free with the
+  // visitor pass (api-resilient.js retries a 402 with it). /stats/daily-flow
+  // is only a 7-day sample.
+  const url = `${VAULT_API}/stats/daily-flow-history?days=${encodeURIComponent(days)}`;
   let body;
   try {
     const r = await fetch(url);
