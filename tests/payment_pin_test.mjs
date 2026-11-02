@@ -16,7 +16,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const TREASURY = 'rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5';
+const TREASURY = 'r9sr13PJ4u6ZvmkCWEQCs5AEenBo4zU3xF';
 const ATTACKER = 'rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH';
 
 let fails = 0;

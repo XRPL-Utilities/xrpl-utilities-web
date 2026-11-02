@@ -13,7 +13,7 @@
   'use strict';
 
   // The one XRPL treasury every XR-* service settles to.
-  const TREASURY = 'rKxTzCKYKPPdXEzuioEQ6KekQK26w2DBd5';
+  const TREASURY = 'r9sr13PJ4u6ZvmkCWEQCs5AEenBo4zU3xF';
   const DROPS_PER_XRP = 1000000;
   // Far above any real invoice (bulk Sentinel is $0.10 per address), low
   // enough that a tampered amount can't ask for a wallet's whole balance.
