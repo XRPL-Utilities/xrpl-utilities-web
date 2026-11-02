@@ -42,7 +42,7 @@ const unescape = (s) => s.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replac
   const section = html.slice(html.indexOf('id="first-call"'), html.indexOf('<!-- LEGAL -->'));
   check('pricing has the first-call section', section.length > 100);
   const pres = [...section.matchAll(/<pre[^>]*>([\s\S]*?)<\/pre>/g)].map((m) => unescape(m[1]));
-  check('free curl call', pres.some((p) => /^curl https:\/\/pulse\.xrpl-utilities\.io\/stats\/rwa-summary$/m.test(p)));
+  check('free curl call', pres.some((p) => /^curl https:\/\/pulse\.xrpl-utilities\.io\/stats\/network$/m.test(p)));
   check('paid curl call shows the 402', pres.some((p) => /curl -i -X POST https:\/\/sentinel\.xrpl-utilities\.io\/scan/.test(p)));
   const node = pres.find((p) => p.includes('@x402/fetch'));
   check('Base sample present', !!node);

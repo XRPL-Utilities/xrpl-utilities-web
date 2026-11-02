@@ -40,7 +40,15 @@ check('no "free until data available" label', !html.includes('free until data av
 for (const r of ['/domains<', '/credentials/issuers<', '/permissioned-domains/operators<']) {
   check(`free list does not offer paid ${r.slice(0, -1)}`, !free.includes(`>${r}`));
 }
-check('MCP tool counts match the server', html.includes('46 across all seven services (32 free, 14 paid)'));
+check('MCP tool counts match the server', html.includes('46 across all seven services (19 free, 27 paid)'));
+
+// 2026-11-02: Pulse's /stats data routes cost agents $0.01 per call (free on
+// this site). The free list and the free curl sample named four of them.
+check('Pulse data calls priced at $0.01', paid.includes('Also &middot; data calls') && paid.includes('$0.01 / call'));
+for (const r of ['/stats/whale-flow-24h', '/stats/whale-flow-history', '/stats/rwa-summary', '/stats/exchange-flow-delta']) {
+  check(`free list does not offer paid ${r}`, !free.includes(`>${r}<`));
+}
+check('free curl sample uses a free route', html.includes('curl https://pulse.xrpl-utilities.io/stats/network<'));
 check('page says seven APIs, not six', !/Six agent-payable/.test(html));
 
 

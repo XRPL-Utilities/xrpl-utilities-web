@@ -122,7 +122,7 @@
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Pricing</h1>
-      <p class="text-xl text-muted">Free on this site. Agents pay per call: most calls $0.10, Pulse live streams from $0.50 an hour.</p>
+      <p class="text-xl text-muted">Free on this site. Agents pay per call: Pulse data calls $0.01, deep dives and feeds $0.10, Pulse live streams from $0.50 an hour.</p>
       <div class="mt-6 flex flex-wrap justify-center gap-2 text-xs text-muted">
         <span class="px-3 py-1.5 border border-border rounded-full">Pay in RLUSD, XRP or USDC on Base</span>
         <span class="px-3 py-1.5 border border-border rounded-full">No account or API key</span>
@@ -142,7 +142,7 @@
   <section class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Paid endpoints</h2>
-      <h3 class="text-3xl font-bold mb-8">$0.10 USD per call &middot; streaming from $0.50/hour</h3>
+      <h3 class="text-3xl font-bold mb-8">$0.01 to $0.10 USD per call &middot; streaming from $0.50/hour</h3>
 
       <div class="space-y-4">
         <!-- Sentinel -->
@@ -202,11 +202,26 @@
               One payment opens a live connection for 1, 6 or 24 hours. Events arrive as they happen, filtered by source, signal or minimum dollar value.
             </p>
           </div>
+          <div class="border-t border-border/60 pt-4 mt-3">
+            <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+              <div class="flex items-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">Also &middot; data calls</span>
+                <code class="font-mono text-sm text-muted">GET /stats/&hellip;</code>
+              </div>
+              <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.01 / call</span>
+            </div>
+            <p class="text-sm text-muted leading-relaxed">
+              The numbers behind this site&rsquo;s Pulse, Vault and Whales pages: whale and exchange flows, the escrow calendar, the whale count, every real-world-asset issuer, token health and the morning desk briefing. 21 routes, listed in <code class="font-mono text-white/80">/agents.json</code>.
+            </p>
+          </div>
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mt-4 break-all" data-mcp="pulse">
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
             <code class="font-mono text-white/80">xrpl_pulse_recent_events</code>
             <code class="font-mono text-white/80">xrpl_pulse_events_by_address</code>
             <code class="font-mono text-white/80">xrpl_pulse_stream_purchase</code>
+            <code class="font-mono text-white/80">xrpl_pulse_rwa_summary</code>
+            <code class="font-mono text-white/80">xrpl_desk_briefing</code>
+            <span>and 11 more data tools</span>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap mt-3">
             <span class="font-mono">pulse.xrpl-utilities.io</span>
@@ -383,10 +398,7 @@
               <span class="free-pill text-[10px] px-2 py-0.5 rounded-full font-mono">free</span>
             </div>
             <ul class="space-y-2 text-sm text-muted">
-            <li><code class="font-mono text-white">/stats/whale-flow-24h</code> &middot; large transfers by hour, last 24 hours</li>
-            <li><code class="font-mono text-white">/stats/whale-flow-history</code> &middot; large transfers by day</li>
-            <li><code class="font-mono text-white">/stats/rwa-summary</code> &middot; every tracked real-world-asset issuer at a glance</li>
-            <li><code class="font-mono text-white">/stats/exchange-flow-delta</code> &middot; net XRP into or out of exchanges by day</li>
+            <li><code class="font-mono text-white">/stats/network</code> &middot; network-wide totals: funded accounts, trustlines, offers, daily activity</li>
             </ul>
           </div>
           <div class="border border-border rounded-xl p-5">
@@ -456,13 +468,13 @@
         <div class="px-6 pb-6 grid md:grid-cols-2 gap-4">
           <div class="min-w-0">
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">Free call</div>
-            <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl https://pulse.xrpl-utilities.io/stats/rwa-summary</pre>
+            <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl https://pulse.xrpl-utilities.io/stats/network</pre>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mt-5 mb-2">See a price (answers 402)</div>
             <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">curl -i -X POST https://sentinel.xrpl-utilities.io/scan \
   -H 'Content-Type: application/json' \
   -d '{"address":"rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"}'</pre>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mt-5 mb-2">Claude Desktop (MCP)</div>
-            <p class="text-xs text-muted leading-relaxed mb-2">Add to <code class="font-mono text-white">claude_desktop_config.json</code>. Tools published: 46 across all seven services (32 free, 14 paid). Remote clients can use <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code>.</p>
+            <p class="text-xs text-muted leading-relaxed mb-2">Add to <code class="font-mono text-white">claude_desktop_config.json</code>. Tools published: 46 across all seven services (19 free, 27 paid). Remote clients can use <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code>.</p>
             <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">{
   "mcpServers": {
     "xrpl-utilities": {
