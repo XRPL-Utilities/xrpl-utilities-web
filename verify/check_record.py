@@ -131,7 +131,12 @@ def main(argv=None):
         ok = ok and passed
         print(("PASS  " if passed else "FAIL  ") + text)
 
-    day = json.loads(_get(f"{PROOF_BASE}/{a.date}"))
+    try:
+        day = json.loads(_get(f"{PROOF_BASE}/{a.date}"))
+    except Exception as e:  # noqa: BLE001
+        report(False, f"could not read the published record for {a.date} ({type(e).__name__})")
+        print("RESULT NOT VERIFIED")
+        return 1
     records = day.get("records") or []
     leaves_hex = [e.get("leaf_sha3_512") for e in records]
     if not all(_hex64(h) for h in leaves_hex) or [e.get("name") for e in records] != \
