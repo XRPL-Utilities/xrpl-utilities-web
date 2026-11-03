@@ -57,6 +57,11 @@ node tests/midnight_gap_test.mjs
 node tests/lineage_exits_test.mjs
 node tests/review_round2_test.mjs
 node tests/whales_test.mjs
+node --check assets/sha3-512.js
+node --check assets/pages/verify.js
+node --test tests/verify_sha3_test.mjs
+node --test tests/verify_page_test.mjs
+python3 -I -m py_compile verify/check_record.py
 node --check assets/chart-palette.js
 node --check assets/status-model.js
 python3 tests/qr_matrix_crosscheck.py
