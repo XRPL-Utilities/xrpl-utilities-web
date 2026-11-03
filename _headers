@@ -19,3 +19,7 @@
 /assets/*.css
   ! Cache-Control
   Cache-Control: public, max-age=300, must-revalidate
+
+/.well-known/xrp-ledger.toml
+  Access-Control-Allow-Origin: *
+  Content-Type: application/toml; charset=utf-8
