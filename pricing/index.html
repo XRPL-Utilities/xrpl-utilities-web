@@ -122,7 +122,7 @@
   <section>
     <div class="max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Pricing</h1>
-      <p class="text-xl text-muted">Free on this site. Agents pay per call: data calls $0.01, deep dives and feeds $0.10, Pulse live streams from $0.50 an hour.</p>
+      <p class="text-xl text-muted">Free on this site. Agents pay per call: data calls $0.01, deep dives and feeds $0.10, bundles $0.05 to $0.25, Pulse live streams from $0.50 an hour.</p>
       <div class="mt-6 flex flex-wrap justify-center gap-2 text-xs text-muted">
         <span class="px-3 py-1.5 border border-border rounded-full">Pay in RLUSD, XRP or USDC on Base</span>
         <span class="px-3 py-1.5 border border-border rounded-full">No account or API key</span>
@@ -142,7 +142,7 @@
   <section class="border-t border-border bg-panel/30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
       <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-3">Paid endpoints</h2>
-      <h3 class="text-3xl font-bold mb-8">$0.01 to $0.10 USD per call &middot; streaming from $0.50/hour</h3>
+      <h3 class="text-3xl font-bold mb-8">$0.01 to $0.25 USD per call &middot; streaming from $0.50/hour</h3>
 
       <div class="space-y-4">
         <!-- Sentinel -->
@@ -164,6 +164,18 @@
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
             <code class="font-mono text-white/80">xrpl_sentinel_scan</code>
             <code class="font-mono text-white/80">xrpl_sentinel_scan_history</code>
+          </div>
+          <div class="border-t border-border/60 pt-4 mb-3">
+            <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+              <div class="flex items-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">Also &middot; bulk scans</span>
+                <code class="font-mono text-sm text-muted">POST /bulk/quote</code>
+              </div>
+              <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.10 / wallet</span>
+            </div>
+            <p class="text-sm text-muted leading-relaxed">
+              Scan up to 50 wallets with one payment. The quote is an XRP invoice; once it is paid, collect the results from <code class="font-mono text-white/80">/bulk/results</code>. Not available through MCP.
+            </p>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap">
             <span class="font-mono">sentinel.xrpl-utilities.io</span>
@@ -214,6 +226,26 @@
               The numbers behind this site&rsquo;s Pulse, Vault and Whales pages: whale and exchange flows, the escrow calendar, the whale count, every real-world-asset issuer, token health and the morning desk briefing. 21 routes, listed in <code class="font-mono text-white/80">/agents.json</code>.
             </p>
           </div>
+          <div class="border-t border-border/60 pt-4 mt-3" data-bundles>
+            <div class="flex items-start justify-between gap-4 mb-3 flex-wrap">
+              <div class="flex items-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">Also &middot; bundles</span>
+                <code class="font-mono text-sm text-muted">GET /bundles/&hellip;</code>
+              </div>
+              <span class="price-pill text-xs px-2.5 py-1 rounded-full font-mono">$0.05 to $0.25 / call</span>
+            </div>
+            <p class="text-sm text-muted leading-relaxed mb-3">
+              One call answers a whole question with data from several of our services, so an agent pays once instead of once per service.
+            </p>
+            <ul class="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm text-muted leading-relaxed">
+              <li><code class="font-mono text-white/80">GET /bundles/wallet-check</code> &middot; $0.25 &middot; who a wallet is and what it has been doing</li>
+              <li><code class="font-mono text-white/80">GET /bundles/rwa-token-report</code> &middot; $0.15 &middot; one real-world-asset token in full</li>
+              <li><code class="font-mono text-white/80">GET /bundles/fund-flow-report</code> &middot; $0.10 &middot; XRP fund assets and flows over 7 or 30 days</li>
+              <li><code class="font-mono text-white/80">GET /bundles/permissioned-venue-report</code> &middot; $0.10 &middot; one permissioned domain or operator</li>
+              <li><code class="font-mono text-white/80">GET /bundles/xrpl-network-snapshot</code> &middot; $0.10 &middot; network totals, ledger objects and settlement</li>
+              <li><code class="font-mono text-white/80">GET /bundles/xrp-market-briefing</code> &middot; $0.05 &middot; the day&rsquo;s XRP market picture in one call</li>
+            </ul>
+          </div>
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mt-4 break-all" data-mcp="pulse">
             <span class="text-[10px] uppercase tracking-[0.2em] text-accent/80 font-semibold whitespace-nowrap">MCP tools</span>
             <code class="font-mono text-white/80">xrpl_pulse_recent_events</code>
@@ -221,7 +253,9 @@
             <code class="font-mono text-white/80">xrpl_pulse_stream_purchase</code>
             <code class="font-mono text-white/80">xrpl_pulse_rwa_summary</code>
             <code class="font-mono text-white/80">xrpl_desk_briefing</code>
-            <span>and 19 more data tools</span>
+            <code class="font-mono text-white/80">xrpl_wallet_check</code>
+            <code class="font-mono text-white/80">xrpl_xrp_market_briefing</code>
+            <span>and 23 more data and bundle tools</span>
           </div>
           <div class="flex items-center gap-3 text-xs text-muted flex-wrap mt-3">
             <span class="font-mono">pulse.xrpl-utilities.io</span>
@@ -535,7 +569,7 @@
   -H 'Content-Type: application/json' \
   -d '{"address":"rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"}'</pre>
             <div class="text-xs uppercase tracking-widest text-accent font-semibold mt-5 mb-2">Claude Desktop (MCP)</div>
-            <p class="text-xs text-muted leading-relaxed mb-2">Add to <code class="font-mono text-white">claude_desktop_config.json</code>. Tools published: 46 across all seven services (8 free, 38 paid). Remote clients can use <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code>.</p>
+            <p class="text-xs text-muted leading-relaxed mb-2">Add to <code class="font-mono text-white">claude_desktop_config.json</code>. Tools published: 64 across all seven services (8 free, 56 paid). Remote clients can use <code class="font-mono text-white">https://mcp.xrpl-utilities.io/mcp</code>.</p>
             <pre tabindex="0" class="bg-ink border border-border rounded-lg p-4 font-mono text-xs text-white leading-relaxed overflow-x-auto">{
   "mcpServers": {
     "xrpl-utilities": {
