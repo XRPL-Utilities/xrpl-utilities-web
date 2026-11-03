@@ -658,6 +658,7 @@ function catalogResponse(body) {
 const PAGE_DIRS = new Set([
   "/start", "/sentinel", "/sentinel/bulk", "/telemetry", "/pulse", "/trust",
   "/vault", "/flows", "/lineage", "/pricing", "/status", "/contact", "/tip", "/terms", "/whales",
+  "/verify",
 ]);
 
 export default {

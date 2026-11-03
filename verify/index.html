@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <title>Verify Our Published XRPL Data On-Chain | XRPL-Utilities</title>
+  <meta name="description" content="Check any day of our published XRP Ledger figures against the fingerprint we write to the XRP Ledger. Free, in your browser, no account." />
+  <meta property="og:title" content="Verify Our Published Data | XRPL-Utilities" />
+  <meta property="og:description" content="Check any day of our published XRP Ledger figures against the fingerprint we write to the XRP Ledger. Free, in your browser, no account." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/verify/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Verify Our Published Data | XRPL-Utilities" />
+  <meta name="twitter:description" content="Check any day of our published XRP Ledger figures against the fingerprint we write to the XRP Ledger. Free, in your browser, no account." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/verify/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+    .hash { word-break: break-all; }
+    .step-pass { color: #34d399; }
+    .step-fail { color: #f87171; }
+    .step-wait { color: #9ca3af; }
+  </style>
+  <script src="/assets/api-resilient.js?v=v2"></script>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="eager" decoding="async" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-x-6 xl:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/start/"     class="text-muted hover:text-white transition">Start here</a>
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
+        <a href="/lineage/"   class="text-muted hover:text-white transition">Lineage</a>
+        <a href="/pricing/"   class="text-muted hover:text-white transition">Pricing</a>
+      </nav>
+      <button id="nav-open" class="lg:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile slide-in nav. Same dark palette as desktop; opens on hamburger
+       tap. Body scroll locks while open; Escape, overlay tap, link tap, or
+       resize past md all close it. -->
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col lg:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/start/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Start here</a>
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
+      <a href="/lineage/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Lineage</a>
+      <a href="/pricing/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pricing</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <main id="main">
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 pt-12 pb-6">
+      <p class="text-xs uppercase tracking-[0.2em] text-accent mb-3">Verified Record</p>
+      <h1 class="text-3xl sm:text-4xl font-bold leading-tight mb-4">Check our numbers against the XRP Ledger</h1>
+      <p class="text-muted leading-relaxed mb-3">Every evening we save a fixed set of the figures we publish, exactly as we served them, and write one fingerprint of the whole set to the XRP Ledger. A fingerprint is a SHA3-512 hash. Change one digit in any figure and the fingerprint no longer matches.</p>
+      <p class="text-muted leading-relaxed">That means you don't have to take our word for a past number. Pick a day below and your browser rebuilds the fingerprint itself, then compares it with the one on the ledger. The full saved figures for each day open up 7 days later.</p>
+    </section>
+
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-6" aria-labelledby="check-h">
+      <h2 id="check-h" class="text-xl font-semibold mb-4">Check a day</h2>
+      <div class="flex flex-wrap items-end gap-3 mb-4">
+        <label for="vr-day" class="flex flex-col text-sm text-muted">Day (UTC)
+          <select id="vr-day" class="mt-1 bg-panel border border-border rounded-lg px-3 py-2 text-white mono" disabled>
+            <option>Loading...</option>
+          </select>
+        </label>
+        <button id="vr-run" type="button" class="bg-accent text-ink font-semibold rounded-lg px-5 py-2 disabled:opacity-50" disabled>Check this day</button>
+      </div>
+      <ol id="vr-steps" class="space-y-2 text-sm mb-4" aria-live="polite"></ol>
+      <p id="vr-summary" class="text-lg font-semibold" aria-live="polite"></p>
+    </section>
+
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-6" aria-labelledby="file-h">
+      <h2 id="file-h" class="text-xl font-semibold mb-2">Check a figure you saved</h2>
+      <p class="text-muted text-sm leading-relaxed mb-3">If you downloaded one of the day's records, pick it here. Your browser hashes the file on your own device and looks for it in the day's list. Nothing is uploaded.</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <label for="vr-file" class="sr-only">Record file to check</label>
+        <input id="vr-file" type="file" accept="application/json,.json" class="text-sm text-muted" disabled />
+        <span id="vr-file-result" class="text-sm" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-6" aria-labelledby="rec-h">
+      <h2 id="rec-h" class="text-xl font-semibold mb-2">What the day contains</h2>
+      <p id="vr-release" class="text-muted text-sm mb-3"></p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead><tr class="text-left text-muted border-b border-border">
+            <th class="py-2 pr-3 font-normal">Record</th><th class="py-2 pr-3 font-normal">Read</th><th class="py-2 font-normal">Fingerprint</th>
+          </tr></thead>
+          <tbody id="vr-records"><tr><td colspan="3" class="py-3 text-muted">Pick a day above.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-12" aria-labelledby="how-h">
+      <h2 id="how-h" class="text-xl font-semibold mb-2">Check it yourself, without this page</h2>
+      <p class="text-muted text-sm leading-relaxed mb-2">Each record's fingerprint is SHA3-512 of a zero byte followed by the record's exact bytes. Fingerprints are paired in name order and each pair is hashed as SHA3-512 of a one byte, the left and the right. A leftover at any level moves up unchanged. The last hash standing is the root.</p>
+      <p class="text-muted text-sm leading-relaxed mb-2">The root is written once a day from account <a class="mono underline hover:text-white" href="https://xrpscan.com/account/rwty5XRq5zrqTZ7XMLgk3EqQ76V3SY8Gwy" target="_blank" rel="noopener noreferrer">rwty5XRq5zrqTZ7XMLgk3EqQ76V3SY8Gwy</a> as a small readable memo labeled <span class="mono">xrpl-utilities/verified-record</span>. Only that account's own transactions count.</p>
+      <p class="text-muted text-sm leading-relaxed">Prefer a script? <a class="underline hover:text-white" href="/verify/check_record.py" download>Download the checker</a> (Python, standard library only, MIT). It reads the anchor straight from an XRP Ledger server you choose.</p>
+    </section>
+  </main>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 mb-10">
+        <div class="col-span-2 md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/start/"     class="text-muted hover:text-white transition">Start here</a></li>
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
+            <li><a href="/lineage/"   class="text-muted hover:text-white transition">XR-Lineage</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
+            <li><a href="https://vault.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Vault API</a></li>
+            <li><a href="https://flows.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Flows API</a></li>
+            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">MCP server</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/status/"  class="text-muted hover:text-white transition">Service status</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+            <li><a href="/tip/"     class="text-muted hover:text-white transition">Tip the maker</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel, XR-Pulse, XR-Telemetry, XR-Trust, XR-Vault, XR-Flows, and XR-Lineage are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/sha3-512.js?v=1"></script>
+  <script src="/assets/pages/verify.js?v=1"></script>
+
+  <script src="/assets/a11y.js?v=1"></script>
+</body>
+</html>
