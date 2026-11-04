@@ -70,6 +70,21 @@ vm.runInContext('renderSummary', ctx)(noJ);
 check('no JMWH: headline is the plain total', nodes['stat-usd-pegged-total'].textContent === '$1.82B', nodes['stat-usd-pegged-total'].textContent);
 check('no JMWH: the all-in line hides', incl.classList.contains('hidden') && incl.textContent === '');
 
+// Pulse 1.122.0 (2026-11-04, Aaron's call): JMWH moved out of total_usd and
+// included[] into issuer_priced_separately[]. Same page, same figures.
+const newShape = JSON.parse(JSON.stringify(body));
+const na = newShape.usd_pegged_aggregate;
+const nj = na.included.find((r) => r.currency === 'JMWH');
+na.included = na.included.filter((r) => r !== nj);
+na.total_usd -= nj.usd_equivalent;
+na.issuer_count_included -= 1;
+na.issuer_priced_separately = [nj];
+na.issuer_priced_separately_total_usd = nj.usd_equivalent;
+vm.runInContext('renderSummary', ctx)(newShape);
+check('1.122.0 shape: headline is total_usd', nodes['stat-usd-pegged-total'].textContent === '$1.82B', nodes['stat-usd-pegged-total'].textContent);
+check('1.122.0 shape: all-in line adds JMWH back', incl.textContent.startsWith('$4.05B including JMWH at an issuer-stated $60/MWh') && !incl.classList.contains('hidden'), incl.textContent);
+check('1.122.0 shape: issuer count not reduced twice', /^19 issuers priced in dollars/.test(nodes['stat-usd-pegged-detail'].textContent), nodes['stat-usd-pegged-detail'].textContent);
+
 // Trustline counts that stopped at Pulse's page cap are a floor, not a count
 // (2026-10-27: RLUSD read "2000" against ~93k real trustlines).
 const tileIssuer = (extra) => Object.assign({ label: 'Ripple RLUSD', logical_label: 'Ripple RLUSD', wallet: 'rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De', currency: 'RLUSD', asset_class: 'fiat_stable_usd', mint_status: 'live', token_standard: 'iou', circulating: '1001880101.99', net_24h: '7206553', trustline_count: 2000 }, extra);
