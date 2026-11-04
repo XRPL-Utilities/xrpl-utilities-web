@@ -7,6 +7,9 @@
 //   about the $0.01 data calls, the six bundles or the Verified Record.
 // - The start page said "the six services" are paid APIs; there are seven.
 // - Nothing outside /verify/ said that paid answers carry a ledger stamp.
+// - 2026-11-04 data-accuracy audit: the API boxes on the Pulse, Telemetry,
+//   Trust, Vault and Flows pages said "paid calls cost $0.10", and the terms
+//   said "Most paid calls cost $0.10". Those services' data calls are $0.01.
 //
 // Run: node tests/docs_freshness_test.mjs
 import fs from 'node:fs';
@@ -26,6 +29,14 @@ check('home: MCP count is 64 (8 free, 56 paid)', home.includes('64 tools across 
 check('home: old 46-tool count is gone', !home.includes('46 tools'));
 check('home: no "most calls $0.10"', !home.includes('most calls $0.10'));
 check('home: links the Verify page from the agents section', /Every paid answer names the validated XRP Ledger[\s\S]{0,200}href="\/verify\/"/.test(home));
+for (const svc of ['pulse', 'telemetry', 'trust', 'vault', 'flows']) {
+  const page = read(`${svc}/index.html`);
+  check(`${svc}: API box does not say every paid call is $0.10`, !page.includes('paid calls cost $0.10'));
+  check(`${svc}: API box names the $0.01 data calls`, page.includes('data calls cost $0.01'));
+}
+const terms = read('terms/index.html');
+check('terms: no "Most paid calls cost $0.10"', !terms.includes('Most paid calls cost $0.10'));
+check('terms: names the $0.01 data calls and the bundles', terms.includes('Data calls cost $0.01') && terms.includes('bundles cost $0.05 to $0.25'));
 check('start: no "six services"', !/six services/i.test(start));
 check('pricing: explains the provenance stamp and links /verify/', /id="ledger-stamp"[\s\S]{0,600}href="\/verify\/"/.test(pricing));
 check('llms: seven APIs, not six', llms.includes('Seven APIs') && !llms.includes('Six APIs'));
