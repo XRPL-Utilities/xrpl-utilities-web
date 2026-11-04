@@ -1101,7 +1101,11 @@ function liquidityToPayload(d) {
   // No generated_at: that would relabel the spot price, which comes from /healthz.
   const payload = { derived_models: { active_float: d.active_float || {} } };
   // A seeded supply figure is not a reading; leave the dated seed in place.
-  if (!fallback.has('total_xrp') && !fallback.has('escrowed_xrp')) payload.supply = d.supply || {};
+  // A fallback named in last_good_fields (Telemetry 1.35.0) is the previous
+  // live reading, at most 6 hours old, so it still counts as live here.
+  const lastGood = (d.last_good_fields && typeof d.last_good_fields === 'object') ? d.last_good_fields : {};
+  const seeded = (f) => fallback.has(f) && typeof lastGood[f] !== 'string';
+  if (!seeded('total_xrp') && !seeded('escrowed_xrp')) payload.supply = d.supply || {};
   return payload;
 }
 // Measured free float tile and the execution-cost table (Telemetry 1.30.0).

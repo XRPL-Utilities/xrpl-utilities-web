@@ -29,6 +29,7 @@ node tests/buyer_path_test.mjs
 node tests/seo_test.mjs
 node tests/images_test.mjs
 node tests/telemetry_null_test.mjs
+node tests/telemetry_supply_fallback_test.mjs
 node tests/pulse_copy_test.mjs
 node tests/trust_copy_test.mjs
 node tests/pricing_copy_test.mjs
