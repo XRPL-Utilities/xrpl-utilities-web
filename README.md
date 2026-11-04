@@ -10,7 +10,7 @@ dependencies.
 |---|---|
 | `index.html` | Landing page for `xrpl-utilities.com`: brand intro and tools portfolio |
 | `start/index.html` | New-to-XRPL plain-English onboarding (5-minute walkthrough + service router) |
-| `pricing/index.html` | Pricing page for the six paid x402 endpoints + Pulse streaming subscriptions |
+| `pricing/index.html` | Pricing for every paid x402 route ($0.01 data calls, $0.10 deep dives, six bundles from $0.05 to $0.25), Pulse streaming, the MCP server and the ledger stamp on paid answers |
 | `sentinel/index.html` | XR-Sentinel showcase: try-it-yourself form, sample classifications, "for agents" snippet |
 | `sentinel/bulk/index.html` | Paid bulk-scan flow (up to 50 XRPL addresses, single payment, CSV download) |
 | `telemetry/index.html` | XR-Telemetry showcase: cached samples, Burst Math calculator, Predictive Floor Matrix chart, live paid snapshot |
@@ -18,6 +18,9 @@ dependencies.
 | `trust/index.html` | XR-Trust showcase: permissioned-domain directory + drill-down, jurisdictions, active operators |
 | `vault/index.html` | XR-Vault showcase: RWA issuer dashboard, top movers, XLS-85 escrow tile, settlement chart |
 | `flows/index.html` | XR-Flows showcase: ETF AUM + XRPL exchange-flow correlation, launch-window analysis |
+| `whales/index.html` | XRP whale wallets: live count of accounts holding 1M+ XRP, size bands, who holds them and the 10 largest |
+| `lineage/index.html` | XR-Lineage showcase: live RLUSD supply, Ripple's wallets and counterparties, large multi-hop payment chains |
+| `verify/index.html` | Verified Record: rebuilds a day's SHA3-512 fingerprint in the browser and compares it with the one written to the XRP Ledger from rwty5XRq5zrqTZ7XMLgk3EqQ76V3SY8Gwy |
 | `terms/index.html` | Terms of service (canonical legal text including void-where-prohibited disclosure) |
 | `status/index.html` | Status page |
 | `contact/index.html` | Contact form (web3forms-backed, Cloudflare Turnstile spam protection) |
@@ -34,6 +37,8 @@ dependencies.
 | `robots.txt` | Allow all, points crawlers at `sitemap.xml` |
 | `sitemap.xml` | All public pages with lastmod and priority |
 | `wrangler.jsonc`, `_worker.js` | Cloudflare Workers config + entrypoint |
+| `llms.txt` | Crawler map of the seven services, prices and the Verify page |
+| `.well-known/xrp-ledger.toml` | Declares our XRPL accounts, including the treasury and the Verified Record anchor account |
 | `.assetsignore` | Files excluded from a Workers asset bundle if/when Workers takes over |
 
 ## Local preview
@@ -103,8 +108,9 @@ serves the agent-facing API:
 - `XR-Vault`: real-world asset tracker (`vault.xrpl-utilities.io`)
 - `XR-Flows`: ETF AUM vs XRPL exchange-flow correlation
   (`flows.xrpl-utilities.io`)
-- `xrpl-utilities-mcp`: Model Context Protocol server exposing all six
-  services as MCP tools (`mcp.xrpl-utilities.io`, also published to npm
+- `XR-Ledger`: per-wallet account statements (`ledger.xrpl-utilities.io`)
+- `xrpl-utilities-mcp`: Model Context Protocol server exposing all seven
+  services as 64 MCP tools (`mcp.xrpl-utilities.io`, also published to npm
   as `@xrpl-utilities/mcp`)
 
 ## Pushing
