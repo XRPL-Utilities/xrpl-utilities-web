@@ -16,3 +16,6 @@ node_modules/
 .cache/
 tests/
 tools/
+__pycache__/
+*.pyc
+*.py
