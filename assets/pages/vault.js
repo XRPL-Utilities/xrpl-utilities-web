@@ -180,7 +180,9 @@ function renderSummary(body) {
     }
   }
   if (usdDetailEl) {
-    const inc = Math.max(0, (usdAgg.issuer_count_included || 0) - split.unattested.length);
+    const inc = Array.isArray(usdAgg.issuer_priced_separately)
+      ? (usdAgg.issuer_count_included || 0)
+      : Math.max(0, (usdAgg.issuer_count_included || 0) - split.unattested.length);
     const exc = usdAgg.issuer_count_excluded || 0;
     usdDetailEl.textContent = `${inc} issuer${inc === 1 ? '' : 's'} priced in dollars · ${exc} counted in ${exc === 1 ? 'its' : 'their'} own unit${exc === 1 ? '' : 's'}`;
   }
@@ -210,8 +212,17 @@ function renderSummary(body) {
 // shows the all-in figure beneath it.
 const UNATTESTED_PEG_CURRENCIES = new Set(['JMWH']);
 
+// Pulse 1.122.0 moved those rows out of total_usd into
+// issuer_priced_separately. Older Pulse still counts them in the total, so
+// they are subtracted here; either way the headline and the all-in figure
+// come out the same.
 function splitRwaAggregate(agg) {
   const total = Number(agg && agg.total_usd) || 0;
+  const separate = (agg && Array.isArray(agg.issuer_priced_separately)) ? agg.issuer_priced_separately : null;
+  if (separate) {
+    const sepUsd = separate.reduce((s, r) => s + (Number(r && r.usd_equivalent) || 0), 0);
+    return { total: total + sepUsd, headline: total, unattested: separate.filter(Boolean) };
+  }
   const included = (agg && Array.isArray(agg.included)) ? agg.included : [];
   const unattested = included.filter((r) => r && UNATTESTED_PEG_CURRENCIES.has(r.currency));
   const unattestedUsd = unattested.reduce((s, r) => s + (Number(r.usd_equivalent) || 0), 0);
