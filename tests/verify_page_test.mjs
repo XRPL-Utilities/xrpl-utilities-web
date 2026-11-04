@@ -8,7 +8,6 @@ import fs from "node:fs";
 const read = (p) => fs.readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const js = read("assets/pages/verify.js");
 const html = read("verify/index.html");
-const py = read("verify/check_record.py");
 
 test("page script never writes HTML from network data", () => {
   assert.doesNotMatch(js, /innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(|new Function/);
@@ -27,12 +26,11 @@ test("sha3 loads before the page script, no third-party script", () => {
 
 test("only the anchor account's own AccountSet counts", () => {
   assert.match(js, /tx\.Account === ACCOUNT && tx\.TransactionType === "AccountSet"/);
-  assert.match(py, /tx\.get\("Account"\) != ANCHOR_ACCOUNT or tx\.get\("TransactionType"\) != "AccountSet"/);
 });
 
-test("checker names no node and needs one chosen by the user", () => {
-  assert.doesNotMatch(py, /xrplcluster|ripple\.com|quicknode/i);
-  assert.match(py, /"--node", required=True/);
+test("no downloadable script is offered (Aaron, 2026-11-03)", () => {
+  assert.doesNotMatch(html, /\.py"|download>|Download the checker/);
+  assert.equal(fs.existsSync(new URL("../verify/check_record.py", import.meta.url)), false);
 });
 
 test("page states the 7-day release", () => {

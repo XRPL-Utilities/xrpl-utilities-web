@@ -1,0 +1,13 @@
+# xrp-ledger.toml for xrpl-utilities.com
+# https://xrpl.org/docs/references/xrp-ledger-toml
+
+[METADATA]
+modified = 2026-11-03T00:00:00Z
+
+[ORGANIZATION]
+name = "XRPL-Utilities LLC"
+website = "https://xrpl-utilities.com"
+
+[[ACCOUNTS]]
+address = "rwty5XRq5zrqTZ7XMLgk3EqQ76V3SY8Gwy"
+desc = "Verified Record anchor. Writes one daily SHA3-512 fingerprint of our published figures. Check it at https://xrpl-utilities.com/verify/"

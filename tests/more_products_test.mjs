@@ -51,6 +51,19 @@ for (const slug of SLUGS) {
   }
 }
 
+// 2026-11-04: /verify/ is not a product either; same block, all seven.
+{
+  const html = fs.readFileSync(path.join(repo, 'verify', 'index.html'), 'utf8');
+  const sections = html.match(/<section id="more-tools"[\s\S]*?<\/section>/g) || [];
+  check('verify: exactly one more-tools block', sections.length === 1);
+  if (sections.length === 1) {
+    const found = [...sections[0].matchAll(/<a href="\/([a-z]+)\/"[\s\S]*?<\/a>/g)];
+    check('verify: links all seven products in order', JSON.stringify(found.map((m) => m[1])) === JSON.stringify(SLUGS));
+    for (const m of found) check(`verify: ${m[1]} tile matches the product pages`, tiles[m[1]] === m[0]);
+    check('verify: more-tools block sits inside main', html.indexOf(sections[0]) < html.indexOf('</main>'));
+  }
+}
+
 const flow = fs.readFileSync(path.join(repo, 'assets/telemetry-flow.js'), 'utf8');
 check('telemetry: no AMM card in the snapshot view', !flow.includes('renderAmmCard') && !flow.includes('No active vaults yet'));
 
