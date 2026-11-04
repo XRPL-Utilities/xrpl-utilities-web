@@ -95,6 +95,7 @@
     <div class="max-w-3xl mx-auto px-6 pt-16 pb-8">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3">Terms of Service</h1>
       <p class="text-sm text-muted">Effective Date: October 26, 2026</p>
+      <p class="text-sm text-muted mt-1">Last updated: November 4, 2026</p>
       <p class="text-sm text-muted mt-1">Provider: XRPL-Utilities LLC ("The Company," "We," "Us," or "Our").</p>
     </div>
   </section>
@@ -116,8 +117,10 @@
             XR-Telemetry<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
             XR-Trust<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
             XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
-            XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and
-            XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>.
+            XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
+            XR-Lineage<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>,
+            XR-Ledger<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>, and the XRPL-Utilities MCP server (npm package
+            <code>@xrpl-utilities/mcp</code> and mcp.xrpl-utilities.io), which passes calls to these APIs unchanged.
           </p>
         </div>
 
@@ -153,6 +156,18 @@
           <p class="text-white leading-relaxed">
             <strong class="text-white">ETF flow figures.</strong>
             XR-Flows<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> tracks XRP exchange-traded funds and products listed in the US, Europe, Canada and Brazil, both spot funds and baskets that hold XRP alongside other assets. Net asset values come from each issuer's public figures, updated daily. We do not cross-validate issuer-reported AUM against on-chain spot price, custodian attestations, or third-party fund administrators, and per-source freshness is exposed on each /scan response so consumers can audit lineage. ETFs hold XRP through pooled institutional custodians, so on-chain wallet activity cannot be cleanly attributed to a specific fund; correlation between ETF AUM movement and XRPL exchange-flow delta is a directional measurement, not a causal claim. Inclusion of an ETF in the tracked registry is not investment advice, an endorsement, or a recommendation. The auto-discovery surface at /stats/etf-candidates is the same kind of pre-review queue as XR-Vault<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup>'s unverified candidates: visibility into pipeline, not endorsement.
+          </p>
+          <p class="text-white leading-relaxed mt-3">
+            <strong class="text-white">Account statements.</strong>
+            XR-Ledger<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> statements summarize what the XRP Ledger shows for the addresses you ask about, in each asset's own unit.
+            They are not tax, accounting or audit documents and may leave out activity a public node could not return.
+            You are responsible for deciding who owns the addresses you query.
+          </p>
+          <p class="text-white leading-relaxed mt-3">
+            <strong class="text-white">Owner names and labels.</strong>
+            Names and types shown for wallets (for example an exchange or Ripple) are our attribution from public wallet labels and
+            our own research. They can be wrong, and they are not a statement by the named company. The whale page never shows personal names.
+            To report a mistake, use the <a href="/contact/" class="underline hover:text-accent">contact page</a>.
           </p>
         </div>
 
@@ -282,6 +297,8 @@
              class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">XR-Vault /tos &rarr;</a>
           <a href="https://flows.xrpl-utilities.io/tos" target="_blank" rel="noopener noreferrer"
              class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">XR-Flows /tos &rarr;</a>
+          <a href="https://ledger.xrpl-utilities.io/tos" target="_blank" rel="noopener noreferrer"
+             class="border border-border hover:border-accent px-4 py-2 rounded-lg transition">XR-Ledger /tos &rarr;</a>
         </div>
       </div>
     </div>
