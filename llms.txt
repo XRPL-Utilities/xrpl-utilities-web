@@ -1,6 +1,6 @@
 # XRPL-Utilities
 
-> XRP Ledger data services for AI agents and people. Six APIs, each payable per call over x402 (RLUSD or XRP on the XRP Ledger, or USDC on Base), plus free endpoints and free dashboards on this site. No account or API key.
+> XRP Ledger data services for AI agents and people. Seven APIs, each payable per call over x402 (RLUSD or XRP on the XRP Ledger, or USDC on Base), plus free endpoints and free dashboards on this site. No account or API key.
 
 Provider: XRPL-Utilities LLC. Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel narratives are AI-generated. Not investment, legal or compliance advice.
 
@@ -9,6 +9,7 @@ Provider: XRPL-Utilities LLC. Independent project not affiliated with Ripple Lab
 - [Pricing and first call](https://xrpl-utilities.com/pricing/): every paid route, free endpoints, a copy-paste curl call, Python and Node.js payment samples, Claude Desktop setup
 - [Payment catalog](https://xrpl-utilities.com/.well-known/x402): x402 resources across all seven services in one document
 - [Service status](https://xrpl-utilities.com/status/)
+- [Verify our figures](https://xrpl-utilities.com/verify/): each evening a SHA3-512 fingerprint of the day's published figures is written to the XRP Ledger from account rwty5XRq5zrqTZ7XMLgk3EqQ76V3SY8Gwy; this page rebuilds it in your browser and compares
 
 ## Services
 
@@ -20,6 +21,15 @@ Each service publishes its own llms.txt, x402 catalog, OpenAPI document and agen
 - [XR-Trust](https://trust.xrpl-utilities.io/llms.txt): Permissioned Domains (XLS-80), credentials (XLS-70) and permissioned DEX activity (XLS-81)
 - [XR-Vault](https://vault.xrpl-utilities.io/llms.txt): real-world-asset tracker for the XRP Ledger
 - [XR-Flows](https://flows.xrpl-utilities.io/llms.txt): XRP ETF assets against on-chain flow correlation
+- [XR-Ledger](https://ledger.xrpl-utilities.io/llms.txt): account statements for one XRPL address or a watchlist of up to 10
+
+## Prices
+
+- Data calls: $0.01 USD each (XR-Pulse, XR-Telemetry, XR-Trust, XR-Vault and XR-Flows data routes)
+- Deep dives: $0.10 USD each (Sentinel scan, Telemetry snapshot, Trust domains, Vault and Flows scans, Ledger statement, Pulse event queries)
+- Bundles, one payment for a whole question: wallet check $0.25, RWA token report $0.15, fund flow report $0.10, permissioned venue report $0.10, XRPL network snapshot $0.10, XRP market briefing $0.05
+- Pulse live stream: 1 hour $0.50, 6 hours $2.50, 24 hours $7.50
+- Every 200 answer on a paid route carries a `provenance` block naming the service, the time and the newest validated XRP Ledger it had read (index, hash, close time)
 
 ## MCP
 
