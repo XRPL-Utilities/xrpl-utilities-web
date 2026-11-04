@@ -27,6 +27,7 @@ node tests/visitor_pass_test.mjs
 node tests/a11y_test.mjs
 node tests/buyer_path_test.mjs
 node tests/seo_test.mjs
+node tests/terms_coverage_test.mjs
 node tests/images_test.mjs
 node tests/telemetry_null_test.mjs
 node tests/telemetry_supply_fallback_test.mjs
