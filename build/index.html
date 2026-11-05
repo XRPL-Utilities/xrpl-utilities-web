@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <title>Build with XRPL Data: API Use Cases and Examples | XRPL-Utilities</title>
+  <meta name="description" content="See how trading bots, exchanges, funds and AI agents use XRPL-Utilities data: the API call, the logic and a real JSON answer. Pay per call, no API key." />
+  <meta property="og:title" content="Build with XRPL data | XRPL-Utilities" />
+  <meta property="og:description" content="One HTTP request, a few cents, JSON your code can act on. Six real use cases with the call, the logic and the answer." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/build/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Build with XRPL data | XRPL-Utilities" />
+  <meta name="twitter:description" content="One HTTP request, a few cents, JSON your code can act on. Six real use cases with the call, the logic and the answer." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/build/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .nav-link-active { color: #00b8ff; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+    .more-grid > a:last-child { grid-column: 1 / -1; justify-self: center; width: calc(50% - 0.375rem); }
+    @media (min-width: 768px) { .more-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .more-grid > a:last-child { grid-column: auto; justify-self: stretch; width: auto; } }
+    @media (min-width: 1024px) { .more-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+    .case-tab { border: 1px solid #262626; border-radius: 9999px; padding: 0.4rem 0.9rem; font-size: 0.85rem; color: #a3a3a3; transition: border-color .15s, color .15s; }
+    .case-tab:hover { color: #fff; border-color: #00b8ff; }
+    .case-tab[aria-selected="true"] { background: #00b8ff; border-color: #00b8ff; color: #0a0a0a; font-weight: 600; }
+    .answer-box { max-height: 34rem; }
+    .answer { white-space: pre-wrap; overflow-wrap: anywhere; }
+    #use-cases { scroll-margin-top: 4.5rem; }
+  </style>
+  <script src="/assets/api-resilient.js?v=v2"></script>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="eager" decoding="async" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-x-6 xl:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/start/"     class="text-muted hover:text-white transition">Start here</a>
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
+        <a href="/lineage/"   class="text-muted hover:text-white transition">Lineage</a>
+        <a href="/pricing/"   class="text-muted hover:text-white transition">Pricing</a>
+      </nav>
+      <button id="nav-open" class="lg:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile slide-in nav. Same dark palette as desktop; opens on hamburger
+       tap. Body scroll locks while open; Escape, overlay tap, link tap, or
+       resize past md all close it. -->
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col lg:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/start/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Start here</a>
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
+      <a href="/lineage/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Lineage</a>
+      <a href="/pricing/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pricing</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <main id="main">
+
+  <section>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-8">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Build with XRPL data</h1>
+      <p class="text-muted text-lg max-w-3xl">Every figure on this site is also an API your code can call. Send one HTTP request, pay $0.01 to $0.25 for it, and get back JSON your system can act on. There&rsquo;s no account, no API key and no subscription. Each call pays for itself in RLUSD, XRP or USDC.</p>
+      <div class="flex flex-wrap gap-3 mt-6">
+        <a href="#use-cases" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-5 py-2.5 rounded-lg transition">See it in use</a>
+        <a href="/pricing/" class="border border-border hover:border-accent text-white font-semibold px-5 py-2.5 rounded-lg transition">Pricing</a>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="how-title">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+      <h2 id="how-title" class="text-xl font-semibold mb-4">How one call works</h2>
+      <ol class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <li class="bg-panel border border-border rounded-xl p-5 min-w-0">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-accent mb-2">1. Ask</div>
+          <p class="text-sm text-muted mb-3">Your code sends a normal GET request.</p>
+          <code class="block font-mono text-xs bg-ink border border-border rounded-lg px-3 py-2 break-all">GET pulse.xrpl-utilities.io/bundles/xrp-market-briefing</code>
+        </li>
+        <li class="bg-panel border border-border rounded-xl p-5 min-w-0">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-accent mb-2">2. Pay</div>
+          <p class="text-sm text-muted">The first answer is HTTP 402 with three ways to pay: $0.05 in RLUSD or XRP on the XRP Ledger, or in USDC on Base. An <a href="https://x402.org" target="_blank" rel="noopener noreferrer" class="text-accent underline hover:text-white">x402</a> client library pays and asks again for you, in a few seconds.</p>
+        </li>
+        <li class="bg-panel border border-border rounded-xl p-5 min-w-0">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-accent mb-2">3. Use the answer</div>
+          <p class="text-sm text-muted">You get JSON with a plain-English <span class="font-mono text-white">summary</span>, the <span class="font-mono text-white">key_numbers</span> your code reads, and a <span class="font-mono text-white">provenance</span> stamp naming the validated XRP Ledger it was served at. <a href="/verify/" class="text-accent underline hover:text-white">Check it yourself</a>.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="setup-title">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-12 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start">
+      <div class="min-w-0">
+        <h2 id="setup-title" class="text-xl font-semibold mb-3">Set up once</h2>
+        <p class="text-muted text-sm mb-3">These examples use Python and the <span class="font-mono text-white">x402-xrpl</span> library, paying in XRP from your own wallet. Any x402 client works, in any language, on any of the three payment options.</p>
+        <p class="text-muted text-sm">Every use case below then comes down to one line, <span class="font-mono text-white">get(&hellip;)</span>, and a few lines of your own logic on what comes back.</p>
+      </div>
+      <div class="bg-panel border border-border rounded-xl p-4 sm:p-6 font-mono text-xs sm:text-sm overflow-x-auto min-w-0" tabindex="0" role="region" aria-label="Python setup: a session that pays per call in XRP">
+        <pre class="text-white leading-relaxed">from x402_xrpl import X402RequestsSession
+
+def pay_in_xrp(accepts, *_):
+    return next(
+        a for a in accepts
+        if a["network"] == "xrpl:0"
+        and a["asset"] == "XRP"
+    )
+
+session = X402RequestsSession(
+    wallet=wallet,
+    rpc_url="https://YOUR_XRPL_RPC",
+    payment_requirements_selector=pay_in_xrp,
+)
+
+def get(path, **params):
+    resp = session.get(
+        "https://pulse.xrpl-utilities.io" + path,
+        params=params,
+    )
+    # a 402 here means the payment did not go through
+    resp.raise_for_status()
+    return resp.json()</pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="use-cases" aria-labelledby="cases-title" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16">
+      <h2 id="cases-title" class="text-xl font-semibold mb-1">Six ways teams use it</h2>
+      <p class="text-sm text-muted mb-5">Each tab shows the call, the logic a real system would run on it, and the answer that came back.</p>
+
+      <div role="tablist" aria-label="Use cases" class="flex flex-wrap gap-2 mb-6" id="case-tabs">
+        <button role="tab" id="tab-trading-bot" aria-controls="panel-trading-bot" aria-selected="true" tabindex="0" class="case-tab">Trading bot</button>
+        <button role="tab" id="tab-deposit-check" aria-controls="panel-deposit-check" aria-selected="false" tabindex="-1" class="case-tab">Deposit check</button>
+        <button role="tab" id="tab-asset-check" aria-controls="panel-asset-check" aria-selected="false" tabindex="-1" class="case-tab">Tokenized asset check</button>
+        <button role="tab" id="tab-fund-dashboard" aria-controls="panel-fund-dashboard" aria-selected="false" tabindex="-1" class="case-tab">Fund dashboard</button>
+        <button role="tab" id="tab-venue-monitor" aria-controls="panel-venue-monitor" aria-selected="false" tabindex="-1" class="case-tab">Venue monitor</button>
+        <button role="tab" id="tab-ai-agent" aria-controls="panel-ai-agent" aria-selected="false" tabindex="-1" class="case-tab">AI agent</button>
+      </div>
+
+      <div role="tabpanel" id="panel-trading-bot" aria-labelledby="tab-trading-bot" tabindex="0" class="case-panel" data-bundle="xrp-market-briefing">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div class="min-w-0">
+            <h3 class="text-lg font-semibold mb-2">A trading bot checks the market before it quotes</h3>
+            <p class="text-sm text-muted mb-2"><span class="text-white">Who:</span> market makers, quant desks, treasury teams.</p>
+            <p class="text-sm text-muted mb-4"><span class="text-white">Without it:</span> you run your own ledger watcher, keep track of which wallets belong to which exchange, follow Ripple&rsquo;s escrow and rebuild the order books yourself.</p>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-muted mb-2">The call: <span class="text-white">$0.05</span></div>
+            <div class="bg-panel border border-border rounded-xl p-4 font-mono text-xs sm:text-sm overflow-x-auto" tabindex="0" role="region" aria-label="Python: trading bot logic">
+              <pre class="text-white leading-relaxed case-code">b = get("/bundles/xrp-market-briefing")
+k = b["key_numbers"]
+
+if k["exchange_net_direction_24h"] == "distributing":
+    widen_spreads()   # XRP is moving onto exchanges
+
+impact = k["sell_10m_usd_slippage_bps_xrp_rlusd"]
+if impact is not None and impact &gt; 5000:
+    cap_order_size()  # a $10M sell would move the price over 50%
+
+post_to_desk_chat(b["summary"])</pre>
+            </div>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-status text-xs text-muted" aria-live="polite"></div>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the trading bot">
+              <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="panel-deposit-check" aria-labelledby="tab-deposit-check" tabindex="0" class="case-panel" data-bundle="wallet-check" hidden>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div class="min-w-0">
+            <h3 class="text-lg font-semibold mb-2">An exchange checks a wallet before it credits a deposit</h3>
+            <p class="text-sm text-muted mb-2"><span class="text-white">Who:</span> exchanges, OTC desks, payment apps.</p>
+            <p class="text-sm text-muted mb-4"><span class="text-white">Without it:</span> someone pulls the wallet&rsquo;s history, looks up who runs it, checks the website it claims and reads its permissioned domain records by hand.</p>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-muted mb-2">The call: <span class="text-white">$0.25</span></div>
+            <div class="bg-panel border border-border rounded-xl p-4 font-mono text-xs sm:text-sm overflow-x-auto" tabindex="0" role="region" aria-label="Python: deposit check logic">
+              <pre class="text-white leading-relaxed case-code">w = get("/bundles/wallet-check", address=sender)
+k = w["key_numbers"]
+
+if k["domain_verdict"] == "mismatch":
+    hold_for_review(sender, w["summary"])
+elif k["known_as"]:
+    label_counterparty(sender, k["known_as"])
+
+if k["is_credential_issuer"]:
+    route_to_compliance(sender)</pre>
+            </div>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-status text-xs text-muted" aria-live="polite"></div>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the deposit check">
+              <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="panel-asset-check" aria-labelledby="tab-asset-check" tabindex="0" class="case-panel" data-bundle="rwa-token-report" hidden>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div class="min-w-0">
+            <h3 class="text-lg font-semibold mb-2">A fund checks a tokenized asset before it buys</h3>
+            <p class="text-sm text-muted mb-2"><span class="text-white">Who:</span> RWA funds, custodians, token issuers watching their own supply.</p>
+            <p class="text-sm text-muted mb-4"><span class="text-white">Without it:</span> you track every holder of the token, its supply over time and its trading pools, then work out how concentrated it is.</p>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-muted mb-2">The call: <span class="text-white">$0.15</span></div>
+            <div class="bg-panel border border-border rounded-xl p-4 font-mono text-xs sm:text-sm overflow-x-auto" tabindex="0" role="region" aria-label="Python: tokenized asset check logic">
+              <pre class="text-white leading-relaxed case-code">r = get("/bundles/rwa-token-report", issuer=issuer)
+k = r["key_numbers"]
+
+if k["top_holder_pct"] &gt; 0.5:
+    flag("one holder has most of the supply")
+if k["growth_pct_30d"] &lt; -10:
+    flag("supply fell more than 10% this month")
+
+save_to_file(issuer, r)   # keep the stamped answer</pre>
+            </div>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-status text-xs text-muted" aria-live="polite"></div>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the tokenized asset check">
+              <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="panel-fund-dashboard" aria-labelledby="tab-fund-dashboard" tabindex="0" class="case-panel" data-bundle="fund-flow-report" hidden>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div class="min-w-0">
+            <h3 class="text-lg font-semibold mb-2">An analyst&rsquo;s dashboard tracks XRP funds against the ledger</h3>
+            <p class="text-sm text-muted mb-2"><span class="text-white">Who:</span> ETF analysts, research shops, newsletters.</p>
+            <p class="text-sm text-muted mb-4"><span class="text-white">Without it:</span> you collect each fund&rsquo;s figures from its issuer and line them up against XRP moving on and off exchanges yourself.</p>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-muted mb-2">The call: <span class="text-white">$0.10</span></div>
+            <div class="bg-panel border border-border rounded-xl p-4 font-mono text-xs sm:text-sm overflow-x-auto" tabindex="0" role="region" aria-label="Python: fund dashboard logic">
+              <pre class="text-white leading-relaxed case-code">f = get("/bundles/fund-flow-report", days=7)
+k = f["key_numbers"]
+
+chart.add("Fund assets, USD", k["funds_total_aum_usd"])
+chart.add("XRP held by funds", k["xrp_held_by_funds"])
+chart.add("Net XRP off exchanges", k["net_xrp_left_exchanges"])
+chart.note("same direction" if k["same_direction"] else "diverging")</pre>
+            </div>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-status text-xs text-muted" aria-live="polite"></div>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the fund dashboard">
+              <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="panel-venue-monitor" aria-labelledby="tab-venue-monitor" tabindex="0" class="case-panel" data-bundle="permissioned-venue-report" hidden>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div class="min-w-0">
+            <h3 class="text-lg font-semibold mb-2">A compliance team watches a regulated trading venue</h3>
+            <p class="text-sm text-muted mb-2"><span class="text-white">Who:</span> compliance teams, venue operators, their banks.</p>
+            <p class="text-sm text-muted mb-4"><span class="text-white">Without it:</span> you watch every permissioned offer on the ledger and tie each one back to its domain and the operator behind it.</p>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-muted mb-2">The call: <span class="text-white">$0.10</span></div>
+            <div class="bg-panel border border-border rounded-xl p-4 font-mono text-xs sm:text-sm overflow-x-auto" tabindex="0" role="region" aria-label="Python: venue monitor logic">
+              <pre class="text-white leading-relaxed case-code">v = get("/bundles/permissioned-venue-report", operator=operator)
+k = v["key_numbers"]
+
+if k["unique_traders_24h"] &lt;= 1 and k["permissioned_offers_24h"] &gt; 1000:
+    alert("one trader is placing all the offers")
+if k["credentials_outstanding"] == 0:
+    alert("no credentials issued yet")</pre>
+            </div>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-status text-xs text-muted" aria-live="polite"></div>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the venue monitor">
+              <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="panel-ai-agent" aria-labelledby="tab-ai-agent" tabindex="0" class="case-panel" data-bundle="xrpl-network-snapshot" hidden>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div class="min-w-0">
+            <h3 class="text-lg font-semibold mb-2">An AI agent answers a question with real numbers</h3>
+            <p class="text-sm text-muted mb-2"><span class="text-white">Who:</span> anyone building on Claude, ChatGPT or their own agent.</p>
+            <p class="text-sm text-muted mb-4"><span class="text-white">Without it:</span> the agent guesses from old training data, or you teach it how the XRP Ledger stores everything. With our <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-accent underline hover:text-white">MCP server</a> it calls a tool by name and pays per call.</p>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-muted mb-2">The tool call: <span class="text-white">$0.10</span></div>
+            <ol class="space-y-2 text-sm">
+              <li class="bg-panel border border-border rounded-xl p-3"><span class="text-[10px] uppercase tracking-[0.2em] text-muted block mb-1">User asks</span>How busy is the XRP Ledger right now?</li>
+              <li class="bg-panel border border-border rounded-xl p-3"><span class="text-[10px] uppercase tracking-[0.2em] text-muted block mb-1">Agent calls</span><span class="font-mono text-accent">xrpl_network_snapshot</span> <span class="text-muted">and pays through the MCP server</span></li>
+              <li class="bg-panel border border-border rounded-xl p-3"><span class="text-[10px] uppercase tracking-[0.2em] text-muted block mb-1">Agent answers from the result</span><span id="agent-answer" class="text-white">&hellip;</span></li>
+            </ol>
+            <p class="text-xs text-muted mt-3">Add it to Claude Desktop with <span class="font-mono text-white">npx -y @xrpl-utilities/mcp</span>, or point any MCP client at <span class="font-mono text-white">mcp.xrpl-utilities.io/mcp</span>.</p>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What the tool returns</div>
+              <div class="answer-status text-xs text-muted" aria-live="polite"></div>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the AI agent">
+              <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-xs text-muted mt-6">The trading bot tab shows a live answer, free on this page. The others show a stored answer with the date it was captured; call them yourself for today&rsquo;s figures. Section details are shortened here, and the full answer carries them. On-chain data and heuristic analytics, not investment, legal or compliance advice.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="next-title" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <h2 id="next-title" class="text-xl font-semibold mb-4">Start building</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <a href="/pricing/" class="block bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
+          <div class="font-semibold mb-1">Every route and price</div>
+          <div class="text-sm text-muted">$0.01 data calls, $0.10 deep dives and six bundles from $0.05 to $0.25.</div>
+        </a>
+        <a href="https://pulse.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="block bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
+          <div class="font-semibold mb-1">API reference</div>
+          <div class="text-sm text-muted">Every route, what it takes and what it returns.</div>
+        </a>
+        <a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="block bg-panel border border-border hover:border-accent rounded-xl p-5 transition">
+          <div class="font-semibold mb-1">MCP server</div>
+          <div class="text-sm text-muted">Give an AI agent the same data as tools, with the same payments.</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MORE PRODUCTS: same tiles as every product page, all seven here (tests/more_products_test.mjs) -->
+  <section id="more-tools" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-10 text-center">More from XRPL-Utilities</h2>
+      <div class="more-grid">
+        <a href="/sentinel/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-sentinel-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Sentinel</div>
+          <div class="text-center text-[10px] text-muted mt-1">Wallet behavior</div>
+        </a>
+        <a href="/telemetry/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-telemetry-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Telemetry</div>
+          <div class="text-center text-[10px] text-muted mt-1">Network supply and liquidity</div>
+        </a>
+        <a href="/pulse/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-pulse-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Pulse</div>
+          <div class="text-center text-[10px] text-muted mt-1">News and on-chain events</div>
+        </a>
+        <a href="/trust/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-trust-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Trust</div>
+          <div class="text-center text-[10px] text-muted mt-1">Permissioned domains</div>
+        </a>
+        <a href="/vault/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-vault-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Vault</div>
+          <div class="text-center text-[10px] text-muted mt-1">Real-world assets</div>
+        </a>
+        <a href="/flows/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-flows-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Flows</div>
+          <div class="text-center text-[10px] text-muted mt-1">ETF assets and flows</div>
+        </a>
+        <a href="/lineage/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-lineage-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Lineage</div>
+          <div class="text-center text-[10px] text-muted mt-1">RLUSD and Ripple flows</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 mb-10">
+        <div class="col-span-2 md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/start/"     class="text-muted hover:text-white transition">Start here</a></li>
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
+            <li><a href="/lineage/"   class="text-muted hover:text-white transition">XR-Lineage</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="/build/" class="text-muted hover:text-white transition">Build with the API</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
+            <li><a href="https://vault.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Vault API</a></li>
+            <li><a href="https://flows.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Flows API</a></li>
+            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">MCP server</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/privacy/" class="text-muted hover:text-white transition">Privacy</a></li>
+            <li><a href="/status/"  class="text-muted hover:text-white transition">Service status</a></li>
+            <li><a href="/verify/"  class="text-muted hover:text-white transition">Verify our data</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+            <li><a href="/tip/"     class="text-muted hover:text-white transition">Tip the maker</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel, XR-Pulse, XR-Telemetry, XR-Trust, XR-Vault, XR-Flows, and XR-Lineage are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/pages/build-samples.js?v=1"></script>
+  <script src="/assets/pages/build.js?v=1"></script>
+
+  <script src="/assets/a11y.js?v=1"></script>
+</body>
+</html>

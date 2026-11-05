@@ -10,6 +10,7 @@ Provider: XRPL-Utilities LLC. Independent project not affiliated with Ripple Lab
 - [Payment catalog](https://xrpl-utilities.com/.well-known/x402): x402 resources across all seven services in one document
 - [Service status](https://xrpl-utilities.com/status/)
 - [Verify our figures](https://xrpl-utilities.com/verify/): each evening a SHA3-512 fingerprint of the day's published figures is written to the XRP Ledger from account rwty5XRq5zrqTZ7XMLgk3EqQ76V3SY8Gwy; this page rebuilds it in your browser and compares
+- [Build with the API](https://xrpl-utilities.com/build/): six use cases (trading bot, deposit check, tokenized asset check, fund dashboard, venue monitor, AI agent), each with the call, sample logic and a real JSON answer
 
 ## Services
 
