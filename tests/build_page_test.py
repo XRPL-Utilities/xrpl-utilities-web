@@ -78,4 +78,11 @@ for b, d in samples.items():
     for f in d.get("key_numbers", {}):
         check(f"table view has a label for {b}.{f}", f in labelled)
 
+# Builder demo look (2026-11-06): the tab header and every answer card carry
+# the accent styling, so a new tab can't ship plain by mistake.
+page_html = open(os.path.join(repo, "build", "index.html"), encoding="utf-8").read()
+panels = re.findall(r'role="tabpanel"[\s\S]*?(?=role="tabpanel"|</section>)', page_html)
+check("the tab header sits in the accent box", 'class="case-head"' in page_html and page_html.index('class="case-head"') < page_html.index('id="case-tabs"'))
+check("every tab's answer sits in an accent card", len(panels) == 6 and all("answer-col" in p for p in panels))
+
 sys.exit(1 if fails else 0)

@@ -34,16 +34,29 @@
     .more-grid > a:last-child { grid-column: 1 / -1; justify-self: center; width: calc(50% - 0.375rem); }
     @media (min-width: 768px) { .more-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .more-grid > a:last-child { grid-column: auto; justify-self: stretch; width: auto; } }
     @media (min-width: 1024px) { .more-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
-    .case-tab { border: 1px solid #262626; border-radius: 9999px; padding: 0.4rem 0.9rem; font-size: 0.85rem; color: #a3a3a3; transition: border-color .15s, color .15s; }
-    .case-tab:hover { color: #fff; border-color: #00b8ff; }
-    .case-tab[aria-selected="true"] { background: #00b8ff; border-color: #00b8ff; color: #0a0a0a; font-weight: 600; }
+    /* Builder demo header and answer card: accent border and glow, same
+       look as the homepage demo box, so the tabs and answers stand out. */
+    .case-head { border: 1px solid rgba(0, 184, 255, 0.55); border-radius: 1.25rem; padding: 1.5rem; margin-bottom: 1.75rem;
+      background: radial-gradient(40rem 12rem at 0% 0%, rgba(0, 184, 255, 0.18), transparent 70%), linear-gradient(180deg, rgba(10, 28, 38, 0.95), rgba(12, 14, 16, 0.95));
+      box-shadow: 0 0 0 1px rgba(0, 184, 255, 0.12), 0 0 48px rgba(0, 184, 255, 0.18); }
+    @media (min-width: 640px) { .case-head { padding: 1.75rem 2rem; } }
+    .case-eyebrow, .answer-label { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #00b8ff; }
+    .case-eyebrow::before, .answer-label::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: #00b8ff; box-shadow: 0 0 10px #00b8ff; }
+    .case-title { margin-top: 0.4rem; font-size: 1.6rem; line-height: 1.2; font-weight: 800; letter-spacing: -0.015em; }
+    .case-sub { margin: 0.4rem 0 1.25rem; font-size: 0.9rem; line-height: 1.5; color: #b5b5b5; }
+    .answer-col { border: 1px solid rgba(0, 184, 255, 0.45); border-radius: 1.25rem; padding: 1.25rem;
+      background: linear-gradient(180deg, rgba(10, 28, 38, 0.9), rgba(12, 14, 16, 0.9));
+      box-shadow: 0 0 0 1px rgba(0, 184, 255, 0.1), 0 0 40px rgba(0, 184, 255, 0.14); }
+    .case-tab { border: 1px solid rgba(0, 184, 255, 0.35); background: rgba(0, 184, 255, 0.08); border-radius: 9999px; padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 500; color: #f5f5f5; transition: border-color .15s, color .15s, background-color .15s; }
+    .case-tab:hover { color: #fff; border-color: #00b8ff; background: rgba(0, 184, 255, 0.18); }
+    .case-tab[aria-selected="true"] { background: #00b8ff; border-color: #00b8ff; color: #0a0a0a; font-weight: 700; box-shadow: 0 0 18px rgba(0, 184, 255, 0.45); }
     .answer-box { max-height: 34rem; }
     .answer { white-space: pre-wrap; overflow-wrap: anywhere; }
     #use-cases { scroll-margin-top: 4.5rem; }
     .view-switch { display: inline-flex; border: 1px solid #262626; border-radius: 0.5rem; padding: 2px; margin-bottom: 0.5rem; }
     .view-btn { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 0.375rem; color: #a3a3a3; }
     .view-btn:hover { color: #fff; }
-    .view-btn[aria-pressed="true"] { background: #262626; color: #fff; font-weight: 600; }
+    .view-btn[aria-pressed="true"] { background: #00b8ff; color: #0a0a0a; font-weight: 700; }
     .answer-table table { width: 100%; border-collapse: collapse; }
     .answer-table th, .answer-table td { padding: 0.45rem 0.5rem; border-top: 1px solid #262626; text-align: left; vertical-align: top; }
     .answer-table th { color: #a3a3a3; font-weight: 400; width: 55%; }
@@ -183,16 +196,19 @@ def get(path, **params):
 
   <section id="use-cases" aria-labelledby="cases-title" class="border-t border-border">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16">
-      <h2 id="cases-title" class="text-xl font-semibold mb-1">Six ways teams use it</h2>
-      <p class="text-sm text-muted mb-5">Each tab shows the call, the logic a real system would run on it, and the answer that came back.</p>
+      <div class="case-head">
+      <p class="case-eyebrow">Builder demo</p>
+      <h2 id="cases-title" class="case-title">Six ways teams use it</h2>
+      <p class="case-sub">Each tab shows the call, the logic a real system would run on it, and the answer that came back.</p>
 
-      <div role="tablist" aria-label="Use cases" class="flex flex-wrap gap-2 mb-6" id="case-tabs">
+      <div role="tablist" aria-label="Use cases" class="flex flex-wrap gap-2" id="case-tabs">
         <button role="tab" id="tab-trading-bot" aria-controls="panel-trading-bot" aria-selected="true" tabindex="0" class="case-tab">Trading bot</button>
         <button role="tab" id="tab-deposit-check" aria-controls="panel-deposit-check" aria-selected="false" tabindex="-1" class="case-tab">Deposit check</button>
         <button role="tab" id="tab-asset-check" aria-controls="panel-asset-check" aria-selected="false" tabindex="-1" class="case-tab">Tokenized asset check</button>
         <button role="tab" id="tab-fund-dashboard" aria-controls="panel-fund-dashboard" aria-selected="false" tabindex="-1" class="case-tab">Fund dashboard</button>
         <button role="tab" id="tab-venue-monitor" aria-controls="panel-venue-monitor" aria-selected="false" tabindex="-1" class="case-tab">Venue monitor</button>
         <button role="tab" id="tab-ai-agent" aria-controls="panel-ai-agent" aria-selected="false" tabindex="-1" class="case-tab">AI agent</button>
+      </div>
       </div>
 
       <div role="tabpanel" id="panel-trading-bot" aria-labelledby="tab-trading-bot" tabindex="0" class="case-panel" data-bundle="xrp-market-briefing">
@@ -216,9 +232,9 @@ if impact is not None and impact &gt; 5000:
 post_to_desk_chat(b["summary"])</pre>
             </div>
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 answer-col">
             <div class="flex items-center justify-between gap-3 mb-2">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-label">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
             <div class="view-switch" role="group" aria-label="Show the answer as">
@@ -253,9 +269,9 @@ if k["is_credential_issuer"]:
     route_to_compliance(sender)</pre>
             </div>
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 answer-col">
             <div class="flex items-center justify-between gap-3 mb-2">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-label">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
             <div class="view-switch" role="group" aria-label="Show the answer as">
@@ -289,9 +305,9 @@ if k["growth_pct_30d"] &lt; -10:
 save_to_file(issuer, r)   # keep the stamped answer</pre>
             </div>
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 answer-col">
             <div class="flex items-center justify-between gap-3 mb-2">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-label">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
             <div class="view-switch" role="group" aria-label="Show the answer as">
@@ -323,9 +339,9 @@ chart.add("Net XRP off exchanges", k["net_xrp_left_exchanges"])
 chart.note("same direction" if k["same_direction"] else "diverging")</pre>
             </div>
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 answer-col">
             <div class="flex items-center justify-between gap-3 mb-2">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-label">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
             <div class="view-switch" role="group" aria-label="Show the answer as">
@@ -357,9 +373,9 @@ if k["credentials_outstanding"] == 0:
     alert("no credentials issued yet")</pre>
             </div>
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 answer-col">
             <div class="flex items-center justify-between gap-3 mb-2">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
+              <div class="answer-label">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
             <div class="view-switch" role="group" aria-label="Show the answer as">
@@ -388,9 +404,9 @@ if k["credentials_outstanding"] == 0:
             </ol>
             <p class="text-xs text-muted mt-3">Add it to Claude Desktop with <span class="font-mono text-white">npx -y @xrpl-utilities/mcp</span>, or point any MCP client at <span class="font-mono text-white">mcp.xrpl-utilities.io/mcp</span>.</p>
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 answer-col">
             <div class="flex items-center justify-between gap-3 mb-2">
-              <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What the tool returns</div>
+              <div class="answer-label">What the tool returns</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
             <div class="view-switch" role="group" aria-label="Show the answer as">
