@@ -40,6 +40,16 @@
     .answer-box { max-height: 34rem; }
     .answer { white-space: pre-wrap; overflow-wrap: anywhere; }
     #use-cases { scroll-margin-top: 4.5rem; }
+    .view-switch { display: inline-flex; border: 1px solid #262626; border-radius: 0.5rem; padding: 2px; margin-bottom: 0.5rem; }
+    .view-btn { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 0.375rem; color: #a3a3a3; }
+    .view-btn:hover { color: #fff; }
+    .view-btn[aria-pressed="true"] { background: #262626; color: #fff; font-weight: 600; }
+    .answer-table table { width: 100%; border-collapse: collapse; }
+    .answer-table th, .answer-table td { padding: 0.45rem 0.5rem; border-top: 1px solid #262626; text-align: left; vertical-align: top; }
+    .answer-table th { color: #a3a3a3; font-weight: 400; width: 55%; }
+    .answer-table td { color: #fff; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .answer-table .t-summary { color: #fff; line-height: 1.55; margin-bottom: 0.75rem; }
+    .answer-table .t-note { color: #a3a3a3; font-size: 0.75rem; margin-top: 0.75rem; line-height: 1.5; }
   </style>
   <script src="/assets/api-resilient.js?v=v2"></script>
 </head>
@@ -211,8 +221,13 @@ post_to_desk_chat(b["summary"])</pre>
               <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
-            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the trading bot">
+            <div class="view-switch" role="group" aria-label="Show the answer as">
+              <button type="button" class="view-btn" data-view="json" aria-pressed="true">JSON</button>
+              <button type="button" class="view-btn" data-view="table" aria-pressed="false">Table</button>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="Answer for the trading bot">
               <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+              <div class="answer-table font-sans text-sm" hidden></div>
             </div>
           </div>
         </div>
@@ -243,8 +258,13 @@ if k["is_credential_issuer"]:
               <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
-            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the deposit check">
+            <div class="view-switch" role="group" aria-label="Show the answer as">
+              <button type="button" class="view-btn" data-view="json" aria-pressed="true">JSON</button>
+              <button type="button" class="view-btn" data-view="table" aria-pressed="false">Table</button>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="Answer for the deposit check">
               <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+              <div class="answer-table font-sans text-sm" hidden></div>
             </div>
           </div>
         </div>
@@ -274,8 +294,13 @@ save_to_file(issuer, r)   # keep the stamped answer</pre>
               <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
-            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the tokenized asset check">
+            <div class="view-switch" role="group" aria-label="Show the answer as">
+              <button type="button" class="view-btn" data-view="json" aria-pressed="true">JSON</button>
+              <button type="button" class="view-btn" data-view="table" aria-pressed="false">Table</button>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="Answer for the tokenized asset check">
               <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+              <div class="answer-table font-sans text-sm" hidden></div>
             </div>
           </div>
         </div>
@@ -303,8 +328,13 @@ chart.note("same direction" if k["same_direction"] else "diverging")</pre>
               <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
-            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the fund dashboard">
+            <div class="view-switch" role="group" aria-label="Show the answer as">
+              <button type="button" class="view-btn" data-view="json" aria-pressed="true">JSON</button>
+              <button type="button" class="view-btn" data-view="table" aria-pressed="false">Table</button>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="Answer for the fund dashboard">
               <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+              <div class="answer-table font-sans text-sm" hidden></div>
             </div>
           </div>
         </div>
@@ -332,8 +362,13 @@ if k["credentials_outstanding"] == 0:
               <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What comes back</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
-            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the venue monitor">
+            <div class="view-switch" role="group" aria-label="Show the answer as">
+              <button type="button" class="view-btn" data-view="json" aria-pressed="true">JSON</button>
+              <button type="button" class="view-btn" data-view="table" aria-pressed="false">Table</button>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="Answer for the venue monitor">
               <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+              <div class="answer-table font-sans text-sm" hidden></div>
             </div>
           </div>
         </div>
@@ -358,8 +393,13 @@ if k["credentials_outstanding"] == 0:
               <div class="text-[10px] uppercase tracking-[0.2em] text-muted">What the tool returns</div>
               <div class="answer-status text-xs text-muted" aria-live="polite"></div>
             </div>
-            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="JSON answer for the AI agent">
+            <div class="view-switch" role="group" aria-label="Show the answer as">
+              <button type="button" class="view-btn" data-view="json" aria-pressed="true">JSON</button>
+              <button type="button" class="view-btn" data-view="table" aria-pressed="false">Table</button>
+            </div>
+            <div class="bg-ink border border-border rounded-xl p-4 font-mono text-xs overflow-auto answer-box" tabindex="0" role="region" aria-label="Answer for the AI agent">
               <pre class="answer text-white leading-relaxed">Loading&hellip;</pre>
+              <div class="answer-table font-sans text-sm" hidden></div>
             </div>
           </div>
         </div>
@@ -493,7 +533,7 @@ if k["credentials_outstanding"] == 0:
   </footer>
 
   <script src="/assets/pages/build-samples.js?v=1"></script>
-  <script src="/assets/pages/build.js?v=1"></script>
+  <script src="/assets/pages/build.js?v=2"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>

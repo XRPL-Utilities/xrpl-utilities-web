@@ -70,4 +70,12 @@ check("stored answers keep only section labels",
 body = js.split("window.XRU_BUILD_SAMPLES = ", 1)[1]
 check("stored answers carry no raw < > & (script-safe)", not re.search(r"[<>&]", body))
 
+# The Table view labels every field a person sees. A field with no label
+# still shows under its raw name, so a new field fails here first.
+page_js = open(os.path.join(repo, "assets", "pages", "build.js"), encoding="utf-8").read()
+labelled = set(re.findall(r"^    ([a-z0-9_]+): \[", page_js, re.M))
+for b, d in samples.items():
+    for f in d.get("key_numbers", {}):
+        check(f"table view has a label for {b}.{f}", f in labelled)
+
 sys.exit(1 if fails else 0)
