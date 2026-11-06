@@ -135,8 +135,20 @@
 
   function sign(n) { return n > 0 ? '+' : n < 0 ? '\u2212' : ''; }
 
-  function formatValue(kind, v, kn) {
-    if (v === null || v === undefined || v === '') return 'Not available';
+  // What an empty field means, said plainly. A blank here is usually a fact
+  // (no public name, no role on file), not a failure, so the table says which.
+  var EMPTY = {
+    role: function () { return 'None on file'; },
+    known_as: function () { return 'No public label'; },
+    xrp_net_90d: function (kn) { return kn && kn.statement_partial ? 'Not counted, history is partial' : 'Not available'; },
+    name: function () { return 'No public name'; },
+    jurisdiction: function () { return 'Not disclosed'; },
+  };
+
+  function formatValue(kind, v, kn, key) {
+    if (v === null || v === undefined || v === '') {
+      return Object.prototype.hasOwnProperty.call(EMPTY, key) ? EMPTY[key](kn) : 'Not available';
+    }
     if (kind === 'bool') return v ? 'Yes' : 'No';
     if (typeof v !== 'number' || !isFinite(v)) {
       var t = String(v);
@@ -188,7 +200,7 @@
       var th = el('th', null, spec[0]);
       th.setAttribute('scope', 'row');
       tr.appendChild(th);
-      tr.appendChild(el('td', null, formatValue(spec[1], kn[key], kn)));
+      tr.appendChild(el('td', null, formatValue(spec[1], kn[key], kn, key)));
       body.appendChild(tr);
     });
     table.appendChild(body);
