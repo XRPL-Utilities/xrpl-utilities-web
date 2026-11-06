@@ -224,7 +224,13 @@
   border-radius: 1rem;
   background: rgba(17, 17, 17, 0.85);
   padding: 1.25rem;
-  max-width: 34rem;
+  margin: 3rem 0 0;
+  display: grid;
+  gap: 0.9rem;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .home-demo { grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) auto; gap: 1.5rem; padding: 1.25rem 1.5rem; }
 }
 .home-demo-title { font-size: 0.95rem; font-weight: 600; color: #fff; }
 .home-demo-sub { margin-top: 0.25rem; font-size: 0.875rem; line-height: 1.5; color: #a3a3a3; }
@@ -232,7 +238,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.9rem;
   list-style: none;
   padding: 0;
 }
@@ -249,7 +254,6 @@
 .home-demo-list a:hover, .home-demo-list a:focus-visible { border-color: #00b8ff; color: #00b8ff; }
 .home-demo-more {
   display: inline-block;
-  margin-top: 0.9rem;
   font-size: 0.875rem;
   font-weight: 600;
   color: #00b8ff;
