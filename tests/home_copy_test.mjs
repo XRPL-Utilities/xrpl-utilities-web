@@ -56,5 +56,15 @@ check('code sample lines fit the box (56 chars max)', longest <= 56, `longest ${
 check('net flow wording follows flow_direction', js.includes('exchange_to_wallet_usd') && js.includes('wallet_to_exchange_usd') && js.includes("'Net XRP off exchanges, 24h'"));
 check('no innerHTML in the home script', !js.includes('innerHTML'));
 
+// Demo box (2026-11-06): every chip opens a real tab on /build/.
+{
+  const home = fs.readFileSync(path.join(repo, 'index.html'), 'utf8');
+  const build = fs.readFileSync(path.join(repo, 'build/index.html'), 'utf8');
+  const box = (home.match(/<div class="home-demo[\s\S]*?<\/ul>/) || [''])[0];
+  const links = [...box.matchAll(/href="\/build\/#([a-z-]+)"/g)].map((m) => m[1]);
+  check('demo box links to all six build tabs', links.length === 6);
+  check('every demo box link names a real build tab', links.every((id) => build.includes(`id="tab-${id}"`)));
+}
+
 console.log(fails ? `${fails} FAILED` : 'home copy: ok');
 process.exit(fails ? 1 : 0);
