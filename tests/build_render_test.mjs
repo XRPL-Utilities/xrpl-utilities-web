@@ -96,4 +96,6 @@ btnJson.listeners.click({ currentTarget: btnJson });
 check('JSON button brings the JSON back', panels.every((p) => !p.pre.hidden && p.table.hidden));
 check('page has a JSON and Table switch on all six answers',
   (html.match(/data-view="json"/g) || []).length === 6 && (html.match(/data-view="table"/g) || []).length === 6);
+// close_out.sh fails the public repo on these names (AI fingerprint scrub).
+check('page names no AI vendor or product', !/Claude Code|Co-Authored-By: Claude|ChatGPT|GPT-4|claude\.ai/i.test(html));
 process.exit(fails ? 1 : 0);
