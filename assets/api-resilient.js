@@ -253,12 +253,48 @@
     });
   }
 
+  // The pass mint itself calls /edge/ip-attest on an API host. That call
+  // must never wait for a pass: with the pass sticky and none cached, it
+  // waited on the very mint that was waiting on it, and every data call on
+  // the page hung (2026-11-06).
+  function isPassMintCall(url) {
+    return /^https:\/\/sentinel\.xrpl-utilities\.io\/edge\/ip-attest(?:[?#]|$)/.test(url);
+  }
+
+  // A pass the API refuses (bound to an address this visitor no longer has,
+  // or minted without the API hosts' view of it) stays cached until it
+  // expires, up to 15 minutes. Drop it and mint a fresh one, once per page.
+  // Every call refused at the same moment shares that one fresh mint.
+  var passRefreshed = null;
+  function freshPassInit(init) {
+    if (!passRefreshed) {
+      passRefreshed = previewTokenLib().then(function (lib) {
+        if (lib && typeof lib._clear === 'function') lib._clear();
+        return passInit(null);
+      }).catch(function () { return null; });
+    }
+    return passRefreshed.then(function (fresh) {
+      return fresh ? withPass(init, fresh.headers.Authorization) : null;
+    });
+  }
+
+  function retryWithFreshPass(input, init, res) {
+    if (res.status !== 402 || isAbort(null, input, init)) return res;
+    return freshPassInit(init).then(function (withToken) {
+      if (!withToken) return res;
+      return resilientFetch(input, withToken).then(null, function () { return res; });
+    });
+  }
+
   global.fetch = function (input, init) {
     var url = requestUrl(input);
     if (!url || !proxyUrlFor(url) || !isPlainGet(input, init)) return resilientFetch(input, init);
+    if (isPassMintCall(url)) return resilientFetch(input, init);
     if (sendPass) {
       return passInit(init).then(function (withToken) {
-        return resilientFetch(input, withToken || init);
+        return resilientFetch(input, withToken || init).then(function (res) {
+          return withToken ? retryWithFreshPass(input, init, res) : res;
+        });
       });
     }
     return resilientFetch(input, init).then(function (res) {
@@ -266,8 +302,8 @@
       return passInit(init).then(function (withToken) {
         if (!withToken) return res;
         return resilientFetch(input, withToken).then(function (again) {
-          if (again.status !== 402) markSendPass();
-          return again;
+          if (again.status !== 402) { markSendPass(); return again; }
+          return retryWithFreshPass(input, init, again);
         }, function () { return res; });
       });
     });
@@ -283,6 +319,7 @@
       proxyMode = false;
       previewViaProxy = false;
       sendPass = false;
+      passRefreshed = null;
       tokenLib = null;
       try { sessionStorage.removeItem(PASS_STICKY_KEY); } catch (_) {}
       try { sessionStorage.removeItem(STICKY_KEY); } catch (_) {}
