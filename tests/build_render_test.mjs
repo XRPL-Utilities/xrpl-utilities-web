@@ -50,7 +50,7 @@ const doc = {
   createElement: (tag) => el({}, tag),
 };
 const sample = (b) => ({ bundle: b, generated_at: '2026-11-05T21:13:24Z', summary: evil,
-  key_numbers: { known_as: evil, role: null, is_domain_operator: false, sell_10m_usd_slippage_bps_xrp_rlusd: 6133.19,
+  key_numbers: { known_as: evil, role: null, xrp_net_90d: null, statement_partial: true, name: null, jurisdiction: null, is_domain_operator: false, sell_10m_usd_slippage_bps_xrp_rlusd: 6133.19,
     exchange_net_flow_24h_usd: 85646867.22, top_holder_pct: 0.745796, xrp_funds_xrp_held: 1712041943.6, next_escrow_unlock_date: '2026-12-01T00:00:00Z', brand_new_field: 7 },
   sections: { s: { source: 'XR-Pulse', status: 'ok', as_of: '2026-11-05T21:13:00Z' } } });
 let calls = 0;
@@ -78,7 +78,10 @@ check('agent answer is the snapshot summary, as text', agent.textContent === evi
 const tableText = panels[1].table.textContent;
 check('table holds the summary as text', panels[1].table.children[0].tag === 'p' && panels[1].table.children[0].textContent === evil);
 check('table shows a hostile value as text', tableText.includes(evil));
-check('null reads "Not available"', tableText.includes('Role|Not available'));
+check('an empty role says none is on file', tableText.includes('Role|None on file'));
+check('empty net XRP on a partial history says why', tableText.includes('Net XRP, last 90 days|Not counted, history is partial'));
+check('empty venue name and jurisdiction say why', tableText.includes('Name|No public name') && tableText.includes('Jurisdiction|Not disclosed'));
+check('the four known blanks never read "Not available"', !/(Role|Net XRP, last 90 days|Name|Jurisdiction)\|Not available/.test(tableText));
 check('false reads "No"', tableText.includes('Runs a permissioned domain|No'));
 check('bps reads as a percent', tableText.includes('61.3% (6,133 bps)'));
 check('a flow carries its sign', tableText.includes('+$85.6M'));
