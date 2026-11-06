@@ -64,6 +64,12 @@ check('no innerHTML in the home script', !js.includes('innerHTML'));
   const links = [...box.matchAll(/href="\/build\/#([a-z-]+)"/g)].map((m) => m[1]);
   check('demo box links to all six build tabs', links.length === 6);
   check('every demo box link names a real build tab', links.every((id) => build.includes(`id="tab-${id}"`)));
+  // Inside the two-column hero it made the left column taller and pushed the
+  // live panel down (Aaron, 2026-11-06). It sits below the grid instead.
+  const gridStart = home.indexOf('class="home-hero-grid"');
+  const panelEnd = home.indexOf('id="ls-escrow-sub"');
+  const boxAt = home.indexOf('class="home-demo"');
+  check('demo box sits below the hero columns, not inside one', gridStart > 0 && boxAt > panelEnd);
 }
 
 console.log(fails ? `${fails} FAILED` : 'home copy: ok');
