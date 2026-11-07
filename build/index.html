@@ -49,6 +49,13 @@
       box-shadow: 0 0 0 1px rgba(0, 184, 255, 0.1), 0 0 40px rgba(0, 184, 255, 0.14); }
     .case-tab { border: 1px solid rgba(0, 184, 255, 0.35); background: rgba(0, 184, 255, 0.08); border-radius: 9999px; padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 500; color: #f5f5f5; transition: border-color .15s, color .15s, background-color .15s; }
     .case-tab:hover { color: #fff; border-color: #00b8ff; background: rgba(0, 184, 255, 0.18); }
+    .build-hero { display: grid; gap: 2rem; align-items: center; }
+    .build-art { display: none; width: 100%; max-width: 440px; height: auto; justify-self: end; overflow: visible; filter: drop-shadow(0 0 28px rgba(0, 184, 255, 0.16)); }
+    @media (min-width: 1024px) { .build-hero { grid-template-columns: minmax(0, 1fr) 400px; } .build-art { display: block; } }
+    .build-art .ba-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; fill: #e5e5e5; }
+    .build-art .ba-dim { fill: #8a8a8a; }
+    .build-art .ba-label { font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; fill: #00b8ff; }
+    .build-art .ba-pay { font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 700; fill: #0a0a0a; }
     .case-tab[aria-selected="true"] { background: #00b8ff; border-color: #00b8ff; color: #0a0a0a; font-weight: 700; box-shadow: 0 0 18px rgba(0, 184, 255, 0.45); }
     .answer-box { max-height: 34rem; }
     .answer { white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -128,13 +135,58 @@
   <main id="main">
 
   <section>
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-8 build-hero">
+      <div class="min-w-0">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Build with XRPL data</h1>
       <p class="text-muted text-lg max-w-3xl">Every figure on this site is also an API your code can call. Send one HTTP request, pay $0.01 to $0.25 for it, and get back JSON your system can act on. There&rsquo;s no account, no API key and no subscription. Each call pays for itself in RLUSD, XRP or USDC.</p>
       <div class="flex flex-wrap gap-3 mt-6">
         <a href="#use-cases" class="bg-accent hover:bg-accent-dim text-ink font-semibold px-5 py-2.5 rounded-lg transition">See it in use</a>
         <a href="/pricing/" class="border border-border hover:border-accent text-white font-semibold px-5 py-2.5 rounded-lg transition">Pricing</a>
       </div>
+      </div>
+      <!-- Builder graphic: one call, paid, answered. Decorative; the steps are
+           spelled out in "How one call works" below. -->
+      <svg class="build-art" viewBox="0 0 440 400" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="ba-card" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0d2230"/><stop offset="1" stop-color="#0c0e10"/>
+          </linearGradient>
+          <filter id="ba-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- 1. your code -->
+        <g>
+          <rect x="20" y="14" width="300" height="104" rx="14" fill="url(#ba-card)" stroke="#00b8ff" stroke-opacity="0.55"/>
+          <circle cx="40" cy="34" r="4" fill="#ff5f57"/><circle cx="54" cy="34" r="4" fill="#febc2e"/><circle cx="68" cy="34" r="4" fill="#28c840"/>
+          <text x="300" y="38" text-anchor="end" class="ba-mono ba-dim">your_bot.py</text>
+          <text x="40" y="66" class="ba-mono"><tspan fill="#00b8ff">b</tspan> = get(<tspan fill="#9be7ff">"/bundles/xrp-</tspan></text>
+          <text x="40" y="84" class="ba-mono"><tspan fill="#9be7ff">    market-briefing"</tspan>)</text>
+          <text x="40" y="104" class="ba-mono ba-dim">if b["key_numbers"][...]: act()</text>
+        </g>
+
+        <path d="M170 118 V158" stroke="#00b8ff" stroke-opacity="0.8" stroke-width="2" stroke-dasharray="4 5" fill="none"/>
+
+        <!-- 2. pay -->
+        <g filter="url(#ba-glow)">
+          <rect x="90" y="158" width="260" height="46" rx="23" fill="#00b8ff"/>
+        </g>
+        <text x="220" y="187" text-anchor="middle" class="ba-pay">402 &#8594; paid $0.05 in RLUSD</text>
+
+        <path d="M270 204 V244" stroke="#00b8ff" stroke-opacity="0.8" stroke-width="2" stroke-dasharray="4 5" fill="none"/>
+
+        <!-- 3. answer -->
+        <g>
+          <rect x="120" y="244" width="300" height="140" rx="14" fill="url(#ba-card)" stroke="#00b8ff" stroke-opacity="0.55"/>
+          <text x="140" y="270" class="ba-label">200 OK &#183; JSON</text>
+          <text x="140" y="296" class="ba-mono"><tspan fill="#9be7ff">"summary"</tspan>: <tspan class="ba-dim">"XRP moving onto&#8230;"</tspan></text>
+          <text x="140" y="316" class="ba-mono"><tspan fill="#9be7ff">"key_numbers"</tspan>: { <tspan class="ba-dim">&#8230;</tspan> }</text>
+          <text x="140" y="336" class="ba-mono"><tspan fill="#9be7ff">"provenance"</tspan>: {</text>
+          <text x="156" y="356" class="ba-mono"><tspan fill="#9be7ff">"ledger_index"</tspan>: <tspan fill="#fff">108160693</tspan></text>
+          <text x="140" y="374" class="ba-mono">}</text>
+        </g>
+      </svg>
     </div>
   </section>
 

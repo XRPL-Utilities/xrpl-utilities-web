@@ -85,4 +85,10 @@ panels = re.findall(r'role="tabpanel"[\s\S]*?(?=role="tabpanel"|</section>)', pa
 check("the tab header sits in the accent box", 'class="case-head"' in page_html and page_html.index('class="case-head"') < page_html.index('id="case-tabs"'))
 check("every tab's answer sits in an accent card", len(panels) == 6 and all("answer-col" in p for p in panels))
 
+# Hero graphic (2026-11-06): decorative only, so screen readers skip it and
+# it never pulls an outside file.
+art = re.search(r'<svg class="build-art"[\s\S]*?</svg>', page_html)
+check("hero graphic is present and hidden from screen readers", bool(art) and 'aria-hidden="true"' in art.group(0))
+check("hero graphic loads nothing from outside", bool(art) and not re.search(r'(href|src)="(https?:)?//', art.group(0)))
+
 sys.exit(1 if fails else 0)
