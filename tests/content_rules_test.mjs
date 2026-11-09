@@ -99,7 +99,11 @@ const navLinks = (html, re) => { const m = html.match(re); return m ? [...m[0].m
 const DESK = /<nav class="hidden lg:flex[\s\S]*?<\/nav>/;
 const MOB = /<nav class="flex-1 flex flex-col[\s\S]*?<\/nav>/;
 const NAV = '/start/ /sentinel/ /telemetry/ /pulse/ /trust/ /vault/ /flows/ /lineage/ /pricing/';
-for (const f of pages) {
+// The /learn/ lessons are entries for XRP Ledger Education Month, whose rules
+// bar promoting a project, so they carry no product menu or trademark footer
+// on purpose. tests/learn_test.mjs checks them instead.
+const isLesson = (f) => path.relative(repo, f).split(path.sep)[0] === 'learn';
+for (const f of pages.filter((p) => !isLesson(p))) {
   const html = fs.readFileSync(f, 'utf8');
   if (navLinks(html, DESK) !== NAV) fail(`${path.relative(repo, f)}: desktop nav differs from the standard links`);
   if (navLinks(html, MOB) !== NAV) fail(`${path.relative(repo, f)}: mobile nav differs from the standard links`);

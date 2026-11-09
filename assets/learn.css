@@ -1,0 +1,75 @@
+/* Lesson pages under /learn/. Plain reading layout, same colors as the rest
+   of the site. Built by tools/learn/build.mjs. */
+:root {
+  --ink: #0a0a0a;
+  --panel: #111111;
+  --border: #262626;
+  --text: #e5e5e5;
+  --muted: #a3a3a3;
+  --accent: #00b8ff;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--ink); color: var(--text); overflow-x: clip; }
+body {
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { color: #fff; }
+.wrap { max-width: 44rem; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 640px) { .wrap { padding: 0 24px; } }
+
+.skip { position: absolute; left: -9999px; top: 12px; }
+.skip:focus { left: 12px; z-index: 60; background: var(--accent); color: var(--ink); padding: 8px 16px; border-radius: 8px; font-weight: 600; }
+
+header.site { border-bottom: 1px solid var(--border); background: rgba(10, 10, 10, 0.95); position: sticky; top: 0; z-index: 40; }
+header.site .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 14px; padding-bottom: 14px; }
+.brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.8rem; white-space: nowrap; }
+.brand img { border-radius: 6px; box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); }
+.brand em { font-style: normal; color: var(--accent); }
+header.site nav a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+header.site nav a:hover { color: #fff; }
+
+main { padding: 32px 0 56px; }
+.crumbs { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; }
+.crumbs a { color: var(--muted); }
+.kicker { margin: 0 0 8px; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+h1 { font-size: 2.25rem; line-height: 1.15; margin: 0 0 12px; color: #fff; font-weight: 800; letter-spacing: -0.01em; }
+@media (min-width: 640px) { h1 { font-size: 2.75rem; } }
+.meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 28px; }
+.short { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 18px 20px; margin: 0 0 36px; }
+.short strong { color: #fff; }
+h2 { font-size: 1.5rem; line-height: 1.3; margin: 44px 0 12px; color: #fff; font-weight: 700; scroll-margin-top: 80px; }
+h3 { font-size: 1.1rem; margin: 0 0 6px; color: #fff; font-weight: 600; }
+p { margin: 0 0 16px; }
+ul, ol { margin: 0 0 20px; padding-left: 1.4em; }
+li { margin: 0 0 10px; }
+li::marker { color: var(--accent); }
+strong { color: #fff; font-weight: 600; }
+.faq { border-top: 1px solid var(--border); padding: 18px 0 4px; }
+.faq p { color: var(--text); }
+
+.pager { display: grid; gap: 12px; margin-top: 48px; }
+@media (min-width: 640px) { .pager { grid-template-columns: 1fr 1fr; } .pager .next { grid-column: 2; text-align: right; } }
+.pager a, .pager div { display: block; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; color: #fff; text-decoration: none; font-weight: 600; }
+.pager a:hover { border-color: var(--accent); }
+.pager span { display: block; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+.pager .soon { color: var(--muted); }
+
+.hub .lead { font-size: 1.15rem; color: var(--text); margin-bottom: 32px; }
+.lessons { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.lessons li { margin: 0; }
+.lessons a, .lessons div { display: block; border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; text-decoration: none; background: var(--panel); }
+.lessons a:hover { border-color: var(--accent); }
+.lessons .num { display: block; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.lessons .name { display: block; color: #fff; font-weight: 700; font-size: 1.15rem; margin: 2px 0; }
+.lessons .blurb { display: block; color: var(--muted); font-size: 0.95rem; }
+.lessons .soon div { background: transparent; }
+.lessons .soon .num, .lessons .soon .name { color: var(--muted); }
+
+footer.site { border-top: 1px solid var(--border); padding: 28px 0 40px; color: var(--muted); font-size: 0.85rem; }
+footer.site p { margin: 0 0 8px; }
+footer.site .links a { color: var(--muted); margin-right: 16px; display: inline-block; }
+footer.site .links a:hover { color: #fff; }
