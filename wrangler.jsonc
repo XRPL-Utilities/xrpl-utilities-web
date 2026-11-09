@@ -26,7 +26,8 @@
       "/api/*", "/.well-known/x402",
       "/start", "/sentinel", "/sentinel/bulk", "/telemetry", "/pulse", "/trust",
       "/vault", "/flows", "/lineage", "/pricing", "/status", "/contact", "/tip", "/terms", "/privacy", "/whales", "/build",
-      "/verify", "/learn", "/learn/what-is-the-xrp-ledger"
+      "/verify", "/learn", "/learn/what-is-the-xrp-ledger",
+      "/404", "/404.html"
     ]
   },
   // Per-visitor limit on the /api/x passthrough, shared by the isolates in a
