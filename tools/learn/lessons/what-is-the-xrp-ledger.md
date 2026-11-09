@@ -28,6 +28,8 @@ Bitcoin and the XRP Ledger do the same basic job. Both keep a shared record that
 - **How they agree.** Bitcoin computers race each other to solve a math puzzle, which takes a lot of computing power. That race is called mining. XRP Ledger validators skip the race and compare notes instead.
 - **What's built in.** On Bitcoin, the main thing you can do is send bitcoin. The XRP Ledger was built to hold more than one kind of money. It has its own currency, XRP, plus tokens for things like dollars, and a built-in marketplace for swapping between them. Later lessons cover each of these.
 
+::: speed
+
 ## What actually goes in it?
 
 Each page of the XRP Ledger (each "ledger version") holds three things:
@@ -37,6 +39,8 @@ Each page of the XRP Ledger (each "ledger version") holds three things:
 3. **The current state of every account**: balances, settings, and anything else the accounts own.
 
 Each page also carries a fingerprint of the page before it. Change anything on an old page and its fingerprint no longer matches, so tampering shows right away. This is the "chain" part of blockchain.
+
+::: tamper
 
 ## Where did it come from?
 
@@ -50,7 +54,9 @@ Yes. Besides the main network (called Mainnet), there are two practice networks,
 
 ## See it for yourself
 
-You don't have to take our word for any of this. Every page of the ledger is public.
+You don't have to take our word for any of this. Every page of the ledger is public. Here are the newest ones, as they're added:
+
+::: live-chain
 
 Here's one we picked: [ledger 108,226,016](https://livenet.xrpl.org/ledgers/108226016) closed on Monday, November 9, 2026 at 4:54 PM Eastern with 181 transactions in it. Click through and you'll see each transaction, the page number, and its fingerprint.
 

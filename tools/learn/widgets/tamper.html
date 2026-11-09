@@ -1,0 +1,24 @@
+<figure class="widget tamper" data-widget="tamper">
+  <div class="widget-head"><strong>Try it: change an old page</strong></div>
+  <p>Here are three pretend pages. Each one's fingerprint is made from what's on the page plus the fingerprint of the page before it. Change the amount on page 1 and watch what happens to page 2.</p>
+  <ol class="chain demo">
+    <li class="page" data-page="1">
+      <span class="page-num">Page 1</span>
+      <span class="tx">Alice pays Bob <label class="sr" for="tamper-amount">Amount Alice pays Bob</label><input id="tamper-amount" type="number" inputmode="numeric" min="0" max="1000000" step="1" value="25" /> XRP</span>
+      <span class="fp">Fingerprint <code data-role="fp1">...</code></span>
+    </li>
+    <li class="page" data-page="2">
+      <span class="page-num">Page 2</span>
+      <span class="tx">Bob pays Carol 10 XRP</span>
+      <span class="fp">Says the page before had <code data-role="prev2">...</code></span>
+      <span class="check" data-role="check2" aria-live="polite"></span>
+    </li>
+    <li class="page" data-page="3">
+      <span class="page-num">Page 3</span>
+      <span class="tx">Carol pays Dan 4 XRP</span>
+      <span class="fp">Says the page before had <code data-role="prev3">...</code></span>
+    </li>
+  </ol>
+  <button type="button" class="reset" data-role="reset" hidden>Put it back</button>
+  <figcaption>The fingerprints here use SHA-512Half, the same method the XRP Ledger uses, on a much simpler page.</figcaption>
+</figure>

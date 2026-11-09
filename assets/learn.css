@@ -73,3 +73,36 @@ footer.site { border-top: 1px solid var(--border); padding: 28px 0 40px; color: 
 footer.site p { margin: 0 0 8px; }
 footer.site .links a { color: var(--muted); margin-right: 16px; display: inline-block; }
 footer.site .links a:hover { color: #fff; }
+
+/* Figures and hands-on widgets */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.fig, .widget { margin: 28px 0 32px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+figcaption { color: var(--muted); font-size: 0.85rem; margin-top: 12px; line-height: 1.5; }
+.fig svg { width: 100%; height: auto; display: block; }
+.fig .lbl { fill: #fff; font: 600 15px Inter, system-ui, sans-serif; }
+.fig .note { fill: var(--muted); font: 13px Inter, system-ui, sans-serif; }
+.fig .btc { fill: #f7931a; }
+.fig .xrpl rect { fill: var(--accent); }
+.widget-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: #fff; }
+.widget p { font-size: 0.95rem; }
+.chain { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
+.chain .page { position: relative; margin: 0; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--ink); display: grid; gap: 2px; font-size: 0.92rem; transition: border-color 0.2s ease; }
+.chain .page + .page::before { content: ""; position: absolute; left: 22px; top: -11px; width: 2px; height: 10px; background: var(--accent); }
+.chain .page-num { color: #fff; font-weight: 700; text-decoration: none; }
+a.page-num:hover { color: var(--accent); }
+.chain .newest { border-color: var(--accent); }
+.chain .tx { color: var(--text); }
+.chain .fp { color: var(--muted); font-size: 0.85rem; }
+.chain code { font-family: "JetBrains Mono", ui-monospace, monospace; color: var(--accent); font-size: 0.85rem; }
+.chain .prev code { color: #7dd3fc; }
+.live-status { color: var(--muted); font-size: 0.85rem; margin: 0; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); } 70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+.tamper input { width: 6.5em; background: var(--panel); color: #fff; border: 1px solid var(--accent); border-radius: 6px; padding: 2px 6px; font: inherit; }
+.tamper .check { color: #22c55e; font-size: 0.85rem; font-weight: 600; }
+.tamper .broken { border-color: #ef4444; }
+.tamper .broken .check { color: #ef4444; }
+.tamper .reset { margin-top: 12px; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.tamper .reset:hover { background: var(--accent); color: var(--ink); }
+.tamper .reset[hidden] { display: none; }
