@@ -24,8 +24,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=4" />
-  <script src="/assets/pages/learn.js?v=4" defer></script>
+  <link rel="stylesheet" href="/assets/learn.css?v=5" />
+  <script src="/assets/pages/learn.js?v=5" defer></script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -194,7 +194,7 @@
         <h2 id="who-keeps-the-notebook">Who keeps the notebook?</h2>
         <p>Anyone can run the software and keep a copy. Most of those computers (called servers) just follow along and pass new payments around.</p>
         <p>A smaller group, called validators, does the agreeing. They look at the payments waiting to go in, compare their lists with each other, and when enough of them match, the new page is locked in. The whole round takes a few seconds. Over the 20,000 pages before November 9, 2026, it averaged just over four seconds a page.</p>
-        <p>Lesson 2 covers how that agreement works, and why it doesn&#39;t need mining.</p>
+        <p><a href="/learn/xrp-ledger-consensus/" target="_blank" rel="noopener noreferrer">Lesson 2</a> covers how that agreement works, and why it doesn&#39;t need mining.</p>
         <h2 id="how-is-this-different-from-bitcoin">How is this different from Bitcoin?</h2>
         <p>Bitcoin and the XRP Ledger do the same basic job. Both keep a shared record that nobody can secretly rewrite. They just go about it differently.</p>
         <ul><li><strong>Speed.</strong> Bitcoin adds a new page (it calls them blocks) about once every ten minutes. The XRP Ledger adds one about every four seconds.</li><li><strong>How they agree.</strong> Bitcoin computers race each other to solve a math puzzle, which takes a lot of computing power. That race is called mining. XRP Ledger validators skip the race and compare notes instead.</li><li><strong>What&#39;s built in.</strong> On Bitcoin, the main thing you can do is send bitcoin. The XRP Ledger was built to hold more than one kind of money. It has its own currency, XRP, plus tokens like RLUSD (a stablecoin, meant to always be worth one US dollar), and a built-in marketplace for swapping between them. Later lessons cover each of these.</li></ul>
@@ -272,7 +272,7 @@
         <ul><li><strong>Ledger:</strong> a record book of payments and balances.</li><li><strong>Ledger version:</strong> one page of the XRP Ledger. A new one gets added every few seconds.</li><li><strong>Ledger index:</strong> the page number of a ledger version.</li><li><strong>Transaction:</strong> anything that changes the ledger, like a payment.</li><li><strong>Server:</strong> a computer running the XRP Ledger software and keeping a copy.</li><li><strong>Validator:</strong> a server that helps decide which transactions go on the next page.</li><li><strong>Consensus:</strong> the process validators use to agree on the next page.</li><li><strong>Blockchain:</strong> a chain of record pages, each one linked to the one before it.</li><li><strong>Stablecoin:</strong> a token built to hold a steady value, usually one US dollar.</li><li><strong>Mainnet and Testnet:</strong> the real network, and a practice network with fake money.</li></ul>
         <h2 id="sources">Sources</h2>
         <ul><li><a href="https://xrpl.org/docs/introduction/what-is-the-xrp-ledger" target="_blank" rel="noopener noreferrer">What is the XRP Ledger?</a>, xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/ledgers" target="_blank" rel="noopener noreferrer">Ledgers</a>, xrpl.org</li><li><a href="https://xrpl.org/docs/introduction/what-is-xrp" target="_blank" rel="noopener noreferrer">What is XRP?</a> (history and naming), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/consensus-protocol" target="_blank" rel="noopener noreferrer">Consensus Protocol</a>, xrpl.org</li><li><a href="https://developer.bitcoin.org/devguide/block_chain.html" target="_blank" rel="noopener noreferrer">Block chain guide</a> (2,016 blocks every two weeks, which works out to ten minutes a block), developer.bitcoin.org</li><li>Average page time: measured by us from the public ledger. The 20,000 ledgers ending at 108,226,016 averaged 4.03 seconds each.</li></ul>
-        <nav class="pager" aria-label="More lessons"><div class="next soon"><span>Next lesson, Sat, Nov 14</span>How the XRP Ledger agrees without mining</div></nav>
+        <nav class="pager" aria-label="More lessons"><a class="next" href="/learn/xrp-ledger-consensus/"><span>Next lesson</span>How the XRP Ledger agrees without mining</a></nav>
       </article>
       <nav class="toc" aria-label="On this page">
         <p>On this page</p>

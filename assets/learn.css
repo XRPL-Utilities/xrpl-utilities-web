@@ -184,6 +184,31 @@ a.page-num:hover { color: var(--accent); }
 .race .guess { fill: #f7931a; opacity: 0.75; font: 500 12px "JetBrains Mono", ui-monospace, monospace; }
 @keyframes dig { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
 @media (prefers-reduced-motion: reduce) { .race .mine { animation: none; } }
-.race .replay { margin-top: 12px; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
-.race .replay:hover:not(:disabled) { background: var(--accent); color: var(--ink); }
-.race .replay:disabled { opacity: 0.4; cursor: default; }
+.race .replay, .vote .replay { margin-top: 12px; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.race .replay:hover:not(:disabled), .vote .replay:hover:not(:disabled) { background: var(--accent); color: var(--ink); }
+.race .replay:disabled, .vote .replay:disabled { opacity: 0.4; cursor: default; }
+
+/* ---- validators voting a page in --------------------------------------------- */
+.vote svg { max-width: 22rem; margin: 10px auto 0; }
+.vote circle { fill: #2a2a2a; stroke: #3a3a3a; stroke-width: 1; transition: fill 0.2s ease; }
+.vote circle.yes { fill: #22c55e; stroke: #22c55e; }
+.vote circle.bad { fill: #ef4444; stroke: #ef4444; }
+.vote-slider { display: block; font-size: 0.95rem; margin-top: 4px; }
+.vote input[type="range"] { width: 100%; accent-color: var(--accent); margin: 6px 0 0; }
+.vote-meter { position: relative; height: 10px; background: #222; border-radius: 5px; margin: 14px 0 10px; }
+.vote-meter span { display: block; height: 100%; width: 0; background: #22c55e; border-radius: 5px; transition: width 0.1s linear; }
+.vote-meter.red span { background: #ef4444; }
+.vote-meter i { position: absolute; left: 80%; top: -4px; bottom: -4px; width: 2px; background: #fff; }
+.vote-status { font-weight: 600; min-height: 3em; margin: 0; }
+.vote-status.ok { color: #22c55e; }
+.vote-status.stuck { color: #fbbf24; }
+.vote-status.bad { color: #ef4444; }
+
+/* ---- hero: validators around the next page ---------------------------------- */
+.hero-vote .v { fill: #2a2a2a; stroke: #3a3a3a; stroke-width: 1; animation: agree 6s ease-out infinite; }
+.hero-vote .off-v { fill: none; stroke: #4a4a4a; stroke-width: 1.5; stroke-dasharray: 2 3; }
+.hero-vote .halo { animation: locked 6s ease-out infinite; }
+.hero-vote .lock { opacity: 0; animation: locked 6s ease-out infinite; font-weight: 700; }
+@keyframes agree { 0% { fill: #2a2a2a; stroke: #3a3a3a; } 4% { fill: #22c55e; stroke: #22c55e; } 70% { fill: #22c55e; stroke: #22c55e; } 80% { fill: #2a2a2a; stroke: #3a3a3a; } 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+@keyframes locked { 0%, 26% { opacity: 0; } 30% { opacity: 1; } 74% { opacity: 1; } 82%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-vote .halo { animation: none; } .hero-vote .v { animation: none; fill: #22c55e; stroke: #22c55e; } .hero-vote .lock { animation: none; opacity: 1; } }

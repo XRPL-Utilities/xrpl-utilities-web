@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <title>How the XRP Ledger Agrees Without Mining, in Plain English</title>
+  <meta name="description" content="No mining, no race. Here&#39;s how XRP Ledger validators compare notes and lock in a new page every few seconds, explained for anyone who has heard of Bitcoin." />
+  <meta property="og:title" content="How the XRP Ledger Agrees Without Mining, in Plain English" />
+  <meta property="og:description" content="No mining, no race. Here&#39;s how XRP Ledger validators compare notes and lock in a new page every few seconds, explained for anyone who has heard of Bitcoin." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/img/learn/xrp-ledger-consensus.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/learn/xrp-ledger-consensus/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="XRPL-Utilities" />
+  <meta property="article:published_time" content="2026-11-14" />
+  <meta property="article:modified_time" content="2026-11-14" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@XRPL_Utilities" />
+  <meta name="twitter:title" content="How the XRP Ledger Agrees Without Mining, in Plain English" />
+  <meta name="twitter:description" content="No mining, no race. Here&#39;s how XRP Ledger validators compare notes and lock in a new page every few seconds, explained for anyone who has heard of Bitcoin." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/img/learn/xrp-ledger-consensus.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/learn/xrp-ledger-consensus/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/learn.css?v=5" />
+  <script src="/assets/pages/learn.js?v=5" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://xrpl-utilities.com/#org",
+      "name": "XRPL-Utilities",
+      "url": "https://xrpl-utilities.com/"
+    },
+    {
+      "@type": "Article",
+      "@id": "https://xrpl-utilities.com/learn/xrp-ledger-consensus/#article",
+      "headline": "How the XRP Ledger agrees without mining",
+      "description": "No mining, no race. Here's how XRP Ledger validators compare notes and lock in a new page every few seconds, explained for anyone who has heard of Bitcoin.",
+      "url": "https://xrpl-utilities.com/learn/xrp-ledger-consensus/",
+      "mainEntityOfPage": "https://xrpl-utilities.com/learn/xrp-ledger-consensus/",
+      "datePublished": "2026-11-14",
+      "dateModified": "2026-11-14",
+      "inLanguage": "en",
+      "author": {
+        "@id": "https://xrpl-utilities.com/#org"
+      },
+      "publisher": {
+        "@id": "https://xrpl-utilities.com/#org"
+      },
+      "image": "https://xrpl-utilities.com/assets/img/learn/xrp-ledger-consensus.png",
+      "isPartOf": {
+        "@type": "Course",
+        "name": "Learn the XRP Ledger",
+        "url": "https://xrpl-utilities.com/learn/"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Learn",
+          "item": "https://xrpl-utilities.com/learn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "How the XRP Ledger agrees without mining",
+          "item": "https://xrpl-utilities.com/learn/xrp-ledger-consensus/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://xrpl-utilities.com/learn/xrp-ledger-consensus/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Do validators get paid?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not by the ledger. No new XRP is created, and transaction fees are destroyed rather than handed out. The people and groups who run validators usually do it because they rely on the network working."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this the same as proof of stake?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Proof of stake gives a bigger say to whoever locks up more coins. On the XRP Ledger, owning more XRP doesn't get you a bigger vote."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Ripple control the validators?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Ripple publishes one of the two recommended lists, and the XRP Ledger Foundation publishes the other. Each validator is run by its own operator, and any server can pick its own list."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens if the validators can't agree?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The network pauses and adds nothing until they can. It's built to stop rather than write down something wrong."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why 80%?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It's high enough that a few broken or dishonest validators can't push a bad page through. It's also low enough that the network keeps going when a few of them go offline."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip">Skip to content</a>
+  <header class="site">
+    <div class="wide bar">
+      <a href="/learn/" class="brand">
+        <img src="/assets/img/logo-mark-128.webp" width="32" height="32" loading="eager" decoding="async" alt="" />
+        <span>XRPL-Utilities <em>Learn</em></span>
+      </a>
+      <nav aria-label="Lessons"><a href="/learn/">All lessons</a></nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="hero">
+      <div class="wide hero-grid">
+        <div class="hero-text">
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 2</nav>
+          <p class="kicker">Lesson 2 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
+          <h1>How the XRP Ledger agrees without mining</h1>
+          <p class="meta">Updated <time datetime="2026-11-14">November 14, 2026</time> <span aria-hidden="true">&middot;</span> 7 minute read</p>
+          <div class="short"><strong>The short answer:</strong> The XRP Ledger doesn&#39;t use mining. Trusted computers called validators compare their lists of new payments, and once at least 80% of them agree, the next page is locked in. It takes a few seconds, with no race to burn computing power.</div>
+        </div>
+        <div class="hero-art">
+          <figure class="hero-chain hero-vote">
+            <svg viewBox="0 0 520 300" role="img" aria-label="Thirty-five validators in a circle around a new ledger page. As they agree one by one, the page locks in once 28 of them match.">
+              <defs>
+                <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <circle cx="260.0" cy="32.0" r="7" class="v" style="animation-delay:0.00s"/><circle cx="281.1" cy="33.9" r="7" class="v" style="animation-delay:0.06s"/><circle cx="301.5" cy="39.5" r="7" class="v" style="animation-delay:0.12s"/><circle cx="320.5" cy="48.7" r="7" class="v" style="animation-delay:0.18s"/><circle cx="337.6" cy="61.1" r="7" class="v" style="animation-delay:0.24s"/><circle cx="352.3" cy="76.4" r="7" class="off-v"/><circle cx="363.9" cy="94.1" r="7" class="v" style="animation-delay:0.30s"/><circle cx="372.2" cy="113.5" r="7" class="v" style="animation-delay:0.36s"/><circle cx="376.9" cy="134.2" r="7" class="v" style="animation-delay:0.42s"/><circle cx="377.9" cy="155.3" r="7" class="v" style="animation-delay:0.48s"/><circle cx="375.0" cy="176.3" r="7" class="v" style="animation-delay:0.54s"/><circle cx="368.5" cy="196.4" r="7" class="v" style="animation-delay:0.60s"/><circle cx="358.5" cy="215.0" r="7" class="v" style="animation-delay:0.66s"/><circle cx="345.3" cy="231.5" r="7" class="off-v"/><circle cx="329.4" cy="245.5" r="7" class="v" style="animation-delay:0.72s"/><circle cx="311.2" cy="256.3" r="7" class="v" style="animation-delay:0.78s"/><circle cx="291.4" cy="263.7" r="7" class="v" style="animation-delay:0.84s"/><circle cx="270.6" cy="267.5" r="7" class="v" style="animation-delay:0.90s"/><circle cx="249.4" cy="267.5" r="7" class="v" style="animation-delay:0.96s"/><circle cx="228.6" cy="263.7" r="7" class="v" style="animation-delay:1.02s"/><circle cx="208.8" cy="256.3" r="7" class="v" style="animation-delay:1.08s"/><circle cx="190.6" cy="245.5" r="7" class="v" style="animation-delay:1.14s"/><circle cx="174.7" cy="231.5" r="7" class="off-v"/><circle cx="161.5" cy="215.0" r="7" class="v" style="animation-delay:1.20s"/><circle cx="151.5" cy="196.4" r="7" class="v" style="animation-delay:1.26s"/><circle cx="145.0" cy="176.3" r="7" class="v" style="animation-delay:1.32s"/><circle cx="142.1" cy="155.3" r="7" class="v" style="animation-delay:1.38s"/><circle cx="143.1" cy="134.2" r="7" class="v" style="animation-delay:1.44s"/><circle cx="147.8" cy="113.5" r="7" class="v" style="animation-delay:1.50s"/><circle cx="156.1" cy="94.1" r="7" class="v" style="animation-delay:1.56s"/><circle cx="167.7" cy="76.4" r="7" class="off-v"/><circle cx="182.4" cy="61.1" r="7" class="v" style="animation-delay:1.62s"/><circle cx="199.5" cy="48.7" r="7" class="v" style="animation-delay:1.68s"/><circle cx="218.5" cy="39.5" r="7" class="v" style="animation-delay:1.74s"/><circle cx="238.9" cy="33.9" r="7" class="v" style="animation-delay:1.80s"/>
+              <g class="pg new">
+                <rect x="212" y="88" width="96" height="124" rx="12" class="card"/>
+                <rect x="212" y="88" width="96" height="124" rx="12" class="halo"/>
+                <text x="226" y="112" class="hd">NEXT PAGE</text>
+                <rect x="226" y="126" width="68" height="6" rx="3" class="ln"/><rect x="226" y="142" width="52" height="6" rx="3" class="ln"/><rect x="226" y="158" width="68" height="6" rx="3" class="ln"/>
+                <text x="226" y="196" class="fp lock">LOCKED IN</text>
+              </g>
+            </svg>
+            <figcaption>The next page locks in once 28 of the 35 validators agree. A few can be offline and it still works.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <div class="wide body-grid">
+      <article class="lesson">
+        <h2 id="the-problem-every-shared-ledger-has-to-solve">The problem every shared ledger has to solve</h2>
+        <p>In Lesson 1 we pictured the XRP Ledger as a notebook, with an exact copy on computers all over the world. That raises a hard question. Who decides what goes on the next page?</p>
+        <p>Payments don&#39;t reach every computer at the same moment. Some arrive in a different order, and some arrive late.</p>
+        <p>Here&#39;s why that matters. Say Alice has 10 XRP. At the same moment, she sends 10 XRP to Bob and 10 XRP to Carol. Only one of those payments can go through. If half the computers pick Bob and half pick Carol, the copies stop matching and the notebook is useless.</p>
+        <p>Computer scientists call this the double-spend problem. A bank solves it easily, because the bank is the boss and its computer decides. A shared ledger has no boss, so it needs a set of rules that everyone follows. Those rules are called a consensus protocol.</p>
+        <h2 id="how-bitcoin-solves-it-a-race">How Bitcoin solves it: a race</h2>
+        <p>Bitcoin settles it with a race called mining. Computers called miners make guess after guess, looking for a number that fits a math puzzle. Almost every guess is wrong.</p>
+        <p>The first miner to find one that fits gets to write the next block. They&#39;re paid for it in new bitcoin plus the fees on the payments inside. On average a winner turns up about every ten minutes.</p>
+        <p>It works, but it&#39;s built on a race that takes a lot of computing power. To cheat, you&#39;d need more computing power than everyone else put together. That&#39;s known as a 51% attack.</p>
+        <h2 id="how-the-xrp-ledger-solves-it-compare-notes">How the XRP Ledger solves it: compare notes</h2>
+        <p>The XRP Ledger skips the race. A group of servers called validators compare notes instead.</p>
+        <p>Every server keeps a list of validators it trusts not to gang up and cheat together. That list is called its Unique Node List, or UNL for short. Most servers use a recommended list. There are two of them, one from the XRP Ledger Foundation and one from Ripple. On November 9, 2026, both lists named the same 35 validators.</p>
+        <p>Every few seconds, the validators go through the same steps:</p>
+        <ol><li><strong>Collect.</strong> Each validator gathers the payments it has heard about that aren&#39;t on a page yet.</li><li><strong>Propose.</strong> It shares that list with the others. This is called a proposal.</li><li><strong>Adjust.</strong> It looks at the other proposals and drops anything most validators haven&#39;t seen. Dropped payments aren&#39;t lost. They just wait for the next page.</li><li><strong>Repeat.</strong> The validators go back and forth a few times. With each round, the bar for agreement goes up, from 50% to a final 80%.</li><li><strong>Lock it in.</strong> Each validator applies the agreed payments in the same order and shares a signed copy of the result. When at least 80% of the trusted validators end up with matching results, the page is final.</li></ol>
+        <p>With 35 validators on the list, that means 28 of them have to match. Nobody wins anything, and no new XRP gets made. Every XRP that will ever exist was created when the ledger started.</p>
+        <figure class="widget vote" data-widget="vote">
+        <div class="widget-head"><strong>Try it: knock out some validators</strong></div>
+        <p>Here are 35 validators, the same number as on the recommended list today. A page locks in once 28 of them agree. Take some offline, or make them cheat, then close a page.</p>
+        <label class="vote-slider" for="vote-bad">Validators offline or cheating: <strong data-role="bad-count">0</strong></label>
+        <input id="vote-bad" type="range" min="0" max="35" step="1" value="0" />
+        <svg viewBox="0 0 312 222" role="img" aria-label="Thirty-five validators in a grid. Green ones agree on the page, red ones are offline or cheating." data-role="grid">
+          <circle cx="24" cy="22" r="15" /><circle cx="68" cy="22" r="15" /><circle cx="112" cy="22" r="15" /><circle cx="156" cy="22" r="15" /><circle cx="200" cy="22" r="15" /><circle cx="244" cy="22" r="15" /><circle cx="288" cy="22" r="15" /><circle cx="24" cy="66" r="15" /><circle cx="68" cy="66" r="15" /><circle cx="112" cy="66" r="15" /><circle cx="156" cy="66" r="15" /><circle cx="200" cy="66" r="15" /><circle cx="244" cy="66" r="15" /><circle cx="288" cy="66" r="15" /><circle cx="24" cy="110" r="15" /><circle cx="68" cy="110" r="15" /><circle cx="112" cy="110" r="15" /><circle cx="156" cy="110" r="15" /><circle cx="200" cy="110" r="15" /><circle cx="244" cy="110" r="15" /><circle cx="288" cy="110" r="15" /><circle cx="24" cy="154" r="15" /><circle cx="68" cy="154" r="15" /><circle cx="112" cy="154" r="15" /><circle cx="156" cy="154" r="15" /><circle cx="200" cy="154" r="15" /><circle cx="244" cy="154" r="15" /><circle cx="288" cy="154" r="15" /><circle cx="24" cy="198" r="15" /><circle cx="68" cy="198" r="15" /><circle cx="112" cy="198" r="15" /><circle cx="156" cy="198" r="15" /><circle cx="200" cy="198" r="15" /><circle cx="244" cy="198" r="15" /><circle cx="288" cy="198" r="15" />
+        </svg>
+        <div class="vote-meter" aria-hidden="true"><span data-role="bar"></span><i></i></div>
+        <p class="vote-status" data-role="status" aria-live="polite">With every validator working, all 35 agree and the page locks in.</p>
+        <button type="button" class="replay" data-role="go">Close a page</button>
+        <figcaption>The white mark on the bar is 28 out of 35, which is 80%. These are the same rules the real network follows, from xrpl.org.</figcaption>
+      </figure>
+        <h2 id="what-if-some-validators-go-bad">What if some validators go bad?</h2>
+        <p>The rules are built for that. A validator could crash, lose its internet connection, or be run by someone dishonest.</p>
+        <ul><li><strong>Fewer than 20% go bad.</strong> On a list of 35, that&#39;s up to 7. The rest still reach 80%, so pages keep getting locked in like nothing happened.</li><li><strong>Between 20% and 80% go bad.</strong> The honest ones can&#39;t reach 80% on their own. So the network pauses instead of guessing. It doesn&#39;t add a wrong page, and it picks back up once enough validators return.</li><li><strong>More than 80% team up.</strong> Only then could a bad page get through. That&#39;s why the recommended lists are spread across different owners in different countries.</li></ul>
+        <p>There&#39;s no 51% attack either, because there&#39;s no mining to take over.</p>
+        <h2 id="trusted-doesn-t-mean-in-charge">Trusted doesn&#39;t mean in charge</h2>
+        <p>Anyone can run a validator. It only counts for the servers that choose to put it on their list.</p>
+        <p>Validators also can&#39;t move your money. Every payment has to be signed by the account sending it, and every server checks that signature for itself. A payment without a proper signature never goes in, even if every validator wanted it to.</p>
+        <p>What validators do is agree on which signed payments go on the next page, and in what order. That&#39;s the whole job.</p>
+        <h2 id="see-it-for-yourself">See it for yourself</h2>
+        <p>Here are the newest pages of the ledger. Each one was locked in by the validators the same way you just saw.</p>
+        <figure class="widget live" data-widget="live-chain">
+        <div class="widget-head">
+          <span class="dot" aria-hidden="true"></span>
+          <strong>The XRP Ledger right now</strong>
+        </div>
+        <p class="live-status" data-role="status" aria-live="polite">Loading the latest pages...</p>
+        <ol class="chain" data-role="chain"></ol>
+        <figcaption>These are real pages, pulled live from the public ledger. See how each page lists the fingerprint of the one before it? That link is the "chain" in blockchain.</figcaption>
+      </figure>
+        <p>You can also watch the validators themselves. Open <a href="https://livenet.xrpl.org/network/validators" target="_blank" rel="noopener noreferrer">the validator list on livenet.xrpl.org</a> to see who they are and whether each one agreed on the latest page.</p>
+        <h2 id="common-questions">Common questions</h2>
+        <details class="faq" open><summary><h3>Do validators get paid?</h3><span class="plus" aria-hidden="true"></span></summary><p>Not by the ledger. No new XRP is created, and transaction fees are destroyed rather than handed out. The people and groups who run validators usually do it because they rely on the network working.</p></details>
+        <details class="faq"><summary><h3>Is this the same as proof of stake?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Proof of stake gives a bigger say to whoever locks up more coins. On the XRP Ledger, owning more XRP doesn&#39;t get you a bigger vote.</p></details>
+        <details class="faq"><summary><h3>Does Ripple control the validators?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Ripple publishes one of the two recommended lists, and the XRP Ledger Foundation publishes the other. Each validator is run by its own operator, and any server can pick its own list.</p></details>
+        <details class="faq"><summary><h3>What happens if the validators can&#39;t agree?</h3><span class="plus" aria-hidden="true"></span></summary><p>The network pauses and adds nothing until they can. It&#39;s built to stop rather than write down something wrong.</p></details>
+        <details class="faq"><summary><h3>Why 80%?</h3><span class="plus" aria-hidden="true"></span></summary><p>It&#39;s high enough that a few broken or dishonest validators can&#39;t push a bad page through. It&#39;s also low enough that the network keeps going when a few of them go offline.</p></details>
+        <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
+        <ul><li><strong>Double spend:</strong> trying to spend the same money twice.</li><li><strong>Consensus protocol:</strong> the rules a shared ledger follows so every copy agrees.</li><li><strong>Mining:</strong> Bitcoin&#39;s way of agreeing, a guessing race to write the next block.</li><li><strong>Validator:</strong> a server that helps decide which payments go on the next page.</li><li><strong>Unique Node List (UNL):</strong> the list of validators a server trusts.</li><li><strong>Recommended list:</strong> a ready-made UNL that most servers use.</li><li><strong>Proposal:</strong> a validator&#39;s list of payments it thinks should go on the next page.</li><li><strong>Validation:</strong> a validator&#39;s signed copy of the finished page.</li><li><strong>Supermajority:</strong> at least 80% of the trusted validators.</li></ul>
+        <h2 id="sources">Sources</h2>
+        <ul><li><a href="https://xrpl.org/docs/concepts/consensus-protocol" target="_blank" rel="noopener noreferrer">Consensus Protocol</a>, xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/consensus-protocol/consensus-structure" target="_blank" rel="noopener noreferrer">Consensus Structure</a> (rounds from 50% to 80%), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/consensus-protocol/consensus-principles-and-rules" target="_blank" rel="noopener noreferrer">Consensus Principles and Rules</a> (double spends, signatures), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/consensus-protocol/unl" target="_blank" rel="noopener noreferrer">Unique Node List</a> (the two recommended lists), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/consensus-protocol/consensus-protections" target="_blank" rel="noopener noreferrer">Consensus Protections Against Attacks and Failure Modes</a> (no 51% attack), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/transactions/transaction-cost" target="_blank" rel="noopener noreferrer">Transaction Cost</a> (fees are destroyed), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens" target="_blank" rel="noopener noreferrer">Tokens</a> (all XRP was created with the ledger), xrpl.org</li><li><a href="https://developer.bitcoin.org/devguide/mining.html" target="_blank" rel="noopener noreferrer">Mining</a> (block reward and fees go to the miner), developer.bitcoin.org</li><li>Validator count: checked by us on November 9, 2026, from the two recommended lists at vl.xrplf.org and vl.ripple.com. Both listed the same 35 validators.</li></ul>
+        <nav class="pager" aria-label="More lessons"><a class="prev" href="/learn/what-is-the-xrp-ledger/"><span>Previous lesson</span>What is the XRP Ledger?</a><div class="next soon"><span>Next lesson, Tue, Nov 17</span>What XRP is actually for</div></nav>
+      </article>
+      <nav class="toc" aria-label="On this page">
+        <p>On this page</p>
+        <ol><li><a href="#the-problem-every-shared-ledger-has-to-solve">The problem every shared ledger has to solve</a></li><li><a href="#how-bitcoin-solves-it-a-race">How Bitcoin solves it: a race</a></li><li><a href="#how-the-xrp-ledger-solves-it-compare-notes">How the XRP Ledger solves it: compare notes</a></li><li><a href="#what-if-some-validators-go-bad">What if some validators go bad?</a></li><li><a href="#trusted-doesn-t-mean-in-charge">Trusted doesn&#39;t mean in charge</a></li><li><a href="#see-it-for-yourself">See it for yourself</a></li><li><a href="#common-questions">Common questions</a></li><li><a href="#words-used-in-this-lesson">Words used in this lesson</a></li><li><a href="#sources">Sources</a></li></ol>
+      </nav>
+    </div>
+  </main>
+  <footer class="site">
+    <div class="wide">
+      <p>Written by XRPL-Utilities for XRP Ledger Education Month. #XRPEducationMonth</p>
+      <p>For learning only. This is not financial advice, and nothing here is a reason to buy anything.</p>
+      <p class="links"><a href="/learn/">All lessons</a> <a href="/contact/">Contact</a> <a href="/privacy/">Privacy</a> <a href="/terms/">Terms</a> <a href="/status/">Site status</a></p>
+    </div>
+  </footer>
+</body>
+</html>
