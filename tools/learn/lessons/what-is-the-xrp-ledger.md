@@ -31,6 +31,8 @@ Bitcoin and the XRP Ledger do the same basic job. Both keep a shared record that
 
 ::: race
 
+::: speed
+
 ## What actually goes in it?
 
 Each page of the XRP Ledger (each "ledger version") holds three things:
