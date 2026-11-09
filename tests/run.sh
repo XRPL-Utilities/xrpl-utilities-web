@@ -62,6 +62,7 @@ node tests/review_round2_test.mjs
 node tests/whales_test.mjs
 node tests/build_render_test.mjs
 node tests/mobile_nav_test.mjs
+node tests/learn_test.mjs
 python3 tests/build_page_test.py
 node --check assets/sha3-512.js
 node --check assets/pages/verify.js
