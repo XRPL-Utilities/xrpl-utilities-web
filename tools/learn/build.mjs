@@ -2,7 +2,8 @@
 //
 // Each lesson is written in a small markdown subset (## headings, paragraphs,
 // "- " and "1. " lists, **bold**, [text](url) links, and "?? question" lines
-// for the common-questions section). Keeping the copy in one plain file per
+// for the common-questions section, and "::: name" to drop in a figure or
+// hands-on widget from tools/learn/widgets/name.html). Keeping the copy in one plain file per
 // lesson means the words can be reviewed on their own, and every page gets
 // the same head, structured data and layout.
 //
@@ -71,6 +72,7 @@ export function parseLesson(src) {
   const blocks = body.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
   const html = [];
   const faq = [];
+  let scripted = false;
   let words = meta.short.split(/\s+/).length;
   for (const b of blocks) {
     words += plain(b).split(/\s+/).length;
@@ -78,6 +80,15 @@ export function parseLesson(src) {
       const title = b.slice(3).trim();
       const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       html.push(`<h2 id="${id}">${inline(title)}</h2>`);
+    } else if (b.startsWith('::: ')) {
+      const name = b.slice(4).trim();
+      if (!/^[a-z0-9-]+$/.test(name)) throw new Error(`bad widget name: ${name}`);
+      const file = path.join(here, 'widgets', `${name}.html`);
+      if (!fs.existsSync(file)) throw new Error(`no widget ${name} in tools/learn/widgets`);
+      const w = fs.readFileSync(file, 'utf8').trim();
+      if (/data-widget=/.test(w)) scripted = true;
+      words += plain(w.replace(/<[^>]+>/g, ' ')).split(/\s+/).length;
+      html.push(w.replace(/\n/g, '\n      '));
     } else if (b.startsWith('?? ')) {
       const [q, ...a] = b.slice(3).split('\n');
       const answer = a.join(' ').trim();
@@ -94,7 +105,7 @@ export function parseLesson(src) {
       html.push(`<p>${inline(b.replace(/\n/g, ' '))}</p>`);
     }
   }
-  return { meta, html, faq, minutes: Math.max(1, Math.round(words / 200)) };
+  return { meta, html, faq, scripted, minutes: Math.max(1, Math.round(words / 200)) };
 }
 
 const longDate = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -103,7 +114,7 @@ const fullDate = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US
 // JSON inside <script> must not be able to close the tag.
 const ld = (obj) => JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
 
-function head({ title, description, url, type, published, modified, graph }) {
+function head({ title, description, url, type, published, modified, graph, scripted }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +141,7 @@ function head({ title, description, url, type, published, modified, graph }) {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=1" />
+  <link rel="stylesheet" href="/assets/learn.css?v=2" />${scripted ? '\n  <script src="/assets/pages/learn.js?v=2" defer></script>' : ''}
   <script type="application/ld+json">
 ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   </script>
@@ -168,7 +179,7 @@ const crumbs = (items) => ({
 
 function lessonPage(entry, lesson) {
   const url = `${SITE}/learn/${entry.slug}/`;
-  const { meta, html, faq, minutes } = lesson;
+  const { meta, html, faq, minutes, scripted } = lesson;
   const total = manifest.lessons.length;
   const prev = manifest.lessons.find((l) => l.n === entry.n - 1);
   const next = manifest.lessons.find((l) => l.n === entry.n + 1);
@@ -205,7 +216,7 @@ function lessonPage(entry, lesson) {
       mainEntity: faq.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
     });
   }
-  return head({ title: meta.title, description: meta.description, url, type: 'article', published: entry.date, modified: meta.updated, graph })
+  return head({ title: meta.title, description: meta.description, url, type: 'article', published: entry.date, modified: meta.updated, graph, scripted })
     + `  <main id="main">
     <article class="wrap lesson">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson ${entry.n}</nav>

@@ -24,7 +24,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=1" />
+  <link rel="stylesheet" href="/assets/learn.css?v=2" />
+  <script src="/assets/pages/learn.js?v=2" defer></script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -141,7 +142,7 @@
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 1</nav>
       <p class="kicker">Lesson 1 of 8</p>
       <h1>What is the XRP Ledger?</h1>
-      <p class="meta">Updated <time datetime="2026-11-10">November 10, 2026</time> <span aria-hidden="true">&middot;</span> 5 minute read</p>
+      <p class="meta">Updated <time datetime="2026-11-10">November 10, 2026</time> <span aria-hidden="true">&middot;</span> 6 minute read</p>
       <div class="short"><strong>The short answer:</strong> The XRP Ledger is a shared record of payments and balances that computers all over the world keep identical copies of. A new page gets added about every four seconds, and no single company owns it.</div>
       <h2 id="start-with-a-notebook">Start with a notebook</h2>
       <p>Picture a notebook where every payment gets written down. Who paid whom, how much, and when.</p>
@@ -154,17 +155,63 @@
       <h2 id="how-is-this-different-from-bitcoin">How is this different from Bitcoin?</h2>
       <p>Bitcoin and the XRP Ledger do the same basic job. Both keep a shared record that nobody can secretly rewrite. They just go about it differently.</p>
       <ul><li><strong>Speed.</strong> Bitcoin adds a new page (it calls them blocks) about once every ten minutes. The XRP Ledger adds one about every four seconds.</li><li><strong>How they agree.</strong> Bitcoin computers race each other to solve a math puzzle, which takes a lot of computing power. That race is called mining. XRP Ledger validators skip the race and compare notes instead.</li><li><strong>What&#39;s built in.</strong> On Bitcoin, the main thing you can do is send bitcoin. The XRP Ledger was built to hold more than one kind of money. It has its own currency, XRP, plus tokens for things like dollars, and a built-in marketplace for swapping between them. Later lessons cover each of these.</li></ul>
+      <figure class="fig speed">
+        <svg viewBox="0 0 640 230" role="img" aria-label="In ten minutes, Bitcoin adds about one block while the XRP Ledger adds about 150 pages.">
+          <text x="0" y="18" class="lbl">Bitcoin</text>
+          <rect x="0" y="34" width="14" height="14" rx="3" class="btc" />
+          <text x="26" y="46" class="note">about 1 block</text>
+          <text x="0" y="96" class="lbl">XRP Ledger</text>
+          <g transform="translate(0,110)" class="xrpl">
+            <rect x="0" y="0" width="14" height="14" rx="3" /><rect x="18" y="0" width="14" height="14" rx="3" /><rect x="36" y="0" width="14" height="14" rx="3" /><rect x="54" y="0" width="14" height="14" rx="3" /><rect x="72" y="0" width="14" height="14" rx="3" /><rect x="90" y="0" width="14" height="14" rx="3" /><rect x="108" y="0" width="14" height="14" rx="3" /><rect x="126" y="0" width="14" height="14" rx="3" /><rect x="144" y="0" width="14" height="14" rx="3" /><rect x="162" y="0" width="14" height="14" rx="3" /><rect x="180" y="0" width="14" height="14" rx="3" /><rect x="198" y="0" width="14" height="14" rx="3" /><rect x="216" y="0" width="14" height="14" rx="3" /><rect x="234" y="0" width="14" height="14" rx="3" /><rect x="252" y="0" width="14" height="14" rx="3" /><rect x="270" y="0" width="14" height="14" rx="3" /><rect x="288" y="0" width="14" height="14" rx="3" /><rect x="306" y="0" width="14" height="14" rx="3" /><rect x="324" y="0" width="14" height="14" rx="3" /><rect x="342" y="0" width="14" height="14" rx="3" /><rect x="360" y="0" width="14" height="14" rx="3" /><rect x="378" y="0" width="14" height="14" rx="3" /><rect x="396" y="0" width="14" height="14" rx="3" /><rect x="414" y="0" width="14" height="14" rx="3" /><rect x="432" y="0" width="14" height="14" rx="3" /><rect x="0" y="18" width="14" height="14" rx="3" /><rect x="18" y="18" width="14" height="14" rx="3" /><rect x="36" y="18" width="14" height="14" rx="3" /><rect x="54" y="18" width="14" height="14" rx="3" /><rect x="72" y="18" width="14" height="14" rx="3" /><rect x="90" y="18" width="14" height="14" rx="3" /><rect x="108" y="18" width="14" height="14" rx="3" /><rect x="126" y="18" width="14" height="14" rx="3" /><rect x="144" y="18" width="14" height="14" rx="3" /><rect x="162" y="18" width="14" height="14" rx="3" /><rect x="180" y="18" width="14" height="14" rx="3" /><rect x="198" y="18" width="14" height="14" rx="3" /><rect x="216" y="18" width="14" height="14" rx="3" /><rect x="234" y="18" width="14" height="14" rx="3" /><rect x="252" y="18" width="14" height="14" rx="3" /><rect x="270" y="18" width="14" height="14" rx="3" /><rect x="288" y="18" width="14" height="14" rx="3" /><rect x="306" y="18" width="14" height="14" rx="3" /><rect x="324" y="18" width="14" height="14" rx="3" /><rect x="342" y="18" width="14" height="14" rx="3" /><rect x="360" y="18" width="14" height="14" rx="3" /><rect x="378" y="18" width="14" height="14" rx="3" /><rect x="396" y="18" width="14" height="14" rx="3" /><rect x="414" y="18" width="14" height="14" rx="3" /><rect x="432" y="18" width="14" height="14" rx="3" /><rect x="0" y="36" width="14" height="14" rx="3" /><rect x="18" y="36" width="14" height="14" rx="3" /><rect x="36" y="36" width="14" height="14" rx="3" /><rect x="54" y="36" width="14" height="14" rx="3" /><rect x="72" y="36" width="14" height="14" rx="3" /><rect x="90" y="36" width="14" height="14" rx="3" /><rect x="108" y="36" width="14" height="14" rx="3" /><rect x="126" y="36" width="14" height="14" rx="3" /><rect x="144" y="36" width="14" height="14" rx="3" /><rect x="162" y="36" width="14" height="14" rx="3" /><rect x="180" y="36" width="14" height="14" rx="3" /><rect x="198" y="36" width="14" height="14" rx="3" /><rect x="216" y="36" width="14" height="14" rx="3" /><rect x="234" y="36" width="14" height="14" rx="3" /><rect x="252" y="36" width="14" height="14" rx="3" /><rect x="270" y="36" width="14" height="14" rx="3" /><rect x="288" y="36" width="14" height="14" rx="3" /><rect x="306" y="36" width="14" height="14" rx="3" /><rect x="324" y="36" width="14" height="14" rx="3" /><rect x="342" y="36" width="14" height="14" rx="3" /><rect x="360" y="36" width="14" height="14" rx="3" /><rect x="378" y="36" width="14" height="14" rx="3" /><rect x="396" y="36" width="14" height="14" rx="3" /><rect x="414" y="36" width="14" height="14" rx="3" /><rect x="432" y="36" width="14" height="14" rx="3" /><rect x="0" y="54" width="14" height="14" rx="3" /><rect x="18" y="54" width="14" height="14" rx="3" /><rect x="36" y="54" width="14" height="14" rx="3" /><rect x="54" y="54" width="14" height="14" rx="3" /><rect x="72" y="54" width="14" height="14" rx="3" /><rect x="90" y="54" width="14" height="14" rx="3" /><rect x="108" y="54" width="14" height="14" rx="3" /><rect x="126" y="54" width="14" height="14" rx="3" /><rect x="144" y="54" width="14" height="14" rx="3" /><rect x="162" y="54" width="14" height="14" rx="3" /><rect x="180" y="54" width="14" height="14" rx="3" /><rect x="198" y="54" width="14" height="14" rx="3" /><rect x="216" y="54" width="14" height="14" rx="3" /><rect x="234" y="54" width="14" height="14" rx="3" /><rect x="252" y="54" width="14" height="14" rx="3" /><rect x="270" y="54" width="14" height="14" rx="3" /><rect x="288" y="54" width="14" height="14" rx="3" /><rect x="306" y="54" width="14" height="14" rx="3" /><rect x="324" y="54" width="14" height="14" rx="3" /><rect x="342" y="54" width="14" height="14" rx="3" /><rect x="360" y="54" width="14" height="14" rx="3" /><rect x="378" y="54" width="14" height="14" rx="3" /><rect x="396" y="54" width="14" height="14" rx="3" /><rect x="414" y="54" width="14" height="14" rx="3" /><rect x="432" y="54" width="14" height="14" rx="3" /><rect x="0" y="72" width="14" height="14" rx="3" /><rect x="18" y="72" width="14" height="14" rx="3" /><rect x="36" y="72" width="14" height="14" rx="3" /><rect x="54" y="72" width="14" height="14" rx="3" /><rect x="72" y="72" width="14" height="14" rx="3" /><rect x="90" y="72" width="14" height="14" rx="3" /><rect x="108" y="72" width="14" height="14" rx="3" /><rect x="126" y="72" width="14" height="14" rx="3" /><rect x="144" y="72" width="14" height="14" rx="3" /><rect x="162" y="72" width="14" height="14" rx="3" /><rect x="180" y="72" width="14" height="14" rx="3" /><rect x="198" y="72" width="14" height="14" rx="3" /><rect x="216" y="72" width="14" height="14" rx="3" /><rect x="234" y="72" width="14" height="14" rx="3" /><rect x="252" y="72" width="14" height="14" rx="3" /><rect x="270" y="72" width="14" height="14" rx="3" /><rect x="288" y="72" width="14" height="14" rx="3" /><rect x="306" y="72" width="14" height="14" rx="3" /><rect x="324" y="72" width="14" height="14" rx="3" /><rect x="342" y="72" width="14" height="14" rx="3" /><rect x="360" y="72" width="14" height="14" rx="3" /><rect x="378" y="72" width="14" height="14" rx="3" /><rect x="396" y="72" width="14" height="14" rx="3" /><rect x="414" y="72" width="14" height="14" rx="3" /><rect x="432" y="72" width="14" height="14" rx="3" /><rect x="0" y="90" width="14" height="14" rx="3" /><rect x="18" y="90" width="14" height="14" rx="3" /><rect x="36" y="90" width="14" height="14" rx="3" /><rect x="54" y="90" width="14" height="14" rx="3" /><rect x="72" y="90" width="14" height="14" rx="3" /><rect x="90" y="90" width="14" height="14" rx="3" /><rect x="108" y="90" width="14" height="14" rx="3" /><rect x="126" y="90" width="14" height="14" rx="3" /><rect x="144" y="90" width="14" height="14" rx="3" /><rect x="162" y="90" width="14" height="14" rx="3" /><rect x="180" y="90" width="14" height="14" rx="3" /><rect x="198" y="90" width="14" height="14" rx="3" /><rect x="216" y="90" width="14" height="14" rx="3" /><rect x="234" y="90" width="14" height="14" rx="3" /><rect x="252" y="90" width="14" height="14" rx="3" /><rect x="270" y="90" width="14" height="14" rx="3" /><rect x="288" y="90" width="14" height="14" rx="3" /><rect x="306" y="90" width="14" height="14" rx="3" /><rect x="324" y="90" width="14" height="14" rx="3" /><rect x="342" y="90" width="14" height="14" rx="3" /><rect x="360" y="90" width="14" height="14" rx="3" /><rect x="378" y="90" width="14" height="14" rx="3" /><rect x="396" y="90" width="14" height="14" rx="3" /><rect x="414" y="90" width="14" height="14" rx="3" /><rect x="432" y="90" width="14" height="14" rx="3" />
+          </g>
+          <text x="458" y="212" class="note">about 150 pages</text>
+        </svg>
+        <figcaption>Ten minutes on each network, at their average speeds. Each square is one new page.</figcaption>
+      </figure>
       <h2 id="what-actually-goes-in-it">What actually goes in it?</h2>
       <p>Each page of the XRP Ledger (each &quot;ledger version&quot;) holds three things:</p>
       <ol><li><strong>A page number</strong>, called the ledger index, so everyone knows the order.</li><li><strong>The transactions</strong> that happened since the last page. Payments, mostly.</li><li><strong>The current state of every account</strong>: balances, settings, and anything else the accounts own.</li></ol>
       <p>Each page also carries a fingerprint of the page before it. Change anything on an old page and its fingerprint no longer matches, so tampering shows right away. This is the &quot;chain&quot; part of blockchain.</p>
+      <figure class="widget tamper" data-widget="tamper">
+        <div class="widget-head"><strong>Try it: change an old page</strong></div>
+        <p>Here are three pretend pages. Each one's fingerprint is made from what's on the page plus the fingerprint of the page before it. Change the amount on page 1 and watch what happens to page 2.</p>
+        <ol class="chain demo">
+          <li class="page" data-page="1">
+            <span class="page-num">Page 1</span>
+            <span class="tx">Alice pays Bob <label class="sr" for="tamper-amount">Amount Alice pays Bob</label><input id="tamper-amount" type="number" inputmode="numeric" min="0" max="1000000" step="1" value="25" /> XRP</span>
+            <span class="fp">Fingerprint <code data-role="fp1">...</code></span>
+          </li>
+          <li class="page" data-page="2">
+            <span class="page-num">Page 2</span>
+            <span class="tx">Bob pays Carol 10 XRP</span>
+            <span class="fp">Says the page before had <code data-role="prev2">...</code></span>
+            <span class="check" data-role="check2" aria-live="polite"></span>
+          </li>
+          <li class="page" data-page="3">
+            <span class="page-num">Page 3</span>
+            <span class="tx">Carol pays Dan 4 XRP</span>
+            <span class="fp">Says the page before had <code data-role="prev3">...</code></span>
+          </li>
+        </ol>
+        <button type="button" class="reset" data-role="reset" hidden>Put it back</button>
+        <figcaption>The fingerprints here use SHA-512Half, the same method the XRP Ledger uses, on a much simpler page.</figcaption>
+      </figure>
       <h2 id="where-did-it-come-from">Where did it come from?</h2>
       <p>Three engineers, Jed McCaleb, Arthur Britto and David Schwartz, built the XRP Ledger in 2011 and early 2012. It has been running ever since.</p>
       <p>You&#39;ll often hear the name Ripple too. Ripple is a company that was founded in 2012 and builds on the XRP Ledger. The ledger itself is an open network that anyone can use, and nobody needs permission to run a copy.</p>
       <h2 id="can-i-try-it-without-spending-anything">Can I try it without spending anything?</h2>
       <p>Yes. Besides the main network (called Mainnet), there are two practice networks, Testnet and Devnet. You can get a free test account loaded with fake XRP and send payments to see how it works. Nothing on those networks has any real value.</p>
       <h2 id="see-it-for-yourself">See it for yourself</h2>
-      <p>You don&#39;t have to take our word for any of this. Every page of the ledger is public.</p>
+      <p>You don&#39;t have to take our word for any of this. Every page of the ledger is public. Here are the newest ones, as they&#39;re added:</p>
+      <figure class="widget live" data-widget="live-chain">
+        <div class="widget-head">
+          <span class="dot" aria-hidden="true"></span>
+          <strong>The XRP Ledger right now</strong>
+        </div>
+        <p class="live-status" data-role="status" aria-live="polite">Loading the latest pages...</p>
+        <ol class="chain" data-role="chain"></ol>
+        <figcaption>These are real pages, pulled live from the public ledger. See how each page lists the fingerprint of the one before it? That link is the "chain" in blockchain.</figcaption>
+      </figure>
       <p>Here&#39;s one we picked: <a href="https://livenet.xrpl.org/ledgers/108226016" rel="noopener">ledger 108,226,016</a> closed on Monday, November 9, 2026 at 4:54 PM Eastern with 181 transactions in it. Click through and you&#39;ll see each transaction, the page number, and its fingerprint.</p>
       <p>Want to watch pages being added live? Open <a href="https://livenet.xrpl.org" rel="noopener">livenet.xrpl.org</a> and wait a few seconds.</p>
       <h2 id="common-questions">Common questions</h2>

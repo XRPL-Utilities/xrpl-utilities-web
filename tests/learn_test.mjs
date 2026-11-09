@@ -70,7 +70,9 @@ for (const [rel, html] of out) {
   }
   check(`${rel}: footer carries ${manifest.hashtag}`, html.slice(html.indexOf('<footer')).includes(manifest.hashtag));
   check(`${rel}: footer says it is not financial advice`, /not financial advice/.test(html.slice(html.indexOf('<footer'))));
-  check(`${rel}: no inline or third-party scripts`, ![...html.matchAll(/<script\b([^>]*)>/g)].some((m) => !/type="application\/ld\+json"/.test(m[1])));
+  const scripts = [...html.matchAll(/<script\b([^>]*)>/g)].map((m) => m[1]);
+  check(`${rel}: no inline or third-party scripts`, scripts.every((a) => /type="application\/ld\+json"/.test(a) || /^ src="\/assets\/pages\/learn\.js\?v=\d+" defer$/.test(a)));
+  check(`${rel}: loads learn.js only when it has a widget`, scripts.some((a) => a.includes('learn.js')) === /data-widget="/.test(html));
   const ld = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
   let graph = [];
   try { graph = JSON.parse(ld[1])['@graph']; } catch { /* reported below */ }
@@ -104,6 +106,19 @@ check('the hub is in the sitemap', read('sitemap.xml').includes('<loc>https://xr
 check('unpublished lessons have no page', manifest.lessons.filter((x) => !x.published).every((x) => !out.has(`learn/${x.slug}/index.html`) || manifest.lessons.some((y) => y.published && y.slug === x.slug)));
 check('lesson numbers run 1..n', manifest.lessons.every((l, i) => l.n === i + 1));
 check('lesson slugs are unique', new Set(manifest.lessons.map((l) => l.slug)).size === manifest.lessons.length);
+
+// ---- widget script -----------------------------------------------------------
+// learn.js shows data from a third-party explorer, so it must only ever write
+// text: no innerHTML, insertAdjacentHTML or document.write.
+{
+  const js = read('assets/pages/learn.js');
+  check('learn.js writes no HTML strings', !/innerHTML|outerHTML|insertAdjacentHTML|document\.write/.test(js));
+  check('learn.js only calls the one explorer host', [...js.matchAll(/https:\/\/[a-z0-9.-]+/g)].every((m) => ['https://api.xrpscan.com', 'https://livenet.xrpl.org'].includes(m[0])));
+  for (const w of fs.readdirSync(path.join(repo, 'tools/learn/widgets'))) {
+    const h = read(`tools/learn/widgets/${w}`);
+    check(`widget ${w} has no script or inline handler`, !/<script|\son[a-z]+=/i.test(h));
+  }
+}
 
 // ---- the markdown converter escapes and refuses bad links -------------------
 check('inline escapes HTML', inline('<img src=x onerror=alert(1)>') === '&lt;img src=x onerror=alert(1)&gt;');
