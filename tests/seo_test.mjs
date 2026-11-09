@@ -37,6 +37,9 @@ for (const f of allHtml) {
   check(`${f}: logo.png is not the favicon`, !/rel="(icon|apple-touch-icon)"[^>]*logo\.png/.test(s));
   const footer = s.slice(s.indexOf('<footer'));
   check(`${f}: footer links to /status/`, footer.includes('href="/status/"'));
+  // Search Console review 2026-11-09: the lessons were linked from the home
+  // page only. Every page's footer points at them so crawlers reach them fast.
+  check(`${f}: footer links to /learn/`, footer.includes('href="/learn/"'));
 }
 for (const [f, max] of [['assets/favicon-32.png', 8 * 1024], ['assets/apple-touch-icon.png', 40 * 1024], ['favicon.ico', 16 * 1024]]) {
   const size = fs.existsSync(path.join(repo, f)) ? fs.statSync(path.join(repo, f)).size : Infinity;
@@ -119,6 +122,31 @@ for (const [f, max] of [['assets/favicon-32.png', 8 * 1024], ['assets/apple-touc
   check('a missing page gets the 404 page with status 404', r.status === 404 && (await r.text()) === NOT_FOUND_BODY, `got ${r.status}`);
   r = await worker.fetch(new Request('https://xrpl-utilities.com/no-such-page', { method: 'POST', body: 'x' }), env);
   check('a missing POST target keeps the plain 404', r.status === 404 && (await r.text()) === '');
+
+  // Search Console review 2026-11-09. The 404 page's own address answered
+  // 200 (a soft 404), and the API passthrough and x402 catalog had no
+  // noindex, so crawlers that pick their paths out of page source could
+  // index raw JSON.
+  check('wrangler routes /404 and /404.html to the Worker', rwf.includes('/404') && rwf.includes('/404.html'));
+  for (const p of ['/404', '/404.html']) {
+    r = await worker.fetch(new Request(`https://xrpl-utilities.com${p}`), env);
+    check(`${p} answers 404 with the 404 page`, r.status === 404 && (await r.text()) === NOT_FOUND_BODY, `got ${r.status}`);
+  }
+  // No network in this test: the catalog and the passthrough get a stub upstream.
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ x402Version: 2, resources: [] }), { headers: { 'content-type': 'application/json' } });
+  try {
+    r = await worker.fetch(new Request('https://xrpl-utilities.com/.well-known/x402'), env);
+    check('x402 catalog carries x-robots-tag noindex', r.status === 200 && r.headers.get('x-robots-tag') === 'noindex', `got ${r.status} ${r.headers.get('x-robots-tag')}`);
+    r = await worker.fetch(new Request('https://xrpl-utilities.com/api/x/pulse/stats'), env);
+    check('API passthrough answers carry x-robots-tag noindex', r.headers.get('x-robots-tag') === 'noindex', `got ${r.status} ${r.headers.get('x-robots-tag')}`);
+    r = await worker.fetch(new Request('https://xrpl-utilities.com/api/x/no-such-service/stats'), env);
+    check('API passthrough errors carry x-robots-tag noindex', r.headers.get('x-robots-tag') === 'noindex', `got ${r.status} ${r.headers.get('x-robots-tag')}`);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+  r = await worker.fetch(new Request('https://xrpl-utilities.com/pricing/'), env);
+  check('real pages are not noindexed', r.headers.get('x-robots-tag') === null);
 }
 
 if (fails) {

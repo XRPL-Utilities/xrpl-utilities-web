@@ -661,6 +661,25 @@ const PAGE_DIRS = new Set([
   "/verify", "/learn", "/learn/what-is-the-xrp-ledger",
 ]);
 
+// API answers and the x402 catalog are data for scripts, not pages. Search
+// engines find these paths in page source and crawl them; this header keeps
+// them out of the index without blocking the crawler, which still needs the
+// /api/x calls to render the live numbers on each page.
+function noindex(res) {
+  // A WebSocket handoff carries the socket on the response; leave it alone.
+  if (res.status === 101 || res.webSocket) return res;
+  const out = new Response(res.body, res);
+  out.headers.set("x-robots-tag", "noindex");
+  return out;
+}
+
+// Serve the site's 404 page with a 404 status, or `fallback` if it is missing.
+async function notFoundPage(request, url, env, fallback) {
+  const notFound = await env.ASSETS.fetch(new Request(new URL("/404", url), { method: request.method }));
+  if (!notFound.ok) return fallback;
+  return new Response(notFound.body, { status: 404, headers: notFound.headers });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -695,14 +714,21 @@ export default {
     }
 
     if (url.pathname.startsWith("/api/x/")) {
-      return handleApiProxy(request, url, env);
+      return noindex(await handleApiProxy(request, url, env));
     }
 
     if (url.pathname === "/.well-known/x402") {
       if (request.method !== "GET" && request.method !== "HEAD") {
         return new Response("Method Not Allowed", { status: 405, headers: { allow: "GET, HEAD" } });
       }
-      return handleX402Catalog();
+      return noindex(await handleX402Catalog());
+    }
+
+    // The 404 page's own address. The assets layer would serve it with a
+    // 200, which search engines read as a thin live page; answer 404 so it
+    // is treated like any other missing URL.
+    if (url.pathname === "/404" || url.pathname === "/404.html") {
+      return notFoundPage(request, url, env, new Response("", { status: 404 }));
     }
 
     // A page URL without its trailing slash. The assets layer would answer
@@ -720,8 +746,6 @@ export default {
     if (res.status !== 404 || (request.method !== "GET" && request.method !== "HEAD")) {
       return res;
     }
-    const notFound = await env.ASSETS.fetch(new Request(new URL("/404", url), { method: request.method }));
-    if (!notFound.ok) return res;
-    return new Response(notFound.body, { status: 404, headers: notFound.headers });
+    return notFoundPage(request, url, env, res);
   },
 };
