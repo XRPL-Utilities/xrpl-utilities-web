@@ -142,6 +142,11 @@
     const squares = Array.from(root.querySelectorAll('[data-role="grid"] rect'));
     const btc = root.querySelector('[data-role="btc"]');
     const btcCount = root.querySelector('[data-role="btc-count"]');
+    const mine = root.querySelector('[data-role="mine"]');
+    const guess = root.querySelector('[data-role="guess"]');
+    let lastGuess = 0;
+    // A made-up guess, just to show the work. Real miners make far more guesses than this.
+    const hex = () => Math.floor(Math.random() * 0x1000000).toString(16).toUpperCase().padStart(6, '0');
     const xrplCount = root.querySelector('[data-role="xrpl-count"]');
     const clock = root.querySelector('[data-role="clock"]');
     const replay = root.querySelector('[data-role="replay"]');
@@ -155,7 +160,10 @@
       squares.forEach((q, i) => q.classList.toggle('off', i >= pages));
       const blockIn = s >= REAL_S;
       btc.classList.toggle('off', !blockIn);
-      btcCount.textContent = blockIn ? '1 block' : '0 blocks, still working on it';
+      mine.classList.toggle('off', blockIn);
+      btcCount.textContent = blockIn ? '1 block. One guess finally fit.' : 'Mining. Trying guess after guess...';
+      if (blockIn) guess.textContent = '';
+      else if (performance.now() - lastGuess > 90) { lastGuess = performance.now(); guess.textContent = 'Guess ' + hex() + '... no good'; }
       xrplCount.textContent = pages + (pages === 1 ? ' page' : ' pages');
       clock.textContent = fmt(s);
     }

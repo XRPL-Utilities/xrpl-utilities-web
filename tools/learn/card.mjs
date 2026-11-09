@@ -37,7 +37,8 @@ h1 { font-size: 64px; line-height: 1.05; margin: 0 0 20px; }
 .art { width: 470px; min-width: 0; }
 .art svg { width: 470px; height: auto; }
 .hero-chain figcaption { display: none; }
-.hero-chain .new, .hero-chain .lk-new { animation: none; }
+.hero-chain .halo, .hero-chain .lk { animation: none; }
+.hero-chain .new .halo { opacity: 1; }
 </style></head><body>
 <div class="og">
   <div>

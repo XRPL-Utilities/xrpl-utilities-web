@@ -4,18 +4,18 @@
   <ol class="chain demo">
     <li class="page" data-page="1">
       <span class="page-num">Page 1</span>
-      <span class="tx">Alice pays Bob <label class="sr" for="tamper-amount">Amount Alice pays Bob</label><input id="tamper-amount" type="number" inputmode="numeric" min="0" max="1000000" step="1" value="25" /> XRP</span>
+      <span class="tx"><span class="who who-a"><i aria-hidden="true">A</i>Alice</span> pays <span class="who who-b"><i aria-hidden="true">B</i>Bob</span> <label class="sr" for="tamper-amount">Amount Alice pays Bob</label><input id="tamper-amount" type="number" inputmode="numeric" min="0" max="1000000" step="1" value="25" /> XRP</span>
       <span class="fp">Fingerprint <code data-role="fp1">...</code></span>
     </li>
     <li class="page" data-page="2">
       <span class="page-num">Page 2</span>
-      <span class="tx">Bob pays Carol 10 XRP</span>
+      <span class="tx"><span class="who who-b"><i aria-hidden="true">B</i>Bob</span> pays <span class="who who-c"><i aria-hidden="true">C</i>Carol</span> 10 XRP</span>
       <span class="fp">Says the page before had <code data-role="prev2">...</code></span>
       <span class="check" data-role="check2" aria-live="polite"></span>
     </li>
     <li class="page" data-page="3">
       <span class="page-num">Page 3</span>
-      <span class="tx">Carol pays Dan 4 XRP</span>
+      <span class="tx"><span class="who who-c"><i aria-hidden="true">C</i>Carol</span> pays <span class="who who-d"><i aria-hidden="true">D</i>Dan</span> 4 XRP</span>
       <span class="fp">Says the page before had <code data-role="prev3">...</code></span>
     </li>
   </ol>
