@@ -9,7 +9,7 @@
   <meta name="description" content="The XRP Ledger is a shared record of payments that computers all over the world keep in sync. Here&#39;s how it works, explained without the jargon." />
   <meta property="og:title" content="What Is the XRP Ledger? A Plain-English Guide" />
   <meta property="og:description" content="The XRP Ledger is a shared record of payments that computers all over the world keep in sync. Here&#39;s how it works, explained without the jargon." />
-  <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/img/learn/what-is-the-xrp-ledger.png" />
   <meta property="og:url" content="https://xrpl-utilities.com/learn/what-is-the-xrp-ledger/" />
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="XRPL-Utilities" />
@@ -19,13 +19,13 @@
   <meta name="twitter:site" content="@XRPL_Utilities" />
   <meta name="twitter:title" content="What Is the XRP Ledger? A Plain-English Guide" />
   <meta name="twitter:description" content="The XRP Ledger is a shared record of payments that computers all over the world keep in sync. Here&#39;s how it works, explained without the jargon." />
-  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/img/learn/what-is-the-xrp-ledger.png" />
   <link rel="canonical" href="https://xrpl-utilities.com/learn/what-is-the-xrp-ledger/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=2" />
-  <script src="/assets/pages/learn.js?v=2" defer></script>
+  <link rel="stylesheet" href="/assets/learn.css?v=3" />
+  <script src="/assets/pages/learn.js?v=3" defer></script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -52,7 +52,7 @@
       "publisher": {
         "@id": "https://xrpl-utilities.com/#org"
       },
-      "image": "https://xrpl-utilities.com/assets/social-card.png",
+      "image": "https://xrpl-utilities.com/assets/img/learn/what-is-the-xrp-ledger.png",
       "isPartOf": {
         "@type": "Course",
         "name": "Learn the XRP Ledger",
@@ -129,7 +129,7 @@
 <body>
   <a href="#main" class="skip">Skip to content</a>
   <header class="site">
-    <div class="wrap bar">
+    <div class="wide bar">
       <a href="/learn/" class="brand">
         <img src="/assets/img/logo-mark-128.webp" width="32" height="32" loading="eager" decoding="async" alt="" />
         <span>XRPL-Utilities <em>Learn</em></span>
@@ -138,41 +138,83 @@
     </div>
   </header>
   <main id="main">
-    <article class="wrap lesson">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 1</nav>
-      <p class="kicker">Lesson 1 of 8</p>
-      <h1>What is the XRP Ledger?</h1>
-      <p class="meta">Updated <time datetime="2026-11-10">November 10, 2026</time> <span aria-hidden="true">&middot;</span> 6 minute read</p>
-      <div class="short"><strong>The short answer:</strong> The XRP Ledger is a shared record of payments and balances that computers all over the world keep identical copies of. A new page gets added about every four seconds, and no single company owns it.</div>
-      <h2 id="start-with-a-notebook">Start with a notebook</h2>
-      <p>Picture a notebook where every payment gets written down. Who paid whom, how much, and when.</p>
-      <p>Now make an exact copy of that notebook for every computer that wants one, anywhere in the world. Every time a new page is ready, the computers compare notes. The page only gets added once they agree it&#39;s right.</p>
-      <p>That&#39;s the XRP Ledger. &quot;Ledger&quot; is just an old word for a record book. Banks keep ledgers too, but a bank&#39;s ledger lives on the bank&#39;s own computers, and you have to trust the bank to keep it straight. The XRP Ledger is kept by many computers at once, so you don&#39;t have to trust any one of them.</p>
-      <h2 id="who-keeps-the-notebook">Who keeps the notebook?</h2>
-      <p>Anyone can run the software and keep a copy. Most of those computers (called servers) just follow along and pass new payments around.</p>
-      <p>A smaller group, called validators, does the agreeing. They look at the payments waiting to go in, compare their lists with each other, and when enough of them match, the new page is locked in. The whole round takes a few seconds. Over the 20,000 pages before November 9, 2026, it averaged just over four seconds a page.</p>
-      <p>Lesson 2 covers how that agreement works, and why it doesn&#39;t need mining.</p>
-      <h2 id="how-is-this-different-from-bitcoin">How is this different from Bitcoin?</h2>
-      <p>Bitcoin and the XRP Ledger do the same basic job. Both keep a shared record that nobody can secretly rewrite. They just go about it differently.</p>
-      <ul><li><strong>Speed.</strong> Bitcoin adds a new page (it calls them blocks) about once every ten minutes. The XRP Ledger adds one about every four seconds.</li><li><strong>How they agree.</strong> Bitcoin computers race each other to solve a math puzzle, which takes a lot of computing power. That race is called mining. XRP Ledger validators skip the race and compare notes instead.</li><li><strong>What&#39;s built in.</strong> On Bitcoin, the main thing you can do is send bitcoin. The XRP Ledger was built to hold more than one kind of money. It has its own currency, XRP, plus tokens for things like dollars, and a built-in marketplace for swapping between them. Later lessons cover each of these.</li></ul>
-      <figure class="fig speed">
-        <svg viewBox="0 0 640 230" role="img" aria-label="In ten minutes, Bitcoin adds about one block while the XRP Ledger adds about 150 pages.">
+    <div class="hero">
+      <div class="wide hero-grid">
+        <div class="hero-text">
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 1</nav>
+          <p class="kicker">Lesson 1 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
+          <h1>What is the XRP Ledger?</h1>
+          <p class="meta">Updated <time datetime="2026-11-10">November 10, 2026</time> <span aria-hidden="true">&middot;</span> 6 minute read</p>
+          <div class="short"><strong>The short answer:</strong> The XRP Ledger is a shared record of payments and balances that computers all over the world keep identical copies of. A new page gets added about every four seconds, and no single company owns it.</div>
+        </div>
+        <div class="hero-art">
+          <figure class="hero-chain">
+            <svg viewBox="0 0 520 240" role="img" aria-label="Pages of the XRP Ledger linked in a chain, with a new page joining the end every few seconds.">
+              <defs>
+                <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <line x1="114" y1="145.0" x2="136" y2="131.0" class="lk"/><line x1="240" y1="131.0" x2="262" y2="117.0" class="lk"/><line x1="366" y1="117.0" x2="388" y2="103.0" class="lk lk-new"/>
+              <g class="pg">
+                <rect x="10" y="70" width="104" height="150" rx="12" class="card"/>
+                <text x="24" y="96" class="hd">PAGE 1</text>
+                <rect x="24" y="112" width="76" height="6" rx="3" class="ln"/><rect x="24" y="128" width="58" height="6" rx="3" class="ln"/><rect x="24" y="144" width="76" height="6" rx="3" class="ln"/><rect x="24" y="160" width="58" height="6" rx="3" class="ln"/>
+                <text x="24" y="204" class="fp">3F9A...</text>
+              </g><g class="pg">
+                <rect x="136" y="56" width="104" height="150" rx="12" class="card"/>
+                <text x="150" y="82" class="hd">PAGE 2</text>
+                <rect x="150" y="98" width="76" height="6" rx="3" class="ln"/><rect x="150" y="114" width="58" height="6" rx="3" class="ln"/><rect x="150" y="130" width="76" height="6" rx="3" class="ln"/><rect x="150" y="146" width="58" height="6" rx="3" class="ln"/>
+                <text x="150" y="190" class="fp">7C2B...</text>
+              </g><g class="pg">
+                <rect x="262" y="42" width="104" height="150" rx="12" class="card"/>
+                <text x="276" y="68" class="hd">PAGE 3</text>
+                <rect x="276" y="84" width="76" height="6" rx="3" class="ln"/><rect x="276" y="100" width="58" height="6" rx="3" class="ln"/><rect x="276" y="116" width="76" height="6" rx="3" class="ln"/><rect x="276" y="132" width="58" height="6" rx="3" class="ln"/>
+                <text x="276" y="176" class="fp">F1D4...</text>
+              </g><g class="pg new">
+                <rect x="388" y="28" width="104" height="150" rx="12" class="card"/>
+                <text x="402" y="54" class="hd">PAGE 4</text>
+                <rect x="402" y="70" width="76" height="6" rx="3" class="ln"/><rect x="402" y="86" width="58" height="6" rx="3" class="ln"/><rect x="402" y="102" width="76" height="6" rx="3" class="ln"/><rect x="402" y="118" width="58" height="6" rx="3" class="ln"/>
+                <text x="402" y="162" class="fp">9E07...</text>
+              </g>
+            </svg>
+            <figcaption>A new page about every four seconds, each one locked to the page before it.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <div class="wide body-grid">
+      <article class="lesson">
+        <h2 id="start-with-a-notebook">Start with a notebook</h2>
+        <p>Picture a notebook where every payment gets written down. Who paid whom, how much, and when.</p>
+        <p>Now make an exact copy of that notebook for every computer that wants one, anywhere in the world. Every time a new page is ready, the computers compare notes. The page only gets added once they agree it&#39;s right.</p>
+        <p>That&#39;s the XRP Ledger. &quot;Ledger&quot; is just an old word for a record book. Banks keep ledgers too, but a bank&#39;s ledger lives on the bank&#39;s own computers, and you have to trust the bank to keep it straight. The XRP Ledger is kept by many computers at once, so you don&#39;t have to trust any one of them.</p>
+        <h2 id="who-keeps-the-notebook">Who keeps the notebook?</h2>
+        <p>Anyone can run the software and keep a copy. Most of those computers (called servers) just follow along and pass new payments around.</p>
+        <p>A smaller group, called validators, does the agreeing. They look at the payments waiting to go in, compare their lists with each other, and when enough of them match, the new page is locked in. The whole round takes a few seconds. Over the 20,000 pages before November 9, 2026, it averaged just over four seconds a page.</p>
+        <p>Lesson 2 covers how that agreement works, and why it doesn&#39;t need mining.</p>
+        <h2 id="how-is-this-different-from-bitcoin">How is this different from Bitcoin?</h2>
+        <p>Bitcoin and the XRP Ledger do the same basic job. Both keep a shared record that nobody can secretly rewrite. They just go about it differently.</p>
+        <ul><li><strong>Speed.</strong> Bitcoin adds a new page (it calls them blocks) about once every ten minutes. The XRP Ledger adds one about every four seconds.</li><li><strong>How they agree.</strong> Bitcoin computers race each other to solve a math puzzle, which takes a lot of computing power. That race is called mining. XRP Ledger validators skip the race and compare notes instead.</li><li><strong>What&#39;s built in.</strong> On Bitcoin, the main thing you can do is send bitcoin. The XRP Ledger was built to hold more than one kind of money. It has its own currency, XRP, plus tokens like RLUSD (a stablecoin, meant to always be worth one US dollar), and a built-in marketplace for swapping between them. Later lessons cover each of these.</li></ul>
+        <figure class="widget race" data-widget="race">
+        <div class="widget-head"><strong>The ten-minute race</strong><span class="clock" data-role="clock" aria-hidden="true">10:00</span></div>
+        <p>Both networks start a fresh page at the same moment. Watch what each one has added by the time ten minutes are up.</p>
+        <svg viewBox="0 0 640 220" role="img" aria-label="In ten minutes, Bitcoin adds about one block while the XRP Ledger adds about 150 pages.">
           <text x="0" y="18" class="lbl">Bitcoin</text>
-          <rect x="0" y="34" width="14" height="14" rx="3" class="btc" />
-          <text x="26" y="46" class="note">about 1 block</text>
-          <text x="0" y="96" class="lbl">XRP Ledger</text>
-          <g transform="translate(0,110)" class="xrpl">
+          <rect x="0" y="32" width="14" height="14" rx="3" class="btc" data-role="btc" />
+          <text x="26" y="44" class="note" data-role="btc-count">1 block</text>
+          <text x="0" y="90" class="lbl">XRP Ledger</text>
+          <text x="458" y="90" class="note" data-role="xrpl-count">150 pages</text>
+          <g transform="translate(0,104)" class="xrpl" data-role="grid">
             <rect x="0" y="0" width="14" height="14" rx="3" /><rect x="18" y="0" width="14" height="14" rx="3" /><rect x="36" y="0" width="14" height="14" rx="3" /><rect x="54" y="0" width="14" height="14" rx="3" /><rect x="72" y="0" width="14" height="14" rx="3" /><rect x="90" y="0" width="14" height="14" rx="3" /><rect x="108" y="0" width="14" height="14" rx="3" /><rect x="126" y="0" width="14" height="14" rx="3" /><rect x="144" y="0" width="14" height="14" rx="3" /><rect x="162" y="0" width="14" height="14" rx="3" /><rect x="180" y="0" width="14" height="14" rx="3" /><rect x="198" y="0" width="14" height="14" rx="3" /><rect x="216" y="0" width="14" height="14" rx="3" /><rect x="234" y="0" width="14" height="14" rx="3" /><rect x="252" y="0" width="14" height="14" rx="3" /><rect x="270" y="0" width="14" height="14" rx="3" /><rect x="288" y="0" width="14" height="14" rx="3" /><rect x="306" y="0" width="14" height="14" rx="3" /><rect x="324" y="0" width="14" height="14" rx="3" /><rect x="342" y="0" width="14" height="14" rx="3" /><rect x="360" y="0" width="14" height="14" rx="3" /><rect x="378" y="0" width="14" height="14" rx="3" /><rect x="396" y="0" width="14" height="14" rx="3" /><rect x="414" y="0" width="14" height="14" rx="3" /><rect x="432" y="0" width="14" height="14" rx="3" /><rect x="0" y="18" width="14" height="14" rx="3" /><rect x="18" y="18" width="14" height="14" rx="3" /><rect x="36" y="18" width="14" height="14" rx="3" /><rect x="54" y="18" width="14" height="14" rx="3" /><rect x="72" y="18" width="14" height="14" rx="3" /><rect x="90" y="18" width="14" height="14" rx="3" /><rect x="108" y="18" width="14" height="14" rx="3" /><rect x="126" y="18" width="14" height="14" rx="3" /><rect x="144" y="18" width="14" height="14" rx="3" /><rect x="162" y="18" width="14" height="14" rx="3" /><rect x="180" y="18" width="14" height="14" rx="3" /><rect x="198" y="18" width="14" height="14" rx="3" /><rect x="216" y="18" width="14" height="14" rx="3" /><rect x="234" y="18" width="14" height="14" rx="3" /><rect x="252" y="18" width="14" height="14" rx="3" /><rect x="270" y="18" width="14" height="14" rx="3" /><rect x="288" y="18" width="14" height="14" rx="3" /><rect x="306" y="18" width="14" height="14" rx="3" /><rect x="324" y="18" width="14" height="14" rx="3" /><rect x="342" y="18" width="14" height="14" rx="3" /><rect x="360" y="18" width="14" height="14" rx="3" /><rect x="378" y="18" width="14" height="14" rx="3" /><rect x="396" y="18" width="14" height="14" rx="3" /><rect x="414" y="18" width="14" height="14" rx="3" /><rect x="432" y="18" width="14" height="14" rx="3" /><rect x="0" y="36" width="14" height="14" rx="3" /><rect x="18" y="36" width="14" height="14" rx="3" /><rect x="36" y="36" width="14" height="14" rx="3" /><rect x="54" y="36" width="14" height="14" rx="3" /><rect x="72" y="36" width="14" height="14" rx="3" /><rect x="90" y="36" width="14" height="14" rx="3" /><rect x="108" y="36" width="14" height="14" rx="3" /><rect x="126" y="36" width="14" height="14" rx="3" /><rect x="144" y="36" width="14" height="14" rx="3" /><rect x="162" y="36" width="14" height="14" rx="3" /><rect x="180" y="36" width="14" height="14" rx="3" /><rect x="198" y="36" width="14" height="14" rx="3" /><rect x="216" y="36" width="14" height="14" rx="3" /><rect x="234" y="36" width="14" height="14" rx="3" /><rect x="252" y="36" width="14" height="14" rx="3" /><rect x="270" y="36" width="14" height="14" rx="3" /><rect x="288" y="36" width="14" height="14" rx="3" /><rect x="306" y="36" width="14" height="14" rx="3" /><rect x="324" y="36" width="14" height="14" rx="3" /><rect x="342" y="36" width="14" height="14" rx="3" /><rect x="360" y="36" width="14" height="14" rx="3" /><rect x="378" y="36" width="14" height="14" rx="3" /><rect x="396" y="36" width="14" height="14" rx="3" /><rect x="414" y="36" width="14" height="14" rx="3" /><rect x="432" y="36" width="14" height="14" rx="3" /><rect x="0" y="54" width="14" height="14" rx="3" /><rect x="18" y="54" width="14" height="14" rx="3" /><rect x="36" y="54" width="14" height="14" rx="3" /><rect x="54" y="54" width="14" height="14" rx="3" /><rect x="72" y="54" width="14" height="14" rx="3" /><rect x="90" y="54" width="14" height="14" rx="3" /><rect x="108" y="54" width="14" height="14" rx="3" /><rect x="126" y="54" width="14" height="14" rx="3" /><rect x="144" y="54" width="14" height="14" rx="3" /><rect x="162" y="54" width="14" height="14" rx="3" /><rect x="180" y="54" width="14" height="14" rx="3" /><rect x="198" y="54" width="14" height="14" rx="3" /><rect x="216" y="54" width="14" height="14" rx="3" /><rect x="234" y="54" width="14" height="14" rx="3" /><rect x="252" y="54" width="14" height="14" rx="3" /><rect x="270" y="54" width="14" height="14" rx="3" /><rect x="288" y="54" width="14" height="14" rx="3" /><rect x="306" y="54" width="14" height="14" rx="3" /><rect x="324" y="54" width="14" height="14" rx="3" /><rect x="342" y="54" width="14" height="14" rx="3" /><rect x="360" y="54" width="14" height="14" rx="3" /><rect x="378" y="54" width="14" height="14" rx="3" /><rect x="396" y="54" width="14" height="14" rx="3" /><rect x="414" y="54" width="14" height="14" rx="3" /><rect x="432" y="54" width="14" height="14" rx="3" /><rect x="0" y="72" width="14" height="14" rx="3" /><rect x="18" y="72" width="14" height="14" rx="3" /><rect x="36" y="72" width="14" height="14" rx="3" /><rect x="54" y="72" width="14" height="14" rx="3" /><rect x="72" y="72" width="14" height="14" rx="3" /><rect x="90" y="72" width="14" height="14" rx="3" /><rect x="108" y="72" width="14" height="14" rx="3" /><rect x="126" y="72" width="14" height="14" rx="3" /><rect x="144" y="72" width="14" height="14" rx="3" /><rect x="162" y="72" width="14" height="14" rx="3" /><rect x="180" y="72" width="14" height="14" rx="3" /><rect x="198" y="72" width="14" height="14" rx="3" /><rect x="216" y="72" width="14" height="14" rx="3" /><rect x="234" y="72" width="14" height="14" rx="3" /><rect x="252" y="72" width="14" height="14" rx="3" /><rect x="270" y="72" width="14" height="14" rx="3" /><rect x="288" y="72" width="14" height="14" rx="3" /><rect x="306" y="72" width="14" height="14" rx="3" /><rect x="324" y="72" width="14" height="14" rx="3" /><rect x="342" y="72" width="14" height="14" rx="3" /><rect x="360" y="72" width="14" height="14" rx="3" /><rect x="378" y="72" width="14" height="14" rx="3" /><rect x="396" y="72" width="14" height="14" rx="3" /><rect x="414" y="72" width="14" height="14" rx="3" /><rect x="432" y="72" width="14" height="14" rx="3" /><rect x="0" y="90" width="14" height="14" rx="3" /><rect x="18" y="90" width="14" height="14" rx="3" /><rect x="36" y="90" width="14" height="14" rx="3" /><rect x="54" y="90" width="14" height="14" rx="3" /><rect x="72" y="90" width="14" height="14" rx="3" /><rect x="90" y="90" width="14" height="14" rx="3" /><rect x="108" y="90" width="14" height="14" rx="3" /><rect x="126" y="90" width="14" height="14" rx="3" /><rect x="144" y="90" width="14" height="14" rx="3" /><rect x="162" y="90" width="14" height="14" rx="3" /><rect x="180" y="90" width="14" height="14" rx="3" /><rect x="198" y="90" width="14" height="14" rx="3" /><rect x="216" y="90" width="14" height="14" rx="3" /><rect x="234" y="90" width="14" height="14" rx="3" /><rect x="252" y="90" width="14" height="14" rx="3" /><rect x="270" y="90" width="14" height="14" rx="3" /><rect x="288" y="90" width="14" height="14" rx="3" /><rect x="306" y="90" width="14" height="14" rx="3" /><rect x="324" y="90" width="14" height="14" rx="3" /><rect x="342" y="90" width="14" height="14" rx="3" /><rect x="360" y="90" width="14" height="14" rx="3" /><rect x="378" y="90" width="14" height="14" rx="3" /><rect x="396" y="90" width="14" height="14" rx="3" /><rect x="414" y="90" width="14" height="14" rx="3" /><rect x="432" y="90" width="14" height="14" rx="3" />
           </g>
-          <text x="458" y="212" class="note">about 150 pages</text>
         </svg>
-        <figcaption>Ten minutes on each network, at their average speeds. Each square is one new page.</figcaption>
+        <button type="button" class="replay" data-role="replay">Run it again</button>
+        <figcaption>Ten minutes squeezed into fifteen seconds, at each network's average speed. Each blue square is one new XRP Ledger page.</figcaption>
       </figure>
-      <h2 id="what-actually-goes-in-it">What actually goes in it?</h2>
-      <p>Each page of the XRP Ledger (each &quot;ledger version&quot;) holds three things:</p>
-      <ol><li><strong>A page number</strong>, called the ledger index, so everyone knows the order.</li><li><strong>The transactions</strong> that happened since the last page. Payments, mostly.</li><li><strong>The current state of every account</strong>: balances, settings, and anything else the accounts own.</li></ol>
-      <p>Each page also carries a fingerprint of the page before it. Change anything on an old page and its fingerprint no longer matches, so tampering shows right away. This is the &quot;chain&quot; part of blockchain.</p>
-      <figure class="widget tamper" data-widget="tamper">
+        <h2 id="what-actually-goes-in-it">What actually goes in it?</h2>
+        <p>Each page of the XRP Ledger (each &quot;ledger version&quot;) holds three things:</p>
+        <ol><li><strong>A page number</strong>, called the ledger index, so everyone knows the order.</li><li><strong>The transactions</strong> that happened since the last page. Payments, mostly.</li><li><strong>The current state of every account</strong>: balances, settings, and anything else the accounts own.</li></ol>
+        <p>Each page also carries a fingerprint of the page before it. Change anything on an old page and its fingerprint no longer matches, so tampering shows right away. This is the &quot;chain&quot; part of blockchain.</p>
+        <figure class="widget tamper" data-widget="tamper">
         <div class="widget-head"><strong>Try it: change an old page</strong></div>
         <p>Here are three pretend pages. Each one's fingerprint is made from what's on the page plus the fingerprint of the page before it. Change the amount on page 1 and watch what happens to page 2.</p>
         <ol class="chain demo">
@@ -196,14 +238,14 @@
         <button type="button" class="reset" data-role="reset" hidden>Put it back</button>
         <figcaption>The fingerprints here use SHA-512Half, the same method the XRP Ledger uses, on a much simpler page.</figcaption>
       </figure>
-      <h2 id="where-did-it-come-from">Where did it come from?</h2>
-      <p>Three engineers, Jed McCaleb, Arthur Britto and David Schwartz, built the XRP Ledger in 2011 and early 2012. It has been running ever since.</p>
-      <p>You&#39;ll often hear the name Ripple too. Ripple is a company that was founded in 2012 and builds on the XRP Ledger. The ledger itself is an open network that anyone can use, and nobody needs permission to run a copy.</p>
-      <h2 id="can-i-try-it-without-spending-anything">Can I try it without spending anything?</h2>
-      <p>Yes. Besides the main network (called Mainnet), there are two practice networks, Testnet and Devnet. You can get a free test account loaded with fake XRP and send payments to see how it works. Nothing on those networks has any real value.</p>
-      <h2 id="see-it-for-yourself">See it for yourself</h2>
-      <p>You don&#39;t have to take our word for any of this. Every page of the ledger is public. Here are the newest ones, as they&#39;re added:</p>
-      <figure class="widget live" data-widget="live-chain">
+        <h2 id="where-did-it-come-from">Where did it come from?</h2>
+        <p>Three engineers, Jed McCaleb, Arthur Britto and David Schwartz, built the XRP Ledger in 2011 and early 2012. It has been running ever since.</p>
+        <p>You&#39;ll often hear the name Ripple too. Ripple is a company that was founded in 2012 and builds on the XRP Ledger. The ledger itself is an open network that anyone can use, and nobody needs permission to run a copy.</p>
+        <h2 id="can-i-try-it-without-spending-anything">Can I try it without spending anything?</h2>
+        <p>Yes. Besides the main network (called Mainnet), there are two practice networks, Testnet and Devnet. You can get a free test account loaded with fake XRP and send payments to see how it works. Nothing on those networks has any real value.</p>
+        <h2 id="see-it-for-yourself">See it for yourself</h2>
+        <p>You don&#39;t have to take our word for any of this. Every page of the ledger is public. Here are the newest ones, as they&#39;re added:</p>
+        <figure class="widget live" data-widget="live-chain">
         <div class="widget-head">
           <span class="dot" aria-hidden="true"></span>
           <strong>The XRP Ledger right now</strong>
@@ -212,23 +254,28 @@
         <ol class="chain" data-role="chain"></ol>
         <figcaption>These are real pages, pulled live from the public ledger. See how each page lists the fingerprint of the one before it? That link is the "chain" in blockchain.</figcaption>
       </figure>
-      <p>Here&#39;s one we picked: <a href="https://livenet.xrpl.org/ledgers/108226016" rel="noopener">ledger 108,226,016</a> closed on Monday, November 9, 2026 at 4:54 PM Eastern with 181 transactions in it. Click through and you&#39;ll see each transaction, the page number, and its fingerprint.</p>
-      <p>Want to watch pages being added live? Open <a href="https://livenet.xrpl.org" rel="noopener">livenet.xrpl.org</a> and wait a few seconds.</p>
-      <h2 id="common-questions">Common questions</h2>
-      <div class="faq"><h3>Is the XRP Ledger the same as Ripple?</h3><p>No. Ripple is a company. The XRP Ledger is an open network that Ripple and many others use. Anyone can run a copy without asking Ripple or anyone else.</p></div>
-      <div class="faq"><h3>Is XRP the same as the XRP Ledger?</h3><p>No. XRP is the currency built into the XRP Ledger. The ledger is the record book, and XRP is one of the things written in it. Lesson 3 covers what XRP is for.</p></div>
-      <div class="faq"><h3>Does the XRP Ledger use mining?</h3><p>No. Validators agree by comparing notes, not by racing to solve puzzles. That&#39;s why a page takes seconds instead of minutes.</p></div>
-      <div class="faq"><h3>Who&#39;s in charge of the XRP Ledger?</h3><p>No single person or company. Changes to the rules have to be voted in by validators, and Lesson 5 shows how that vote works.</p></div>
-      <div class="faq"><h3>Can someone change an old payment?</h3><p>Not quietly. Every page carries a fingerprint of the one before it, so a changed page would stand out right away and the validators would reject it.</p></div>
-      <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
-      <ul><li><strong>Ledger:</strong> a record book of payments and balances.</li><li><strong>Ledger version:</strong> one page of the XRP Ledger. A new one gets added every few seconds.</li><li><strong>Ledger index:</strong> the page number of a ledger version.</li><li><strong>Transaction:</strong> anything that changes the ledger, like a payment.</li><li><strong>Server:</strong> a computer running the XRP Ledger software and keeping a copy.</li><li><strong>Validator:</strong> a server that helps decide which transactions go on the next page.</li><li><strong>Consensus:</strong> the process validators use to agree on the next page.</li><li><strong>Blockchain:</strong> a chain of record pages, each one linked to the one before it.</li><li><strong>Mainnet and Testnet:</strong> the real network, and a practice network with fake money.</li></ul>
-      <h2 id="sources">Sources</h2>
-      <ul><li><a href="https://xrpl.org/docs/introduction/what-is-the-xrp-ledger" rel="noopener">What is the XRP Ledger?</a>, xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/ledgers" rel="noopener">Ledgers</a>, xrpl.org</li><li><a href="https://xrpl.org/docs/introduction/what-is-xrp" rel="noopener">What is XRP?</a> (history and naming), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/consensus-protocol" rel="noopener">Consensus Protocol</a>, xrpl.org</li><li><a href="https://developer.bitcoin.org/devguide/block_chain.html" rel="noopener">Block chain guide</a> (2,016 blocks every two weeks, which works out to ten minutes a block), developer.bitcoin.org</li><li>Average page time: measured by us from the public ledger. The 20,000 ledgers ending at 108,226,016 averaged 4.03 seconds each.</li></ul>
-      <nav class="pager" aria-label="More lessons"><div class="next soon"><span>Next lesson, Sat, Nov 14</span>How the XRP Ledger agrees without mining</div></nav>
-    </article>
+        <p>Here&#39;s one we picked: <a href="https://livenet.xrpl.org/ledgers/108226016" target="_blank" rel="noopener noreferrer">ledger 108,226,016</a> closed on Monday, November 9, 2026 at 4:54 PM Eastern with 181 transactions in it. Click through and you&#39;ll see each transaction, the page number, and its fingerprint.</p>
+        <p>Want to watch pages being added live? Open <a href="https://livenet.xrpl.org" target="_blank" rel="noopener noreferrer">livenet.xrpl.org</a> and wait a few seconds.</p>
+        <h2 id="common-questions">Common questions</h2>
+        <details class="faq" open><summary><h3>Is the XRP Ledger the same as Ripple?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Ripple is a company. The XRP Ledger is an open network that Ripple and many others use. Anyone can run a copy without asking Ripple or anyone else.</p></details>
+        <details class="faq"><summary><h3>Is XRP the same as the XRP Ledger?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. XRP is the currency built into the XRP Ledger. The ledger is the record book, and XRP is one of the things written in it. Lesson 3 covers what XRP is for.</p></details>
+        <details class="faq"><summary><h3>Does the XRP Ledger use mining?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Validators agree by comparing notes, not by racing to solve puzzles. That&#39;s why a page takes seconds instead of minutes.</p></details>
+        <details class="faq"><summary><h3>Who&#39;s in charge of the XRP Ledger?</h3><span class="plus" aria-hidden="true"></span></summary><p>No single person or company. Changes to the rules have to be voted in by validators, and Lesson 5 shows how that vote works.</p></details>
+        <details class="faq"><summary><h3>Can someone change an old payment?</h3><span class="plus" aria-hidden="true"></span></summary><p>Not quietly. Every page carries a fingerprint of the one before it, so a changed page would stand out right away and the validators would reject it.</p></details>
+        <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
+        <ul><li><strong>Ledger:</strong> a record book of payments and balances.</li><li><strong>Ledger version:</strong> one page of the XRP Ledger. A new one gets added every few seconds.</li><li><strong>Ledger index:</strong> the page number of a ledger version.</li><li><strong>Transaction:</strong> anything that changes the ledger, like a payment.</li><li><strong>Server:</strong> a computer running the XRP Ledger software and keeping a copy.</li><li><strong>Validator:</strong> a server that helps decide which transactions go on the next page.</li><li><strong>Consensus:</strong> the process validators use to agree on the next page.</li><li><strong>Blockchain:</strong> a chain of record pages, each one linked to the one before it.</li><li><strong>Stablecoin:</strong> a token built to hold a steady value, usually one US dollar.</li><li><strong>Mainnet and Testnet:</strong> the real network, and a practice network with fake money.</li></ul>
+        <h2 id="sources">Sources</h2>
+        <ul><li><a href="https://xrpl.org/docs/introduction/what-is-the-xrp-ledger" target="_blank" rel="noopener noreferrer">What is the XRP Ledger?</a>, xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/ledgers" target="_blank" rel="noopener noreferrer">Ledgers</a>, xrpl.org</li><li><a href="https://xrpl.org/docs/introduction/what-is-xrp" target="_blank" rel="noopener noreferrer">What is XRP?</a> (history and naming), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/consensus-protocol" target="_blank" rel="noopener noreferrer">Consensus Protocol</a>, xrpl.org</li><li><a href="https://developer.bitcoin.org/devguide/block_chain.html" target="_blank" rel="noopener noreferrer">Block chain guide</a> (2,016 blocks every two weeks, which works out to ten minutes a block), developer.bitcoin.org</li><li>Average page time: measured by us from the public ledger. The 20,000 ledgers ending at 108,226,016 averaged 4.03 seconds each.</li></ul>
+        <nav class="pager" aria-label="More lessons"><div class="next soon"><span>Next lesson, Sat, Nov 14</span>How the XRP Ledger agrees without mining</div></nav>
+      </article>
+      <nav class="toc" aria-label="On this page">
+        <p>On this page</p>
+        <ol><li><a href="#start-with-a-notebook">Start with a notebook</a></li><li><a href="#who-keeps-the-notebook">Who keeps the notebook?</a></li><li><a href="#how-is-this-different-from-bitcoin">How is this different from Bitcoin?</a></li><li><a href="#what-actually-goes-in-it">What actually goes in it?</a></li><li><a href="#where-did-it-come-from">Where did it come from?</a></li><li><a href="#can-i-try-it-without-spending-anything">Can I try it without spending anything?</a></li><li><a href="#see-it-for-yourself">See it for yourself</a></li><li><a href="#common-questions">Common questions</a></li><li><a href="#words-used-in-this-lesson">Words used in this lesson</a></li><li><a href="#sources">Sources</a></li></ol>
+      </nav>
+    </div>
   </main>
   <footer class="site">
-    <div class="wrap">
+    <div class="wide">
       <p>Written by XRPL-Utilities for XRP Ledger Education Month. #XRPEducationMonth</p>
       <p>For learning only. This is not financial advice, and nothing here is a reason to buy anything.</p>
       <p class="links"><a href="/learn/">All lessons</a> <a href="/contact/">Contact</a> <a href="/privacy/">Privacy</a> <a href="/terms/">Terms</a> <a href="/status/">Site status</a></p>

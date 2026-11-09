@@ -133,7 +133,55 @@
     tick();
   }
 
-  const WIDGETS = { tamper, 'live-chain': liveChain };
+  // ---- the ten-minute race --------------------------------------------------
+  // Ten minutes played back in fifteen seconds. The XRP Ledger takes about
+  // four seconds a page (so about 150 in ten minutes) and Bitcoin about ten
+  // minutes a block. Starts when the figure scrolls into view. Without JavaScript, or
+  // with reduced motion, the finished picture shows.
+  function race(root) {
+    const squares = Array.from(root.querySelectorAll('[data-role="grid"] rect'));
+    const btc = root.querySelector('[data-role="btc"]');
+    const btcCount = root.querySelector('[data-role="btc-count"]');
+    const xrplCount = root.querySelector('[data-role="xrpl-count"]');
+    const clock = root.querySelector('[data-role="clock"]');
+    const replay = root.querySelector('[data-role="replay"]');
+    const PLAY_MS = 15000;
+    const REAL_S = 600;
+    let raf = null;
+    const fmt = (s) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    function draw(t) {
+      const s = Math.min(REAL_S, t * REAL_S);
+      const pages = Math.min(squares.length, Math.floor((s / REAL_S) * squares.length));
+      squares.forEach((q, i) => q.classList.toggle('off', i >= pages));
+      const blockIn = s >= REAL_S;
+      btc.classList.toggle('off', !blockIn);
+      btcCount.textContent = blockIn ? '1 block' : '0 blocks, still working on it';
+      xrplCount.textContent = pages + (pages === 1 ? ' page' : ' pages');
+      clock.textContent = fmt(s);
+    }
+    function play() {
+      if (raf) cancelAnimationFrame(raf);
+      replay.disabled = true;
+      const t0 = performance.now();
+      const step = (now) => {
+        const t = (now - t0) / PLAY_MS;
+        draw(t);
+        if (t < 1) raf = requestAnimationFrame(step);
+        else { raf = null; replay.disabled = false; }
+      };
+      raf = requestAnimationFrame(step);
+    }
+    replay.addEventListener('click', play);
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    draw(0);
+    if (!('IntersectionObserver' in window)) { play(); return; }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); play(); }
+    }, { threshold: 0.5 });
+    io.observe(root);
+  }
+
+  const WIDGETS = { tamper, 'live-chain': liveChain, race };
   document.querySelectorAll('[data-widget]').forEach((root) => {
     const fn = WIDGETS[root.getAttribute('data-widget')];
     if (fn) fn(root);

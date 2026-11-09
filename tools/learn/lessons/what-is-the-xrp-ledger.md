@@ -2,6 +2,7 @@ title: What Is the XRP Ledger? A Plain-English Guide
 description: The XRP Ledger is a shared record of payments that computers all over the world keep in sync. Here's how it works, explained without the jargon.
 h1: What is the XRP Ledger?
 updated: 2026-11-10
+card: How a shared record book with no owner keeps the world in sync.
 short: The XRP Ledger is a shared record of payments and balances that computers all over the world keep identical copies of. A new page gets added about every four seconds, and no single company owns it.
 ---
 ## Start with a notebook
@@ -26,9 +27,9 @@ Bitcoin and the XRP Ledger do the same basic job. Both keep a shared record that
 
 - **Speed.** Bitcoin adds a new page (it calls them blocks) about once every ten minutes. The XRP Ledger adds one about every four seconds.
 - **How they agree.** Bitcoin computers race each other to solve a math puzzle, which takes a lot of computing power. That race is called mining. XRP Ledger validators skip the race and compare notes instead.
-- **What's built in.** On Bitcoin, the main thing you can do is send bitcoin. The XRP Ledger was built to hold more than one kind of money. It has its own currency, XRP, plus tokens for things like dollars, and a built-in marketplace for swapping between them. Later lessons cover each of these.
+- **What's built in.** On Bitcoin, the main thing you can do is send bitcoin. The XRP Ledger was built to hold more than one kind of money. It has its own currency, XRP, plus tokens like RLUSD (a stablecoin, meant to always be worth one US dollar), and a built-in marketplace for swapping between them. Later lessons cover each of these.
 
-::: speed
+::: race
 
 ## What actually goes in it?
 
@@ -89,6 +90,7 @@ Not quietly. Every page carries a fingerprint of the one before it, so a changed
 - **Validator:** a server that helps decide which transactions go on the next page.
 - **Consensus:** the process validators use to agree on the next page.
 - **Blockchain:** a chain of record pages, each one linked to the one before it.
+- **Stablecoin:** a token built to hold a steady value, usually one US dollar.
 - **Mainnet and Testnet:** the real network, and a practice network with fake money.
 
 ## Sources
