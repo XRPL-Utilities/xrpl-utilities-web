@@ -150,7 +150,7 @@ function head({ title, description, url, type, published, modified, graph, scrip
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=3" />${scripted ? '\n  <script src="/assets/pages/learn.js?v=3" defer></script>' : ''}
+  <link rel="stylesheet" href="/assets/learn.css?v=4" />${scripted ? '\n  <script src="/assets/pages/learn.js?v=4" defer></script>' : ''}
   <script type="application/ld+json">
 ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   </script>

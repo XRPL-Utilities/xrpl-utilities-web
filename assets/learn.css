@@ -106,6 +106,16 @@ a.page-num:hover { color: var(--accent); }
 .tamper .reset { margin-top: 12px; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
 .tamper .reset:hover { background: var(--accent); color: var(--ink); }
 .tamper .reset[hidden] { display: none; }
+.who { white-space: nowrap; font-weight: 600; color: #fff; }
+.who i { display: inline-grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; margin-right: 5px; font-style: normal; font-size: 0.72em; font-weight: 700; color: var(--ink); vertical-align: 0.1em; }
+.who-a i { background: #00b8ff; }
+.who-b i { background: #a78bfa; }
+.who-c i { background: #34d399; }
+.who-d i { background: #fbbf24; }
+.tamper .page + .page.broken::before { background: repeating-linear-gradient(to bottom, #ef4444 0 3px, transparent 3px 6px); }
+.tamper .broken { animation: shake 0.4s ease-in-out; }
+@keyframes shake { 0%, 100% { transform: none; } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .tamper .broken { animation: none; } }
 
 /* ---- hero ------------------------------------------------------------------ */
 .hero { border-bottom: 1px solid var(--border); background:
@@ -126,12 +136,15 @@ a.page-num:hover { color: var(--accent); }
 .hero-chain .ln { fill: #2a2a2a; }
 .hero-chain .fp { fill: var(--accent); font: 500 12px "JetBrains Mono", ui-monospace, monospace; }
 .hero-chain .lk { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 4 4; opacity: 0.8; }
-.hero-chain .new .card { stroke: var(--accent); filter: url(#glow); }
-.hero-chain .new .ln { fill: rgba(0, 184, 255, 0.35); }
-.hero-chain .new, .hero-chain .lk-new { animation: newpage 4s ease-out infinite; }
-@keyframes newpage { 0% { opacity: 0; transform: translateX(18px); } 18% { opacity: 1; transform: none; } 100% { opacity: 1; transform: none; } }
-.hero-chain figcaption { text-align: center; }
-@media (prefers-reduced-motion: reduce) { .hero-chain .new, .hero-chain .lk-new { animation: none; } }
+.hero-chain .halo { fill: none; stroke: var(--accent); stroke-width: 2; filter: url(#glow); opacity: 0; animation: lit 5s ease-in-out infinite; }
+.hero-chain .pg:nth-of-type(2) .halo { animation-delay: 1s; }
+.hero-chain .pg:nth-of-type(3) .halo { animation-delay: 2s; }
+.hero-chain .pg:nth-of-type(4) .halo { animation-delay: 3s; }
+.hero-chain .lk { animation: flow 1s linear infinite; }
+@keyframes lit { 0% { opacity: 0; } 6% { opacity: 1; } 24% { opacity: 1; } 40% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes flow { to { stroke-dashoffset: -8; } }
+.hero-chain figcaption { text-align: center; font-size: 1rem; color: var(--text); margin-top: 16px; }
+@media (prefers-reduced-motion: reduce) { .hero-chain .halo, .hero-chain .lk { animation: none; } .hero-chain .new .halo { opacity: 1; } }
 
 /* ---- body and contents sidebar ---------------------------------------------- */
 .body-grid { display: block; }
@@ -167,6 +180,10 @@ a.page-num:hover { color: var(--accent); }
 .race .clock { font: 600 1.1rem "JetBrains Mono", ui-monospace, monospace; color: var(--accent); }
 .race rect { transition: opacity 0.25s ease, transform 0.25s ease; transform-box: fill-box; transform-origin: center; }
 .race rect.off { opacity: 0; transform: scale(0.4); }
+.race .mine { fill: none; stroke: #f7931a; stroke-width: 1.5; stroke-dasharray: 3 3; animation: flow 0.6s linear infinite, dig 0.5s ease-in-out infinite alternate; }
+.race .guess { fill: #f7931a; opacity: 0.75; font: 500 12px "JetBrains Mono", ui-monospace, monospace; }
+@keyframes dig { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) { .race .mine { animation: none; } }
 .race .replay { margin-top: 12px; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
 .race .replay:hover:not(:disabled) { background: var(--accent); color: var(--ink); }
 .race .replay:disabled { opacity: 0.4; cursor: default; }
