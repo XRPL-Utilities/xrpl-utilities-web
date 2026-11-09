@@ -46,8 +46,8 @@ export function inline(text) {
     out += esc(text.slice(last, m.index));
     if (m[1] !== undefined) {
       const href = safeHref(m[2]);
-      const ext = href.startsWith('https://') && !href.startsWith(SITE);
-      out += `<a href="${esc(href)}"${ext ? ' rel="noopener"' : ''}>${esc(m[1])}</a>`;
+      // Links inside a lesson open in a new tab so the reader keeps their place.
+      out += `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(m[1])}</a>`;
     } else {
       out += `<strong>${esc(m[3])}</strong>`;
     }
@@ -57,6 +57,13 @@ export function inline(text) {
 }
 
 const plain = (text) => text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');
+
+function widget(name) {
+  if (!/^[a-z0-9-]+$/.test(name)) throw new Error(`bad widget name: ${name}`);
+  const file = path.join(here, 'widgets', `${name}.html`);
+  if (!fs.existsSync(file)) throw new Error(`no widget ${name} in tools/learn/widgets`);
+  return fs.readFileSync(file, 'utf8').trim();
+}
 
 export function parseLesson(src) {
   const [headRaw, ...rest] = src.split(/^---$/m);
@@ -68,10 +75,14 @@ export function parseLesson(src) {
   for (const k of ['title', 'description', 'h1', 'updated', 'short']) {
     if (!meta[k]) throw new Error(`lesson is missing "${k}"`);
   }
+  // The picture at the top of the page: "hero: name" in the head, or the
+  // shared chain picture.
+  const hero = widget(meta.hero || 'hero-chain');
   const body = rest.join('---');
   const blocks = body.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
   const html = [];
   const faq = [];
+  const toc = [];
   let scripted = false;
   let words = meta.short.split(/\s+/).length;
   for (const b of blocks) {
@@ -79,13 +90,10 @@ export function parseLesson(src) {
     if (b.startsWith('## ')) {
       const title = b.slice(3).trim();
       const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      toc.push({ id, title: plain(title) });
       html.push(`<h2 id="${id}">${inline(title)}</h2>`);
     } else if (b.startsWith('::: ')) {
-      const name = b.slice(4).trim();
-      if (!/^[a-z0-9-]+$/.test(name)) throw new Error(`bad widget name: ${name}`);
-      const file = path.join(here, 'widgets', `${name}.html`);
-      if (!fs.existsSync(file)) throw new Error(`no widget ${name} in tools/learn/widgets`);
-      const w = fs.readFileSync(file, 'utf8').trim();
+      const w = widget(b.slice(4).trim());
       if (/data-widget=/.test(w)) scripted = true;
       words += plain(w.replace(/<[^>]+>/g, ' ')).split(/\s+/).length;
       html.push(w.replace(/\n/g, '\n      '));
@@ -94,7 +102,8 @@ export function parseLesson(src) {
       const answer = a.join(' ').trim();
       if (!answer) throw new Error(`question has no answer: ${q}`);
       faq.push({ q: plain(q.trim()), a: plain(answer) });
-      html.push(`<div class="faq"><h3>${inline(q.trim())}</h3><p>${inline(answer)}</p></div>`);
+      const open = faq.length === 1 ? ' open' : '';
+      html.push(`<details class="faq"${open}><summary><h3>${inline(q.trim())}</h3><span class="plus" aria-hidden="true"></span></summary><p>${inline(answer)}</p></details>`);
     } else if (/^- /.test(b)) {
       const items = b.split(/\n(?=- )/).map((i) => `<li>${inline(i.replace(/^- /, '').replace(/\n/g, ' '))}</li>`);
       html.push(`<ul>${items.join('')}</ul>`);
@@ -105,7 +114,7 @@ export function parseLesson(src) {
       html.push(`<p>${inline(b.replace(/\n/g, ' '))}</p>`);
     }
   }
-  return { meta, html, faq, scripted, minutes: Math.max(1, Math.round(words / 200)) };
+  return { meta, html, faq, toc, hero, scripted: scripted || /data-widget=/.test(hero), minutes: Math.max(1, Math.round(words / 200)) };
 }
 
 const longDate = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -114,7 +123,7 @@ const fullDate = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US
 // JSON inside <script> must not be able to close the tag.
 const ld = (obj) => JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
 
-function head({ title, description, url, type, published, modified, graph, scripted }) {
+function head({ title, description, url, type, published, modified, graph, scripted, image = `${SITE}/assets/social-card.png` }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,7 +135,7 @@ function head({ title, description, url, type, published, modified, graph, scrip
   <meta name="description" content="${esc(description)}" />
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(description)}" />
-  <meta property="og:image" content="${SITE}/assets/social-card.png" />
+  <meta property="og:image" content="${image}" />
   <meta property="og:url" content="${url}" />
   <meta property="og:type" content="${type}" />
   <meta property="og:site_name" content="XRPL-Utilities" />${published ? `
@@ -136,12 +145,12 @@ function head({ title, description, url, type, published, modified, graph, scrip
   <meta name="twitter:site" content="@XRPL_Utilities" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(description)}" />
-  <meta name="twitter:image" content="${SITE}/assets/social-card.png" />
+  <meta name="twitter:image" content="${image}" />
   <link rel="canonical" href="${url}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=2" />${scripted ? '\n  <script src="/assets/pages/learn.js?v=2" defer></script>' : ''}
+  <link rel="stylesheet" href="/assets/learn.css?v=3" />${scripted ? '\n  <script src="/assets/pages/learn.js?v=3" defer></script>' : ''}
   <script type="application/ld+json">
 ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   </script>
@@ -149,7 +158,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
 <body>
   <a href="#main" class="skip">Skip to content</a>
   <header class="site">
-    <div class="wrap bar">
+    <div class="wide bar">
       <a href="/learn/" class="brand">
         <img src="/assets/img/logo-mark-128.webp" width="32" height="32" loading="eager" decoding="async" alt="" />
         <span>XRPL-Utilities <em>Learn</em></span>
@@ -161,7 +170,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
 }
 
 const FOOT = `  <footer class="site">
-    <div class="wrap">
+    <div class="wide">
       <p>Written by XRPL-Utilities for XRP Ledger Education Month. ${esc(manifest.hashtag)}</p>
       <p>For learning only. This is not financial advice, and nothing here is a reason to buy anything.</p>
       <p class="links"><a href="/learn/">All lessons</a> <a href="/contact/">Contact</a> <a href="/privacy/">Privacy</a> <a href="/terms/">Terms</a> <a href="/status/">Site status</a></p>
@@ -179,7 +188,10 @@ const crumbs = (items) => ({
 
 function lessonPage(entry, lesson) {
   const url = `${SITE}/learn/${entry.slug}/`;
-  const { meta, html, faq, minutes, scripted } = lesson;
+  // A lesson's own share card, when tools/learn/card.mjs has made one.
+  const card = `assets/img/learn/${entry.slug}.png`;
+  const image = fs.existsSync(path.join(repo, card)) ? `${SITE}/${card}` : `${SITE}/assets/social-card.png`;
+  const { meta, html, faq, toc, hero, minutes, scripted } = lesson;
   const total = manifest.lessons.length;
   const prev = manifest.lessons.find((l) => l.n === entry.n - 1);
   const next = manifest.lessons.find((l) => l.n === entry.n + 1);
@@ -204,7 +216,7 @@ function lessonPage(entry, lesson) {
       inLanguage: 'en',
       author: { '@id': `${SITE}/#org` },
       publisher: { '@id': `${SITE}/#org` },
-      image: `${SITE}/assets/social-card.png`,
+      image,
       isPartOf: { '@type': 'Course', name: 'Learn the XRP Ledger', url: `${SITE}/learn/` },
     },
     crumbs([['Learn', `${SITE}/learn/`], [meta.h1, url]]),
@@ -216,17 +228,32 @@ function lessonPage(entry, lesson) {
       mainEntity: faq.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
     });
   }
-  return head({ title: meta.title, description: meta.description, url, type: 'article', published: entry.date, modified: meta.updated, graph, scripted })
+  return head({ title: meta.title, description: meta.description, url, type: 'article', published: entry.date, modified: meta.updated, graph, scripted, image })
     + `  <main id="main">
-    <article class="wrap lesson">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson ${entry.n}</nav>
-      <p class="kicker">Lesson ${entry.n} of ${total}</p>
-      <h1>${inline(meta.h1)}</h1>
-      <p class="meta">Updated <time datetime="${meta.updated}">${fullDate(meta.updated)}</time> <span aria-hidden="true">&middot;</span> ${minutes} minute read</p>
-      <div class="short"><strong>The short answer:</strong> ${inline(meta.short)}</div>
-      ${html.join('\n      ')}
-      <nav class="pager" aria-label="More lessons">${pager.join('')}</nav>
-    </article>
+    <div class="hero">
+      <div class="wide hero-grid">
+        <div class="hero-text">
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson ${entry.n}</nav>
+          <p class="kicker">Lesson ${entry.n} of ${total} <span aria-hidden="true">&middot;</span> ${esc(manifest.series)}</p>
+          <h1>${inline(meta.h1)}</h1>
+          <p class="meta">Updated <time datetime="${meta.updated}">${fullDate(meta.updated)}</time> <span aria-hidden="true">&middot;</span> ${minutes} minute read</p>
+          <div class="short"><strong>The short answer:</strong> ${inline(meta.short)}</div>
+        </div>
+        <div class="hero-art">
+          ${hero.replace(/\n/g, '\n          ')}
+        </div>
+      </div>
+    </div>
+    <div class="wide body-grid">
+      <article class="lesson">
+        ${html.join('\n        ')}
+        <nav class="pager" aria-label="More lessons">${pager.join('')}</nav>
+      </article>
+      <nav class="toc" aria-label="On this page">
+        <p>On this page</p>
+        <ol>${toc.map((t) => `<li><a href="#${t.id}">${esc(t.title)}</a></li>`).join('')}</ol>
+      </nav>
+    </div>
   </main>
 ` + FOOT;
 }
