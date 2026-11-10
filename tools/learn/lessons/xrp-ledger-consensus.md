@@ -82,6 +82,9 @@ No. Ripple publishes one of the two recommended lists, and the XRP Ledger Founda
 ?? What happens if the validators can't agree?
 The network pauses and adds nothing until they can. It's built to stop rather than write down something wrong.
 
+?? What if one validator keeps disagreeing?
+It gets outvoted. The page goes in with the validators that match, and the odd one out has to drop its version and take the agreed page. If it keeps happening, servers can take it off their trusted list. The recommended lists also drop validators that aren't reliable.
+
 ?? Why 80%?
 It's high enough that a few broken or dishonest validators can't push a bad page through. It's also low enough that the network keeps going when a few of them go offline.
 

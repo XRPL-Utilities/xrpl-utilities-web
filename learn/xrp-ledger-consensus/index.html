@@ -114,6 +114,14 @@
         },
         {
           "@type": "Question",
+          "name": "What if one validator keeps disagreeing?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It gets outvoted. The page goes in with the validators that match, and the odd one out has to drop its version and take the agreed page. If it keeps happening, servers can take it off their trusted list. The recommended lists also drop validators that aren't reliable."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Why 80%?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -222,6 +230,7 @@
         <details class="faq"><summary><h3>Is this the same as proof of stake?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Proof of stake gives a bigger say to whoever locks up more coins. On the XRP Ledger, owning more XRP doesn&#39;t get you a bigger vote.</p></details>
         <details class="faq"><summary><h3>Does Ripple control the validators?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Ripple publishes one of the two recommended lists, and the XRP Ledger Foundation publishes the other. Each validator is run by its own operator, and any server can pick its own list.</p></details>
         <details class="faq"><summary><h3>What happens if the validators can&#39;t agree?</h3><span class="plus" aria-hidden="true"></span></summary><p>The network pauses and adds nothing until they can. It&#39;s built to stop rather than write down something wrong.</p></details>
+        <details class="faq"><summary><h3>What if one validator keeps disagreeing?</h3><span class="plus" aria-hidden="true"></span></summary><p>It gets outvoted. The page goes in with the validators that match, and the odd one out has to drop its version and take the agreed page. If it keeps happening, servers can take it off their trusted list. The recommended lists also drop validators that aren&#39;t reliable.</p></details>
         <details class="faq"><summary><h3>Why 80%?</h3><span class="plus" aria-hidden="true"></span></summary><p>It&#39;s high enough that a few broken or dishonest validators can&#39;t push a bad page through. It&#39;s also low enough that the network keeps going when a few of them go offline.</p></details>
         <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
         <ul><li><strong>Double spend:</strong> trying to spend the same money twice.</li><li><strong>Consensus protocol:</strong> the rules a shared ledger follows so every copy agrees.</li><li><strong>Mining:</strong> Bitcoin&#39;s way of agreeing, a guessing race to write the next block.</li><li><strong>Validator:</strong> a server that helps decide which payments go on the next page.</li><li><strong>Unique Node List (UNL):</strong> the list of validators a server trusts.</li><li><strong>Recommended list:</strong> a ready-made UNL that most servers use.</li><li><strong>Proposal:</strong> a validator&#39;s list of payments it thinks should go on the next page.</li><li><strong>Validation:</strong> a validator&#39;s signed copy of the finished page.</li><li><strong>Supermajority:</strong> at least 80% of the trusted validators.</li></ul>
