@@ -40,7 +40,6 @@ Each service publishes its own llms.txt, x402 catalog, OpenAPI document and agen
 
 - [Learn the XRP Ledger](https://xrpl-utilities.com/learn/): free plain-English lessons on how the XRP Ledger works, for people new to it
 - [What is the XRP Ledger?](https://xrpl-utilities.com/learn/what-is-the-xrp-ledger/)
-- [How the XRP Ledger agrees without mining](https://xrpl-utilities.com/learn/xrp-ledger-consensus/)
 
 ## Optional
 
