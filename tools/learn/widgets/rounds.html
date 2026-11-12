@@ -1,0 +1,15 @@
+<figure class="widget rounds">
+  <div class="widget-head"><strong>How validators compare notes</strong></div>
+  <ol class="steps">
+    <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><b>Collect</b><span>Each validator gathers the new payments it has heard about.</span></li>
+    <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h12M12 6l6 6-6 6"/><circle cx="4" cy="12" r="1.5"/></svg></span><b>Share</b><span>It sends that list to the other validators.</span></li>
+    <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg></span><b>Trim and repeat</b><span>Payments most others haven't seen wait for the next page. Then they swap lists again.</span></li>
+    <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><b>Lock it in</b><span>Once 80% of the trusted validators match, the page is final.</span></li>
+  </ol>
+  <div class="agree" aria-hidden="true">
+    <div class="agree-top"><span>Agreement needed</span><span class="agree-end">80% to lock in</span></div>
+    <div class="agree-bar"><span></span></div>
+    <div class="agree-scale"><span>First round: 50%</span><span>Rises each round</span><span>Final: 80%</span></div>
+  </div>
+  <figcaption>This takes a few seconds, then it starts over for the next page.</figcaption>
+</figure>

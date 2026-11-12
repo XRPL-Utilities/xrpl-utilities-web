@@ -97,7 +97,8 @@ for (const l of manifest.lessons.filter((x) => x.published)) {
   check(`${rel}: has a glossary`, /<h2 id="words-used-in-this-lesson">/.test(html));
   const sources = html.slice(html.indexOf('<h2 id="sources">'));
   check(`${rel}: sources cite xrpl.org`, /href="https:\/\/xrpl\.org\//.test(sources));
-  const sentences = lesson.html.join('').split(/<\/(?:p|li|h\d)>/).flatMap((b) => b.replace(/<[^>]+>/g, ' ').split(/(?<=[.?!])\s+/));
+  // Text inside drawings (svg labels) isn't prose, so it is left out.
+  const sentences = lesson.html.join('').replace(/<svg[\s\S]*?<\/svg>/g, ' ').split(/<\/(?:p|li|h\d)>/).flatMap((b) => b.replace(/<[^>]+>/g, ' ').split(/(?<=[.?!])\s+/));
   const long = sentences.filter((s) => s.split(/\s+/).filter(Boolean).length > 30);
   check(`${rel}: no sentence over 30 words`, long.length === 0, long[0]);
   check(`${rel}: listed in the sitemap`, read('sitemap.xml').includes(`https://xrpl-utilities.com/learn/${l.slug}/`));

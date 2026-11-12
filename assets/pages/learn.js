@@ -71,8 +71,9 @@
     const URL_LEDGERS = 'https://api.xrpscan.com/api/v1/ledgers';
     const PAUSE_MS = 8000;
     const STOP_AFTER_MS = 5 * 60 * 1000;
-    const started = Date.now();
+    let started = Date.now();
     let timer = null;
+    const refresh = root.querySelector('[data-role="refresh"]');
     const HEX64 = /^[0-9A-F]{64}$/;
 
     function pickRun(ledgers) {
@@ -110,9 +111,11 @@
       });
       status.textContent = 'Live. New pages keep arriving while this tab is open.';
     }
+    let busy = false;
     async function tick() {
       timer = null;
-      if (document.hidden) return;
+      if (document.hidden || busy) return;
+      busy = true;
       try {
         const r = await fetch(URL_LEDGERS, { headers: { accept: 'application/json' } });
         if (!r.ok) throw new Error('status ' + r.status);
@@ -122,11 +125,23 @@
         if (run) render(run);
         else if (!list.children.length) status.textContent = 'Waiting for three pages in a row...';
       } catch (e) {
-        if (!list.children.length) status.textContent = 'Couldn’t reach the live ledger just now. You can still watch it at livenet.xrpl.org.';
+        status.textContent = list.children.length
+          ? 'Couldn’t reach the live ledger just now. These are the last pages we got.'
+          : 'Couldn’t reach the live ledger just now. You can still watch it at livenet.xrpl.org.';
       }
+      busy = false;
+      if (timer) clearTimeout(timer);
       if (Date.now() - started < STOP_AFTER_MS) timer = setTimeout(tick, PAUSE_MS);
-      else status.textContent = 'Paused. Reload the page to see the newest pages.';
+      else status.textContent = 'Paused. Press "Show the newest pages" to start again.';
     }
+    // The button restarts the clock and fetches straight away.
+    if (refresh) refresh.addEventListener('click', () => {
+      if (busy) return;
+      if (timer) { clearTimeout(timer); timer = null; }
+      started = Date.now();
+      status.textContent = 'Loading the latest pages...';
+      tick();
+    });
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && !timer && Date.now() - started < STOP_AFTER_MS) tick();
     });

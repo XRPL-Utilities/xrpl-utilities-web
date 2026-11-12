@@ -8,49 +8,35 @@ short: The XRP Ledger doesn't use mining. Trusted computers called validators co
 ---
 ## The problem every shared ledger has to solve
 
-In Lesson 1 we pictured the XRP Ledger as a notebook, with an exact copy on computers all over the world. That raises a hard question. Who decides what goes on the next page?
+In Lesson 1 we pictured the XRP Ledger as a notebook, with copies on computers all over the world. So who decides what goes on the next page?
 
-Payments don't reach every computer at the same moment. Some arrive in a different order, and some arrive late.
+Here's the catch. Say Alice has 10 XRP, and at the same moment she sends 10 to Bob and 10 to Carol. Only one of those can go through.
 
-Here's why that matters. Say Alice has 10 XRP. At the same moment, she sends 10 XRP to Bob and 10 XRP to Carol. Only one of those payments can go through. If half the computers pick Bob and half pick Carol, the copies stop matching and the notebook is useless.
+::: double-spend
 
-Computer scientists call this the double-spend problem. A bank solves it easily, because the bank is the boss and its computer decides. A shared ledger has no boss, so it needs a set of rules that everyone follows. Those rules are called a consensus protocol.
+That's called the double-spend problem. A bank solves it by being the boss. A shared ledger has no boss, so every copy follows the same rules instead. Those rules are called a consensus protocol.
 
 ## How Bitcoin solves it: a race
 
-Bitcoin settles it with a race called mining. Computers called miners make guess after guess, looking for a number that fits a math puzzle. Almost every guess is wrong.
+Bitcoin settles it with a guessing race called mining. The first miner to find a guess that fits writes the next block and gets paid in new bitcoin. A winner turns up about every ten minutes. [Lesson 1](/learn/what-is-the-xrp-ledger/) shows that race.
 
-The first miner to find one that fits gets to write the next block. They're paid for it in new bitcoin plus the fees on the payments inside. On average a winner turns up about every ten minutes.
-
-It works, but it's built on a race that takes a lot of computing power. To cheat, you'd need more computing power than everyone else put together. That's known as a 51% attack.
+To cheat Bitcoin, you'd need more computing power than everyone else put together. That's called a 51% attack. The XRP Ledger can't have one, because there's no mining to take over.
 
 ## How the XRP Ledger solves it: compare notes
 
 The XRP Ledger skips the race. A group of servers called validators compare notes instead.
 
-Every server keeps a list of validators it trusts not to gang up and cheat together. That list is called its Unique Node List, or UNL for short. Most servers use a recommended list. There are two of them, one from the XRP Ledger Foundation and one from Ripple. On November 9, 2026, both lists named the same 35 validators.
+Each server keeps a list of validators it trusts, called its Unique Node List (UNL). Most use a recommended list from the XRP Ledger Foundation or from Ripple. On November 9, 2026, both lists named the same 35 validators.
 
-Every few seconds, the validators go through the same steps:
+::: rounds
 
-1. **Collect.** Each validator gathers the payments it has heard about that aren't on a page yet.
-2. **Propose.** It shares that list with the others. This is called a proposal.
-3. **Adjust.** It looks at the other proposals and drops anything most validators haven't seen. Dropped payments aren't lost. They just wait for the next page.
-4. **Repeat.** The validators go back and forth a few times. With each round, the bar for agreement goes up, from 50% to a final 80%.
-5. **Lock it in.** Each validator applies the agreed payments in the same order and shares a signed copy of the result. When at least 80% of the trusted validators end up with matching results, the page is final.
-
-With 35 validators on the list, that means 28 of them have to match. Nobody wins anything, and no new XRP gets made. Every XRP that will ever exist was created when the ledger started.
-
-::: vote
+With 35 on the list, 28 have to match. Nobody wins a prize, and no new XRP gets made. Every XRP that will ever exist was created when the ledger started.
 
 ## What if some validators go bad?
 
-The rules are built for that. A validator could crash, lose its internet connection, or be run by someone dishonest.
+A validator could crash, lose its connection, or be run by someone dishonest. Try it: knock some out and close a page.
 
-- **Fewer than 20% go bad.** On a list of 35, that's up to 7. The rest still reach 80%, so pages keep getting locked in like nothing happened.
-- **Between 20% and 80% go bad.** The honest ones can't reach 80% on their own. So the network pauses instead of guessing. It doesn't add a wrong page, and it picks back up once enough validators return.
-- **More than 80% team up.** Only then could a bad page get through. That's why the recommended lists are spread across different owners in different countries.
-
-There's no 51% attack either, because there's no mining to take over.
+::: vote
 
 ## Trusted doesn't mean in charge
 
