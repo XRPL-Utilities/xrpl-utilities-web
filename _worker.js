@@ -658,7 +658,7 @@ function catalogResponse(body) {
 const PAGE_DIRS = new Set([
   "/start", "/sentinel", "/sentinel/bulk", "/telemetry", "/pulse", "/trust",
   "/vault", "/flows", "/lineage", "/pricing", "/status", "/contact", "/tip", "/terms", "/privacy", "/whales", "/build",
-  "/verify", "/learn", "/learn/what-is-the-xrp-ledger", "/learn/xrp-ledger-consensus",
+  "/verify", "/learn", "/learn/what-is-the-xrp-ledger",
 ]);
 
 // API answers and the x402 catalog are data for scripts, not pages. Search

@@ -19,7 +19,7 @@ Anyone can run the software and keep a copy. Most of those computers (called ser
 
 A smaller group, called validators, does the agreeing. They look at the payments waiting to go in, compare their lists with each other, and when enough of them match, the new page is locked in. The whole round takes a few seconds. Over the 20,000 pages before November 9, 2026, it averaged just over four seconds a page.
 
-[Lesson 2](/learn/xrp-ledger-consensus/) covers how that agreement works, and why it doesn't need mining.
+Lesson 2 covers how that agreement works, and why it doesn't need mining.
 
 ## How is this different from Bitcoin?
 
