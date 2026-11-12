@@ -71,6 +71,7 @@ const VETTED = [
   ['flows.js', 'const startInterval = setInterval(() => {'],    // waits up to 10s for d3, then clears
   ['status.js', 'setInterval(() => { if (!document.hidden) refresh(); }, 60000)'],
   ['telemetry.js', 'setInterval(refreshSpot, 60_000)'],         // cleared when hidden
+  ['learn.js', 'timer = setInterval(() => {'],                  // vote animation, about two seconds, clears itself; no network
 ];
 const pagesDir = path.join(repo, 'assets/pages');
 for (const f of fs.readdirSync(pagesDir).filter((n) => n.endsWith('.js'))) {

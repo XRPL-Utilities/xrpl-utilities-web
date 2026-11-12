@@ -189,7 +189,93 @@
     io.observe(root);
   }
 
-  const WIDGETS = { tamper, 'live-chain': liveChain, race };
+  // ---- validators voting a page in ------------------------------------------
+  // 35 validators, as on the recommended lists, and the 80% bar (28 of 35).
+  // The slider takes some offline or makes them cheat. Closing a page shows
+  // the honest ones agreeing one at a time, then what the rules do next.
+  function vote(root) {
+    const dots = Array.from(root.querySelectorAll('[data-role="grid"] circle'));
+    const range = root.querySelector('#vote-bad');
+    const badCount = root.querySelector('[data-role="bad-count"]');
+    const bar = root.querySelector('[data-role="bar"]');
+    const meter = bar.parentNode;
+    const status = root.querySelector('[data-role="status"]');
+    const go = root.querySelector('[data-role="go"]');
+    const TOTAL = dots.length;
+    const NEED = Math.ceil(TOTAL * 0.8);
+    const STEP_MS = 45;
+    const still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // A fixed shuffle, so the same validators go bad each time.
+    const order = dots.map((_, i) => i);
+    let seed = 7;
+    for (let i = order.length - 1; i > 0; i--) {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      const j = seed % (i + 1);
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    let timer = null;
+
+    function bad() { return Math.max(0, Math.min(TOTAL, parseInt(range.value, 10) || 0)); }
+    function setStatus(text, cls) { status.textContent = text; status.className = 'vote-status ' + cls; }
+    function reset() {
+      if (timer) { clearInterval(timer); timer = null; }
+      const n = bad();
+      badCount.textContent = String(n);
+      const badSet = new Set(order.slice(0, n));
+      dots.forEach((d, i) => { d.classList.toggle('bad', badSet.has(i)); d.classList.remove('yes'); });
+      bar.style.width = '0%';
+      meter.classList.remove('red');
+      setStatus('Press "Close a page" to see what happens.', '');
+      return badSet;
+    }
+    function finish(n) {
+      const good = TOTAL - n;
+      if (n >= NEED) {
+        meter.classList.add('red');
+        bar.style.width = (n / TOTAL * 100) + '%';
+        setStatus('If all ' + n + ' of these were cheating together, they would reach ' + NEED + ' on their own. Only then could a bad page get through. It would take that many validators, run by different groups, all cheating the same way.', 'bad');
+      } else if (good >= NEED) {
+        setStatus(good + ' of ' + TOTAL + ' agree. That clears ' + NEED + ', so the page is locked in.', 'ok');
+      } else {
+        setStatus('Only ' + good + ' of ' + TOTAL + ' agree, short of ' + NEED + '. The network pauses instead of guessing. Nothing wrong gets written, and it picks back up when enough validators return.', 'stuck');
+      }
+      go.disabled = false;
+    }
+    function play() {
+      const badSet = reset();
+      const n = badSet.size;
+      const honest = order.filter((i) => !badSet.has(i)).reverse();
+      go.disabled = true;
+      if (still) {
+        honest.forEach((i) => dots[i].classList.add('yes'));
+        bar.style.width = (honest.length / TOTAL * 100) + '%';
+        finish(n);
+        return;
+      }
+      let k = 0;
+      setStatus('Comparing notes...', '');
+      timer = setInterval(() => {
+        if (k < honest.length) {
+          dots[honest[k]].classList.add('yes');
+          k++;
+          bar.style.width = (k / TOTAL * 100) + '%';
+        } else {
+          clearInterval(timer); timer = null;
+          finish(n);
+        }
+      }, STEP_MS);
+    }
+    range.addEventListener('input', () => { reset(); go.disabled = false; });
+    go.addEventListener('click', play);
+    reset();
+    if (!('IntersectionObserver' in window)) { play(); return; }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); play(); }
+    }, { threshold: 0.4 });
+    io.observe(root);
+  }
+
+  const WIDGETS = { tamper, 'live-chain': liveChain, race, vote };
   document.querySelectorAll('[data-widget]').forEach((root) => {
     const fn = WIDGETS[root.getAttribute('data-widget')];
     if (fn) fn(root);
