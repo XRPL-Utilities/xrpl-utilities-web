@@ -24,8 +24,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=5" />
-  <script src="/assets/pages/learn.js?v=5" defer></script>
+  <link rel="stylesheet" href="/assets/learn.css?v=6" />
+  <script src="/assets/pages/learn.js?v=6" defer></script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -152,7 +152,7 @@
           <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 2</nav>
           <p class="kicker">Lesson 2 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
           <h1>How the XRP Ledger agrees without mining</h1>
-          <p class="meta">Updated <time datetime="2026-11-14">November 14, 2026</time> <span aria-hidden="true">&middot;</span> 7 minute read</p>
+          <p class="meta">Updated <time datetime="2026-11-14">November 14, 2026</time> <span aria-hidden="true">&middot;</span> 6 minute read</p>
           <div class="short"><strong>The short answer:</strong> The XRP Ledger doesn&#39;t use mining. Trusted computers called validators compare their lists of new payments, and once at least 80% of them agree, the next page is locked in. It takes a few seconds, with no race to burn computing power.</div>
         </div>
         <div class="hero-art">
@@ -178,20 +178,48 @@
     <div class="wide body-grid">
       <article class="lesson">
         <h2 id="the-problem-every-shared-ledger-has-to-solve">The problem every shared ledger has to solve</h2>
-        <p>In Lesson 1 we pictured the XRP Ledger as a notebook, with an exact copy on computers all over the world. That raises a hard question. Who decides what goes on the next page?</p>
-        <p>Payments don&#39;t reach every computer at the same moment. Some arrive in a different order, and some arrive late.</p>
-        <p>Here&#39;s why that matters. Say Alice has 10 XRP. At the same moment, she sends 10 XRP to Bob and 10 XRP to Carol. Only one of those payments can go through. If half the computers pick Bob and half pick Carol, the copies stop matching and the notebook is useless.</p>
-        <p>Computer scientists call this the double-spend problem. A bank solves it easily, because the bank is the boss and its computer decides. A shared ledger has no boss, so it needs a set of rules that everyone follows. Those rules are called a consensus protocol.</p>
+        <p>In Lesson 1 we pictured the XRP Ledger as a notebook, with copies on computers all over the world. So who decides what goes on the next page?</p>
+        <p>Here&#39;s the catch. Say Alice has 10 XRP, and at the same moment she sends 10 to Bob and 10 to Carol. Only one of those can go through.</p>
+        <figure class="widget dspend">
+        <svg viewBox="0 0 640 250" role="img" aria-label="Alice has 10 XRP and sends it to Bob and to Carol at the same moment. One copy of the ledger records the payment to Bob, another records the payment to Carol, and the copies no longer match.">
+          <defs><marker id="ds-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ds-head"/></marker></defs>
+          <g class="ds-person"><circle cx="70" cy="125" r="30" class="ds-a"/><text x="70" y="132" class="ds-ini">A</text><text x="70" y="180" class="ds-name">Alice</text><text x="70" y="200" class="ds-note">has 10 XRP</text></g>
+          <path d="M104 112 C 160 70, 190 62, 236 62" class="ds-path ds-p1" marker-end="url(#ds-arrow)"/>
+          <path d="M104 138 C 160 180, 190 188, 236 188" class="ds-path ds-p2" marker-end="url(#ds-arrow)"/>
+          <text x="168" y="62" class="ds-amt">10 XRP</text><text x="168" y="208" class="ds-amt">10 XRP</text>
+          <g class="ds-person"><circle cx="266" cy="62" r="24" class="ds-b"/><text x="266" y="68" class="ds-ini">B</text><text x="266" y="104" class="ds-name">Bob</text></g>
+          <g class="ds-person"><circle cx="266" cy="188" r="24" class="ds-c"/><text x="266" y="194" class="ds-ini">C</text><text x="266" y="230" class="ds-name">Carol</text></g>
+          <g class="ds-copy ds-c1"><rect x="360" y="26" width="200" height="74" rx="10" class="ds-card"/><text x="376" y="50" class="ds-hd">COPY IN NEW YORK</text><text x="376" y="80" class="ds-line">Alice paid Bob 10</text></g>
+          <g class="ds-copy ds-c2"><rect x="360" y="150" width="200" height="74" rx="10" class="ds-card"/><text x="376" y="174" class="ds-hd">COPY IN TOKYO</text><text x="376" y="204" class="ds-line">Alice paid Carol 10</text></g>
+          <g class="ds-x"><circle cx="460" cy="125" r="17" class="ds-bad"/><text x="460" y="131" class="ds-neq">&#8800;</text><text x="490" y="130" class="ds-warn">No match</text></g>
+        </svg>
+        <figcaption>Two payments, but only 10 XRP to spend. If different copies keep different ones, the ledger stops agreeing with itself.</figcaption>
+      </figure>
+        <p>That&#39;s called the double-spend problem. A bank solves it by being the boss. A shared ledger has no boss, so every copy follows the same rules instead. Those rules are called a consensus protocol.</p>
         <h2 id="how-bitcoin-solves-it-a-race">How Bitcoin solves it: a race</h2>
-        <p>Bitcoin settles it with a race called mining. Computers called miners make guess after guess, looking for a number that fits a math puzzle. Almost every guess is wrong.</p>
-        <p>The first miner to find one that fits gets to write the next block. They&#39;re paid for it in new bitcoin plus the fees on the payments inside. On average a winner turns up about every ten minutes.</p>
-        <p>It works, but it&#39;s built on a race that takes a lot of computing power. To cheat, you&#39;d need more computing power than everyone else put together. That&#39;s known as a 51% attack.</p>
+        <p>Bitcoin settles it with a guessing race called mining. The first miner to find a guess that fits writes the next block and gets paid in new bitcoin. A winner turns up about every ten minutes. <a href="/learn/what-is-the-xrp-ledger/" target="_blank" rel="noopener noreferrer">Lesson 1</a> shows that race.</p>
+        <p>To cheat Bitcoin, you&#39;d need more computing power than everyone else put together. That&#39;s called a 51% attack. The XRP Ledger can&#39;t have one, because there&#39;s no mining to take over.</p>
         <h2 id="how-the-xrp-ledger-solves-it-compare-notes">How the XRP Ledger solves it: compare notes</h2>
         <p>The XRP Ledger skips the race. A group of servers called validators compare notes instead.</p>
-        <p>Every server keeps a list of validators it trusts not to gang up and cheat together. That list is called its Unique Node List, or UNL for short. Most servers use a recommended list. There are two of them, one from the XRP Ledger Foundation and one from Ripple. On November 9, 2026, both lists named the same 35 validators.</p>
-        <p>Every few seconds, the validators go through the same steps:</p>
-        <ol><li><strong>Collect.</strong> Each validator gathers the payments it has heard about that aren&#39;t on a page yet.</li><li><strong>Propose.</strong> It shares that list with the others. This is called a proposal.</li><li><strong>Adjust.</strong> It looks at the other proposals and drops anything most validators haven&#39;t seen. Dropped payments aren&#39;t lost. They just wait for the next page.</li><li><strong>Repeat.</strong> The validators go back and forth a few times. With each round, the bar for agreement goes up, from 50% to a final 80%.</li><li><strong>Lock it in.</strong> Each validator applies the agreed payments in the same order and shares a signed copy of the result. When at least 80% of the trusted validators end up with matching results, the page is final.</li></ol>
-        <p>With 35 validators on the list, that means 28 of them have to match. Nobody wins anything, and no new XRP gets made. Every XRP that will ever exist was created when the ledger started.</p>
+        <p>Each server keeps a list of validators it trusts, called its Unique Node List (UNL). Most use a recommended list from the XRP Ledger Foundation or from Ripple. On November 9, 2026, both lists named the same 35 validators.</p>
+        <figure class="widget rounds">
+        <div class="widget-head"><strong>How validators compare notes</strong></div>
+        <ol class="steps">
+          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><b>Collect</b><span>Each validator gathers the new payments it has heard about.</span></li>
+          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h12M12 6l6 6-6 6"/><circle cx="4" cy="12" r="1.5"/></svg></span><b>Share</b><span>It sends that list to the other validators.</span></li>
+          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg></span><b>Trim and repeat</b><span>Payments most others haven't seen wait for the next page. Then they swap lists again.</span></li>
+          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><b>Lock it in</b><span>Once 80% of the trusted validators match, the page is final.</span></li>
+        </ol>
+        <div class="agree" aria-hidden="true">
+          <div class="agree-top"><span>Agreement needed</span><span class="agree-end">80% to lock in</span></div>
+          <div class="agree-bar"><span></span></div>
+          <div class="agree-scale"><span>First round: 50%</span><span>Rises each round</span><span>Final: 80%</span></div>
+        </div>
+        <figcaption>This takes a few seconds, then it starts over for the next page.</figcaption>
+      </figure>
+        <p>With 35 on the list, 28 have to match. Nobody wins a prize, and no new XRP gets made. Every XRP that will ever exist was created when the ledger started.</p>
+        <h2 id="what-if-some-validators-go-bad">What if some validators go bad?</h2>
+        <p>A validator could crash, lose its connection, or be run by someone dishonest. Try it: knock some out and close a page.</p>
         <figure class="widget vote" data-widget="vote">
         <div class="widget-head"><strong>Try it: knock out some validators</strong></div>
         <p>Here are 35 validators, the same number as on the recommended list today. A page locks in once 28 of them agree. Take some offline, or make them cheat, then close a page.</p>
@@ -205,10 +233,6 @@
         <button type="button" class="replay" data-role="go">Close a page</button>
         <figcaption>The white mark on the bar is 28 out of 35, which is 80%. These are the same rules the real network follows, from xrpl.org.</figcaption>
       </figure>
-        <h2 id="what-if-some-validators-go-bad">What if some validators go bad?</h2>
-        <p>The rules are built for that. A validator could crash, lose its internet connection, or be run by someone dishonest.</p>
-        <ul><li><strong>Fewer than 20% go bad.</strong> On a list of 35, that&#39;s up to 7. The rest still reach 80%, so pages keep getting locked in like nothing happened.</li><li><strong>Between 20% and 80% go bad.</strong> The honest ones can&#39;t reach 80% on their own. So the network pauses instead of guessing. It doesn&#39;t add a wrong page, and it picks back up once enough validators return.</li><li><strong>More than 80% team up.</strong> Only then could a bad page get through. That&#39;s why the recommended lists are spread across different owners in different countries.</li></ul>
-        <p>There&#39;s no 51% attack either, because there&#39;s no mining to take over.</p>
         <h2 id="trusted-doesn-t-mean-in-charge">Trusted doesn&#39;t mean in charge</h2>
         <p>Anyone can run a validator. It only counts for the servers that choose to put it on their list.</p>
         <p>Validators also can&#39;t move your money. Every payment has to be signed by the account sending it, and every server checks that signature for itself. A payment without a proper signature never goes in, even if every validator wanted it to.</p>
@@ -222,6 +246,7 @@
         </div>
         <p class="live-status" data-role="status" aria-live="polite">Loading the latest pages...</p>
         <ol class="chain" data-role="chain"></ol>
+        <button type="button" class="replay" data-role="refresh">Show the newest pages</button>
         <figcaption>These are real pages, pulled live from the public ledger. See how each page lists the fingerprint of the one before it? That link is the "chain" in blockchain.</figcaption>
       </figure>
         <p>You can also watch the validators themselves. Open <a href="https://livenet.xrpl.org/network/validators" target="_blank" rel="noopener noreferrer">the validator list on livenet.xrpl.org</a> to see who they are and whether each one agreed on the latest page.</p>

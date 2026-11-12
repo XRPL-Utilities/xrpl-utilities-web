@@ -1,0 +1,15 @@
+<figure class="widget dspend">
+  <svg viewBox="0 0 640 250" role="img" aria-label="Alice has 10 XRP and sends it to Bob and to Carol at the same moment. One copy of the ledger records the payment to Bob, another records the payment to Carol, and the copies no longer match.">
+    <defs><marker id="ds-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ds-head"/></marker></defs>
+    <g class="ds-person"><circle cx="70" cy="125" r="30" class="ds-a"/><text x="70" y="132" class="ds-ini">A</text><text x="70" y="180" class="ds-name">Alice</text><text x="70" y="200" class="ds-note">has 10 XRP</text></g>
+    <path d="M104 112 C 160 70, 190 62, 236 62" class="ds-path ds-p1" marker-end="url(#ds-arrow)"/>
+    <path d="M104 138 C 160 180, 190 188, 236 188" class="ds-path ds-p2" marker-end="url(#ds-arrow)"/>
+    <text x="168" y="62" class="ds-amt">10 XRP</text><text x="168" y="208" class="ds-amt">10 XRP</text>
+    <g class="ds-person"><circle cx="266" cy="62" r="24" class="ds-b"/><text x="266" y="68" class="ds-ini">B</text><text x="266" y="104" class="ds-name">Bob</text></g>
+    <g class="ds-person"><circle cx="266" cy="188" r="24" class="ds-c"/><text x="266" y="194" class="ds-ini">C</text><text x="266" y="230" class="ds-name">Carol</text></g>
+    <g class="ds-copy ds-c1"><rect x="360" y="26" width="200" height="74" rx="10" class="ds-card"/><text x="376" y="50" class="ds-hd">COPY IN NEW YORK</text><text x="376" y="80" class="ds-line">Alice paid Bob 10</text></g>
+    <g class="ds-copy ds-c2"><rect x="360" y="150" width="200" height="74" rx="10" class="ds-card"/><text x="376" y="174" class="ds-hd">COPY IN TOKYO</text><text x="376" y="204" class="ds-line">Alice paid Carol 10</text></g>
+    <g class="ds-x"><circle cx="460" cy="125" r="17" class="ds-bad"/><text x="460" y="131" class="ds-neq">&#8800;</text><text x="490" y="130" class="ds-warn">No match</text></g>
+  </svg>
+  <figcaption>Two payments, but only 10 XRP to spend. If different copies keep different ones, the ledger stops agreeing with itself.</figcaption>
+</figure>
