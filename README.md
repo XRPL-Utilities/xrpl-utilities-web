@@ -21,6 +21,7 @@ dependencies.
 | `whales/index.html` | XRP whale wallets: live count of accounts holding 1M+ XRP, size bands, who holds them and the 10 largest |
 | `build/index.html` | Builder demo: six use cases (trading bot, deposit check, tokenized asset check, fund dashboard, venue monitor, AI agent), each with the API call, the logic a system runs on it and a real JSON answer (live market briefing; dated stored samples for the paid bundles) |
 | `lineage/index.html` | XR-Lineage showcase: live RLUSD supply, Ripple's wallets and counterparties, large multi-hop payment chains |
+| `cases/index.html`, `cases/<slug>/` | Case files: dated, facts-only replays of big XRP Ledger moves (timeline, how fast each step moved, where the money landed). Built from `tools/cases/<slug>.json` by `node tools/cases/build.mjs`; each case also serves its figures as `data.json`, which the nightly Verified Record fingerprints. `tests/cases_test.mjs` bans allegations, names, deposit tags, method words and UTC times |
 | `verify/index.html` | Verified Record: rebuilds a day's SHA3-512 fingerprint in the browser and compares it with the one written to the XRP Ledger from rwty5XRq5zrqTZ7XMLgk3EqQ76V3SY8Gwy |
 | `terms/index.html` | Terms of service (canonical legal text including void-where-prohibited disclosure) |
 | `status/index.html` | Status page |
