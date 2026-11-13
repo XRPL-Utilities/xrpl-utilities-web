@@ -68,6 +68,9 @@
     .follow-trail { row-gap: 0.5rem; }
     .follow-bar { display: flex; justify-content: flex-end; margin: -0.5rem 0 0.75rem; }
     .follow-card { animation: follow-in 0.35s ease both; }
+    #follow-results, #follow-trail { scroll-margin-top: 5.5rem; }
+    .follow-stories { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.75rem; }
+    @media (min-width: 768px) { .follow-stories { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .follow-steps { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.75rem; }
     @media (min-width: 640px) { .follow-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @keyframes follow-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -169,6 +172,35 @@
     <nav id="follow-trail" class="follow-trail flex flex-wrap items-center text-sm mb-4" aria-label="Wallets you have followed" hidden></nav>
     <div id="follow-results" aria-live="polite"></div>
   </div>
+
+  <section aria-labelledby="stories-title">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 pt-6">
+      <h2 id="stories-title" class="text-xl font-semibold mb-1">Start with a story</h2>
+      <p class="text-sm text-muted mb-4">Two groups of wallets worth a look. Tap any one to follow it, then keep clicking.</p>
+      <div class="follow-stories">
+        <div class="bg-panel border border-border rounded-xl p-5">
+          <div class="text-accent text-xs font-semibold mb-1">The trensik.com tokens</div>
+          <p class="text-sm text-muted mb-3">In July 2026 one website listed fifteen new company tokens on the XRP Ledger, each from its own fresh wallet. They all trade against one dollar-named token, and one wallet holds all of them. Follow the trades and see who is on the other side.</p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="follow-example" data-example="rLQNxUZT1PraKVzpvBMXUTLk8PiQS18qqy" title="rLQNxUZT1PraKVzpvBMXUTLk8PiQS18qqy">The CHOLA token's issuer</button>
+            <button type="button" class="follow-example" data-example="rGYKNR86osXXNzCxq8fQyBbUKW8Nx4ks7A" title="rGYKNR86osXXNzCxq8fQyBbUKW8Nx4ks7A">The QBAR token's issuer</button>
+            <button type="button" class="follow-example" data-example="rfffsukWALJB1PXYk7H8xkR6UJUDT8nMJE" title="rfffsukWALJB1PXYk7H8xkR6UJUDT8nMJE">The USDV token they trade against</button>
+            <button type="button" class="follow-example" data-example="rDNm2QPdT9QidGvSWe8gac67whbnX3cYag" title="rDNm2QPdT9QidGvSWe8gac67whbnX3cYag">The wallet that holds them all</button>
+          </div>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-5">
+          <div class="text-accent text-xs font-semibold mb-1">Wallets that spell out brand names</div>
+          <p class="text-sm text-muted mb-3">Anyone can make an XRP Ledger address that starts with a famous name, for free. One wallet starting with "rippLE" created more than 170 of them, each with its own token, and gave many the brand's real website. A wallet's name and website prove nothing about who owns it.</p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="follow-example" data-example="rippLE4uy7r898MzuHTeTe7sPfuUDafLB" title="rippLE4uy7r898MzuHTeTe7sPfuUDafLB">The wallet that created them</button>
+            <button type="button" class="follow-example" data-example="rLUSDfDxGQ28Dn3ZtRSTzuqfzBaacRmNm8" title="rLUSDfDxGQ28Dn3ZtRSTzuqfzBaacRmNm8">A wallet issuing a token called RLUSD</button>
+            <button type="button" class="follow-example" data-example="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De" title="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De">Compare: Ripple's real RLUSD issuer</button>
+            <button type="button" class="follow-example" data-example="rfRAnKTuePqKBpyy1bSwXtqR9skfwjBH5o" title="rfRAnKTuePqKBpyy1bSwXtqR9skfwjBH5o">A wallet named after Franklin</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section aria-labelledby="how-title">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
@@ -299,7 +331,7 @@
 
   <script src="/assets/mobile-nav.js?v=1"></script>
   <script src="/assets/follow-core.js?v=1"></script>
-  <script src="/assets/pages/follow.js?v=1"></script>
+  <script src="/assets/pages/follow.js?v=2"></script>
 
   <script src="/assets/a11y.js?v=1"></script>
 </body>
