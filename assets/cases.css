@@ -1,0 +1,133 @@
+/* Case files under /cases/. Built by tools/cases/build.mjs. Same colors as
+   the rest of the site; the site header and footer keep their Tailwind
+   classes, everything inside <main class="case"> is styled here. */
+.case {
+  --ink: #0a0a0a;
+  --panel: #111111;
+  --border: #262626;
+  --text: #e5e5e5;
+  --muted: #a3a3a3;
+  --accent: #00b8ff;
+  --warm: #fbbf24;
+  color: var(--text);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  padding-bottom: 56px;
+}
+.case a { color: var(--accent); text-underline-offset: 3px; text-decoration: underline; }
+.case a:hover { color: #fff; }
+.cwrap { max-width: 46rem; margin: 0 auto; padding: 32px 16px 0; }
+@media (min-width: 640px) { .cwrap { padding: 44px 24px 0; } }
+
+.case .crumbs { font-size: 0.85rem; color: var(--muted); margin: 0 0 18px; }
+.case .crumbs a { color: var(--muted); }
+.case .kicker { margin: 0 0 8px; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.case h1 { font-size: 2.1rem; line-height: 1.15; margin: 0 0 12px; color: #fff; font-weight: 800; letter-spacing: -0.01em; }
+@media (min-width: 640px) { .case h1 { font-size: 2.75rem; } }
+.case h2 { font-size: 1.5rem; line-height: 1.3; margin: 52px 0 6px; color: #fff; font-weight: 700; scroll-margin-top: 80px; }
+.case h3 { font-size: 1.05rem; line-height: 1.35; margin: 0 0 4px; color: #fff; font-weight: 600; }
+.case p { margin: 0 0 16px; }
+.case .meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 24px; }
+.case .sub { color: var(--muted); font-size: 0.95rem; margin: 0 0 20px; }
+.case .fine { color: var(--muted); font-size: 0.85rem; margin-top: 14px; }
+.case .short { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 18px 20px; margin: 0 0 28px; }
+.case code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.82rem; word-break: break-all; }
+
+/* ---- three numbers ---------------------------------------------------- */
+.stats { display: grid; gap: 12px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .stats { grid-template-columns: repeat(3, 1fr); } }
+.stat { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+.stat .n { display: block; font-size: 1.9rem; font-weight: 800; color: #fff; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.stat .l { display: block; color: var(--muted); font-size: 0.9rem; margin-top: 4px; line-height: 1.4; }
+.stats .stat:nth-child(2) { border-color: rgba(0, 184, 255, 0.5); box-shadow: 0 0 30px rgba(0, 184, 255, 0.12); }
+
+/* ---- timeline ----------------------------------------------------------- */
+.timeline { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(var(--accent), rgba(0, 184, 255, 0.15)); }
+.stop { position: relative; margin: 0 0 26px; }
+.stop::before { content: ""; position: absolute; left: -26px; top: 7px; width: 14px; height: 14px; border-radius: 50%; background: var(--ink); border: 2px solid var(--accent); box-sizing: border-box; }
+.stop .when { display: block; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.stop p { margin: 0; font-size: 0.98rem; }
+
+/* ---- legs and speed bars ---------------------------------------------- */
+.legs { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.leg { position: relative; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.leg + .leg::before { content: ""; position: absolute; left: 28px; top: -15px; width: 2px; height: 14px; background: var(--accent); }
+.leg-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.leg-n { display: inline-grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--ink); font-weight: 700; font-size: 0.8rem; }
+.leg-top h3 { margin: 0; }
+.leg-facts { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0 0 10px; }
+.leg-facts div { min-width: 0; }
+.leg-facts dt { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.leg-facts dd { margin: 0; color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
+.speed { height: 8px; border-radius: 4px; background: #1d1d1d; overflow: hidden; margin: 0 0 10px; }
+.speed i { display: block; height: 100%; width: var(--w); border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--warm)); }
+.leg-note { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+
+/* ---- exchange bars ------------------------------------------------------ */
+.exchanges { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ex { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name val" "bar bar"; gap: 4px 12px; align-items: center; }
+@media (min-width: 640px) { .ex { grid-template-columns: 11rem 1fr 4.5rem; grid-template-areas: "name bar val"; } }
+.ex-name { grid-area: name; color: #fff; font-weight: 600; font-size: 0.95rem; line-height: 1.3; }
+.ex-name small { display: block; color: var(--muted); font-weight: 400; font-size: 0.75rem; }
+.ex-bar { grid-area: bar; height: 14px; background: #1d1d1d; border-radius: 4px; overflow: hidden; }
+.ex-bar i { display: block; height: 100%; width: var(--w); background: var(--accent); border-radius: 4px; }
+.ex-val { grid-area: val; text-align: right; color: #fff; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* ---- unknowns, wallets, check, dyor ------------------------------------ */
+.unknowns { margin: 0; padding-left: 1.3em; }
+.unknowns li { margin: 0 0 12px; }
+.unknowns li::marker { color: var(--warm); }
+.wallets { display: grid; gap: 16px; }
+@media (min-width: 640px) { .wallets { grid-template-columns: 1fr 1fr; } .wallets .wgroup:first-child { grid-column: 1 / -1; } }
+.wgroup { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.wgroup ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.wgroup a { text-decoration: none; }
+.wgroup a:hover code { color: #fff; }
+.check { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 4px 18px 6px; margin-top: 52px; }
+.check h2 { margin-top: 14px; }
+.dyor { margin-top: 28px; border-left: 3px solid var(--warm); padding: 4px 0 4px 16px; color: var(--muted); font-size: 0.95rem; }
+.dyor strong { color: #fff; }
+.dyor p { margin: 0 0 8px; }
+
+/* ---- hub list ----------------------------------------------------------- */
+.caselist { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.caselist a { display: block; border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; text-decoration: none; background: var(--panel); }
+.caselist a:hover { border-color: var(--accent); }
+.caselist .num { display: block; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.caselist .name { display: block; color: #fff; font-weight: 700; font-size: 1.15rem; margin: 2px 0; }
+.caselist .blurb { display: block; color: var(--muted); font-size: 0.95rem; }
+
+/* ---- motion: only once the script has run, never without it ------------ */
+.js .case .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.5s ease, transform 0.5s ease; transition-delay: calc(var(--i, 0) * 70ms); }
+.js .case .reveal.in { opacity: 1; transform: none; }
+.js .case .speed i, .js .case .ex-bar i { width: 0; transition: width 0.9s ease; transition-delay: calc(var(--i, 0) * 70ms + 200ms); }
+.js .case .reveal.in .speed i, .js .case .reveal.in .ex-bar i { width: var(--w); }
+@media (prefers-reduced-motion: reduce) {
+  .js .case .reveal { opacity: 1; transform: none; transition: none; }
+  .js .case .speed i, .js .case .ex-bar i { width: var(--w); transition: none; }
+}
+
+/* ---- path at a glance ---------------------------------------------------- */
+.path { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px 6px; }
+@media (min-width: 640px) { .path { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; } }
+.node { position: relative; text-align: center; }
+.node .count { display: grid; place-items: center; margin: 0 auto 6px; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); background: rgba(0, 184, 255, 0.08); color: #fff; font-weight: 800; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.node.end .count { border-color: var(--warm); background: rgba(251, 191, 36, 0.1); }
+.node .what { display: block; color: var(--muted); font-size: 0.75rem; line-height: 1.3; }
+@media (min-width: 640px) { .node .count { width: 56px; height: 56px; } .node .what { font-size: 0.8rem; } }
+@media (min-width: 640px) {
+  .node + .node::before { content: ""; position: absolute; top: 28px; right: calc(50% + 34px); width: calc(100% - 56px); height: 2px; background: var(--accent); opacity: 0.6; }
+}
+.node .when { display: block; color: var(--accent); font-size: 0.7rem; line-height: 1.3; margin-top: 2px; }
+
+/* ---- hero art ---------------------------------------------------------- */
+.case .hero { display: flex; flex-direction: column-reverse; gap: 16px; margin-bottom: 12px; }
+.case .hero-art { width: 112px; height: 112px; border-radius: 16px; box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+.case .hero-art.big { width: 128px; height: 128px; }
+@media (min-width: 640px) {
+  .case .hero { flex-direction: row; align-items: center; justify-content: space-between; gap: 28px; }
+  .case .hero-text { min-width: 0; flex: 1; }
+  .case .hero-art { width: 160px; height: 160px; flex: none; }
+  .case .hero-art.big { width: 200px; height: 200px; }
+}
