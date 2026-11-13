@@ -37,11 +37,33 @@
     .follow-input:focus { outline: 2px solid #00b8ff; outline-offset: 1px; border-color: #00b8ff; }
     .follow-go { background: #00b8ff; color: #0a0a0a; font-weight: 600; border-radius: 0.75rem; padding: 0.85rem 1.4rem; white-space: nowrap; }
     .follow-go:hover { background: #33c6ff; }
-    .follow-btn-ghost { border: 1px solid #262626; border-radius: 9999px; padding: 0.35rem 0.9rem; font-size: 0.8rem; color: #a3a3a3; }
-    .follow-btn-ghost:hover { color: #fff; border-color: #00b8ff; }
-    .follow-btn-ghost:disabled { opacity: 0.6; cursor: wait; }
-    .follow-example { border: 1px dashed #333; border-radius: 9999px; padding: 0.3rem 0.8rem; font-size: 0.8rem; color: #a3a3a3; }
-    .follow-example:hover { color: #fff; border-color: #00b8ff; }
+    .follow-btn { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid rgba(0, 184, 255, 0.45); background: rgba(0, 184, 255, 0.1); border-radius: 9999px; padding: 0.45rem 1.05rem; font-size: 0.85rem; font-weight: 600; color: #7dd8ff; transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; }
+    .follow-btn:hover { background: #00b8ff; color: #0a0a0a; box-shadow: 0 0 18px rgba(0, 184, 255, 0.35); }
+    .follow-btn:disabled { opacity: 0.6; cursor: wait; }
+    .follow-btn:focus-visible, .follow-example:focus-visible, .follow-tx:focus-visible { outline: 2px solid #00b8ff; outline-offset: 2px; }
+    .follow-example { display: inline-flex; align-items: center; gap: 0.55rem; text-align: left; background: linear-gradient(180deg, #181818, #121212); border: 1px solid #2e2e2e; border-radius: 0.75rem; padding: 0.55rem 0.9rem; font-size: 0.875rem; font-weight: 500; color: #f5f5f5; transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+    .follow-example::after { content: "\2192"; color: #00b8ff; transition: transform 0.2s ease; }
+    .follow-example:hover { border-color: #00b8ff; box-shadow: 0 0 20px rgba(0, 184, 255, 0.2); transform: translateY(-1px); }
+    .follow-example:hover::after { transform: translateX(3px); }
+    .follow-tag { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.45rem; border-radius: 0.35rem; background: rgba(0, 184, 255, 0.14); color: #7dd8ff; white-space: nowrap; }
+    .follow-tag-warn { background: rgba(251, 191, 36, 0.14); color: #fcd34d; }
+    .follow-tag-ok { background: rgba(52, 211, 153, 0.14); color: #6ee7b7; }
+    .follow-try { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.5rem; }
+    @media (min-width: 640px) { .follow-try { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (min-width: 900px) { .follow-try { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .follow-try .follow-example::after, .follow-story-btns .follow-example::after { margin-left: auto; }
+    .follow-story-btns { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.5rem; }
+    .follow-howto { border-left: 3px solid #00b8ff; background: rgba(0, 184, 255, 0.06); border-radius: 0 0.5rem 0.5rem 0; padding: 0.7rem 0.9rem; font-size: 0.85rem; line-height: 1.6; color: #d4d4d4; margin-bottom: 0.9rem; }
+    .follow-howto strong { color: #fff; }
+    .follow-site { border-radius: 1rem; border: 1px solid; padding: 1.1rem 1.25rem; margin-bottom: 1rem; }
+    .follow-site-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .follow-site-body { font-size: 0.95rem; line-height: 1.6; color: rgba(255, 255, 255, 0.85); overflow-wrap: anywhere; }
+    .follow-site-warn { background: rgba(251, 191, 36, 0.08); border-color: rgba(251, 191, 36, 0.55); }
+    .follow-site-warn .follow-site-title { color: #fcd34d; }
+    .follow-site-bad { background: rgba(248, 113, 113, 0.1); border-color: rgba(248, 113, 113, 0.65); box-shadow: 0 0 30px rgba(248, 113, 113, 0.12); }
+    .follow-site-bad .follow-site-title { color: #fca5a5; }
+    .follow-site-ok { background: rgba(52, 211, 153, 0.08); border-color: rgba(52, 211, 153, 0.55); }
+    .follow-site-ok .follow-site-title { color: #6ee7b7; }
     .follow-addr { display: inline-flex; align-items: center; gap: 0.4rem; max-width: 100%; padding: 0.1rem 0.5rem; border-radius: 0.5rem; background: rgba(0, 184, 255, 0.08); color: #7dd8ff; font-size: 0.85em; text-decoration: none; overflow-wrap: anywhere; vertical-align: baseline; }
     .follow-addr:hover { background: rgba(0, 184, 255, 0.18); color: #fff; }
     .follow-addr-full { font-size: 0.95rem; padding: 0.3rem 0.7rem; }
@@ -54,10 +76,10 @@
     .follow-step::before { content: ""; position: absolute; left: -0.42rem; top: 0.3rem; width: 0.7rem; height: 0.7rem; border-radius: 9999px; background: #00b8ff; box-shadow: 0 0 0 3px #0a0a0a; }
     .follow-step-failed::before { background: #737373; }
     .follow-step-failed .follow-what { color: #a3a3a3; }
-    .follow-when { font-size: 0.72rem; color: #8a8a8a; margin-bottom: 0.15rem; }
+    .follow-when { display: inline-block; font-size: 0.78rem; font-weight: 600; color: #e5e5e5; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 0.4rem; padding: 0.1rem 0.5rem; margin-bottom: 0.35rem; font-variant-numeric: tabular-nums; }
     .follow-what { font-size: 0.95rem; line-height: 1.6; overflow-wrap: anywhere; }
-    .follow-tx { font-size: 0.75rem; color: #8a8a8a; text-decoration: underline; }
-    .follow-tx:hover { color: #fff; }
+    .follow-tx { display: inline-block; margin-top: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #7dd8ff; border: 1px solid rgba(0, 184, 255, 0.35); border-radius: 9999px; padding: 0.15rem 0.7rem; text-decoration: none; transition: background 0.2s ease, color 0.2s ease; }
+    .follow-tx:hover { background: #00b8ff; color: #0a0a0a; }
     .follow-cp { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem; padding: 0.6rem 0; border-bottom: 1px solid #1f1f1f; }
     .follow-meta { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1rem; font-size: 0.85rem; }
     .follow-meta dt { color: #8a8a8a; }
@@ -150,10 +172,16 @@
         <input id="follow-input" class="follow-input" type="text" inputmode="text" spellcheck="false" autocapitalize="off" maxlength="80" placeholder="Wallet address (r...) or transaction ID" />
         <button type="submit" class="follow-go">Follow</button>
       </form>
-      <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
-        <span>Try one:</span>
-        <button type="button" class="follow-example" data-example="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De">The RLUSD stablecoin's issuer</button>
-        <button type="button" class="follow-example" data-example="rLQNxUZT1PraKVzpvBMXUTLk8PiQS18qqy">A small token issuer</button>
+      <div class="mt-5">
+        <p class="text-xs font-semibold uppercase tracking-[0.15em] text-muted mb-2">Or try a famous one</p>
+        <div class="follow-try">
+          <button type="button" class="follow-example" data-example="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De" title="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"><span class="follow-tag">Ripple</span>The RLUSD stablecoin's issuer</button>
+          <button type="button" class="follow-example" data-example="rKveEyR1SrkWbJX214xcfH43ZsoGMb3PEv" title="rKveEyR1SrkWbJX214xcfH43ZsoGMb3PEv"><span class="follow-tag">Ripple</span>A Ripple treasury wallet</button>
+          <button type="button" class="follow-example" data-example="rpLru1mHkBEgmE6zw2gXP2HcSyHg3hCt69" title="rpLru1mHkBEgmE6zw2gXP2HcSyHg3hCt69"><span class="follow-tag">Exchange</span>Binance's withdrawal wallet</button>
+          <button type="button" class="follow-example" data-example="rwshjBngGqMRJgGYvEJXGMkg5DS2GX3U3q" title="rwshjBngGqMRJgGYvEJXGMkg5DS2GX3U3q"><span class="follow-tag">Exchange</span>A Kraken cold wallet</button>
+          <button type="button" class="follow-example" data-example="rwnYLUsoBQX3ECa1A5bSKLdbPoHKnqf63J" title="rwnYLUsoBQX3ECa1A5bSKLdbPoHKnqf63J"><span class="follow-tag">Exchange</span>A Coinbase hot wallet</button>
+          <button type="button" class="follow-example" data-example="rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh" title="rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"><span class="follow-tag">2013</span>The very first XRP Ledger wallet</button>
+        </div>
       </div>
       <p id="follow-status" class="text-sm mt-3 text-muted" role="status" aria-live="polite"></p>
     </div>
@@ -181,7 +209,7 @@
         <div class="bg-panel border border-border rounded-xl p-5">
           <div class="text-accent text-xs font-semibold mb-1">The trensik.com tokens</div>
           <p class="text-sm text-muted mb-3">In July 2026 one website listed fifteen new company tokens on the XRP Ledger, each from its own fresh wallet. They all trade against one dollar-named token, and one wallet holds all of them. Follow the trades and see who is on the other side.</p>
-          <div class="flex flex-wrap gap-2">
+          <div class="follow-story-btns">
             <button type="button" class="follow-example" data-example="rLQNxUZT1PraKVzpvBMXUTLk8PiQS18qqy" title="rLQNxUZT1PraKVzpvBMXUTLk8PiQS18qqy">The CHOLA token's issuer</button>
             <button type="button" class="follow-example" data-example="rGYKNR86osXXNzCxq8fQyBbUKW8Nx4ks7A" title="rGYKNR86osXXNzCxq8fQyBbUKW8Nx4ks7A">The QBAR token's issuer</button>
             <button type="button" class="follow-example" data-example="rfffsukWALJB1PXYk7H8xkR6UJUDT8nMJE" title="rfffsukWALJB1PXYk7H8xkR6UJUDT8nMJE">The USDV token they trade against</button>
@@ -190,11 +218,13 @@
         </div>
         <div class="bg-panel border border-border rounded-xl p-5">
           <div class="text-accent text-xs font-semibold mb-1">Wallets that spell out brand names</div>
-          <p class="text-sm text-muted mb-3">Anyone can make an XRP Ledger address that starts with a famous name, for free. One wallet starting with "rippLE" created more than 170 of them, each with its own token, and gave many the brand's real website. A wallet's name and website prove nothing about who owns it.</p>
-          <div class="flex flex-wrap gap-2">
+          <p class="text-sm text-muted mb-3">One wallet starting with "rippLE" created more than 170 wallets named after famous brands, each with its own token, and gave many of them the brand's real website. A wallet's name and website prove nothing about who owns it.</p>
+          <p class="follow-howto"><strong>How is that possible?</strong> A wallet address comes from a random secret number. Free programs make millions of them a minute and keep the ones whose address happens to start with the letters you want, like "rLUSD". It costs nothing but computer time, and anyone can do it.</p>
+          <p class="follow-howto"><strong>Same website, different owners.</strong> The two RLUSD buttons below both say their website is ripple.com. Ripple publishes its own list of the wallets that are really its own, and this page checks it for you. Tap both and compare.</p>
+          <div class="follow-story-btns">
             <button type="button" class="follow-example" data-example="rippLE4uy7r898MzuHTeTe7sPfuUDafLB" title="rippLE4uy7r898MzuHTeTe7sPfuUDafLB">The wallet that created them</button>
-            <button type="button" class="follow-example" data-example="rLUSDfDxGQ28Dn3ZtRSTzuqfzBaacRmNm8" title="rLUSDfDxGQ28Dn3ZtRSTzuqfzBaacRmNm8">A wallet issuing a token called RLUSD</button>
-            <button type="button" class="follow-example" data-example="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De" title="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De">Compare: Ripple's real RLUSD issuer</button>
+            <button type="button" class="follow-example" data-example="rLUSDfDxGQ28Dn3ZtRSTzuqfzBaacRmNm8" title="rLUSDfDxGQ28Dn3ZtRSTzuqfzBaacRmNm8"><span class="follow-tag follow-tag-warn">Lookalike</span>A wallet issuing a token called RLUSD</button>
+            <button type="button" class="follow-example" data-example="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De" title="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"><span class="follow-tag follow-tag-ok">Real</span>Compare: Ripple's real RLUSD issuer</button>
             <button type="button" class="follow-example" data-example="rfRAnKTuePqKBpyy1bSwXtqR9skfwjBH5o" title="rfRAnKTuePqKBpyy1bSwXtqR9skfwjBH5o">A wallet named after Franklin</button>
           </div>
         </div>

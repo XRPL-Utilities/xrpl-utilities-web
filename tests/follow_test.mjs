@@ -69,6 +69,20 @@ for (const [addr, file] of [['rLQNxUZT1PraKVzpvBMXUTLk8PiQS18qqy', 'account_tx_r
   check(`${file}: counterparties exclude the wallet itself`, cps.length > 0 && cps.every((c) => c.address !== addr));
   check(`${file}: names lookup list is addresses only`, C.addressesIn(entries, addr).every(C.isAddress));
 }
+// Self-swaps (2026-11-13): a wallet that only trades with itself through the
+// order books still shows who was on the other side, in the sentence and in
+// "Who it dealt with most". The holder wallet in the trensik story showed
+// "Nobody yet" before this.
+{
+  const me = 'rDNm2QPdT9QidGvSWe8gac67whbnX3cYag';
+  const es = fx(`account_tx_${me}.json`).result.transactions.map(C.normalizeEntry);
+  const swap = es.find((e) => e.tx.TransactionType === 'Payment' && e.tx.Account === me && e.tx.Destination === me);
+  const sw = C.describe(swap, me).parts;
+  check('self-swap names who it traded with', sw.some((p) => p && p.addr && p.addr !== me) && text(sw).includes('trading with'), text(sw));
+  const cps = C.counterparties(es, me);
+  check('self-swapping wallet has counterparties', cps.length >= 3 && cps.every((c) => c.address !== me && C.isAddress(c.address)), String(cps.length));
+}
+
 const offer = C.normalizeEntry(fx('tx_offer.json').result);
 check('single tx answer normalises', offer && offer.hash.length === 64 && offer.tx.TransactionType === 'OfferCreate');
 check('offer sentence names both sides', /Offered 1\.5 XRP for 1,500 CHOLA/.test(text(C.describe(offer).parts)), text(C.describe(offer).parts));
@@ -97,6 +111,8 @@ check('named flags win', C.flagWords({ Flags: 0 }, { depositAuth: true }).length
 // ---- scripts and page ---------------------------------------------------------------
 const pageJs = fs.readFileSync(path.join(repo, 'assets/pages/follow.js'), 'utf8');
 const coreJs = fs.readFileSync(path.join(repo, 'assets/follow-core.js'), 'utf8');
+const headers = fs.readFileSync(path.join(repo, '_headers'), 'utf8');
+const connect = (headers.match(/connect-src([^;]*)/) || [])[1] || '';
 for (const [name, src] of [['follow.js', pageJs], ['follow-core.js', coreJs]]) {
   const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   check(`${name} never parses HTML`, !/innerHTML|outerHTML|insertAdjacentHTML|document\.write|\beval\(|new Function/.test(code));
@@ -109,16 +125,23 @@ check('people are never named (stated)', html.includes('We never name people'));
 // Starter stories (2026-11-13): every preset is a real address, and the
 // lookalike group sits next to the real issuer so readers can compare.
 const presets = [...html.matchAll(/data-example="([^"]+)"/g)].map((m) => m[1]);
-check('every preset is a valid address', presets.length >= 8 && presets.every((a) => C.parseInput(a)?.kind === 'account'), presets.join(','));
+check('every preset is a valid address', presets.length >= 14 && presets.every((a) => C.parseInput(a)?.kind === 'account'), presets.join(','));
 check('lookalike RLUSD sits beside the real issuer', presets.includes('rLUSDfDxGQ28Dn3ZtRSTzuqfzBaacRmNm8') && presets.includes('rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De'));
+// Website claims (2026-11-13): never shown as fact, and the only site list
+// the page fetches is a fixed URL the CSP allows.
+check('website claim is flagged as not verified', /Website not verified/.test(pageJs) && /Treat it as a claim, not a fact/.test(pageJs));
+check('site list URLs are fixed constants', [...pageJs.matchAll(/fetch\(([^,)]+)/g)].every((m) => /^(SITE_LISTS\[host\]|url|NAMES_URL)/.test(m[1].trim())), [...pageJs.matchAll(/fetch\(([^,)]+)/g)].map((m) => m[1]).join(' | '));
+check('site check host must match exactly', /if \(!hasSite\(host\)\)/.test(pageJs) && /hasOwnProperty\.call\(SITE_LISTS, host\)/.test(pageJs));
+for (const u of pageJs.match(/'https:\/\/[a-z0-9.-]+\/\.well-known\/[a-z0-9.-]+'/g) || []) {
+  check(`CSP allows site list ${u}`, connect.split(/\s+/).includes(u.slice(1, -1)));
+}
+check('vanity story explains how', html.includes('How is that possible?') && html.includes('anyone can do it'));
 check('stories say a name proves nothing', html.includes("A wallet's name and website prove nothing about who owns it"));
 const WORDS = /\b(scam\w*|fraud\w*|fake|ring|suspicious|risky|criminal|launder\w*|report (this|a) wallet)\b/i;
 for (const [name, src] of [['follow/index.html', html.replace(/<footer[\s\S]*<\/footer>/, '')], ['follow.js', pageJs], ['follow-core.js', coreJs]]) {
   const m = src.match(WORDS);
   check(`${name} uses no verdict words`, !m, m ? m[0] : '');
 }
-const headers = fs.readFileSync(path.join(repo, '_headers'), 'utf8');
-const connect = (headers.match(/connect-src([^;]*)/) || [])[1] || '';
 for (const host of pageJs.match(/wss:\/\/[a-z0-9.-]+/g) || []) {
   check(`CSP allows ${host}`, connect.split(/\s+/).includes(host));
 }

@@ -213,6 +213,26 @@
     return tx.DeliverMax != null ? tx.DeliverMax : tx.Amount;
   }
 
+  // The other wallets whose balances moved in a trade: the people on the
+  // other side of the orders it filled.
+  function othersIn(changes, skip) {
+    var seen = {}, out = [];
+    changes.forEach(function (c) {
+      var a = c.account;
+      if (!isAddress(a) || skip.indexOf(a) !== -1 || seen[a]) return;
+      seen[a] = 1; out.push(a);
+    });
+    return out;
+  }
+
+  function withWho(list) {
+    if (!list.length) return [];
+    var parts = [', trading with ', who(list[0])];
+    if (list.length === 2) parts.push(' and ', who(list[1]));
+    if (list.length > 2) parts.push(', ', who(list[1]), ' and ' + (list.length - 2) + (list.length === 3 ? ' other' : ' others'));
+    return parts;
+  }
+
   function gaveGot(list) {
     var gave = list.filter(function (c) { return c.value < 0; });
     var got = list.filter(function (c) { return c.value > 0; });
@@ -248,7 +268,7 @@
         if (S === D) {
           var gg = gaveGot(myChanges);
           if (gg.gave.length && gg.got.length) {
-            p = ['Swapped '].concat(joinAmounts(gg.gave), [' for '], joinAmounts(gg.got));
+            p = ['Swapped '].concat(joinAmounts(gg.gave), [' for '], joinAmounts(gg.got), withWho(othersIn(changes, [view])));
           } else {
             p = ['Paid itself ', amt(del)];
           }
@@ -280,7 +300,7 @@
         var g2 = gaveGot(myChanges);
         if (mine) {
           p = ['Offered ', amt(tx.TakerGets), ' for ', amt(tx.TakerPays), ' on the exchange'];
-          if (g2.gave.length && g2.got.length) p = p.concat(['; traded '], joinAmounts(g2.gave), [' for '], joinAmounts(g2.got));
+          if (g2.gave.length && g2.got.length) p = p.concat(['; traded '], joinAmounts(g2.gave), [' for '], joinAmounts(g2.got), withWho(othersIn(changes, [view])));
         } else if (g2.gave.length && g2.got.length) {
           p = ['Traded '].concat(joinAmounts(g2.gave), [' for '], joinAmounts(g2.got), [' with ', who(S)]);
         } else {
@@ -375,6 +395,11 @@
       var touch = function (a) { if (isAddress(a) && a !== me && !seen[a]) { seen[a] = 1; bump(a, 'count'); } };
       if (tx.Account !== me) touch(tx.Account);
       if (tx.Destination && tx.Destination !== me && tx.Account === me) touch(tx.Destination);
+      if (tx.Account === me && tx.TransactionType === 'TrustSet' && tx.LimitAmount) touch(tx.LimitAmount.issuer);
+      // Trades: whoever was on the other side of the orders it filled.
+      if (tx.Account === me && (tx.TransactionType === 'OfferCreate' || (tx.TransactionType === 'Payment' && tx.Destination === me))) {
+        othersIn(balanceChanges(e.meta), [me]).forEach(touch);
+      }
       if (tx.TransactionType === 'Payment' && (!e.meta || e.meta.TransactionResult === 'tesSUCCESS')) {
         var del = readAmount(deliveredOf(tx, e.meta));
         if (del && del.currency === 'XRP') {
