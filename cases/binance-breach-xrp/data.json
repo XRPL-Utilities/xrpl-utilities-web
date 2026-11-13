@@ -1,0 +1,239 @@
+{
+  "slug": "binance-breach-xrp",
+  "case_number": 1,
+  "title": "Where the XRP from the Binance breach went",
+  "seo_title": "Binance Breach XRP Timeline: Where 233.5M XRP Went | Case Files",
+  "description": "Day by day: where the 233.5 million XRP taken in the Oct 29, 2026 Binance breach went, and how about 216 million reached exchange deposits by Nov 12.",
+  "short": "On October 29, 2026, about 233.5 million XRP left five Binance wallets for one new wallet. Over the next 14 days it was split, collected again, broken into small amounts and passed through a chain of wallets. By November 12 about 216 million XRP, roughly 93% of it, had been paid into deposit accounts at about ten exchanges and swap services.",
+  "as_of": "2026-11-12T23:30:00Z",
+  "as_of_label": "Nov 12, 2026, 6:30 PM ET",
+  "published": "2026-11-13",
+  "updated": "2026-11-13",
+  "headline": {
+    "taken_xrp": 233461943.1,
+    "to_exchanges_xrp": 216400000,
+    "to_exchanges_share": 0.93,
+    "days": 14,
+    "venues": 10
+  },
+  "timeline": [
+    {
+      "when": "Oct 11, 7:35 PM",
+      "title": "Six hub wallets are created",
+      "text": "Six new wallets are opened within 20 seconds of each other. Each takes over the balance of an older wallet that had been doing the same job since at least April. These six later carry most of the money.",
+      "wallets": [
+        "hubs"
+      ]
+    },
+    {
+      "when": "Oct 29, 4:05 PM",
+      "title": "233.5 million XRP leaves Binance",
+      "text": "Five Binance wallets pay 233,461,943 XRP to one new wallet in about four minutes.",
+      "wallets": [
+        "breach"
+      ]
+    },
+    {
+      "when": "Oct 29 to Nov 1",
+      "title": "Three days of nothing",
+      "text": "The wallet sits untouched for three days and seven hours.",
+      "wallets": [
+        "breach"
+      ]
+    },
+    {
+      "when": "Nov 1, 10:52 PM",
+      "title": "Split six ways",
+      "text": "In eight minutes the wallet sends everything to six new wallets: five get 40 million XRP each and one gets 33.45 million.",
+      "wallets": [
+        "split"
+      ]
+    },
+    {
+      "when": "Nov 5, 9:56 AM",
+      "title": "The pay-out starts",
+      "text": "One of the six, which we call the collection wallet, starts paying out in chunks of about 140,000 XRP, roughly one a minute, day and night.",
+      "wallets": [
+        "collection"
+      ]
+    },
+    {
+      "when": "Nov 6 to Nov 10",
+      "title": "The other five empty into it",
+      "text": "One by one, the other five wallets send their whole balance to the collection wallet: Nov 6 at 1:06 AM and 9:50 PM, Nov 8 at 6:53 PM, Nov 9 at 12:18 PM and Nov 10 at 7:01 PM.",
+      "wallets": [
+        "split",
+        "collection"
+      ]
+    },
+    {
+      "when": "Nov 5 to Nov 12",
+      "title": "Through the hubs and out to exchanges",
+      "text": "The chunks go to short-lived wallets, then into the six hub wallets, then to pay-out wallets that each pay one exchange deposit account, 100 to 150 times a day.",
+      "wallets": [
+        "hubs"
+      ]
+    },
+    {
+      "when": "Nov 12, 1:06 PM",
+      "title": "The collection wallet is empty",
+      "text": "Its last payment goes out. It is left holding 4.54 XRP. The other five split wallets are down to 5 to 11 XRP each.",
+      "wallets": [
+        "collection"
+      ]
+    },
+    {
+      "when": "Nov 12, 6:30 PM",
+      "title": "About 216 million XRP has reached exchanges",
+      "text": "By this time about 216 million XRP had been paid into exchange deposit accounts through the hub wallets. About 1.1 million XRP is still sitting in the hubs.",
+      "wallets": []
+    }
+  ],
+  "legs": [
+    {
+      "name": "Binance to the first wallet",
+      "path_label": "first wallet",
+      "wallets": "1",
+      "xrp": 233461943.1,
+      "stay": "4 minutes",
+      "stay_minutes": 4,
+      "note": "Five payments, 4:05 to 4:09 PM on Oct 29."
+    },
+    {
+      "name": "Waiting in the first wallet",
+      "wallets": "1",
+      "xrp": 233461943.1,
+      "stay": "3 days, 7 hours",
+      "stay_minutes": 4783,
+      "note": "Not a single payment out until Nov 1."
+    },
+    {
+      "name": "Split into six wallets",
+      "path_label": "split wallets",
+      "wallets": "6",
+      "xrp": 233454920,
+      "stay": "3 to 9 days",
+      "stay_minutes": 8640,
+      "note": "Each wallet held its share untouched until it was called on, the last on Nov 10."
+    },
+    {
+      "name": "The collection wallet pays out",
+      "path_label": "collection wallet",
+      "wallets": "1",
+      "xrp": 233454920,
+      "stay": "7 days",
+      "stay_minutes": 10080,
+      "note": "1,289 payments, about one a minute, from Nov 5 to Nov 12."
+    },
+    {
+      "name": "Short-lived wallets",
+      "path_label": "short-lived wallets",
+      "wallets": "98",
+      "xrp": null,
+      "stay": "about 17 minutes",
+      "stay_minutes": 17,
+      "note": "Half the XRP moved on within about 17 minutes and 90% within 4 hours. Many of these wallets were used again and again."
+    },
+    {
+      "name": "The six hub wallets",
+      "path_label": "hub wallets",
+      "wallets": "6",
+      "xrp": null,
+      "stay": "about 40 minutes",
+      "stay_minutes": 42,
+      "note": "Half moved on within about 40 minutes and 90% within about 3.5 hours. The hubs also carry money that did not come from the breach."
+    },
+    {
+      "name": "Pay-out wallets to exchanges",
+      "path_label": "pay-out wallets",
+      "wallets": "58",
+      "xrp": 216400000,
+      "stay": "about 1 minute",
+      "stay_minutes": 1,
+      "note": "Half moved on within about a minute and 90% within 10 minutes. Each pays one exchange deposit account, 100 to 150 times a day."
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "OKX",
+      "xrp": 75430000,
+      "label_note": "our attribution, not a public label"
+    },
+    {
+      "name": "Binance",
+      "xrp": 65360000,
+      "label_note": ""
+    },
+    {
+      "name": "Coinbase",
+      "xrp": 31500000,
+      "label_note": ""
+    },
+    {
+      "name": "Kraken",
+      "xrp": 23490000,
+      "label_note": ""
+    },
+    {
+      "name": "Bybit",
+      "xrp": 13920000,
+      "label_note": ""
+    },
+    {
+      "name": "Bitget",
+      "xrp": 2790000,
+      "label_note": ""
+    },
+    {
+      "name": "ChangeNOW",
+      "xrp": 1540000,
+      "label_note": ""
+    },
+    {
+      "name": "Others and unlabelled",
+      "xrp": 2370000,
+      "label_note": "MEXC, KuCoin, FixedFloat and a few accounts with no public name"
+    }
+  ],
+  "wallets": {
+    "breach": {
+      "label": "First wallet",
+      "addresses": [
+        "rK21t6nGLy4MNDqhvy3pGwcLFy25qgfzMx"
+      ]
+    },
+    "split": {
+      "label": "The six split wallets",
+      "addresses": [
+        "ryB7NESZcttqzRioiD5L6Kf5tFL87ktmx",
+        "rKxwzjpZj5r9eXnCJQvLVUnebpGEHTDH1F",
+        "rhfA8QzpcDPYX3safySLrvT5afnNjHc9XB",
+        "rsNoNkb1zqMBR1rjbrasUzExqjCDXseisW",
+        "rhXtRtpfZRAKVayWd5Z5kRJ2YXYkcuxNRD",
+        "raoMrxbMFo5xpVfE9VPoEuVpv1CTtebm5t"
+      ]
+    },
+    "collection": {
+      "label": "Collection wallet",
+      "addresses": [
+        "ryB7NESZcttqzRioiD5L6Kf5tFL87ktmx"
+      ]
+    },
+    "hubs": {
+      "label": "The six hub wallets",
+      "addresses": [
+        "rMTwKkK2MjLkFGb6NSnMqcyaNoTvuiZhzs",
+        "rsUhJLXbnrPFao1Akpo58Vy1tXeA6gkdUA",
+        "rPNjkN34VdR24ys4XRwENtmVc975pkShYY",
+        "rwA6nv2QxDUgAcDKSH9tUqf7xvmHEhhQUu",
+        "rf4ixBDbXNqCenbMhGQqrjPejUL8Tj3fwr",
+        "rJpKWz6LkY4JuFH54FoTMFt3Ep2L3dXy4Y"
+      ]
+    }
+  },
+  "unknowns": [
+    "Who controls the six hub wallets. They were set up before October 29 and handled smaller amounts for months before it, so they could belong to the same people as the first wallet or to a swap or trading service those people used.",
+    "How much of the hub money was from the breach. About 85% of what the hubs took in from Nov 5 can be followed back to the first wallet. The rest came from other wallets, so 216 million is the most that could be breach money, not an exact count.",
+    "What happened after the deposits. Once XRP is inside an exchange it moves on the exchange's own books, which are not public."
+  ]
+}
