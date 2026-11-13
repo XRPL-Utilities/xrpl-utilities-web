@@ -54,6 +54,15 @@ const BANNED = [
   { re: /twenty million dollars total movement|three or more hops, twenty/, why: 'names an internal detection threshold (methodology leak)' },
 ];
 
+// /follow/ reads the public XRP Ledger from the visitor's own browser, so its
+// script has to name the public servers it connects to and the read-only
+// commands it sends; the browser's network tab shows both anyway. Only code
+// lines in that one file are let through, and only for these two rules:
+// a comment there that names them still fails.
+const FOLLOW_SCRIPT = path.join('assets', 'pages', 'follow.js');
+const FOLLOW_ALLOWED = new Set(['names an XRPL RPC method (methodology leak)', 'names a node or data vendor (methodology leak)']);
+const isComment = (line) => /^\s*(\/\/|\/?\*)/.test(line) || /[;,)}\]]\s+\/\/\s/.test(line);
+
 let fails = 0;
 for (const page of [...pages, ...scripts]) {
   const rel = path.relative(repo, page);
@@ -63,6 +72,7 @@ for (const page of [...pages, ...scripts]) {
   }
   html.split('\n').forEach((line, i) => {
     for (const rule of BANNED) {
+      if (rel === FOLLOW_SCRIPT && FOLLOW_ALLOWED.has(rule.why) && !isComment(line)) continue;
       if (rule.re.test(line)) { fails++; console.log(`FAIL ${rel}:${i + 1}: ${rule.why}`); }
     }
   });

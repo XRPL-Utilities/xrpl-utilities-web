@@ -60,6 +60,8 @@ node tests/midnight_gap_test.mjs
 node tests/lineage_exits_test.mjs
 node tests/review_round2_test.mjs
 node tests/whales_test.mjs
+node --check assets/follow-core.js
+node tests/follow_test.mjs
 node tests/build_render_test.mjs
 node tests/mobile_nav_test.mjs
 node tests/learn_test.mjs

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <title>Follow Any XRP Ledger Wallet or Transaction | XRPL-Utilities</title>
+  <meta name="description" content="See what any XRP Ledger wallet or transaction did, in plain English: who funded it, where its money went, what tokens it made and who it dealt with." />
+  <meta property="og:title" content="Follow an XRP Ledger wallet | XRPL-Utilities" />
+  <meta property="og:description" content="See what any XRP Ledger wallet or transaction did, in plain English, then click through to the wallets it dealt with. Free, straight from the public ledger." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/follow/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Follow an XRP Ledger wallet | XRPL-Utilities" />
+  <meta name="twitter:description" content="See what any XRP Ledger wallet or transaction did, in plain English, then click through to the wallets it dealt with. Free, straight from the public ledger." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/social-card.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/follow/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
+  <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
+  <style>
+    html, body { background: #0a0a0a; overflow-x: clip; }
+    body { min-width: 0; }
+    .logo-glow { box-shadow: 0 0 18px rgba(0, 184, 255, 0.18); transition: box-shadow 0.25s ease; }
+    .logo-glow:hover { box-shadow: 0 0 28px rgba(0, 184, 255, 0.45); }
+    .nav-link { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.7rem; }
+    .glow { box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+    .more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+    .more-grid > a:last-child { grid-column: 1 / -1; justify-self: center; width: calc(50% - 0.375rem); }
+    @media (min-width: 768px) { .more-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .more-grid > a:last-child { grid-column: auto; justify-self: stretch; width: auto; } }
+    @media (min-width: 1024px) { .more-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+    .follow-input { width: 100%; min-width: 0; background: #111; border: 1px solid #262626; border-radius: 0.75rem; padding: 0.85rem 1rem; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    .follow-input:focus { outline: 2px solid #00b8ff; outline-offset: 1px; border-color: #00b8ff; }
+    .follow-go { background: #00b8ff; color: #0a0a0a; font-weight: 600; border-radius: 0.75rem; padding: 0.85rem 1.4rem; white-space: nowrap; }
+    .follow-go:hover { background: #33c6ff; }
+    .follow-btn-ghost { border: 1px solid #262626; border-radius: 9999px; padding: 0.35rem 0.9rem; font-size: 0.8rem; color: #a3a3a3; }
+    .follow-btn-ghost:hover { color: #fff; border-color: #00b8ff; }
+    .follow-btn-ghost:disabled { opacity: 0.6; cursor: wait; }
+    .follow-example { border: 1px dashed #333; border-radius: 9999px; padding: 0.3rem 0.8rem; font-size: 0.8rem; color: #a3a3a3; }
+    .follow-example:hover { color: #fff; border-color: #00b8ff; }
+    .follow-addr { display: inline-flex; align-items: center; gap: 0.4rem; max-width: 100%; padding: 0.1rem 0.5rem; border-radius: 0.5rem; background: rgba(0, 184, 255, 0.08); color: #7dd8ff; font-size: 0.85em; text-decoration: none; overflow-wrap: anywhere; vertical-align: baseline; }
+    .follow-addr:hover { background: rgba(0, 184, 255, 0.18); color: #fff; }
+    .follow-addr-full { font-size: 0.95rem; padding: 0.3rem 0.7rem; }
+    .stat-tile-value .follow-addr { font-size: 1rem; line-height: 1.4; }
+    .follow-name { color: #fff; font-weight: 600; }
+    .follow-kind { font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.12em; color: #a3a3a3; }
+    .follow-badge { font-size: 0.7rem; padding: 0.1rem 0.5rem; border-radius: 9999px; background: rgba(250, 204, 21, 0.12); color: #fde68a; }
+    .follow-timeline { position: relative; margin-left: 0.4rem; border-left: 2px solid #262626; }
+    .follow-step { position: relative; padding: 0 0 1.1rem 1.1rem; animation: follow-in 0.35s ease both; }
+    .follow-step::before { content: ""; position: absolute; left: -0.42rem; top: 0.3rem; width: 0.7rem; height: 0.7rem; border-radius: 9999px; background: #00b8ff; box-shadow: 0 0 0 3px #0a0a0a; }
+    .follow-step-failed::before { background: #737373; }
+    .follow-step-failed .follow-what { color: #a3a3a3; }
+    .follow-when { font-size: 0.72rem; color: #8a8a8a; margin-bottom: 0.15rem; }
+    .follow-what { font-size: 0.95rem; line-height: 1.6; overflow-wrap: anywhere; }
+    .follow-tx { font-size: 0.75rem; color: #8a8a8a; text-decoration: underline; }
+    .follow-tx:hover { color: #fff; }
+    .follow-cp { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem; padding: 0.6rem 0; border-bottom: 1px solid #1f1f1f; }
+    .follow-meta { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1rem; font-size: 0.85rem; }
+    .follow-meta dt { color: #8a8a8a; }
+    .follow-meta dd { min-width: 0; overflow-wrap: anywhere; }
+    .follow-memo { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; background: #111; border: 1px solid #262626; border-radius: 0.5rem; padding: 0.6rem 0.8rem; margin-bottom: 0.5rem; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .follow-fact::before { content: "\2022"; color: #00b8ff; margin-right: 0.5rem; }
+    .follow-caveat { background: rgba(251, 191, 36, 0.05); }
+    .follow-trail { row-gap: 0.5rem; }
+    .follow-bar { display: flex; justify-content: flex-end; margin: -0.5rem 0 0.75rem; }
+    .follow-card { animation: follow-in 0.35s ease both; }
+    .follow-steps { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.75rem; }
+    @media (min-width: 640px) { .follow-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @keyframes follow-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .follow-step, .follow-card { animation: none; } }
+  </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="/assets/api-resilient.js?v=v3"></script>
+  <script src="/assets/preview-token.js?v=v2"></script>
+</head>
+<body class="bg-ink text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink focus:font-semibold">Skip to content</a>
+
+  <header class="border-b border-border bg-ink/95 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3 whitespace-nowrap min-w-0 group">
+        <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="eager" decoding="async" alt="" class="h-9 w-9 rounded shrink-0 logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white truncate">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-x-6 xl:gap-x-8 nav-link whitespace-nowrap">
+        <a href="/start/"     class="text-muted hover:text-white transition">Start here</a>
+        <a href="/sentinel/"  class="text-muted hover:text-white transition">Sentinel</a>
+        <a href="/telemetry/" class="text-muted hover:text-white transition">Telemetry</a>
+        <a href="/pulse/"     class="text-muted hover:text-white transition">Pulse</a>
+        <a href="/trust/"     class="text-muted hover:text-white transition">Trust</a>
+        <a href="/vault/"     class="text-muted hover:text-white transition">Vault</a>
+        <a href="/flows/"     class="text-muted hover:text-white transition">Flows</a>
+        <a href="/lineage/"   class="text-muted hover:text-white transition">Lineage</a>
+        <a href="/pricing/"   class="text-muted hover:text-white transition">Pricing</a>
+      </nav>
+      <button id="nav-open" class="lg:hidden p-2 -mr-2 text-muted hover:text-white transition" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile slide-in nav. Same dark palette as desktop; opens on hamburger
+       tap. Body scroll locks while open; Escape, overlay tap, link tap, or
+       resize past md all close it. -->
+  <div id="mobile-nav" class="fixed inset-0 z-50 bg-ink flex-col lg:hidden" role="dialog" aria-modal="true" aria-label="Site navigation" style="display: none;">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
+        <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+      </a>
+      <button id="nav-close" class="p-2 -mr-2 text-muted hover:text-white transition" aria-label="Close menu">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 flex flex-col justify-center px-8 gap-1 nav-link">
+      <a href="/start/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Start here</a>
+      <a href="/sentinel/"  class="py-5 border-b border-border/60 text-muted hover:text-white transition">Sentinel</a>
+      <a href="/telemetry/" class="py-5 border-b border-border/60 text-muted hover:text-white transition">Telemetry</a>
+      <a href="/pulse/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pulse</a>
+      <a href="/trust/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Trust</a>
+      <a href="/vault/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Vault</a>
+      <a href="/flows/"     class="py-5 border-b border-border/60 text-muted hover:text-white transition">Flows</a>
+      <a href="/lineage/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Lineage</a>
+      <a href="/pricing/"   class="py-5 border-b border-border/60 text-muted hover:text-white transition">Pricing</a>
+    </nav>
+    <div class="px-8 py-6 border-t border-border text-[10px] tracking-[0.2em] uppercase text-muted">
+      XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup> &copy; 2026
+    </div>
+  </div>
+
+  <main id="main">
+
+  <section>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-6">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Follow any XRP Ledger wallet</h1>
+      <p class="text-muted max-w-3xl">Paste a wallet address or a transaction ID. You'll see what it did in plain English: who funded it, where its money went, what tokens it made and who it dealt with. Click any wallet along the way to keep following.</p>
+      <form id="follow-form" class="mt-6 flex flex-col sm:flex-row gap-3" role="search" autocomplete="off">
+        <label for="follow-input" class="sr-only">Wallet address or transaction ID</label>
+        <input id="follow-input" class="follow-input" type="text" inputmode="text" spellcheck="false" autocapitalize="off" maxlength="80" placeholder="Wallet address (r...) or transaction ID" />
+        <button type="submit" class="follow-go">Follow</button>
+      </form>
+      <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
+        <span>Try one:</span>
+        <button type="button" class="follow-example" data-example="rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De">The RLUSD stablecoin's issuer</button>
+        <button type="button" class="follow-example" data-example="rLQNxUZT1PraKVzpvBMXUTLk8PiQS18qqy">A small token issuer</button>
+      </div>
+      <p id="follow-status" class="text-sm mt-3 text-muted" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section aria-label="Before you read on">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 pb-6">
+      <div class="follow-caveat rounded-2xl border border-amber-400/30 p-5 text-sm leading-relaxed">
+        <p class="font-semibold text-amber-200 mb-1">Do your own research</p>
+        <p class="text-white/80">Everything here comes straight from the public XRP Ledger and is shown as it is. We don't judge anyone. A wallet's history can't tell you who owns it or why they did something. Do your own research before you send money to anyone, and never share your secret key. We will never ask for it.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <nav id="follow-trail" class="follow-trail flex flex-wrap items-center text-sm mb-4" aria-label="Wallets you have followed" hidden></nav>
+    <div id="follow-results" aria-live="polite"></div>
+  </div>
+
+  <section aria-labelledby="how-title">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <h2 id="how-title" class="text-xl font-semibold mb-4">How to read it</h2>
+      <div class="follow-steps">
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-accent text-xs font-semibold mb-1">1. Start anywhere</div>
+          <p class="text-sm text-muted">A wallet address starts with r. A transaction ID is 64 letters and numbers. Both are public on the XRP Ledger.</p>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-accent text-xs font-semibold mb-1">2. Read the story</div>
+          <p class="text-sm text-muted">Each line is one thing the wallet did, newest first. Tap Details on any line to see every balance that moved.</p>
+        </div>
+        <div class="bg-panel border border-border rounded-xl p-4">
+          <div class="text-accent text-xs font-semibold mb-1">3. Follow the money</div>
+          <p class="text-sm text-muted">Tap any blue wallet to jump to it. Your path stays at the top so you can step back.</p>
+        </div>
+      </div>
+      <p class="text-xs text-muted mt-6">Names appear only for public exchanges and well-known organizations. They come from public wallet labels and our own research, so they can be wrong. We never name people. Spot a mistake? <a href="/contact/" class="underline hover:text-white">Tell us</a>. Nothing you search for is saved.</p>
+    </div>
+  </section>
+
+  <!-- MORE PRODUCTS: same tiles as every product page, all seven here (tests/more_products_test.mjs) -->
+  <section id="more-tools" class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <h2 class="text-sm uppercase tracking-widest text-accent font-semibold mb-10 text-center">More from XRPL-Utilities</h2>
+      <div class="more-grid">
+        <a href="/sentinel/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-sentinel-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Sentinel</div>
+          <div class="text-center text-[10px] text-muted mt-1">Wallet behavior</div>
+        </a>
+        <a href="/telemetry/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-telemetry-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Telemetry</div>
+          <div class="text-center text-[10px] text-muted mt-1">Network supply and liquidity</div>
+        </a>
+        <a href="/pulse/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-pulse-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Pulse</div>
+          <div class="text-center text-[10px] text-muted mt-1">News and on-chain events</div>
+        </a>
+        <a href="/trust/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-trust-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Trust</div>
+          <div class="text-center text-[10px] text-muted mt-1">Permissioned domains</div>
+        </a>
+        <a href="/vault/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-vault-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Vault</div>
+          <div class="text-center text-[10px] text-muted mt-1">Real-world assets</div>
+        </a>
+        <a href="/flows/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-flows-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Flows</div>
+          <div class="text-center text-[10px] text-muted mt-1">ETF assets and flows</div>
+        </a>
+        <a href="/lineage/" class="block bg-panel border border-border hover:border-accent rounded-xl p-4 transition">
+          <img src="/assets/img/xr-lineage-mark-128.webp" width="64" height="64" loading="lazy" decoding="async" alt="" class="h-16 w-16 mx-auto mb-3 rounded-lg" />
+          <div class="text-center text-xs font-semibold text-white">XR-Lineage</div>
+          <div class="text-center text-[10px] text-muted mt-1">RLUSD and Ripple flows</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="border-t border-border bg-ink mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 mb-10">
+        <div class="col-span-2 md:col-span-1">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/img/logo-mark-128.webp" width="36" height="36" loading="lazy" decoding="async" alt="" class="h-9 w-9 rounded logo-glow" />
+            <span class="font-semibold tracking-[0.18em] uppercase text-sm text-white">XRPL-Utilities<sup class="text-[0.6em] font-normal opacity-70 ml-0.5">&trade;</sup></span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">Public-source XRPL data + agent-payable APIs. Built for institutions, agents, and researchers.</p>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Products</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/start/"     class="text-muted hover:text-white transition">Start here</a></li>
+            <li><a href="/learn/"     class="text-muted hover:text-white transition">Learn the basics</a></li>
+            <li><a href="/follow/"    class="text-muted hover:text-white transition">Follow a wallet</a></li>
+            <li><a href="/sentinel/"  class="text-muted hover:text-white transition">XR-Sentinel</a></li>
+            <li><a href="/telemetry/" class="text-muted hover:text-white transition">XR-Telemetry</a></li>
+            <li><a href="/pulse/"     class="text-muted hover:text-white transition">XR-Pulse</a></li>
+            <li><a href="/trust/"     class="text-muted hover:text-white transition">XR-Trust</a></li>
+            <li><a href="/vault/"     class="text-muted hover:text-white transition">XR-Vault</a></li>
+            <li><a href="/flows/"     class="text-muted hover:text-white transition">XR-Flows</a></li>
+            <li><a href="/lineage/"   class="text-muted hover:text-white transition">XR-Lineage</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Developers</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/pricing/" class="text-muted hover:text-white transition">Pricing</a></li>
+            <li><a href="/build/" class="text-muted hover:text-white transition">Build with the API</a></li>
+            <li><a href="https://sentinel.xrpl-utilities.io/docs"  target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Sentinel API</a></li>
+            <li><a href="https://telemetry.xrpl-utilities.io/docs" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Telemetry API</a></li>
+            <li><a href="https://pulse.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Pulse API</a></li>
+            <li><a href="https://trust.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Trust API</a></li>
+            <li><a href="https://vault.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Vault API</a></li>
+            <li><a href="https://flows.xrpl-utilities.io/docs"     target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">Flows API</a></li>
+            <li><a href="https://github.com/XRPL-Utilities/xrpl-utilities-mcp" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-white transition">MCP server</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">Legal</h2>
+          <ul class="space-y-3 text-sm">
+            <li><a href="/terms/"   class="text-muted hover:text-white transition">Terms</a></li>
+            <li><a href="/privacy/" class="text-muted hover:text-white transition">Privacy</a></li>
+            <li><a href="/status/"  class="text-muted hover:text-white transition">Service status</a></li>
+            <li><a href="/verify/"  class="text-muted hover:text-white transition">Verify our data</a></li>
+            <li><a href="/contact/" class="text-muted hover:text-white transition">Contact</a></li>
+            <li><a href="/tip/"     class="text-muted hover:text-white transition">Tip the maker</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border pt-6 space-y-2 text-xs text-muted leading-relaxed">
+        <div class="text-white/80">&copy; 2026 XRPL-Utilities LLC. All rights reserved.</div>
+        <div>XR-Sentinel, XR-Pulse, XR-Telemetry, XR-Trust, XR-Vault, XR-Flows, and XR-Lineage are trademarks of XRPL-Utilities LLC.</div>
+        <div>Independent project not affiliated with Ripple Labs. On-chain data and heuristic analytics; XR-Sentinel&trade; narratives are AI-generated. Not investment, legal or compliance advice. See <a href="/terms/" class="underline hover:text-white">Terms</a> for details.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/mobile-nav.js?v=1"></script>
+  <script src="/assets/follow-core.js?v=1"></script>
+  <script src="/assets/pages/follow.js?v=1"></script>
+
+  <script src="/assets/a11y.js?v=1"></script>
+</body>
+</html>
