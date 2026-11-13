@@ -22,7 +22,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
 const SITE = 'https://xrpl-utilities.com';
 const EXPLORER = 'https://xrpscan.com/account/';
-const CSS_V = '1';
+const CSS_V = '2';
 const JS_V = '1';
 
 export function esc(s) {
@@ -48,7 +48,7 @@ export function loadCases() {
     .map((f) => {
       const c = JSON.parse(read(f));
       if (!SLUG.test(c.slug) || `${c.slug}.json` !== f) throw new Error(`bad slug in ${f}`);
-      for (const k of ['title', 'seo_title', 'description', 'short', 'as_of', 'as_of_label', 'published', 'updated']) {
+      for (const k of ['title', 'path_caption', 'seo_title', 'description', 'short', 'as_of', 'as_of_label', 'published', 'updated']) {
         if (!c[k]) throw new Error(`${f} is missing "${k}"`);
       }
       for (const g of Object.values(c.wallets)) {
@@ -175,8 +175,13 @@ function caseBody(c) {
   <main id="main" class="case">
     <article class="cwrap">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/cases/">Case files</a> <span aria-hidden="true">/</span> Case ${esc(c.case_number)}</nav>
-      <p class="kicker">Case file ${esc(c.case_number)}</p>
-      <h1>${esc(c.title)}</h1>
+      <div class="hero">
+        <div class="hero-text">
+          <p class="kicker">Case file ${esc(c.case_number)}</p>
+          <h1>${esc(c.title)}</h1>
+        </div>
+        <img src="/assets/img/xr-cases-512.webp" width="176" height="176" loading="eager" decoding="async" alt="Case files" class="hero-art" />
+      </div>
       <p class="meta">Traced to exchange deposits as of ${esc(c.as_of_label)}. Published ${esc(fmtDate(c.published))}.</p>
       <p class="short">${esc(c.short)}</p>
 
@@ -190,9 +195,10 @@ function caseBody(c) {
         <h2 id="t-path">The path at a glance</h2>
         <p class="sub">How many wallets the XRP passed through at each step.</p>
         <ol class="path">${c.legs.filter((l) => l.path_label).map((l, i) => `
-          <li class="node reveal" style="--i:${i}"><span class="count">${esc(l.wallets)}</span><span class="what">${esc(l.path_label)}</span></li>`).join('')}
-          <li class="node end reveal" style="--i:${c.legs.filter((l) => l.path_label).length}"><span class="count">${esc(c.headline.venues)}</span><span class="what">exchanges and swap services</span></li>
+          <li class="node reveal" style="--i:${i}"><span class="count">${esc(l.wallets)}</span><span class="what">${esc(l.path_label)}</span><span class="when">${esc(l.path_when)}</span></li>`).join('')}
+          <li class="node end reveal" style="--i:${c.legs.filter((l) => l.path_label).length}"><span class="count">${esc(c.headline.venues)}</span><span class="what">exchanges and swap services</span><span class="when">${esc(c.headline.venues_when)}</span></li>
         </ol>
+        <p class="fine">${esc(c.path_caption)}</p>
       </section>
 
       <section aria-labelledby="t-timeline">
@@ -314,8 +320,13 @@ function hubPage(cases) {
   const body = `
   <main id="main" class="case">
     <article class="cwrap">
-      <p class="kicker">Case files</p>
-      <h1>Case files</h1>
+      <div class="hero">
+        <div class="hero-text">
+          <p class="kicker">Case files</p>
+          <h1>Case files</h1>
+        </div>
+        <img src="/assets/img/xr-cases-512.webp" width="224" height="224" loading="eager" decoding="async" alt="Case files" class="hero-art big" />
+      </div>
       <p class="short">Big moves on the XRP Ledger, replayed step by step from public records: where the money went, how fast it moved and what is still unknown. Facts only. We do not say who is behind any wallet.</p>
       <ul class="caselist">${items}
       </ul>
