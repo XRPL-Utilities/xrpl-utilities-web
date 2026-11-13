@@ -4,7 +4,8 @@
   "title": "Where the XRP from the Binance breach went",
   "seo_title": "Binance Breach XRP Timeline: Where 233.5M XRP Went | Case Files",
   "description": "Day by day: where the 233.5 million XRP taken in the Oct 29, 2026 Binance breach went, and how about 216 million reached exchange deposits by Nov 12.",
-  "short": "On October 29, 2026, about 233.5 million XRP left five Binance wallets for one new wallet. Over the next 14 days it was split, collected again, broken into small amounts and passed through a chain of wallets. By November 12 about 216 million XRP, roughly 93% of it, had been paid into deposit accounts at about ten exchanges and swap services.",
+  "short": "On October 29, 2026, about 233.5 million XRP left five Binance wallets for one brand-new wallet, which we call the first wallet. Over the next 14 days it was split, collected again, broken into small amounts and passed through a chain of wallets. By November 12 about 216 million XRP, roughly 93% of it, had been paid into deposit accounts at about ten exchanges and swap services.",
+  "path_caption": "The first wallet is the brand-new wallet that received the XRP from Binance on Oct 29. The timeline below walks through each step in order.",
   "as_of": "2026-11-12T23:30:00Z",
   "as_of_label": "Nov 12, 2026, 6:30 PM ET",
   "published": "2026-11-13",
@@ -14,12 +15,13 @@
     "to_exchanges_xrp": 216400000,
     "to_exchanges_share": 0.93,
     "days": 14,
-    "venues": 10
+    "venues": 10,
+    "venues_when": "by Nov 12"
   },
   "timeline": [
     {
       "when": "Oct 11, 7:35 PM",
-      "title": "Six hub wallets are created",
+      "title": "Before the breach: six hub wallets are created",
       "text": "Six new wallets are opened within 20 seconds of each other. Each takes over the balance of an older wallet that had been doing the same job since at least April. These six later carry most of the money.",
       "wallets": [
         "hubs"
@@ -28,7 +30,7 @@
     {
       "when": "Oct 29, 4:05 PM",
       "title": "233.5 million XRP leaves Binance",
-      "text": "Five Binance wallets pay 233,461,943 XRP to one new wallet in about four minutes.",
+      "text": "Five Binance wallets pay 233,461,943 XRP to one brand-new wallet in about four minutes. We call it the first wallet.",
       "wallets": [
         "breach"
       ]
@@ -36,7 +38,7 @@
     {
       "when": "Oct 29 to Nov 1",
       "title": "Three days of nothing",
-      "text": "The wallet sits untouched for three days and seven hours.",
+      "text": "The first wallet sits untouched for three days and seven hours.",
       "wallets": [
         "breach"
       ]
@@ -44,7 +46,7 @@
     {
       "when": "Nov 1, 10:52 PM",
       "title": "Split six ways",
-      "text": "In eight minutes the wallet sends everything to six new wallets: five get 40 million XRP each and one gets 33.45 million.",
+      "text": "In eight minutes the first wallet sends everything to six new wallets: five get 40 million XRP each and one gets 33.45 million.",
       "wallets": [
         "split"
       ]
@@ -93,6 +95,7 @@
     {
       "name": "Binance to the first wallet",
       "path_label": "first wallet",
+      "path_when": "Oct 29",
       "wallets": "1",
       "xrp": 233461943.1,
       "stay": "4 minutes",
@@ -110,6 +113,7 @@
     {
       "name": "Split into six wallets",
       "path_label": "split wallets",
+      "path_when": "Nov 1",
       "wallets": "6",
       "xrp": 233454920,
       "stay": "3 to 9 days",
@@ -119,6 +123,7 @@
     {
       "name": "The collection wallet pays out",
       "path_label": "collection wallet",
+      "path_when": "Nov 5 to 12",
       "wallets": "1",
       "xrp": 233454920,
       "stay": "7 days",
@@ -128,6 +133,7 @@
     {
       "name": "Short-lived wallets",
       "path_label": "short-lived wallets",
+      "path_when": "Nov 5 to 12",
       "wallets": "98",
       "xrp": null,
       "stay": "about 17 minutes",
@@ -137,6 +143,7 @@
     {
       "name": "The six hub wallets",
       "path_label": "hub wallets",
+      "path_when": "set up Oct 11",
       "wallets": "6",
       "xrp": null,
       "stay": "about 40 minutes",
@@ -146,6 +153,7 @@
     {
       "name": "Pay-out wallets to exchanges",
       "path_label": "pay-out wallets",
+      "path_when": "Nov 5 to 12",
       "wallets": "58",
       "xrp": 216400000,
       "stay": "about 1 minute",

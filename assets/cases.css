@@ -119,3 +119,15 @@
 @media (min-width: 640px) {
   .node + .node::before { content: ""; position: absolute; top: 28px; right: calc(50% + 34px); width: calc(100% - 56px); height: 2px; background: var(--accent); opacity: 0.6; }
 }
+.node .when { display: block; color: var(--accent); font-size: 0.7rem; line-height: 1.3; margin-top: 2px; }
+
+/* ---- hero art ---------------------------------------------------------- */
+.case .hero { display: flex; flex-direction: column-reverse; gap: 16px; margin-bottom: 12px; }
+.case .hero-art { width: 112px; height: 112px; border-radius: 16px; box-shadow: 0 0 40px rgba(0, 184, 255, 0.15); }
+.case .hero-art.big { width: 128px; height: 128px; }
+@media (min-width: 640px) {
+  .case .hero { flex-direction: row; align-items: center; justify-content: space-between; gap: 28px; }
+  .case .hero-text { min-width: 0; flex: 1; }
+  .case .hero-art { width: 160px; height: 160px; flex: none; }
+  .case .hero-art.big { width: 200px; height: 200px; }
+}

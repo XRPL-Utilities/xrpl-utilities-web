@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
-  <link rel="stylesheet" href="/assets/cases.css?v=1" />
+  <link rel="stylesheet" href="/assets/cases.css?v=2" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
@@ -147,10 +147,15 @@
   <main id="main" class="case">
     <article class="cwrap">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/cases/">Case files</a> <span aria-hidden="true">/</span> Case 1</nav>
-      <p class="kicker">Case file 1</p>
-      <h1>Where the XRP from the Binance breach went</h1>
+      <div class="hero">
+        <div class="hero-text">
+          <p class="kicker">Case file 1</p>
+          <h1>Where the XRP from the Binance breach went</h1>
+        </div>
+        <img src="/assets/img/xr-cases-512.webp" width="176" height="176" loading="eager" decoding="async" alt="Case files" class="hero-art" />
+      </div>
       <p class="meta">Traced to exchange deposits as of Nov 12, 2026, 6:30 PM ET. Published Nov 13, 2026.</p>
-      <p class="short">On October 29, 2026, about 233.5 million XRP left five Binance wallets for one new wallet. Over the next 14 days it was split, collected again, broken into small amounts and passed through a chain of wallets. By November 12 about 216 million XRP, roughly 93% of it, had been paid into deposit accounts at about ten exchanges and swap services.</p>
+      <p class="short">On October 29, 2026, about 233.5 million XRP left five Binance wallets for one brand-new wallet, which we call the first wallet. Over the next 14 days it was split, collected again, broken into small amounts and passed through a chain of wallets. By November 12 about 216 million XRP, roughly 93% of it, had been paid into deposit accounts at about ten exchanges and swap services.</p>
 
       <section class="stats" aria-label="The case in three numbers">
         <div class="stat reveal" style="--i:0"><span class="n">233.5M</span><span class="l">XRP taken on Oct 29</span></div>
@@ -162,14 +167,15 @@
         <h2 id="t-path">The path at a glance</h2>
         <p class="sub">How many wallets the XRP passed through at each step.</p>
         <ol class="path">
-          <li class="node reveal" style="--i:0"><span class="count">1</span><span class="what">first wallet</span></li>
-          <li class="node reveal" style="--i:1"><span class="count">6</span><span class="what">split wallets</span></li>
-          <li class="node reveal" style="--i:2"><span class="count">1</span><span class="what">collection wallet</span></li>
-          <li class="node reveal" style="--i:3"><span class="count">98</span><span class="what">short-lived wallets</span></li>
-          <li class="node reveal" style="--i:4"><span class="count">6</span><span class="what">hub wallets</span></li>
-          <li class="node reveal" style="--i:5"><span class="count">58</span><span class="what">pay-out wallets</span></li>
-          <li class="node end reveal" style="--i:6"><span class="count">10</span><span class="what">exchanges and swap services</span></li>
+          <li class="node reveal" style="--i:0"><span class="count">1</span><span class="what">first wallet</span><span class="when">Oct 29</span></li>
+          <li class="node reveal" style="--i:1"><span class="count">6</span><span class="what">split wallets</span><span class="when">Nov 1</span></li>
+          <li class="node reveal" style="--i:2"><span class="count">1</span><span class="what">collection wallet</span><span class="when">Nov 5 to 12</span></li>
+          <li class="node reveal" style="--i:3"><span class="count">98</span><span class="what">short-lived wallets</span><span class="when">Nov 5 to 12</span></li>
+          <li class="node reveal" style="--i:4"><span class="count">6</span><span class="what">hub wallets</span><span class="when">set up Oct 11</span></li>
+          <li class="node reveal" style="--i:5"><span class="count">58</span><span class="what">pay-out wallets</span><span class="when">Nov 5 to 12</span></li>
+          <li class="node end reveal" style="--i:6"><span class="count">10</span><span class="what">exchanges and swap services</span><span class="when">by Nov 12</span></li>
         </ol>
+        <p class="fine">The first wallet is the brand-new wallet that received the XRP from Binance on Oct 29. The timeline below walks through each step in order.</p>
       </section>
 
       <section aria-labelledby="t-timeline">
@@ -178,23 +184,23 @@
         <ol class="timeline">
           <li class="stop reveal" style="--i:0">
             <span class="when">Oct 11, 7:35 PM</span>
-            <h3>Six hub wallets are created</h3>
+            <h3>Before the breach: six hub wallets are created</h3>
             <p>Six new wallets are opened within 20 seconds of each other. Each takes over the balance of an older wallet that had been doing the same job since at least April. These six later carry most of the money.</p>
           </li>
           <li class="stop reveal" style="--i:1">
             <span class="when">Oct 29, 4:05 PM</span>
             <h3>233.5 million XRP leaves Binance</h3>
-            <p>Five Binance wallets pay 233,461,943 XRP to one new wallet in about four minutes.</p>
+            <p>Five Binance wallets pay 233,461,943 XRP to one brand-new wallet in about four minutes. We call it the first wallet.</p>
           </li>
           <li class="stop reveal" style="--i:2">
             <span class="when">Oct 29 to Nov 1</span>
             <h3>Three days of nothing</h3>
-            <p>The wallet sits untouched for three days and seven hours.</p>
+            <p>The first wallet sits untouched for three days and seven hours.</p>
           </li>
           <li class="stop reveal" style="--i:3">
             <span class="when">Nov 1, 10:52 PM</span>
             <h3>Split six ways</h3>
-            <p>In eight minutes the wallet sends everything to six new wallets: five get 40 million XRP each and one gets 33.45 million.</p>
+            <p>In eight minutes the first wallet sends everything to six new wallets: five get 40 million XRP each and one gets 33.45 million.</p>
           </li>
           <li class="stop reveal" style="--i:4">
             <span class="when">Nov 5, 9:56 AM</span>
