@@ -580,7 +580,10 @@
     Array.prototype.forEach.call(document.querySelectorAll('[data-example]'), function (b) {
       b.addEventListener('click', function () {
         var item = C.parseInput(b.getAttribute('data-example'));
-        if (item) go(item, true);
+        if (!item) return;
+        go(item, true);
+        var res = $('follow-results');
+        if (res) res.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
     window.addEventListener('popstate', function (ev) {

@@ -106,6 +106,12 @@ check('follow.js links only validated addresses', /function addrLink\(addr, opts
 const html = fs.readFileSync(path.join(repo, 'follow/index.html'), 'utf8');
 check('caveat is on the page', html.includes('Do your own research before you send money to anyone') && html.includes('We don\'t judge anyone'));
 check('people are never named (stated)', html.includes('We never name people'));
+// Starter stories (2026-11-13): every preset is a real address, and the
+// lookalike group sits next to the real issuer so readers can compare.
+const presets = [...html.matchAll(/data-example="([^"]+)"/g)].map((m) => m[1]);
+check('every preset is a valid address', presets.length >= 8 && presets.every((a) => C.parseInput(a)?.kind === 'account'), presets.join(','));
+check('lookalike RLUSD sits beside the real issuer', presets.includes('rLUSDfDxGQ28Dn3ZtRSTzuqfzBaacRmNm8') && presets.includes('rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De'));
+check('stories say a name proves nothing', html.includes("A wallet's name and website prove nothing about who owns it"));
 const WORDS = /\b(scam\w*|fraud\w*|fake|ring|suspicious|risky|criminal|launder\w*|report (this|a) wallet)\b/i;
 for (const [name, src] of [['follow/index.html', html.replace(/<footer[\s\S]*<\/footer>/, '')], ['follow.js', pageJs], ['follow-core.js', coreJs]]) {
   const m = src.match(WORDS);
