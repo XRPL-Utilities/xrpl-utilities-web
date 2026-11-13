@@ -285,6 +285,68 @@
     });
   }
 
+  // A wallet can type any website into its own record. A few big sites
+  // publish the list of wallets that are really theirs; for those we check
+  // the list from the visitor's browser. The URL is fixed here, never taken
+  // from the ledger.
+  var SITE_LISTS = { 'ripple.com': 'https://ripple.com/.well-known/xrp-ledger.toml' };
+  var siteCache = {};
+  function hasSite(host) { return !!host && Object.prototype.hasOwnProperty.call(SITE_LISTS, host); }
+
+  function siteHost(dom) {
+    var m = /^(?:https?:\/\/)?(?:www\.)?([a-z0-9.-]+?)\.?(?::\d+)?(?:[\/?#].*)?$/i.exec(String(dom).trim());
+    return m ? m[1].toLowerCase() : null;
+  }
+
+  function siteWallets(host) {
+    if (!Object.prototype.hasOwnProperty.call(siteCache, host)) {
+      siteCache[host] = fetch(SITE_LISTS[host], { credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-cache' })
+        .then(function (r) { if (!r.ok) throw new Error('site list ' + r.status); return r.text(); })
+        .then(function (t) {
+          var set = {};
+          (String(t).slice(0, 300000).match(/\br[1-9A-HJ-NP-Za-km-z]{24,34}\b/g) || []).forEach(function (a) {
+            if (C.isAddress(a)) set[a] = 1;
+          });
+          return set;
+        });
+      siteCache[host].catch(function () { delete siteCache[host]; });
+    }
+    return siteCache[host];
+  }
+
+  function siteCheck(my, address, dom) {
+    var host = siteHost(dom);
+    var box = el('div', 'follow-site follow-site-warn follow-card');
+    var title = el('p', 'follow-site-title');
+    var body = el('p', 'follow-site-body');
+    box.appendChild(title);
+    box.appendChild(body);
+    function show(kind, head, parts) {
+      box.className = 'follow-site follow-site-' + kind + ' follow-card';
+      title.textContent = head;
+      clear(body);
+      body.appendChild(renderParts(parts));
+    }
+    var unchecked = ['This wallet says its website is ', { text: dom }, '. Any wallet can type in any website, even a famous one, and nothing on the ledger checks it. Treat it as a claim, not a fact.'];
+    if (!hasSite(host)) {
+      show('warn', '\u26A0 Website not verified', unchecked);
+      return box;
+    }
+    show('warn', 'Checking with ' + host + '\u2026', ['This wallet says its website is ', { text: dom }, '. We are checking that with ' + host + ' now.']);
+    siteWallets(host).then(function (set) {
+      if (my !== seq) return;
+      if (set[address]) {
+        show('ok', '\u2713 Verified by ' + host, [host + ' publishes a list of the wallets that are really its own, and this wallet is on it.']);
+      } else {
+        show('bad', '\u2715 Not on ' + host + "'s list", ['This wallet says its website is ', { text: dom }, ', but ' + host + ' publishes a list of the wallets that are really its own, and this one is not on it. Anyone can type any website into a wallet.']);
+      }
+    }).catch(function () {
+      if (my !== seq) return;
+      show('warn', '\u26A0 Website not verified', unchecked);
+    });
+    return box;
+  }
+
   function renderSummary(out, address, acct, funding) {
     var head = el('div', 'mb-4');
     var line = el('div', 'flex flex-wrap items-center gap-2 mb-1');
@@ -319,7 +381,7 @@
 
     var facts = [];
     var dom = data && data.Domain ? C.hexToText(data.Domain, 80) : null;
-    if (dom) facts.push(['Says its website is ', { text: dom }, ' (the wallet set this itself; we have not checked it)']);
+    if (dom) out.appendChild(siteCheck(seq, address, dom));
     C.flagWords(data, acct && acct.account_flags).forEach(function (w) { facts.push([w]); });
     if (data && Number(data.OwnerCount) > 0) facts.push(['Has ' + Number(data.OwnerCount).toLocaleString('en-US') + ' open items on the ledger (token lines, orders, offers and so on)']);
     if (facts.length) {
@@ -376,7 +438,7 @@
   function renderActivity(out, address) {
     var s = section('What it did', 'Newest first. Times are shown in your time zone.');
     var bar = el('div', 'follow-bar');
-    var refresh = el('button', 'follow-btn-ghost', 'Refresh');
+    var refresh = el('button', 'follow-btn', '\u21BB Refresh');
     refresh.type = 'button';
     refresh.addEventListener('click', function () { showAccount(address); });
     bar.appendChild(refresh);
@@ -384,7 +446,7 @@
     activityList = el('ol', 'follow-timeline');
     s.appendChild(activityList);
     appendEntries(current.entries, address);
-    moreBtn = el('button', 'follow-btn-ghost mt-4', 'Show older activity');
+    moreBtn = el('button', 'follow-btn mt-4', 'Show older activity');
     moreBtn.type = 'button';
     moreBtn.hidden = !current.marker;
     moreBtn.addEventListener('click', function () { loadOlder(address); });
@@ -398,12 +460,14 @@
       var d = C.describe(e, me);
       var li = el('li', 'follow-step' + (d.ok ? '' : ' follow-step-failed'));
       li.style.animationDelay = Math.min(i, 12) * 40 + 'ms';
-      li.appendChild(el('div', 'follow-when', fmtDate(e.date)));
+      var when = el('time', 'follow-when', fmtDate(e.date));
+      if (e.date && !isNaN(e.date.getTime())) when.dateTime = e.date.toISOString();
+      li.appendChild(when);
       var p = el('p', 'follow-what');
       p.appendChild(renderParts(d.parts));
       li.appendChild(p);
       if (e.hash) {
-        var link = el('a', 'follow-tx', 'Details');
+        var link = el('a', 'follow-tx', 'Details \u2192');
         link.href = '/follow/?tx=' + e.hash;
         link.addEventListener('click', function (ev) {
           if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button === 1) return;
