@@ -3,7 +3,7 @@
   "hashtag": "#XRPEducationMonth",
   "lessons": [
     { "n": 1, "slug": "what-is-the-xrp-ledger", "name": "What is the XRP Ledger?", "date": "2026-11-10", "published": true },
-    { "n": 2, "slug": "xrp-ledger-consensus", "name": "How the XRP Ledger agrees without mining", "date": "2026-11-14", "published": false },
+    { "n": 2, "slug": "xrp-ledger-consensus", "name": "How the XRP Ledger agrees without mining", "date": "2026-11-14", "published": true },
     { "n": 3, "slug": "what-is-xrp", "name": "What XRP is actually for", "date": "2026-11-17", "published": false },
     { "n": 4, "slug": "tokens-on-the-xrp-ledger", "name": "Tokens: dollars and more on the XRP Ledger", "date": "2026-11-21", "published": false },
     { "n": 5, "slug": "xrp-ledger-amendments", "name": "How new features get voted in", "date": "2026-11-24", "published": false },
