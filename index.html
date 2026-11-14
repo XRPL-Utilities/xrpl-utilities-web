@@ -190,7 +190,7 @@
   <script src="/assets/glossary-tooltip.js?v=m6" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
-  <link rel="stylesheet" href="/assets/home.css?v=5" />
+  <link rel="stylesheet" href="/assets/home.css?v=6" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
@@ -347,6 +347,45 @@
     </div>
   </section>
 
+  <!-- TRACE THE MONEY. The newest case file and the free wallet lookup, so
+       neither lives only in the footer (Aaron, 2026-11-14). The lookup is a
+       plain GET form: /follow/ reads ?a= and checks the input itself, so it
+       works without any script on this page. -->
+  <section id="trace" class="border-t border-border bg-panel/30">
+    <div class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+      <p class="home-kicker">Trace the money</p>
+      <h2 class="home-h2 mb-10">See where XRP actually went.</h2>
+      <div class="home-trace">
+        <a href="/cases/binance-breach-xrp/" class="home-case">
+          <img src="/assets/img/xr-cases-512.webp" width="112" height="112" loading="lazy" decoding="async" alt="" class="home-case-art" />
+          <div class="home-case-body">
+            <p class="home-trace-eyebrow">Case file 1 &middot; Nov 13, 2026</p>
+            <h3 class="home-trace-title">Where the XRP from the Binance breach went</h3>
+            <div class="home-case-facts">
+              <div><span class="home-case-num">233.5M</span><span class="home-case-label">XRP taken on Oct 29</span></div>
+              <div><span class="home-case-num">93%</span><span class="home-case-label">at exchanges within 14 days</span></div>
+            </div>
+            <span class="home-trace-cta">Read the timeline <span aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+        <div class="home-follow">
+          <p class="home-trace-eyebrow">Follow a wallet</p>
+          <h3 class="home-trace-title">Look up any wallet or transaction</h3>
+          <p class="home-follow-sub">See who funded it, where its money went and who it dealt with, in plain English. Free, no sign-up.</p>
+          <form action="/follow/" method="get" class="home-follow-form" role="search">
+            <label for="home-follow-input" class="sr-only">XRP Ledger wallet address or transaction ID</label>
+            <input id="home-follow-input" name="a" type="text" required maxlength="80" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Wallet (r...) or transaction ID" />
+            <button type="submit">Follow</button>
+          </form>
+          <div class="home-follow-links">
+            <a href="/follow/">How it works</a>
+            <a href="/cases/">All case files</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- PICK YOUR PATH. One column per kind of visitor, so nobody has to read
        the other two pitches to find theirs. -->
   <section id="paths" class="border-t border-border bg-ink">
@@ -361,6 +400,7 @@
             <a href="/pulse/"><span>XR-Pulse: live event feed</span><span aria-hidden="true">&rarr;</span></a>
             <a href="/telemetry/"><span>XR-Telemetry: network health</span><span aria-hidden="true">&rarr;</span></a>
             <a href="/flows/"><span>XR-Flows: XRP funds and flows</span><span aria-hidden="true">&rarr;</span></a>
+            <a href="/cases/"><span>Case files: big moves, step by step</span><span aria-hidden="true">&rarr;</span></a>
           </div>
         </div>
         <div class="home-path">

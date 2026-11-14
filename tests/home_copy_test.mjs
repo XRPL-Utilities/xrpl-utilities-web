@@ -72,5 +72,28 @@ check('no innerHTML in the home script', !js.includes('innerHTML'));
   check('demo box sits below the hero columns, not inside one', gridStart > 0 && boxAt > panelEnd);
 }
 
+// Trace the money (2026-11-14): case files and the wallet lookup were only
+// in the footer. The section must sit right under the hero, the case figures
+// must match the case's own data, and the lookup must hand off to /follow/.
+{
+  const home = fs.readFileSync(path.join(repo, 'index.html'), 'utf8');
+  const data = JSON.parse(fs.readFileSync(path.join(repo, 'cases/binance-breach-xrp/data.json'), 'utf8'));
+  const start = home.indexOf('<section id="trace"');
+  const end = home.indexOf('</section>', start);
+  const trace = home.slice(start, end);
+  check('trace section sits between the hero and the paths', start > home.indexOf('class="home-demo"') && start < home.indexOf('id="paths"'));
+  check('case card links to the case page', trace.includes('href="/cases/binance-breach-xrp/"'));
+  const taken = (data.headline.taken_xrp / 1e6).toFixed(1) + 'M';
+  check(`case card shows taken figure ${taken}`, trace.includes(`>${taken}<`));
+  check('case card share matches data', trace.includes(`>${Math.round(data.headline.to_exchanges_share * 100)}%<`));
+  check('case card days match data', trace.includes(`within ${data.headline.days} days`));
+  check('lookup is a GET form to /follow/ with name="a"', /<form action="\/follow\/" method="get"/.test(trace) && trace.includes('name="a"'));
+  check('lookup input has a label', trace.includes('for="home-follow-input"') && trace.includes('id="home-follow-input"'));
+  check('trace section links all case files', trace.includes('href="/cases/"'));
+  check('no em dash in trace section', !trace.includes('\u2014') && !trace.includes('&mdash;'));
+  const paths = home.slice(home.indexOf('id="paths"'), home.indexOf('id="live-state"'));
+  check('Follow the market card links case files', paths.includes('href="/cases/"'));
+}
+
 console.log(fails ? `${fails} FAILED` : 'home copy: ok');
 process.exit(fails ? 1 : 0);
