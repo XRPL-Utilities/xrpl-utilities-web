@@ -157,6 +157,91 @@
 .home-path-links a:hover { color: #00b8ff; }
 .home-path-links a span:last-child { color: #00b8ff; }
 
+/* Trace the money: newest case file + wallet lookup */
+.home-trace {
+  display: grid;
+  gap: 1.25rem;
+}
+@media (min-width: 900px) { .home-trace { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+.home-case, .home-follow {
+  background: #111;
+  border: 1px solid #262626;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  min-width: 0;
+}
+.home-case {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  color: #fff;
+  text-decoration: none;
+  background:
+    radial-gradient(28rem 10rem at 0% 0%, rgba(245, 180, 60, 0.10), transparent 70%),
+    #111;
+  transition: border-color 150ms ease;
+}
+.home-case:hover, .home-case:focus-visible { border-color: #00b8ff; }
+.home-case-art { width: 112px; height: 112px; flex: none; border-radius: 0.75rem; }
+.home-case-body { min-width: 0; display: flex; flex-direction: column; }
+.home-trace-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #00b8ff;
+}
+.home-trace-title { margin-top: 0.4rem; font-size: 1.35rem; line-height: 1.25; font-weight: 800; letter-spacing: -0.01em; color: #fff; }
+.home-case-facts { display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; margin-top: 1.1rem; }
+.home-case-facts > div { display: flex; flex-direction: column; }
+.home-case-num { font-size: 1.6rem; font-weight: 800; line-height: 1.1; color: #fff; font-variant-numeric: tabular-nums; }
+.home-case-label { font-size: 0.8rem; color: #a3a3a3; margin-top: 0.2rem; }
+.home-trace-cta { margin-top: 1.25rem; font-weight: 600; color: #00b8ff; }
+.home-case:hover .home-trace-cta { color: #33c6ff; }
+.home-follow { display: flex; flex-direction: column; }
+.home-follow-sub { margin-top: 0.5rem; font-size: 0.95rem; line-height: 1.5; color: #b5b5b5; }
+.home-follow-form { display: flex; gap: 0.5rem; margin-top: 1.25rem; }
+.home-follow-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  color: #fff;
+}
+.home-follow-form input::placeholder { color: #8a8a8a; font-family: Inter, system-ui, sans-serif; }
+.home-follow-form input:focus { outline: 2px solid #00b8ff; outline-offset: 1px; border-color: #00b8ff; }
+.home-follow-form button {
+  flex: none;
+  background: #00b8ff;
+  color: #0a0a0a;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.6rem;
+  transition: background-color 0.15s;
+}
+.home-follow-form button:hover, .home-follow-form button:focus-visible { background: #33c6ff; }
+.home-follow-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: auto; padding-top: 1.1rem; font-size: 0.875rem; }
+.home-follow-links a { color: #a3a3a3; text-decoration: underline; text-underline-offset: 3px; }
+.home-follow-links a:hover { color: #fff; }
+/* Phones: drop the art, put the two figures side by side and stack the
+   lookup box over its button. Kept after the base rules so it wins. */
+@media (max-width: 520px) {
+  .home-case { padding: 1.4rem; }
+  .home-case-art { display: none; }
+  .home-case-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .home-case-num { font-size: 1.4rem; }
+  .home-follow { padding: 1.4rem; }
+  .home-follow-form { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-case, .home-follow-form button { transition: none; }
+}
+
 /* Today on the ledger */
 .home-tiles {
   display: grid;
