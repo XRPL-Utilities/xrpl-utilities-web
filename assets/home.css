@@ -173,7 +173,7 @@
 .home-case {
   display: flex;
   gap: 1.5rem;
-  align-items: flex-start;
+  align-items: center;
   color: #fff;
   text-decoration: none;
   background:
@@ -225,9 +225,53 @@
   transition: background-color 0.15s;
 }
 .home-follow-form button:hover, .home-follow-form button:focus-visible { background: #33c6ff; }
-.home-follow-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: auto; padding-top: 1.1rem; font-size: 0.875rem; }
-.home-follow-links a { color: #a3a3a3; text-decoration: underline; text-underline-offset: 3px; }
-.home-follow-links a:hover { color: #fff; }
+.home-follow-try {
+  margin-top: 1.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+.home-follow-examples {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.6rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.home-follow-examples a {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  min-width: 0;
+  border: 1px solid rgba(0, 184, 255, 0.28);
+  background: linear-gradient(180deg, rgba(0, 184, 255, 0.09), rgba(0, 184, 255, 0.03));
+  border-radius: 0.7rem;
+  padding: 0.6rem 0.85rem 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #f5f5f5;
+  text-decoration: none;
+  line-height: 1.3;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.15s;
+}
+.home-follow-examples a:hover, .home-follow-examples a:focus-visible {
+  border-color: #00b8ff;
+  background: rgba(0, 184, 255, 0.16);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.home-follow-tag {
+  flex: none;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #00b8ff;
+}
 /* Phones: drop the art, put the two figures side by side and stack the
    lookup box over its button. Kept after the base rules so it wins. */
 @media (max-width: 520px) {
@@ -239,7 +283,8 @@
   .home-follow-form { flex-direction: column; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .home-case, .home-follow-form button { transition: none; }
+  .home-case, .home-follow-form button, .home-follow-examples a { transition: none; }
+  .home-follow-examples a:hover, .home-follow-examples a:focus-visible { transform: none; }
 }
 
 /* Today on the ledger */

@@ -190,7 +190,7 @@
   <script src="/assets/glossary-tooltip.js?v=m6" defer></script>
   <link rel="stylesheet" href="/assets/stat-tile.css?v=v1" />
   <link rel="stylesheet" href="/assets/tailwind.css?v=1" />
-  <link rel="stylesheet" href="/assets/home.css?v=6" />
+  <link rel="stylesheet" href="/assets/home.css?v=7" />
   <style>
     html, body { background: #0a0a0a; overflow-x: clip; }
     body { min-width: 0; }
@@ -377,10 +377,13 @@
             <input id="home-follow-input" name="a" type="text" required maxlength="80" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Wallet (r...) or transaction ID" />
             <button type="submit">Follow</button>
           </form>
-          <div class="home-follow-links">
-            <a href="/follow/">How it works</a>
-            <a href="/cases/">All case files</a>
-          </div>
+          <p class="home-follow-try">Or try one</p>
+          <ul class="home-follow-examples">
+            <li><a href="/follow/?a=rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"><span class="home-follow-tag">Ripple</span><span>RLUSD issuer</span></a></li>
+            <li><a href="/follow/?a=rwshjBngGqMRJgGYvEJXGMkg5DS2GX3U3q"><span class="home-follow-tag">Exchange</span><span>Kraken wallet</span></a></li>
+            <li><a href="/follow/?a=rwnYLUsoBQX3ECa1A5bSKLdbPoHKnqf63J"><span class="home-follow-tag">Exchange</span><span>Coinbase wallet</span></a></li>
+            <li><a href="/follow/?a=rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"><span class="home-follow-tag">2013</span><span>First wallet ever</span></a></li>
+          </ul>
         </div>
       </div>
     </div>

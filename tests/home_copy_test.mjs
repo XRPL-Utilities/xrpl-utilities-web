@@ -89,7 +89,13 @@ check('no innerHTML in the home script', !js.includes('innerHTML'));
   check('case card days match data', trace.includes(`within ${data.headline.days} days`));
   check('lookup is a GET form to /follow/ with name="a"', /<form action="\/follow\/" method="get"/.test(trace) && trace.includes('name="a"'));
   check('lookup input has a label', trace.includes('for="home-follow-input"') && trace.includes('id="home-follow-input"'));
-  check('trace section links all case files', trace.includes('href="/cases/"'));
+  // Aaron, 2026-11-14: no "All case files" link in the lookup card; a few
+  // example wallets to click instead, each a known entity, never a person.
+  check('lookup card has no All case files link', !trace.includes('All case files'));
+  const ex = [...trace.matchAll(/href="\/follow\/\?a=(r[1-9A-HJ-NP-Za-km-z]{24,34})"/g)].map((m) => m[1]);
+  check('lookup card offers 4 example wallets', ex.length === 4);
+  const follow = fs.readFileSync(path.join(repo, 'follow/index.html'), 'utf8');
+  check('every example is one the follow page already features', ex.every((a) => follow.includes(`data-example="${a}"`)));
   check('no em dash in trace section', !trace.includes('\u2014') && !trace.includes('&mdash;'));
   const paths = home.slice(home.indexOf('id="paths"'), home.indexOf('id="live-state"'));
   check('Follow the market card links case files', paths.includes('href="/cases/"'));
