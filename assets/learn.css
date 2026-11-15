@@ -252,3 +252,81 @@ a.page-num:hover { color: var(--accent); }
 .agree-bar span { display: block; height: 100%; width: 50%; border-radius: 6px; background: linear-gradient(90deg, var(--accent), #22c55e); animation: agree-rise 8s ease-in-out infinite; }
 @keyframes agree-rise { 0%, 25% { width: 50%; } 75% { width: 80%; } 95% { width: 80%; } 100% { width: 50%; } }
 @media (prefers-reduced-motion: reduce) { .steps li, .agree-bar span { animation: none; } .agree-bar span { width: 80%; } }
+
+/* ---- hero: XRP and its four jobs -------------------------------------------- */
+.hero-xrp .coin-ring { fill: #0f1a20; stroke: var(--accent); stroke-width: 3; }
+.hero-xrp .coin-halo { fill: none; stroke: var(--accent); stroke-width: 2; filter: url(#glow); animation: coin-glow 4s ease-in-out infinite; }
+.hero-xrp .coin-t { fill: #fff; font: 800 34px Inter, system-ui, sans-serif; text-anchor: middle; letter-spacing: 0.02em; }
+.hero-xrp .jt { fill: #fff; font: 600 15px Inter, system-ui, sans-serif; text-anchor: middle; }
+.hero-xrp .jhalo { fill: none; stroke: var(--accent); stroke-width: 2; filter: url(#glow); opacity: 0; animation: lit 8s ease-in-out infinite; }
+.hero-xrp .j2 .jhalo { animation-delay: 2s; } .hero-xrp .j3 .jhalo { animation-delay: 4s; } .hero-xrp .j4 .jhalo { animation-delay: 6s; }
+@keyframes coin-glow { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .hero-xrp .coin-halo, .hero-xrp .jhalo { animation: none; } .hero-xrp .coin-halo { opacity: 1; } }
+
+/* ---- fee burn picture --------------------------------------------------------- */
+.burn svg { max-width: 40rem; margin: 0 auto; }
+.fb-card { fill: var(--ink); stroke: var(--border); stroke-width: 1.5; }
+.fb-ok { stroke: #22c55e; }
+.fb-hd { fill: var(--muted); font: 700 10px Inter, system-ui, sans-serif; letter-spacing: 0.14em; }
+.fb-line { fill: #fff; font: 600 16px Inter, system-ui, sans-serif; }
+.fb-fee { fill: #fb923c; font: 500 14px "JetBrains Mono", ui-monospace, monospace; }
+.fb-small, .fb-note { fill: var(--muted); font: 13px Inter, system-ui, sans-serif; }
+.fb-note { text-anchor: middle; }
+.fb-gone { fill: #fb923c; font: 700 16px Inter, system-ui, sans-serif; }
+.fb-path { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 140; stroke-dashoffset: 140; animation: fb-pay 6s ease-out infinite; }
+.fb-head { fill: var(--accent); }
+.fb-bob { opacity: 0; animation: fb-show 6s ease-out infinite; animation-delay: 0.6s; }
+.fb-drop { fill: #fb923c; animation: fb-fall 6s ease-in infinite; }
+.fb-flame { fill: #f97316; transform-box: fill-box; transform-origin: 50% 100%; animation: fb-flick 0.5s ease-in-out infinite alternate; }
+.fb-core { fill: #fde68a; }
+@keyframes fb-pay { 0% { stroke-dashoffset: 140; } 12% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+@keyframes fb-show { 0% { opacity: 0; } 8% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fb-fall { 0%, 20% { transform: translateY(0); opacity: 1; } 45% { transform: translateY(40px); opacity: 1; } 52%, 100% { transform: translateY(46px); opacity: 0; } }
+@keyframes fb-flick { from { transform: scale(0.92, 0.95); } to { transform: scale(1.05, 1.08); } }
+@media (prefers-reduced-motion: reduce) { .fb-path, .fb-bob, .fb-drop, .fb-flame { animation: none; } .fb-path { stroke-dashoffset: 0; } .fb-bob { opacity: 1; } .fb-drop { opacity: 0; } }
+
+/* ---- reserve try-it ------------------------------------------------------------ */
+.rs-list { list-style: none; padding: 0; margin: 8px 0 14px; display: grid; gap: 8px; }
+.rs-list li { margin: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--ink); padding: 10px 12px; font-size: 0.95rem; }
+.rs-ctl { display: inline-flex; align-items: center; gap: 10px; flex: none; }
+.rs-ctl output { min-width: 1.4em; text-align: center; color: #fff; font-weight: 700; }
+.rs-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font: 600 1.1rem Inter, system-ui, sans-serif; cursor: pointer; line-height: 1; }
+.rs-btn:hover:not(:disabled) { background: var(--accent); color: var(--ink); }
+.rs-btn:disabled { opacity: 0.35; cursor: default; }
+.rs-bar { display: flex; height: 14px; border-radius: 7px; background: #222; overflow: hidden; }
+.rs-base { width: 14%; background: var(--accent); }
+.rs-extra { width: 0; background: #22c55e; transition: width 0.25s ease; }
+.rs-total { margin: 10px 0 0; font-weight: 600; color: #fff; }
+
+/* ---- bridge picture ------------------------------------------------------------- */
+.bridge svg { max-width: 40rem; margin: 0 auto; }
+.br-cur { fill: var(--ink); stroke: #a78bfa; stroke-width: 2; }
+.br-xrp { fill: var(--accent); }
+.br-big { fill: #fff; font: 800 18px Inter, system-ui, sans-serif; text-anchor: middle; }
+.br-ink { fill: var(--ink); }
+.br-small { fill: var(--muted); font: 13px Inter, system-ui, sans-serif; text-anchor: middle; }
+.br-head { fill: var(--accent); }
+.br-thin { fill: none; stroke: #4a4a4a; stroke-width: 2; stroke-dasharray: 3 6; }
+.br-path { fill: none; stroke: var(--accent); stroke-width: 3; stroke-dasharray: 200; stroke-dashoffset: 200; animation: br-go 6s ease-out infinite; }
+.br-p2 { animation-delay: 0.9s; }
+.br-mid { animation: br-pop 6s ease-out infinite; transform-box: fill-box; transform-origin: center; animation-delay: 0.6s; }
+@keyframes br-go { 0% { stroke-dashoffset: 200; } 14% { stroke-dashoffset: 0; } 85% { stroke-dashoffset: 0; opacity: 1; } 95%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes br-pop { 0%, 100% { transform: scale(1); } 8% { transform: scale(1.12); } 16% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .br-path, .br-mid { animation: none; } .br-path { stroke-dashoffset: 0; } }
+
+/* ---- owed by no one ------------------------------------------------------------- */
+.ow-grid { display: grid; gap: 10px; }
+@media (min-width: 560px) { .ow-grid { grid-template-columns: 1fr 1fr; } }
+.ow-card { border: 1px solid var(--border); border-radius: 10px; background: var(--ink); padding: 14px; display: grid; gap: 4px; font-size: 0.92rem; color: var(--muted); }
+.ow-card b { color: #fff; font-size: 1.05rem; }
+.ow-tag { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #a78bfa; font-weight: 600; }
+.ow-xrp { border-color: var(--accent); }
+.ow-xrp .ow-tag { color: var(--accent); }
+
+/* ---- live supply ------------------------------------------------------------------- */
+.sp-grid { display: grid; gap: 10px; margin: 12px 0 0; }
+@media (min-width: 560px) { .sp-grid { grid-template-columns: 1fr 1fr; } .sp-wide { grid-column: 1 / -1; } }
+.sp-grid div { border: 1px solid var(--border); border-radius: 10px; background: var(--ink); padding: 12px 14px; }
+.sp-grid dt { color: var(--muted); font-size: 0.82rem; }
+.sp-grid dd { margin: 2px 0 0; color: #fff; font: 700 1.15rem "JetBrains Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
+.sp-wide dd { color: #fb923c; }

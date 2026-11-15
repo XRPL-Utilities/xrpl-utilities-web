@@ -290,7 +290,119 @@
     io.observe(root);
   }
 
-  const WIDGETS = { tamper, 'live-chain': liveChain, race, vote };
+  // ---- try it: the account reserve --------------------------------------------
+  // Mainnet figures on xrpl.org (Reserves page): 1 XRP base, 0.2 XRP per item.
+  function reserve(root) {
+    const BASE = 1, ITEM = 0.2, MAX = 10;
+    const counts = { token: 0, offer: 0, escrow: 0 };
+    const total = root.querySelector('[data-role="total"]');
+    const bar = root.querySelector('[data-role="bar"]');
+    const fmt = (n) => n.toLocaleString('en-US', { maximumFractionDigits: 1 });
+    function draw() {
+      const items = counts.token + counts.offer + counts.escrow;
+      const locked = Math.round((BASE + items * ITEM) * 10) / 10;
+      Object.keys(counts).forEach((k) => {
+        root.querySelector('[data-count="' + k + '"]').textContent = String(counts[k]);
+        root.querySelectorAll('[data-item="' + k + '"]').forEach((b) => {
+          b.disabled = b.getAttribute('data-step') === '1' ? counts[k] >= MAX : counts[k] <= 0;
+        });
+      });
+      bar.style.width = (items * ITEM / (BASE + 3 * MAX * ITEM) * 100) + '%';
+      total.textContent = items === 0
+        ? 'Locked: 1 XRP. That\'s the base amount every account needs.'
+        : 'Locked: ' + fmt(locked) + ' XRP. That\'s 1 XRP for the account plus 0.2 XRP for each of your ' + items + (items === 1 ? ' item.' : ' items.');
+    }
+    root.querySelectorAll('[data-item]').forEach((b) => {
+      b.addEventListener('click', () => {
+        const k = b.getAttribute('data-item');
+        if (!(k in counts)) return;
+        const next = counts[k] + (b.getAttribute('data-step') === '1' ? 1 : -1);
+        counts[k] = Math.max(0, Math.min(MAX, next));
+        draw();
+      });
+    });
+    draw();
+  }
+
+  // ---- live: how much XRP is left ----------------------------------------------
+  // Every ledger page carries total_coins in drops. The ledger began with
+  // exactly 100 billion XRP, so 100 billion minus total_coins is what fees
+  // have destroyed.
+  function supply(root) {
+    const status = root.querySelector('[data-role="status"]');
+    const totalEl = root.querySelector('[data-role="total"]');
+    const goneEl = root.querySelector('[data-role="gone"]');
+    const sinceEl = root.querySelector('[data-role="since"]');
+    const refresh = root.querySelector('[data-role="refresh"]');
+    const URL_LEDGERS = 'https://api.xrpscan.com/api/v1/ledgers';
+    const START_DROPS = 100000000000n * 1000000n;
+    const PAUSE_MS = 10000;
+    const STOP_AFTER_MS = 5 * 60 * 1000;
+    let started = Date.now();
+    let timer = null;
+    let busy = false;
+    let first = null;
+    let lastIndex = 0;
+    const xrp = (drops, digits) => {
+      const whole = drops / 1000000n;
+      const frac = Number(drops % 1000000n) / 1e6;
+      const w = whole.toLocaleString('en-US');
+      return digits ? w + frac.toFixed(digits).slice(1) : w;
+    };
+    // total_coins is past 2^53, so JSON.parse would round off its last
+    // digits. The digits are read straight from the text instead. Each
+    // ledger in the answer is a flat object, and only digits are captured.
+    const LEDGER_RE = /\{[^{}]*?"ledger_index":\s*(\d{1,12})[^{}]*?"total_coins":\s*"?(\d{1,18})"?[^{}]*\}/g;
+    function pick(text) {
+      let best = null;
+      for (const m of text.matchAll(LEDGER_RE)) {
+        const idx = Number(m[1]);
+        if (idx > 0 && (!best || idx > best.ledger_index)) best = { ledger_index: idx, total_coins: m[2] };
+      }
+      return best;
+    }
+    async function tick() {
+      timer = null;
+      if (document.hidden || busy) return;
+      busy = true;
+      try {
+        const r = await fetch(URL_LEDGERS, { headers: { accept: 'application/json' } });
+        if (!r.ok) throw new Error('status ' + r.status);
+        const l = pick(await r.text());
+        if (l && l.ledger_index >= lastIndex) {
+          const left = BigInt(l.total_coins);
+          if (left > 0n && left <= START_DROPS) {
+            lastIndex = l.ledger_index;
+            if (!first) first = left;
+            totalEl.textContent = xrp(left, 0) + ' XRP';
+            goneEl.textContent = xrp(START_DROPS - left, 0) + ' XRP';
+            const since = first - left;
+            sinceEl.textContent = since > 0n ? xrp(since, 6) + ' XRP (' + since.toLocaleString('en-US') + ' drops)' : 'Nothing yet. Give it a few seconds.';
+            status.textContent = 'From page ' + l.ledger_index.toLocaleString('en-US') + '. Updates while this tab is open.';
+          }
+        }
+      } catch (e) {
+        status.textContent = first
+          ? 'Couldn’t reach the live ledger just now. These are the last numbers we got.'
+          : 'Couldn’t reach the live ledger just now. Press "Check again" in a moment.';
+      }
+      busy = false;
+      if (timer) clearTimeout(timer);
+      if (Date.now() - started < STOP_AFTER_MS) timer = setTimeout(tick, PAUSE_MS);
+      else status.textContent = 'Paused. Press "Check again" to start again.';
+    }
+    if (refresh) refresh.addEventListener('click', () => {
+      started = Date.now();
+      if (timer) { clearTimeout(timer); timer = null; }
+      tick();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && !timer && !busy && Date.now() - started < STOP_AFTER_MS) tick();
+    });
+    tick();
+  }
+
+  const WIDGETS = { tamper, 'live-chain': liveChain, race, vote, reserve, supply };
   document.querySelectorAll('[data-widget]').forEach((root) => {
     const fn = WIDGETS[root.getAttribute('data-widget')];
     if (fn) fn(root);
