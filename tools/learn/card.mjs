@@ -41,6 +41,8 @@ h1 { font-size: 64px; line-height: 1.05; margin: 0 0 20px; }
 .hero-chain .new .halo { opacity: 1; }
 .hero-vote .v { animation: none; fill: #22c55e; stroke: #22c55e; }
 .hero-vote .lock { animation: none; opacity: 1; }
+.hero-xrp .coin-halo { animation: none; opacity: 1; }
+.hero-xrp .jhalo { animation: none; opacity: 0; }
 </style></head><body>
 <div class="og">
   <div>
