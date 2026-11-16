@@ -330,3 +330,6 @@ a.page-num:hover { color: var(--accent); }
 .sp-grid dt { color: var(--muted); font-size: 0.82rem; }
 .sp-grid dd { margin: 2px 0 0; color: #fff; font: 700 1.15rem "JetBrains Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
 .sp-wide dd { color: #fb923c; }
+.sp-grid.fresh dd { animation: sp-flash 0.9s ease-out; }
+@keyframes sp-flash { 0% { color: #22c55e; } 100% { } }
+@media (prefers-reduced-motion: reduce) { .sp-grid.fresh dd { animation: none; } }
