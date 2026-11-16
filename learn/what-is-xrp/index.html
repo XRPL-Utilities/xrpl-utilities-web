@@ -114,6 +114,14 @@
         },
         {
           "@type": "Question",
+          "name": "Is there a limit on how many accounts there can be?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No set limit. The reserve is what keeps the number sensible, since every account has to hold at least 1 XRP. The goal, per xrpl.org, is that an ordinary server can always hold the whole ledger in memory."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Can I get my reserve back?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -199,7 +207,7 @@
         <p>So why charge it at all? To stop spam. A few drops is nothing for a real payment. But someone trying to flood the network with millions of junk transactions would burn through their XRP fast. When the network gets busy, the fee goes up for a while, which makes flooding it even more costly.</p>
         <h2 id="job-2-keeping-your-account-open">Job 2: keeping your account open</h2>
         <p>An account needs at least 1 XRP in it to exist. That 1 XRP is called the reserve, and you can&#39;t send it away.</p>
-        <p>Why? Every account takes up room on every copy of the ledger, all over the world. The reserve stops anyone from making millions of empty accounts and filling up those copies.</p>
+        <p>Why? Every account takes up room on every copy of the ledger, all over the world. There&#39;s no set limit on how many accounts there can be. But each one costs 1 XRP to keep, so nobody can cheaply make millions of junk accounts and make every copy bigger.</p>
         <figure class="widget reserve" data-widget="reserve">
         <div class="widget-head"><strong>Try it: what your account keeps locked</strong></div>
         <p>Every account starts with 1 XRP set aside. Add things to the account and watch the locked amount grow.</p>
@@ -263,6 +271,7 @@
         <details class="faq"><summary><h3>Can more XRP be created?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. All 100 billion XRP were created when the ledger started, and no new XRP can be made. Fees destroy a little every few seconds, so the total only ever goes down.</p></details>
         <details class="faq"><summary><h3>Who got the XRP when it was made?</h3><span class="plus" aria-hidden="true"></span></summary><p>In 2012, 80 billion XRP went to the company now called Ripple, in return for building on the ledger. The other 20 billion went to the founders. In 2017, Ripple locked 55 billion away in escrow, to be released over time.</p></details>
         <details class="faq"><summary><h3>Do I need XRP to hold a stablecoin on the XRP Ledger?</h3><span class="plus" aria-hidden="true"></span></summary><p>Yes. Every account needs the 1 XRP reserve, plus a little more for each token it holds. And every transaction you send, in any currency, pays its fee in XRP.</p></details>
+        <details class="faq"><summary><h3>Is there a limit on how many accounts there can be?</h3><span class="plus" aria-hidden="true"></span></summary><p>No set limit. The reserve is what keeps the number sensible, since every account has to hold at least 1 XRP. The goal, per xrpl.org, is that an ordinary server can always hold the whole ledger in memory.</p></details>
         <details class="faq"><summary><h3>Can I get my reserve back?</h3><span class="plus" aria-hidden="true"></span></summary><p>Partly. Remove a token or an offer and its 0.2 XRP is free again. You can also delete the whole account. That costs a fee of 0.2 XRP, and the rest of the reserve can then go to another account.</p></details>
         <details class="faq"><summary><h3>What&#39;s a drop?</h3><span class="plus" aria-hidden="true"></span></summary><p>The smallest amount of XRP. One XRP is a million drops, the way a dollar is 100 cents. Fees are usually counted in drops because they&#39;re so small.</p></details>
         <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
