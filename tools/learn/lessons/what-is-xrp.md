@@ -4,7 +4,7 @@ h1: What XRP is actually for
 updated: 2026-11-15
 hero: hero-xrp
 card: Four jobs for the currency built into the ledger.
-short: XRP is the currency built into the XRP Ledger. It pays the small fee on every transaction, keeps each account open, can bridge two currencies that rarely trade, and nobody issued it. All of it was created when the ledger started.
+short: XRP is the currency built into the XRP Ledger. Every transaction pays its small fee in XRP, whatever currency is being sent. XRP also keeps each account open and can bridge two currencies that rarely trade. And no company issued it. All of it was created when the ledger started.
 ---
 ## The ledger's own money
 
@@ -17,6 +17,8 @@ The ledger can hold other kinds of money too, like digital dollars. But XRP is t
 ## Job 1: paying for every transaction
 
 Every transaction costs a tiny bit of XRP. The usual fee is 10 drops, or 0.00001 XRP.
+
+That goes for anything you send, not just XRP. Send XRP, a digital dollar like RLUSD, or any other token on the ledger, and the fee is still paid in XRP.
 
 ::: fee-burn
 
@@ -44,13 +46,13 @@ Say Anita wants to swap British pounds for Brazilian reais, and few people swap 
 
 The ledger checks both routes for her. If going through XRP gives a better rate, it does that in the same step. It's called auto-bridging, and it only works because XRP is built in.
 
-## Job 4: money nobody owes you
+## Job 4: no company behind it
 
 Every other kind of money on the ledger was issued by someone. A stablecoin, for example, is a company's promise to pay you back a dollar.
 
 ::: owed
 
-XRP has no issuer. It isn't anyone's debt, so there's no company standing behind it that could fail to pay. It also can't be frozen by an issuer, because there isn't one.
+XRP has no issuer. When you own XRP, you own the XRP itself, not a company's promise. So there's no company that could fail to pay you back. It also can't be frozen by an issuer, because there isn't one.
 
 ## See it for yourself
 
