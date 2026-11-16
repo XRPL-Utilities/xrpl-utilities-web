@@ -30,7 +30,7 @@ So why charge it at all? To stop spam. A few drops is nothing for a real payment
 
 An account needs at least 1 XRP in it to exist. That 1 XRP is called the reserve, and you can't send it away.
 
-Why? Every account takes up room on every copy of the ledger, all over the world. The reserve stops anyone from making millions of empty accounts and filling up those copies.
+Why? Every account takes up room on every copy of the ledger, all over the world. There's no set limit on how many accounts there can be. But each one costs 1 XRP to keep, so nobody can cheaply make millions of junk accounts and make every copy bigger.
 
 ::: reserve
 
@@ -75,6 +75,9 @@ In 2012, 80 billion XRP went to the company now called Ripple, in return for bui
 
 ?? Do I need XRP to hold a stablecoin on the XRP Ledger?
 Yes. Every account needs the 1 XRP reserve, plus a little more for each token it holds. And every transaction you send, in any currency, pays its fee in XRP.
+
+?? Is there a limit on how many accounts there can be?
+No set limit. The reserve is what keeps the number sensible, since every account has to hold at least 1 XRP. The goal, per xrpl.org, is that an ordinary server can always hold the whole ledger in memory.
 
 ?? Can I get my reserve back?
 Partly. Remove a token or an offer and its 0.2 XRP is free again. You can also delete the whole account. That costs a fee of 0.2 XRP, and the rest of the reserve can then go to another account.
