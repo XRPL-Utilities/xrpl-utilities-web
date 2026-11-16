@@ -361,15 +361,21 @@
       }
       return best;
     }
-    async function tick() {
+    const card = root.querySelector('.sp-grid');
+    async function tick(clicked) {
       timer = null;
       if (document.hidden || busy) return;
       busy = true;
+      if (clicked) status.textContent = 'Checking the newest page...';
       try {
         const r = await fetch(URL_LEDGERS, { headers: { accept: 'application/json' } });
         if (!r.ok) throw new Error('status ' + r.status);
         const l = pick(await r.text());
-        if (l && l.ledger_index >= lastIndex) {
+        if (clicked && l && l.ledger_index === lastIndex) {
+          // New pages close a few seconds apart, so a quick second
+          // click usually finds the same one. Say so instead of looking stuck.
+          status.textContent = 'Still page ' + l.ledger_index.toLocaleString('en-US') + '. New pages come a few seconds apart, so try again in a moment.';
+        } else if (l && l.ledger_index >= lastIndex) {
           const left = BigInt(l.total_coins);
           if (left > 0n && left <= START_DROPS) {
             lastIndex = l.ledger_index;
@@ -379,6 +385,7 @@
             const since = first - left;
             sinceEl.textContent = since > 0n ? xrp(since, 6) + ' XRP (' + since.toLocaleString('en-US') + ' drops)' : 'Nothing yet. Give it a few seconds.';
             status.textContent = 'From page ' + l.ledger_index.toLocaleString('en-US') + '. Updates while this tab is open.';
+            if (card) { card.classList.remove('fresh'); void card.offsetWidth; card.classList.add('fresh'); }
           }
         }
       } catch (e) {
@@ -394,7 +401,7 @@
     if (refresh) refresh.addEventListener('click', () => {
       started = Date.now();
       if (timer) { clearTimeout(timer); timer = null; }
-      tick();
+      tick(true);
     });
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && !timer && !busy && Date.now() - started < STOP_AFTER_MS) tick();
