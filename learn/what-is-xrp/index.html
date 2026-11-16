@@ -24,8 +24,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=7" />
-  <script src="/assets/pages/learn.js?v=7" defer></script>
+  <link rel="stylesheet" href="/assets/learn.css?v=8" />
+  <script src="/assets/pages/learn.js?v=8" defer></script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -152,12 +152,12 @@
           <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 3</nav>
           <p class="kicker">Lesson 3 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
           <h1>What XRP is actually for</h1>
-          <p class="meta">Updated <time datetime="2026-11-15">November 15, 2026</time> <span aria-hidden="true">&middot;</span> 6 minute read</p>
-          <div class="short"><strong>The short answer:</strong> XRP is the currency built into the XRP Ledger. It pays the small fee on every transaction, keeps each account open, can bridge two currencies that rarely trade, and nobody issued it. All of it was created when the ledger started.</div>
+          <p class="meta">Updated <time datetime="2026-11-15">November 15, 2026</time> <span aria-hidden="true">&middot;</span> 7 minute read</p>
+          <div class="short"><strong>The short answer:</strong> XRP is the currency built into the XRP Ledger. Every transaction pays its small fee in XRP, whatever currency is being sent. XRP also keeps each account open and can bridge two currencies that rarely trade. And no company issued it. All of it was created when the ledger started.</div>
         </div>
         <div class="hero-art">
           <figure class="hero-chain hero-xrp">
-            <svg viewBox="0 0 520 300" role="img" aria-label="An XRP coin in the middle, linked to its four jobs: it pays the fee, opens an account, bridges two currencies, and is owed by no one.">
+            <svg viewBox="0 0 520 300" role="img" aria-label="An XRP coin in the middle, linked to its four jobs: it pays the fee, opens an account, bridges two currencies, and was issued by no company.">
               <defs>
                 <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
               </defs>
@@ -166,7 +166,7 @@
               <g class="job j1"><rect x="14" y="40" width="168" height="48" rx="10" class="card"/><rect x="14" y="40" width="168" height="48" rx="10" class="jhalo"/><text x="98" y="70" class="jt">Pays the fee</text></g>
               <g class="job j2"><rect x="338" y="40" width="168" height="48" rx="10" class="card"/><rect x="338" y="40" width="168" height="48" rx="10" class="jhalo"/><text x="422" y="70" class="jt">Opens an account</text></g>
               <g class="job j3"><rect x="14" y="212" width="168" height="48" rx="10" class="card"/><rect x="14" y="212" width="168" height="48" rx="10" class="jhalo"/><text x="98" y="242" class="jt">Bridges currencies</text></g>
-              <g class="job j4"><rect x="338" y="212" width="168" height="48" rx="10" class="card"/><rect x="338" y="212" width="168" height="48" rx="10" class="jhalo"/><text x="422" y="242" class="jt">Owed by no one</text></g>
+              <g class="job j4"><rect x="338" y="212" width="168" height="48" rx="10" class="card"/><rect x="338" y="212" width="168" height="48" rx="10" class="jhalo"/><text x="422" y="242" class="jt">No company issued it</text></g>
             </svg>
             <figcaption>One currency built into the ledger, with four jobs to do.</figcaption>
           </figure>
@@ -181,6 +181,7 @@
         <p>The ledger can hold other kinds of money too, like digital dollars. But XRP is the only one built in. That gives it four jobs.</p>
         <h2 id="job-1-paying-for-every-transaction">Job 1: paying for every transaction</h2>
         <p>Every transaction costs a tiny bit of XRP. The usual fee is 10 drops, or 0.00001 XRP.</p>
+        <p>That goes for anything you send, not just XRP. Send XRP, a digital dollar like RLUSD, or any other token on the ledger, and the fee is still paid in XRP.</p>
         <figure class="widget burn">
         <svg viewBox="0 0 640 230" role="img" aria-label="Alice pays Bob 50 XRP. The 50 XRP arrives at Bob. The fee of 0.00001 XRP drops away and is destroyed, so nobody receives it.">
           <defs><marker id="fb-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="fb-head"/></marker></defs>
@@ -230,16 +231,16 @@
         <figcaption>When the straight swap is thin, the ledger can go through XRP instead. It picks whichever mix gives the better rate, on its own.</figcaption>
       </figure>
         <p>The ledger checks both routes for her. If going through XRP gives a better rate, it does that in the same step. It&#39;s called auto-bridging, and it only works because XRP is built in.</p>
-        <h2 id="job-4-money-nobody-owes-you">Job 4: money nobody owes you</h2>
+        <h2 id="job-4-no-company-behind-it">Job 4: no company behind it</h2>
         <p>Every other kind of money on the ledger was issued by someone. A stablecoin, for example, is a company&#39;s promise to pay you back a dollar.</p>
         <figure class="widget owed">
         <div class="ow-grid">
           <div class="ow-card"><span class="ow-tag">A token, like a stablecoin</span><b>Someone's promise</b><span>A company issues it and promises to pay it back. It's only as good as that company.</span></div>
-          <div class="ow-card ow-xrp"><span class="ow-tag">XRP</span><b>Nobody's promise</b><span>No one issued it and no one owes it. It just sits in your account.</span></div>
+          <div class="ow-card ow-xrp"><span class="ow-tag">XRP</span><b>The thing itself</b><span>No company issued it. When you own XRP, you hold the XRP itself, not anyone's promise.</span></div>
         </div>
         <figcaption>Lesson 4 covers tokens and the companies behind them.</figcaption>
       </figure>
-        <p>XRP has no issuer. It isn&#39;t anyone&#39;s debt, so there&#39;s no company standing behind it that could fail to pay. It also can&#39;t be frozen by an issuer, because there isn&#39;t one.</p>
+        <p>XRP has no issuer. When you own XRP, you own the XRP itself, not a company&#39;s promise. So there&#39;s no company that could fail to pay you back. It also can&#39;t be frozen by an issuer, because there isn&#39;t one.</p>
         <h2 id="see-it-for-yourself">See it for yourself</h2>
         <p>Every page of the ledger records how much XRP is left. Since the ledger started with exactly 100 billion, you can see how much fees have destroyed so far.</p>
         <figure class="widget live supply" data-widget="supply">
@@ -272,7 +273,7 @@
       </article>
       <nav class="toc" aria-label="On this page">
         <p>On this page</p>
-        <ol><li><a href="#the-ledger-s-own-money">The ledger&#39;s own money</a></li><li><a href="#job-1-paying-for-every-transaction">Job 1: paying for every transaction</a></li><li><a href="#job-2-keeping-your-account-open">Job 2: keeping your account open</a></li><li><a href="#job-3-a-bridge-between-currencies">Job 3: a bridge between currencies</a></li><li><a href="#job-4-money-nobody-owes-you">Job 4: money nobody owes you</a></li><li><a href="#see-it-for-yourself">See it for yourself</a></li><li><a href="#common-questions">Common questions</a></li><li><a href="#words-used-in-this-lesson">Words used in this lesson</a></li><li><a href="#sources">Sources</a></li></ol>
+        <ol><li><a href="#the-ledger-s-own-money">The ledger&#39;s own money</a></li><li><a href="#job-1-paying-for-every-transaction">Job 1: paying for every transaction</a></li><li><a href="#job-2-keeping-your-account-open">Job 2: keeping your account open</a></li><li><a href="#job-3-a-bridge-between-currencies">Job 3: a bridge between currencies</a></li><li><a href="#job-4-no-company-behind-it">Job 4: no company behind it</a></li><li><a href="#see-it-for-yourself">See it for yourself</a></li><li><a href="#common-questions">Common questions</a></li><li><a href="#words-used-in-this-lesson">Words used in this lesson</a></li><li><a href="#sources">Sources</a></li></ol>
       </nav>
     </div>
   </main>
