@@ -333,3 +333,42 @@ a.page-num:hover { color: var(--accent); }
 .sp-grid.fresh dd { animation: sp-flash 0.9s ease-out; }
 @keyframes sp-flash { 0% { color: #22c55e; } 100% { } }
 @media (prefers-reduced-motion: reduce) { .sp-grid.fresh dd { animation: none; } }
+
+/* ---- hero: issuer and tokens ------------------------------------------------- */
+.hero-tokens .lk { fill: none; }
+.hero-tokens .tk-big { fill: #fff; font: 700 18px Inter, system-ui, sans-serif; }
+.hero-tokens .tk-small { fill: var(--muted); font: 13px Inter, system-ui, sans-serif; }
+.hero-tokens .tk-acct { fill: #fff; font: 600 14px Inter, system-ui, sans-serif; }
+.hero-tokens .tk-coin { fill: #22c55e; stroke: #0a0a0a; stroke-width: 2; }
+.hero-tokens .halo { animation: lit 6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .hero-tokens .tk-coin { display: none; } .hero-tokens .halo { animation: none; opacity: 1; } }
+
+/* ---- trust line try-it -------------------------------------------------------- */
+.tr-acct { display: grid; gap: 8px; margin: 10px 0 12px; }
+@media (min-width: 560px) { .tr-acct { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tr-acct div { border: 1px solid var(--border); border-radius: 10px; background: var(--ink); padding: 10px 12px; display: grid; gap: 2px; }
+.tr-lbl { color: var(--muted); font-size: 0.8rem; }
+.tr-acct b { font-size: 0.95rem; }
+.tr-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.trust .replay { margin-top: 0; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.trust .replay:hover { background: var(--accent); color: var(--ink); }
+.tr-msg { margin: 12px 0 0; font-weight: 600; min-height: 3em; color: #fff; }
+.tr-msg.ok { color: #22c55e; }
+.tr-msg.bad { color: #ef4444; animation: shake 0.4s ease-in-out; }
+@media (prefers-reduced-motion: reduce) { .tr-msg.bad { animation: none; } }
+
+/* ---- issuer powers -------------------------------------------------------------- */
+.pw-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 0.8fr); gap: 6px; font-size: 0.9rem; }
+.pw-h { color: #a78bfa; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; padding: 0 4px; }
+.pw-h.pw-xrp { color: var(--accent); }
+.pw-row { color: #fff; font-weight: 600; padding: 10px 4px; }
+.pw-cell { border: 1px solid var(--border); border-radius: 8px; background: var(--ink); padding: 8px 10px; }
+.pw-maybe { color: #fbbf24; }
+.pw-no { color: #22c55e; font-weight: 600; }
+
+/* ---- kinds of tokens -------------------------------------------------------------- */
+@media (min-width: 640px) { .kinds-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* ---- live: inside the newest page ------------------------------------------------- */
+.ltok .sp-grid dd { color: #fff; }
+.pw-grid p { margin: 0; }

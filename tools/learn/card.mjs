@@ -43,6 +43,8 @@ h1 { font-size: 64px; line-height: 1.05; margin: 0 0 20px; }
 .hero-vote .lock { animation: none; opacity: 1; }
 .hero-xrp .coin-halo { animation: none; opacity: 1; }
 .hero-xrp .jhalo { animation: none; opacity: 0; }
+.hero-tokens .tk-coin { display: none; }
+.hero-tokens .halo { animation: none; opacity: 1; }
 </style></head><body>
 <div class="og">
   <div>
