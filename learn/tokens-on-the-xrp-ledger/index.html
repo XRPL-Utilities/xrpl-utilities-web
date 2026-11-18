@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <title>XRP Ledger Tokens and Stablecoins, Explained Simply</title>
+  <meta name="description" content="How dollars and other assets live on the XRP Ledger as tokens, why you have to say yes before you can hold one, and what an issuer can and can&#39;t do." />
+  <meta property="og:title" content="XRP Ledger Tokens and Stablecoins, Explained Simply" />
+  <meta property="og:description" content="How dollars and other assets live on the XRP Ledger as tokens, why you have to say yes before you can hold one, and what an issuer can and can&#39;t do." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/img/learn/tokens-on-the-xrp-ledger.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="XRPL-Utilities" />
+  <meta property="article:published_time" content="2026-11-21" />
+  <meta property="article:modified_time" content="2026-11-17" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@XRPL_Utilities" />
+  <meta name="twitter:title" content="XRP Ledger Tokens and Stablecoins, Explained Simply" />
+  <meta name="twitter:description" content="How dollars and other assets live on the XRP Ledger as tokens, why you have to say yes before you can hold one, and what an issuer can and can&#39;t do." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/img/learn/tokens-on-the-xrp-ledger.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/learn.css?v=10" />
+  <script src="/assets/pages/learn.js?v=10" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://xrpl-utilities.com/#org",
+      "name": "XRPL-Utilities",
+      "url": "https://xrpl-utilities.com/"
+    },
+    {
+      "@type": "Article",
+      "@id": "https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/#article",
+      "headline": "Tokens: dollars and more on the XRP Ledger",
+      "description": "How dollars and other assets live on the XRP Ledger as tokens, why you have to say yes before you can hold one, and what an issuer can and can't do.",
+      "url": "https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/",
+      "mainEntityOfPage": "https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/",
+      "datePublished": "2026-11-21",
+      "dateModified": "2026-11-17",
+      "inLanguage": "en",
+      "author": {
+        "@id": "https://xrpl-utilities.com/#org"
+      },
+      "publisher": {
+        "@id": "https://xrpl-utilities.com/#org"
+      },
+      "image": "https://xrpl-utilities.com/assets/img/learn/tokens-on-the-xrp-ledger.png",
+      "isPartOf": {
+        "@type": "Course",
+        "name": "Learn the XRP Ledger",
+        "url": "https://xrpl-utilities.com/learn/"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Learn",
+          "item": "https://xrpl-utilities.com/learn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tokens: dollars and more on the XRP Ledger",
+          "item": "https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is a stablecoin the same as a dollar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not quite. It's a promise that you can trade it for a dollar. If the issuer can't or won't pay out, the token can be worth less than a dollar."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who can issue a token?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Anyone with an XRP Ledger account. That's why it matters who the issuer is. The ledger checks the math, not the promise behind it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can someone send me a token I don't want?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. A token can only land in your account after you've said yes to it with a trust line, or bought it yourself. The ledger also blocks payments that would put you over your limit."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can my XRP be frozen like a token?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Nobody can freeze or claw back XRP on the ledger. An exchange can still freeze an account it runs for you, because then the exchange holds the XRP, not you."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does each trust line lock up XRP?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Each one takes up room on every copy of the ledger. The 0.2 XRP keeps people from opening thousands of them for nothing. Empty the trust line and close it, and that XRP is free again."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What's the difference between a token and an NFT?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "One dollar token is the same as any other, like dollar bills. Each NFT is one of a kind, like a numbered concert ticket."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip">Skip to content</a>
+  <header class="site">
+    <div class="wide bar">
+      <a href="/learn/" class="brand">
+        <img src="/assets/img/logo-mark-128.webp" width="32" height="32" loading="eager" decoding="async" alt="" />
+        <span>XRPL-Utilities <em>Learn</em></span>
+      </a>
+      <nav aria-label="Lessons"><a href="/learn/">All lessons</a></nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="hero">
+      <div class="wide hero-grid">
+        <div class="hero-text">
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 4</nav>
+          <p class="kicker">Lesson 4 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
+          <h1>Tokens: dollars and more on the XRP Ledger</h1>
+          <p class="meta">Updated <time datetime="2026-11-17">November 17, 2026</time> <span aria-hidden="true">&middot;</span> 6 minute read</p>
+          <div class="short"><strong>The short answer:</strong> A token is anything on the XRP Ledger other than XRP. Someone issues it, usually as a promise backed by something real, like a dollar. You have to say yes before you can hold one, and it&#39;s only as good as its issuer.</div>
+        </div>
+        <div class="hero-art">
+          <figure class="hero-chain hero-tokens">
+            <svg viewBox="0 0 520 300" role="img" aria-label="An issuer holds real dollars in a vault and sends matching tokens out to three accounts on the ledger.">
+              <defs>
+                <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <g><rect x="18" y="92" width="150" height="116" rx="14" class="card"/><rect x="18" y="92" width="150" height="116" rx="14" class="halo"/><text x="36" y="118" class="hd">ISSUER</text><text x="36" y="150" class="tk-big">Real dollars</text><text x="36" y="174" class="tk-small">one for every</text><text x="36" y="194" class="tk-small">token it sends</text></g>
+              <path d="M176 150 C 250 150, 280 62, 352 62" class="lk"/><path d="M176 150 L 352 150" class="lk"/><path d="M176 150 C 250 150, 280 238, 352 238" class="lk"/>
+              <circle r="11" class="tk-coin tk-c1"><animateMotion dur="3s" repeatCount="indefinite" path="M176 150 C 250 150, 280 62, 352 62"/></circle>
+              <circle r="11" class="tk-coin tk-c2"><animateMotion dur="3s" begin="1s" repeatCount="indefinite" path="M176 150 L 352 150"/></circle>
+              <circle r="11" class="tk-coin tk-c3"><animateMotion dur="3s" begin="2s" repeatCount="indefinite" path="M176 150 C 250 150, 280 238, 352 238"/></circle>
+              <g><rect x="360" y="38" width="142" height="48" rx="10" class="card"/><text x="378" y="68" class="tk-acct">Alice: 50 USD</text></g>
+              <g><rect x="360" y="126" width="142" height="48" rx="10" class="card"/><text x="378" y="156" class="tk-acct">Bob: 20 USD</text></g>
+              <g><rect x="360" y="214" width="142" height="48" rx="10" class="card"/><text x="378" y="244" class="tk-acct">Carol: 30 USD</text></g>
+            </svg>
+            <figcaption>A token is a promise from its issuer. A dollar token is only worth a dollar if the issuer really holds one for it.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <div class="wide body-grid">
+      <article class="lesson">
+        <h2 id="xrp-is-built-in-everything-else-is-a-token">XRP is built in. Everything else is a token.</h2>
+        <p><a href="/learn/what-is-xrp/" target="_blank" rel="noopener noreferrer">Lesson 3</a> covered XRP, the currency built into the ledger. The ledger can hold a lot more than XRP, though. Dollars, euros, gold, shares in a fund. Each of those shows up as a token.</p>
+        <p>Anyone with an account can issue a token. Most useful tokens stand for something real that the issuer holds outside the ledger. A dollar token, often called a stablecoin, is meant to be worth exactly one dollar.</p>
+        <h2 id="how-a-dollar-gets-onto-the-ledger">How a dollar gets onto the ledger</h2>
+        <p>Think of a coat check. You hand over your coat and get a ticket. The ticket is only worth something because the counter will give your coat back.</p>
+        <figure class="widget rounds token-life">
+        <div class="widget-head"><strong>The life of a dollar token</strong></div>
+        <ol class="steps">
+          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="11" rx="2"/><circle cx="12" cy="12.5" r="2.5"/></svg></span><b>Deposit</b><span>You give the issuer a real dollar, the way you'd hand over a coat at a coat check.</span></li>
+          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9 10.5h4.5a1.5 1.5 0 0 1 0 3H10"/></svg></span><b>Get a token</b><span>The issuer sends you one dollar token on the ledger. That's your ticket.</span></li>
+          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h12M12 6l6 6-6 6"/></svg></span><b>Send it</b><span>You can pay anyone who accepts that token, in seconds.</span></li>
+          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 12H8M12 6l-6 6 6 6"/></svg></span><b>Cash it in</b><span>Whoever holds it last hands it back to the issuer and gets the dollar.</span></li>
+        </ol>
+        <figcaption>The ledger tracks the tokens. The real dollars sit with the issuer, outside the ledger.</figcaption>
+      </figure>
+        <p>That last step is the whole deal. The ledger can&#39;t see the issuer&#39;s bank account, so it can&#39;t check that the dollars are really there.</p>
+        <h2 id="you-have-to-say-yes-first">You have to say yes first</h2>
+        <p>Nobody can put a token in your account without your OK. You first tell the ledger you&#39;ll accept that token from that issuer, and set a limit on how much. This is called a trust line.</p>
+        <figure class="widget trust" data-widget="trust">
+        <div class="widget-head"><strong>Try it: say yes to a token</strong></div>
+        <p>Bob wants to pay you in dollar tokens from Example Bank. Press the buttons in any order and see what the ledger does.</p>
+        <div class="tr-acct">
+          <div><span class="tr-lbl">Your account</span><b data-role="bal">0 USD from Example Bank</b></div>
+          <div><span class="tr-lbl">Your limit for this token</span><b data-role="limit">None. You haven't said yes.</b></div>
+          <div><span class="tr-lbl">XRP locked for it</span><b data-role="res">0 XRP</b></div>
+        </div>
+        <div class="tr-btns">
+          <button type="button" class="replay" data-act="send50">Bob sends you 50 USD</button>
+          <button type="button" class="replay" data-act="trust">Say yes, up to 1,000 USD</button>
+          <button type="button" class="replay" data-act="send2000">Bob sends you 2,000 USD</button>
+          <button type="button" class="replay" data-act="reset">Start over</button>
+        </div>
+        <p class="tr-msg" data-role="msg" aria-live="polite">Nothing sent yet.</p>
+        <figcaption>Saying yes is called setting up a trust line. It usually locks 0.2 XRP of your reserve while it's open.</figcaption>
+      </figure>
+        <p>The ledger also won&#39;t let a payment push you past your limit. And every trust line uses up a bit of your reserve, the XRP your account keeps locked.</p>
+        <h2 id="what-an-issuer-can-and-can-t-do">What an issuer can and can&#39;t do</h2>
+        <p>Because a token is the issuer&#39;s promise, the issuer keeps some control over it. XRP has no issuer, so none of this applies to it.</p>
+        <figure class="widget powers">
+        <div class="pw-grid">
+          <p class="pw-h"></p><p class="pw-h">A token</p><p class="pw-h pw-xrp">XRP</p>
+          <p class="pw-row">Freeze your balance</p><p class="pw-cell pw-maybe">Yes, the issuer can</p><p class="pw-cell pw-no">Never</p>
+          <p class="pw-row">Take it back (claw back)</p><p class="pw-cell pw-maybe">Only if the issuer switched it on before issuing any tokens</p><p class="pw-cell pw-no">Never</p>
+          <p class="pw-row">Refuse to cash it in</p><p class="pw-cell pw-maybe">The ledger can't stop that. You trust the issuer.</p><p class="pw-cell pw-no">Nothing to cash in</p>
+        </div>
+        <figcaption>What an issuer can do to tokens it issued. Nobody can do any of this to XRP.</figcaption>
+      </figure>
+        <p>Freezing and clawing back exist mostly so regulated companies can follow the law, for example when funds are tied to a crime. Before you hold a token, it&#39;s worth knowing who issued it.</p>
+        <h2 id="three-kinds-of-tokens">Three kinds of tokens</h2>
+        <figure class="widget kinds">
+        <div class="ow-grid kinds-grid">
+          <div class="ow-card"><span class="ow-tag">Trust line tokens</span><b>The original</b><span>Each holder opens a trust line to the issuer. This is the kind the ledger started with.</span></div>
+          <div class="ow-card"><span class="ow-tag">Multi-Purpose Tokens</span><b>The newer kind</b><span>Simpler for issuers, with the same "say yes first" rule. Often called MPTs.</span></div>
+          <div class="ow-card ow-xrp"><span class="ow-tag">NFTs</span><b>One of a kind</b><span>Each one is unique, like a ticket to one seat or a piece of art. They aren't used for payments.</span></div>
+        </div>
+        <figcaption>The first two are interchangeable, like dollar bills. NFTs aren't.</figcaption>
+      </figure>
+        <p>The ledger lets you trade most tokens in the same built-in marketplace from Lesson 3. That&#39;s how one person&#39;s dollar tokens can become another person&#39;s euro tokens in a single step.</p>
+        <h2 id="see-it-for-yourself">See it for yourself</h2>
+        <p>Every page of the ledger shows these tokens moving. Here&#39;s what&#39;s inside the newest one.</p>
+        <figure class="widget live ltok" data-widget="live-tokens">
+        <div class="widget-head">
+          <span class="dot" aria-hidden="true"></span>
+          <strong>Inside the newest page</strong>
+        </div>
+        <p class="live-status" data-role="status" aria-live="polite">Opening the newest page...</p>
+        <dl class="sp-grid">
+          <div><dt>Payments in XRP</dt><dd data-role="xrp">...</dd></div>
+          <div><dt>Payments in a token</dt><dd data-role="tok">...</dd></div>
+          <div><dt>People saying yes to a token</dt><dd data-role="trust">...</dd></div>
+          <div><dt>Everything else</dt><dd data-role="other">...</dd></div>
+        </dl>
+        <button type="button" class="replay" data-role="refresh">Open the newest page</button>
+        <figcaption>Counted from one real ledger page. "Everything else" is mostly offers to swap currencies, the marketplace from lesson 3.</figcaption>
+      </figure>
+        <p>Press the button again in a few seconds to open the next page. The mix changes every time.</p>
+        <h2 id="common-questions">Common questions</h2>
+        <details class="faq" open><summary><h3>Is a stablecoin the same as a dollar?</h3><span class="plus" aria-hidden="true"></span></summary><p>Not quite. It&#39;s a promise that you can trade it for a dollar. If the issuer can&#39;t or won&#39;t pay out, the token can be worth less than a dollar.</p></details>
+        <details class="faq"><summary><h3>Who can issue a token?</h3><span class="plus" aria-hidden="true"></span></summary><p>Anyone with an XRP Ledger account. That&#39;s why it matters who the issuer is. The ledger checks the math, not the promise behind it.</p></details>
+        <details class="faq"><summary><h3>Can someone send me a token I don&#39;t want?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. A token can only land in your account after you&#39;ve said yes to it with a trust line, or bought it yourself. The ledger also blocks payments that would put you over your limit.</p></details>
+        <details class="faq"><summary><h3>Can my XRP be frozen like a token?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Nobody can freeze or claw back XRP on the ledger. An exchange can still freeze an account it runs for you, because then the exchange holds the XRP, not you.</p></details>
+        <details class="faq"><summary><h3>Why does each trust line lock up XRP?</h3><span class="plus" aria-hidden="true"></span></summary><p>Each one takes up room on every copy of the ledger. The 0.2 XRP keeps people from opening thousands of them for nothing. Empty the trust line and close it, and that XRP is free again.</p></details>
+        <details class="faq"><summary><h3>What&#39;s the difference between a token and an NFT?</h3><span class="plus" aria-hidden="true"></span></summary><p>One dollar token is the same as any other, like dollar bills. Each NFT is one of a kind, like a numbered concert ticket.</p></details>
+        <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
+        <ul><li><strong>Token:</strong> anything held on the XRP Ledger other than XRP.</li><li><strong>Issuer:</strong> the account that creates a token and stands behind it.</li><li><strong>Stablecoin:</strong> a token meant to stay worth one unit of a regular currency, like one US dollar.</li><li><strong>Trust line:</strong> your yes to holding a certain token from a certain issuer, up to a limit you set.</li><li><strong>Freeze:</strong> an issuer stopping a balance of its token from being sent.</li><li><strong>Claw back:</strong> an issuer taking its token back from a holder, if it switched that on before issuing.</li><li><strong>Multi-Purpose Token (MPT):</strong> the newer, simpler kind of token on the ledger.</li><li><strong>NFT:</strong> a non-fungible token, one of a kind and not used for payments.</li></ul>
+        <h2 id="sources">Sources</h2>
+        <ul><li><a href="https://xrpl.org/docs/concepts/tokens" target="_blank" rel="noopener noreferrer">Tokens</a> (all assets other than XRP are tokens, anyone can issue), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/stablecoins" target="_blank" rel="noopener noreferrer">Stablecoins</a> (backed outside the ledger, depend on the issuer), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/trust-line-tokens" target="_blank" rel="noopener noreferrer">Trust Line Tokens</a> (you can&#39;t be made to hold a token, limits), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/freezes" target="_blank" rel="noopener noreferrer">Freezing Tokens</a> (freeze types, XRP can&#39;t be frozen), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/clawing-back-tokens" target="_blank" rel="noopener noreferrer">Clawing Back Tokens</a> (must be switched on before issuing, XRP can&#39;t be clawed back), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/multi-purpose-tokens" target="_blank" rel="noopener noreferrer">Multi-Purpose Tokens</a> (holders must say yes first), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/nfts" target="_blank" rel="noopener noreferrer">Non-Fungible Tokens</a> (unique, not used for payments), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/accounts/reserves" target="_blank" rel="noopener noreferrer">Reserves</a> (0.2 XRP per trust line), xrpl.org</li></ul>
+        <nav class="pager" aria-label="More lessons"><a class="prev" href="/learn/what-is-xrp/"><span>Previous lesson</span>What XRP is actually for</a><div class="next soon"><span>Next lesson, Tue, Nov 24</span>How new features get voted in</div></nav>
+      </article>
+      <nav class="toc" aria-label="On this page">
+        <p>On this page</p>
+        <ol><li><a href="#xrp-is-built-in-everything-else-is-a-token">XRP is built in. Everything else is a token.</a></li><li><a href="#how-a-dollar-gets-onto-the-ledger">How a dollar gets onto the ledger</a></li><li><a href="#you-have-to-say-yes-first">You have to say yes first</a></li><li><a href="#what-an-issuer-can-and-can-t-do">What an issuer can and can&#39;t do</a></li><li><a href="#three-kinds-of-tokens">Three kinds of tokens</a></li><li><a href="#see-it-for-yourself">See it for yourself</a></li><li><a href="#common-questions">Common questions</a></li><li><a href="#words-used-in-this-lesson">Words used in this lesson</a></li><li><a href="#sources">Sources</a></li></ol>
+      </nav>
+    </div>
+  </main>
+  <footer class="site">
+    <div class="wide">
+      <p>Written by XRPL-Utilities for XRP Ledger Education Month. #XRPEducationMonth</p>
+      <p>For learning only. This is not financial advice, and nothing here is a reason to buy anything.</p>
+      <p class="links"><a href="/learn/">All lessons</a> <a href="/contact/">Contact</a> <a href="/privacy/">Privacy</a> <a href="/terms/">Terms</a> <a href="/status/">Site status</a></p>
+    </div>
+  </footer>
+</body>
+</html>
