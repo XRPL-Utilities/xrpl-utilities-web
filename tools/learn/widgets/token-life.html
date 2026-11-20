@@ -4,14 +4,16 @@
   <div class="tl-grid">
     <p class="tl-h"></p><p class="tl-h">You</p><p class="tl-h tl-iss">Issuer</p><p class="tl-h">Your friend</p>
     <p class="tl-row">Real money<span>off the ledger</span></p>
-    <p class="tl-cell" data-cell="you-cash"><span class="chip cash">1 dollar</span></p>
-    <p class="tl-cell tl-vault" data-cell="vault"><span class="tl-k">In the vault</span><b>0 dollars</b></p>
+    <p class="tl-cell" data-cell="you-cash"><span class="chip cash"><svg class="ico" viewBox="0 0 36 22" aria-hidden="true"><rect x="1" y="1" width="34" height="20" rx="3" class="bill-bg"/><rect x="4" y="4" width="28" height="14" rx="2" class="bill-in"/><circle cx="18" cy="11" r="4.5" class="bill-in"/><text x="18" y="14" class="bill-t">$</text></svg>1 dollar</span></p>
+    <p class="tl-cell tl-vault" data-cell="vault"><span class="tl-k">In the vault</span><span class="tl-slot" data-slot="vault"></span><b>0 dollars</b></p>
     <p class="tl-cell" data-cell="friend-cash"></p>
     <p class="tl-row">Tokens<span>on the ledger</span></p>
     <p class="tl-cell" data-cell="you-tok"></p>
     <p class="tl-cell tl-vault" data-cell="out"><span class="tl-k">Tokens out</span><b>0</b></p>
     <p class="tl-cell" data-cell="friend-tok"></p>
   </div>
+  <template data-tpl="cash"><span class="chip cash"><svg class="ico" viewBox="0 0 36 22" aria-hidden="true"><rect x="1" y="1" width="34" height="20" rx="3" class="bill-bg"/><rect x="4" y="4" width="28" height="14" rx="2" class="bill-in"/><circle cx="18" cy="11" r="4.5" class="bill-in"/><text x="18" y="14" class="bill-t">$</text></svg>1 dollar</span></template>
+  <template data-tpl="tok"><span class="chip tok"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" class="coin-bg"/><circle cx="12" cy="12" r="7.5" class="coin-in"/><text x="12" y="15.5" class="coin-t">$</text></svg>1 USD token</span></template>
   <p class="tl-msg" data-role="msg" aria-live="polite">You have a real dollar. The issuer's vault is empty.</p>
   <div class="tr-btns">
     <button type="button" class="replay tr-next" data-role="next">Step 1: Hand the issuer your dollar</button>
