@@ -346,8 +346,8 @@ a.page-num:hover { color: var(--accent); }
 .hero-tokens .vault-x { stroke: #fbbf24; stroke-width: 2; }
 .hero-tokens .vhalo { fill: none; stroke: #fbbf24; stroke-width: 2; filter: url(#glow); opacity: 0.6; }
 .hero-tokens .xrp-card { stroke: var(--accent); }
-.hero-tokens .xcoin { fill: var(--accent); }
-.hero-tokens .xg { fill: var(--ink); }
+.hero-tokens .xrp-card { stroke-dasharray: 5 4; }
+.hero-tokens .xname { fill: var(--accent); }
 .hero-tokens .tk-dot { stroke: #0a0a0a; stroke-width: 2; }
 .hero-tokens .halo { opacity: 0; animation: tk-lit 8s ease-in-out infinite; }
 .hero-tokens .ha .halo { stroke: #fbbf24; }
