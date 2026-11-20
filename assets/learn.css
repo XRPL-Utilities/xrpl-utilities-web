@@ -335,23 +335,65 @@ a.page-num:hover { color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .sp-grid.fresh dd { animation: none; } }
 
 /* ---- hero: issuer and tokens ------------------------------------------------- */
-.hero-tokens .lk { fill: none; }
-.hero-tokens .tk-big { fill: #fff; font: 700 18px Inter, system-ui, sans-serif; }
-.hero-tokens .tk-small { fill: var(--muted); font: 13px Inter, system-ui, sans-serif; }
-.hero-tokens .tk-acct { fill: #fff; font: 600 14px Inter, system-ui, sans-serif; }
-.hero-tokens .tk-coin { fill: #22c55e; stroke: #0a0a0a; stroke-width: 2; }
-.hero-tokens .halo { animation: lit 6s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .hero-tokens .tk-coin { display: none; } .hero-tokens .halo { animation: none; opacity: 1; } }
+.hero-tokens .lk { fill: none; stroke-width: 2; opacity: 0.45; }
+.hero-tokens .nm { fill: #fff; font: 600 15px Inter, system-ui, sans-serif; }
+.hero-tokens .sm { fill: var(--muted); font: 12px Inter, system-ui, sans-serif; }
+.hero-tokens .mid { text-anchor: middle; }
+.hero-tokens .glyph { fill: rgba(251, 191, 36, 0.15); stroke: #fbbf24; stroke-width: 1.5; }
+.hero-tokens .gl { fill: #fff; font: 700 11px Inter, system-ui, sans-serif; text-anchor: middle; }
+.hero-tokens .tcoin { fill: rgba(0, 184, 255, 0.2); stroke: var(--accent); stroke-width: 2; }
+.hero-tokens .vault { fill: none; stroke: #fbbf24; stroke-width: 2.5; }
+.hero-tokens .vault-x { stroke: #fbbf24; stroke-width: 2; }
+.hero-tokens .vhalo { fill: none; stroke: #fbbf24; stroke-width: 2; filter: url(#glow); opacity: 0.6; }
+.hero-tokens .xrp-card { stroke: var(--accent); }
+.hero-tokens .xcoin { fill: var(--accent); }
+.hero-tokens .xg { fill: var(--ink); }
+.hero-tokens .tk-dot { stroke: #0a0a0a; stroke-width: 2; }
+.hero-tokens .halo { opacity: 0; animation: tk-lit 8s ease-in-out infinite; }
+.hero-tokens .ha .halo { stroke: #fbbf24; }
+.hero-tokens .ha2 .halo, .hero-tokens .ht2 .halo { animation-delay: 2s; }
+.hero-tokens .ha3 .halo, .hero-tokens .ht3 .halo { animation-delay: 4s; }
+.hero-tokens .ha4 .halo, .hero-tokens .ht4 .halo { animation-delay: 6s; }
+.hero-tokens .ht .halo { animation-name: tk-lit-late; }
+@keyframes tk-lit { 0% { opacity: 0; } 3% { opacity: 1; } 12% { opacity: 1; } 20%, 100% { opacity: 0; } }
+@keyframes tk-lit-late { 0%, 14% { opacity: 0; } 20% { opacity: 1; } 26% { opacity: 1; } 32%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-tokens .tk-dot { display: none; } .hero-tokens .halo { animation: none; opacity: 0; } }
+
+/* ---- life of a dollar token ------------------------------------------------------ */
+.token-life svg { width: 100%; height: auto; display: block; margin-top: 8px; }
+.token-life .card { fill: #121212; stroke: #2e2e2e; stroke-width: 1.5; }
+.token-life .vault-box { stroke: #fbbf24; }
+.token-life .hd { fill: var(--muted); font: 700 13px Inter, system-ui, sans-serif; letter-spacing: 0.04em; }
+.token-life .mid { text-anchor: middle; }
+.token-life .tl-div { stroke: #3a3a3a; stroke-width: 1.5; stroke-dasharray: 6 6; }
+.token-life .cnt { fill: #fff; font: 700 24px Inter, system-ui, sans-serif; }
+.token-life .cap { fill: #fff; font: 600 20px Inter, system-ui, sans-serif; }
+.token-life .bill { fill: #16a34a; stroke: #bbf7d0; stroke-width: 1.5; }
+.token-life .bill-dot { fill: none; stroke: #bbf7d0; stroke-width: 1.5; }
+.token-life .tcoin { fill: var(--accent); stroke: #0a0a0a; stroke-width: 2; }
+.token-life .gl { fill: var(--ink); font: 700 13px Inter, system-ui, sans-serif; text-anchor: middle; }
+.tl-steps { display: none; margin: 8px 0 0; padding-left: 1.4em; }
+@media (prefers-reduced-motion: reduce) { .token-life .tl-move, .token-life .cap { display: none; } .tl-steps { display: block; } }
 
 /* ---- trust line try-it -------------------------------------------------------- */
-.tr-acct { display: grid; gap: 8px; margin: 10px 0 12px; }
-@media (min-width: 560px) { .tr-acct { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.tr-acct div { border: 1px solid var(--border); border-radius: 10px; background: var(--ink); padding: 10px 12px; display: grid; gap: 2px; }
-.tr-lbl { color: var(--muted); font-size: 0.8rem; }
-.tr-acct b { font-size: 0.95rem; }
-.tr-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.tr-wallet { border: 1px solid var(--border); border-radius: 12px; background: var(--ink); padding: 12px 14px; margin: 10px 0 4px; }
+.tr-wallet p { margin: 0; }
+.tr-title { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px !important; }
+.tr-empty { color: var(--muted); }
+.tr-line { display: grid; gap: 4px; animation: tr-in 0.4s ease-out; }
+.tr-name { color: #fff; font-weight: 600; }
+.tr-nums { font-size: 0.9rem; }
+.tr-res { color: var(--muted); font-size: 0.8rem; }
+.tr-bar { height: 10px; border-radius: 5px; background: #222; overflow: hidden; }
+.tr-bar span { display: block; height: 100%; width: 0; border-radius: 5px; background: linear-gradient(90deg, var(--accent), #22c55e); transition: width 0.6s ease-out; }
+@keyframes tr-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.tr-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .trust .replay { margin-top: 0; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
 .trust .replay:hover { background: var(--accent); color: var(--ink); }
+.trust .tr-next { background: var(--accent); color: var(--ink); font-weight: 600; }
+.trust .tr-reset { border-color: var(--border); color: var(--muted); }
+.trust .replay[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .tr-line { animation: none; } .tr-bar span { transition: none; } }
 .tr-msg { margin: 12px 0 0; font-weight: 600; min-height: 3em; color: #fff; }
 .tr-msg.ok { color: #22c55e; }
 .tr-msg.bad { color: #ef4444; animation: shake 0.4s ease-in-out; }
@@ -371,4 +413,5 @@ a.page-num:hover { color: var(--accent); }
 
 /* ---- live: inside the newest page ------------------------------------------------- */
 .ltok .sp-grid dd { color: #fff; }
+.ltok-also { color: var(--muted); font-size: 0.9rem; margin: 10px 0 0; min-height: 1.5em; }
 .pw-grid p { margin: 0; }

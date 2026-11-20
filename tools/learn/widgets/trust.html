@@ -1,17 +1,20 @@
 <figure class="widget trust" data-widget="trust">
   <div class="widget-head"><strong>Try it: say yes to a token</strong></div>
-  <p>Bob wants to pay you in dollar tokens from Example Bank. Press the buttons in any order and see what the ledger does.</p>
-  <div class="tr-acct">
-    <div><span class="tr-lbl">Your account</span><b data-role="bal">0 USD from Example Bank</b></div>
-    <div><span class="tr-lbl">Your limit for this token</span><b data-role="limit">None. You haven't said yes.</b></div>
-    <div><span class="tr-lbl">XRP locked for it</span><b data-role="res">0 XRP</b></div>
+  <p>Bob wants to pay you in dollar tokens from Example Bank. Go one step at a time and watch your wallet.</p>
+  <div class="tr-wallet">
+    <p class="tr-title">Your wallet</p>
+    <p class="tr-empty" data-role="empty">No tokens. You haven't said yes to any yet.</p>
+    <div class="tr-line" data-role="line" hidden>
+      <p class="tr-name">USD from Example Bank</p>
+      <p class="tr-nums" data-role="nums">0 of your 1,000 limit</p>
+      <div class="tr-bar" aria-hidden="true"><span data-role="bar"></span></div>
+      <p class="tr-res">0.2 XRP of your reserve is set aside for this.</p>
+    </div>
   </div>
+  <p class="tr-msg" data-role="msg" aria-live="polite"></p>
   <div class="tr-btns">
-    <button type="button" class="replay" data-act="send50">Bob sends you 50 USD</button>
-    <button type="button" class="replay" data-act="trust">Say yes, up to 1,000 USD</button>
-    <button type="button" class="replay" data-act="send2000">Bob sends you 2,000 USD</button>
-    <button type="button" class="replay" data-act="reset">Start over</button>
+    <button type="button" class="replay tr-next" data-role="next">Next</button>
+    <button type="button" class="replay tr-reset" data-role="reset">Start over</button>
   </div>
-  <p class="tr-msg" data-role="msg" aria-live="polite">Nothing sent yet.</p>
-  <figcaption>Saying yes is called setting up a trust line. It usually locks 0.2 XRP of your reserve while it's open.</figcaption>
+  <figcaption>Saying yes like this is called a trust line: one token, from one issuer, up to a limit you pick.</figcaption>
 </figure>

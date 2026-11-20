@@ -14,7 +14,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="XRPL-Utilities" />
   <meta property="article:published_time" content="2026-11-21" />
-  <meta property="article:modified_time" content="2026-11-17" />
+  <meta property="article:modified_time" content="2026-11-20" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@XRPL_Utilities" />
   <meta name="twitter:title" content="XRP Ledger Tokens and Stablecoins, Explained Simply" />
@@ -24,8 +24,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=10" />
-  <script src="/assets/pages/learn.js?v=10" defer></script>
+  <link rel="stylesheet" href="/assets/learn.css?v=11" />
+  <script src="/assets/pages/learn.js?v=11" defer></script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -44,7 +44,7 @@
       "url": "https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/",
       "mainEntityOfPage": "https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/",
       "datePublished": "2026-11-21",
-      "dateModified": "2026-11-17",
+      "dateModified": "2026-11-20",
       "inLanguage": "en",
       "author": {
         "@id": "https://xrpl-utilities.com/#org"
@@ -106,6 +106,22 @@
         },
         {
           "@type": "Question",
+          "name": "Then why do random things show up in some wallets?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "On the XRP Ledger, it's usually tiny XRP payments carrying a spam message, or NFT offers that do nothing unless you accept them. It can also be a token from an issuer you said yes to before, like for an airdrop. On some other blockchains, anyone can push a token into your wallet."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does an issuer need XRP to back its token?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Say a bank issues 30,000 dollar tokens. It needs 30,000 real dollars, kept off the ledger in its bank account. It only needs a little XRP for its own reserve and fees."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Can my XRP be frozen like a token?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -152,25 +168,33 @@
           <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 4</nav>
           <p class="kicker">Lesson 4 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
           <h1>Tokens: dollars and more on the XRP Ledger</h1>
-          <p class="meta">Updated <time datetime="2026-11-17">November 17, 2026</time> <span aria-hidden="true">&middot;</span> 6 minute read</p>
+          <p class="meta">Updated <time datetime="2026-11-20">November 20, 2026</time> <span aria-hidden="true">&middot;</span> 7 minute read</p>
           <div class="short"><strong>The short answer:</strong> A token is anything on the XRP Ledger other than XRP. Someone issues it, usually as a promise backed by something real, like a dollar. You have to say yes before you can hold one, and it&#39;s only as good as its issuer.</div>
         </div>
         <div class="hero-art">
           <figure class="hero-chain hero-tokens">
-            <svg viewBox="0 0 520 300" role="img" aria-label="An issuer holds real dollars in a vault and sends matching tokens out to three accounts on the ledger.">
+            <svg viewBox="0 0 560 340" role="img" aria-label="Dollars, euros, gold and fund shares go into an issuer's vault off the ledger and come out as matching tokens on the ledger. XRP sits apart, built into the ledger with no issuer.">
               <defs>
                 <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
               </defs>
-              <g><rect x="18" y="92" width="150" height="116" rx="14" class="card"/><rect x="18" y="92" width="150" height="116" rx="14" class="halo"/><text x="36" y="118" class="hd">ISSUER</text><text x="36" y="150" class="tk-big">Real dollars</text><text x="36" y="174" class="tk-small">one for every</text><text x="36" y="194" class="tk-small">token it sends</text></g>
-              <path d="M176 150 C 250 150, 280 62, 352 62" class="lk"/><path d="M176 150 L 352 150" class="lk"/><path d="M176 150 C 250 150, 280 238, 352 238" class="lk"/>
-              <circle r="11" class="tk-coin tk-c1"><animateMotion dur="3s" repeatCount="indefinite" path="M176 150 C 250 150, 280 62, 352 62"/></circle>
-              <circle r="11" class="tk-coin tk-c2"><animateMotion dur="3s" begin="1s" repeatCount="indefinite" path="M176 150 L 352 150"/></circle>
-              <circle r="11" class="tk-coin tk-c3"><animateMotion dur="3s" begin="2s" repeatCount="indefinite" path="M176 150 C 250 150, 280 238, 352 238"/></circle>
-              <g><rect x="360" y="38" width="142" height="48" rx="10" class="card"/><text x="378" y="68" class="tk-acct">Alice: 50 USD</text></g>
-              <g><rect x="360" y="126" width="142" height="48" rx="10" class="card"/><text x="378" y="156" class="tk-acct">Bob: 20 USD</text></g>
-              <g><rect x="360" y="214" width="142" height="48" rx="10" class="card"/><text x="378" y="244" class="tk-acct">Carol: 30 USD</text></g>
+              <text x="10" y="18" class="hd">OFF THE LEDGER</text><text x="400" y="18" class="hd">ON THE LEDGER</text>
+              <path d="M160 60 C 190 60, 196 150, 222 150 L 338 150 C 364 150, 370 60, 400 60" class="lk"/><path d="M160 120 C 190 120, 196 150, 222 150 L 338 150 C 364 150, 370 120, 400 120" class="lk"/><path d="M160 180 C 190 180, 196 150, 222 150 L 338 150 C 364 150, 370 180, 400 180" class="lk"/><path d="M160 240 C 190 240, 196 150, 222 150 L 338 150 C 364 150, 370 240, 400 240" class="lk"/>
+              <g class="ha ha1"><rect x="10" y="38" width="150" height="44" rx="10" class="card"/><rect x="10" y="38" width="150" height="44" rx="10" class="halo"/><circle cx="34" cy="60" r="12" class="glyph"/><text x="34" y="64" class="gl">$</text><text x="56" y="65" class="nm">Dollars</text></g>
+              <g class="ht ht1"><rect x="400" y="38" width="150" height="44" rx="22" class="card"/><rect x="400" y="38" width="150" height="44" rx="22" class="halo"/><circle cx="424" cy="60" r="10" class="tcoin"/><text x="444" y="65" class="nm">USD token</text></g>
+              <g class="ha ha2"><rect x="10" y="98" width="150" height="44" rx="10" class="card"/><rect x="10" y="98" width="150" height="44" rx="10" class="halo"/><circle cx="34" cy="120" r="12" class="glyph"/><text x="34" y="124" class="gl">€</text><text x="56" y="125" class="nm">Euros</text></g>
+              <g class="ht ht2"><rect x="400" y="98" width="150" height="44" rx="22" class="card"/><rect x="400" y="98" width="150" height="44" rx="22" class="halo"/><circle cx="424" cy="120" r="10" class="tcoin"/><text x="444" y="125" class="nm">EUR token</text></g>
+              <g class="ha ha3"><rect x="10" y="158" width="150" height="44" rx="10" class="card"/><rect x="10" y="158" width="150" height="44" rx="10" class="halo"/><circle cx="34" cy="180" r="12" class="glyph"/><text x="34" y="184" class="gl">oz</text><text x="56" y="185" class="nm">Gold</text></g>
+              <g class="ht ht3"><rect x="400" y="158" width="150" height="44" rx="22" class="card"/><rect x="400" y="158" width="150" height="44" rx="22" class="halo"/><circle cx="424" cy="180" r="10" class="tcoin"/><text x="444" y="185" class="nm">Gold token</text></g>
+              <g class="ha ha4"><rect x="10" y="218" width="150" height="44" rx="10" class="card"/><rect x="10" y="218" width="150" height="44" rx="10" class="halo"/><circle cx="34" cy="240" r="12" class="glyph"/><text x="34" y="244" class="gl">%</text><text x="56" y="245" class="nm">Fund shares</text></g>
+              <g class="ht ht4"><rect x="400" y="218" width="150" height="44" rx="22" class="card"/><rect x="400" y="218" width="150" height="44" rx="22" class="halo"/><circle cx="424" cy="240" r="10" class="tcoin"/><text x="444" y="245" class="nm">Fund token</text></g>
+              <g><rect x="212" y="98" width="136" height="104" rx="14" class="card"/><rect x="212" y="98" width="136" height="104" rx="14" class="vhalo"/><text x="280" y="124" class="hd mid">ISSUER</text><circle cx="280" cy="152" r="16" class="vault"/><path d="M280 140v24M268 152h24" class="vault-x"/><text x="280" y="190" class="sm mid">holds the real thing</text></g>
+              <circle r="8" class="tk-dot" opacity="0"><animateMotion dur="8s" begin="0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.2;1" path="M160 60 C 190 60, 196 150, 222 150 L 338 150 C 364 150, 370 60, 400 60"/><animate attributeName="opacity" dur="8s" begin="0s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.2;0.21;1"/><animate attributeName="fill" dur="8s" begin="0s" repeatCount="indefinite" calcMode="discrete" values="#fbbf24;#00b8ff" keyTimes="0;0.1"/></circle>
+              <circle r="8" class="tk-dot" opacity="0"><animateMotion dur="8s" begin="2s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.2;1" path="M160 120 C 190 120, 196 150, 222 150 L 338 150 C 364 150, 370 120, 400 120"/><animate attributeName="opacity" dur="8s" begin="2s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.2;0.21;1"/><animate attributeName="fill" dur="8s" begin="2s" repeatCount="indefinite" calcMode="discrete" values="#fbbf24;#00b8ff" keyTimes="0;0.1"/></circle>
+              <circle r="8" class="tk-dot" opacity="0"><animateMotion dur="8s" begin="4s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.2;1" path="M160 180 C 190 180, 196 150, 222 150 L 338 150 C 364 150, 370 180, 400 180"/><animate attributeName="opacity" dur="8s" begin="4s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.2;0.21;1"/><animate attributeName="fill" dur="8s" begin="4s" repeatCount="indefinite" calcMode="discrete" values="#fbbf24;#00b8ff" keyTimes="0;0.1"/></circle>
+              <circle r="8" class="tk-dot" opacity="0"><animateMotion dur="8s" begin="6s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.2;1" path="M160 240 C 190 240, 196 150, 222 150 L 338 150 C 364 150, 370 240, 400 240"/><animate attributeName="opacity" dur="8s" begin="6s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.2;0.21;1"/><animate attributeName="fill" dur="8s" begin="6s" repeatCount="indefinite" calcMode="discrete" values="#fbbf24;#00b8ff" keyTimes="0;0.1"/></circle>
+              <g class="xrp-chip"><rect x="130" y="286" width="300" height="44" rx="22" class="card xrp-card"/><circle cx="156" cy="308" r="12" class="xcoin"/><text x="156" y="312" class="gl xg">X</text><text x="178" y="313" class="nm">XRP: built in. No issuer.</text></g>
             </svg>
-            <figcaption>A token is a promise from its issuer. A dollar token is only worth a dollar if the issuer really holds one for it.</figcaption>
+            <figcaption>Almost anything can be a token: dollars, euros, gold, shares in a fund. The issuer holds the real thing off the ledger. XRP is the only money built in.</figcaption>
           </figure>
         </div>
       </div>
@@ -182,37 +206,60 @@
         <p>Anyone with an account can issue a token. Most useful tokens stand for something real that the issuer holds outside the ledger. A dollar token, often called a stablecoin, is meant to be worth exactly one dollar.</p>
         <h2 id="how-a-dollar-gets-onto-the-ledger">How a dollar gets onto the ledger</h2>
         <p>Think of a coat check. You hand over your coat and get a ticket. The ticket is only worth something because the counter will give your coat back.</p>
-        <figure class="widget rounds token-life">
+        <figure class="widget token-life">
         <div class="widget-head"><strong>The life of a dollar token</strong></div>
-        <ol class="steps">
-          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="11" rx="2"/><circle cx="12" cy="12.5" r="2.5"/></svg></span><b>Deposit</b><span>You give the issuer a real dollar, the way you'd hand over a coat at a coat check.</span></li>
-          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9 10.5h4.5a1.5 1.5 0 0 1 0 3H10"/></svg></span><b>Get a token</b><span>The issuer sends you one dollar token on the ledger. That's your ticket.</span></li>
-          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h12M12 6l6 6-6 6"/></svg></span><b>Send it</b><span>You can pay anyone who accepts that token, in seconds.</span></li>
-          <li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 12H8M12 6l-6 6 6 6"/></svg></span><b>Cash it in</b><span>Whoever holds it last hands it back to the issuer and gets the dollar.</span></li>
+        <svg viewBox="0 0 520 330" role="img" aria-label="You hand the issuer a dollar, and its vault count goes to one. The issuer sends you a token, and tokens out goes to one. You pay a friend with the token. Your friend hands the token back and gets the dollar, and both counts go back to zero.">
+          <text x="10" y="22" class="hd">OFF THE LEDGER</text>
+          <line x1="10" y1="152" x2="510" y2="152" class="tl-div"/>
+          <text x="10" y="176" class="hd">ON THE LEDGER</text>
+          <rect x="10" y="38" width="140" height="98" rx="12" class="card"/><text x="80" y="62" class="hd mid">YOU</text>
+          <rect x="190" y="38" width="140" height="98" rx="12" class="card vault-box"/><text x="260" y="62" class="hd mid">ISSUER'S VAULT</text>
+          <text x="260" y="124" class="cnt mid">0 dollars<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="1;0;1" keyTimes="0;0.15;0.8"/></text>
+          <text x="260" y="124" class="cnt mid" opacity="0">1 dollar<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.15;0.8"/></text>
+          <rect x="370" y="38" width="140" height="98" rx="12" class="card"/><text x="440" y="62" class="hd mid">YOUR FRIEND</text>
+          <rect x="10" y="188" width="140" height="82" rx="12" class="card"/><text x="80" y="210" class="hd mid">YOUR WALLET</text>
+          <rect x="190" y="188" width="140" height="82" rx="12" class="card"/><text x="260" y="210" class="hd mid">TOKENS OUT</text>
+          <text x="260" y="258" class="cnt mid">0<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="1;0;1" keyTimes="0;0.25;0.8"/></text>
+          <text x="260" y="258" class="cnt mid" opacity="0">1<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.8"/></text>
+          <rect x="370" y="188" width="140" height="82" rx="12" class="card"/><text x="440" y="210" class="hd mid">FRIEND'S WALLET</text>
+          <g class="tl-move"><rect x="-20" y="-12" width="40" height="24" rx="4" class="bill"/><circle r="6" class="bill-dot"/><animateMotion dur="16s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0.5;0.5;1;1" keyTimes="0;0.15;0.8;0.95;1" path="M80 100 L260 100 L440 100"/><animate attributeName="opacity" dur="16s" repeatCount="indefinite" values="1;1;0;0;1;1" keyTimes="0;0.15;0.16;0.79;0.8;1"/></g>
+          <g class="tl-move" opacity="0"><circle r="13" class="tcoin"/><text y="5" class="gl">T</text><animateMotion dur="16s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;0.25;0.25;0.75;0.75;1;1" keyTimes="0;0.28;0.42;0.53;0.67;0.76;0.8;1" path="M260 234 L80 234 L440 234 L260 234"/><animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.8"/></g>
+          <text x="260" y="312" class="cap mid">1. You hand the issuer a real dollar.<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="1;0" keyTimes="0;0.25"/></text>
+          <text x="260" y="312" class="cap mid" opacity="0">2. The issuer sends you a token for it.<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.5"/></text>
+          <text x="260" y="312" class="cap mid" opacity="0">3. You pay your friend with the token.<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.75"/></text>
+          <text x="260" y="312" class="cap mid" opacity="0">4. Your friend cashes it in for the dollar.<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1" keyTimes="0;0.75"/></text>
+        </svg>
+        <ol class="tl-steps">
+          <li>You hand the issuer a real dollar.</li>
+          <li>The issuer sends you a token for it.</li>
+          <li>You pay your friend with the token.</li>
+          <li>Your friend cashes it in for the dollar.</li>
         </ol>
-        <figcaption>The ledger tracks the tokens. The real dollars sit with the issuer, outside the ledger.</figcaption>
+        <figcaption>The dollars in the vault and the tokens out always match. The ledger can only see the bottom half.</figcaption>
       </figure>
-        <p>That last step is the whole deal. The ledger can&#39;t see the issuer&#39;s bank account, so it can&#39;t check that the dollars are really there.</p>
+        <p>The ledger can&#39;t see inside the issuer&#39;s vault, so it can&#39;t check that the dollars are really there. That&#39;s why it matters who the issuer is.</p>
         <h2 id="you-have-to-say-yes-first">You have to say yes first</h2>
         <p>Nobody can put a token in your account without your OK. You first tell the ledger you&#39;ll accept that token from that issuer, and set a limit on how much. This is called a trust line.</p>
         <figure class="widget trust" data-widget="trust">
         <div class="widget-head"><strong>Try it: say yes to a token</strong></div>
-        <p>Bob wants to pay you in dollar tokens from Example Bank. Press the buttons in any order and see what the ledger does.</p>
-        <div class="tr-acct">
-          <div><span class="tr-lbl">Your account</span><b data-role="bal">0 USD from Example Bank</b></div>
-          <div><span class="tr-lbl">Your limit for this token</span><b data-role="limit">None. You haven't said yes.</b></div>
-          <div><span class="tr-lbl">XRP locked for it</span><b data-role="res">0 XRP</b></div>
+        <p>Bob wants to pay you in dollar tokens from Example Bank. Go one step at a time and watch your wallet.</p>
+        <div class="tr-wallet">
+          <p class="tr-title">Your wallet</p>
+          <p class="tr-empty" data-role="empty">No tokens. You haven't said yes to any yet.</p>
+          <div class="tr-line" data-role="line" hidden>
+            <p class="tr-name">USD from Example Bank</p>
+            <p class="tr-nums" data-role="nums">0 of your 1,000 limit</p>
+            <div class="tr-bar" aria-hidden="true"><span data-role="bar"></span></div>
+            <p class="tr-res">0.2 XRP of your reserve is set aside for this.</p>
+          </div>
         </div>
+        <p class="tr-msg" data-role="msg" aria-live="polite"></p>
         <div class="tr-btns">
-          <button type="button" class="replay" data-act="send50">Bob sends you 50 USD</button>
-          <button type="button" class="replay" data-act="trust">Say yes, up to 1,000 USD</button>
-          <button type="button" class="replay" data-act="send2000">Bob sends you 2,000 USD</button>
-          <button type="button" class="replay" data-act="reset">Start over</button>
+          <button type="button" class="replay tr-next" data-role="next">Next</button>
+          <button type="button" class="replay tr-reset" data-role="reset">Start over</button>
         </div>
-        <p class="tr-msg" data-role="msg" aria-live="polite">Nothing sent yet.</p>
-        <figcaption>Saying yes is called setting up a trust line. It usually locks 0.2 XRP of your reserve while it's open.</figcaption>
+        <figcaption>Saying yes like this is called a trust line: one token, from one issuer, up to a limit you pick.</figcaption>
       </figure>
-        <p>The ledger also won&#39;t let a payment push you past your limit. And every trust line uses up a bit of your reserve, the XRP your account keeps locked.</p>
         <h2 id="what-an-issuer-can-and-can-t-do">What an issuer can and can&#39;t do</h2>
         <p>Because a token is the issuer&#39;s promise, the issuer keeps some control over it. XRP has no issuer, so none of this applies to it.</p>
         <figure class="widget powers">
@@ -220,7 +267,7 @@
           <p class="pw-h"></p><p class="pw-h">A token</p><p class="pw-h pw-xrp">XRP</p>
           <p class="pw-row">Freeze your balance</p><p class="pw-cell pw-maybe">Yes, the issuer can</p><p class="pw-cell pw-no">Never</p>
           <p class="pw-row">Take it back (claw back)</p><p class="pw-cell pw-maybe">Only if the issuer switched it on before issuing any tokens</p><p class="pw-cell pw-no">Never</p>
-          <p class="pw-row">Refuse to cash it in</p><p class="pw-cell pw-maybe">The ledger can't stop that. You trust the issuer.</p><p class="pw-cell pw-no">Nothing to cash in</p>
+          <p class="pw-row">Not pay you back</p><p class="pw-cell pw-maybe">It could. The ledger can't make an issuer hand over the dollar.</p><p class="pw-cell pw-no">Nobody owes you. XRP is the money itself.</p>
         </div>
         <figcaption>What an issuer can do to tokens it issued. Nobody can do any of this to XRP.</figcaption>
       </figure>
@@ -229,7 +276,7 @@
         <figure class="widget kinds">
         <div class="ow-grid kinds-grid">
           <div class="ow-card"><span class="ow-tag">Trust line tokens</span><b>The original</b><span>Each holder opens a trust line to the issuer. This is the kind the ledger started with.</span></div>
-          <div class="ow-card"><span class="ow-tag">Multi-Purpose Tokens</span><b>The newer kind</b><span>Simpler for issuers, with the same "say yes first" rule. Often called MPTs.</span></div>
+          <div class="ow-card"><span class="ow-tag">Multi-Purpose Tokens</span><b>The newer kind</b><span>Often called MPTs. Built for things like funds and bonds, with the issuer's rules set when the token is made. Lesson 8 comes back to these.</span></div>
           <div class="ow-card ow-xrp"><span class="ow-tag">NFTs</span><b>One of a kind</b><span>Each one is unique, like a ticket to one seat or a piece of art. They aren't used for payments.</span></div>
         </div>
         <figcaption>The first two are interchangeable, like dollar bills. NFTs aren't.</figcaption>
@@ -247,23 +294,26 @@
           <div><dt>Payments in XRP</dt><dd data-role="xrp">...</dd></div>
           <div><dt>Payments in a token</dt><dd data-role="tok">...</dd></div>
           <div><dt>People saying yes to a token</dt><dd data-role="trust">...</dd></div>
-          <div><dt>Everything else</dt><dd data-role="other">...</dd></div>
+          <div><dt>Offers to swap currencies</dt><dd data-role="swap">...</dd></div>
         </dl>
+        <p class="ltok-also" data-role="also"></p>
         <button type="button" class="replay" data-role="refresh">Open the newest page</button>
-        <figcaption>Counted from one real ledger page. "Everything else" is mostly offers to swap currencies, the marketplace from lesson 3.</figcaption>
+        <figcaption>Counted from one real ledger page. Offers to swap are the built-in marketplace from lesson 3.</figcaption>
       </figure>
         <p>Press the button again in a few seconds to open the next page. The mix changes every time.</p>
         <h2 id="common-questions">Common questions</h2>
         <details class="faq" open><summary><h3>Is a stablecoin the same as a dollar?</h3><span class="plus" aria-hidden="true"></span></summary><p>Not quite. It&#39;s a promise that you can trade it for a dollar. If the issuer can&#39;t or won&#39;t pay out, the token can be worth less than a dollar.</p></details>
         <details class="faq"><summary><h3>Who can issue a token?</h3><span class="plus" aria-hidden="true"></span></summary><p>Anyone with an XRP Ledger account. That&#39;s why it matters who the issuer is. The ledger checks the math, not the promise behind it.</p></details>
         <details class="faq"><summary><h3>Can someone send me a token I don&#39;t want?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. A token can only land in your account after you&#39;ve said yes to it with a trust line, or bought it yourself. The ledger also blocks payments that would put you over your limit.</p></details>
+        <details class="faq"><summary><h3>Then why do random things show up in some wallets?</h3><span class="plus" aria-hidden="true"></span></summary><p>On the XRP Ledger, it&#39;s usually tiny XRP payments carrying a spam message, or NFT offers that do nothing unless you accept them. It can also be a token from an issuer you said yes to before, like for an airdrop. On some other blockchains, anyone can push a token into your wallet.</p></details>
+        <details class="faq"><summary><h3>Does an issuer need XRP to back its token?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Say a bank issues 30,000 dollar tokens. It needs 30,000 real dollars, kept off the ledger in its bank account. It only needs a little XRP for its own reserve and fees.</p></details>
         <details class="faq"><summary><h3>Can my XRP be frozen like a token?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Nobody can freeze or claw back XRP on the ledger. An exchange can still freeze an account it runs for you, because then the exchange holds the XRP, not you.</p></details>
         <details class="faq"><summary><h3>Why does each trust line lock up XRP?</h3><span class="plus" aria-hidden="true"></span></summary><p>Each one takes up room on every copy of the ledger. The 0.2 XRP keeps people from opening thousands of them for nothing. Empty the trust line and close it, and that XRP is free again.</p></details>
         <details class="faq"><summary><h3>What&#39;s the difference between a token and an NFT?</h3><span class="plus" aria-hidden="true"></span></summary><p>One dollar token is the same as any other, like dollar bills. Each NFT is one of a kind, like a numbered concert ticket.</p></details>
         <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
         <ul><li><strong>Token:</strong> anything held on the XRP Ledger other than XRP.</li><li><strong>Issuer:</strong> the account that creates a token and stands behind it.</li><li><strong>Stablecoin:</strong> a token meant to stay worth one unit of a regular currency, like one US dollar.</li><li><strong>Trust line:</strong> your yes to holding a certain token from a certain issuer, up to a limit you set.</li><li><strong>Freeze:</strong> an issuer stopping a balance of its token from being sent.</li><li><strong>Claw back:</strong> an issuer taking its token back from a holder, if it switched that on before issuing.</li><li><strong>Multi-Purpose Token (MPT):</strong> the newer, simpler kind of token on the ledger.</li><li><strong>NFT:</strong> a non-fungible token, one of a kind and not used for payments.</li></ul>
         <h2 id="sources">Sources</h2>
-        <ul><li><a href="https://xrpl.org/docs/concepts/tokens" target="_blank" rel="noopener noreferrer">Tokens</a> (all assets other than XRP are tokens, anyone can issue), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/stablecoins" target="_blank" rel="noopener noreferrer">Stablecoins</a> (backed outside the ledger, depend on the issuer), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/trust-line-tokens" target="_blank" rel="noopener noreferrer">Trust Line Tokens</a> (you can&#39;t be made to hold a token, limits), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/freezes" target="_blank" rel="noopener noreferrer">Freezing Tokens</a> (freeze types, XRP can&#39;t be frozen), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/clawing-back-tokens" target="_blank" rel="noopener noreferrer">Clawing Back Tokens</a> (must be switched on before issuing, XRP can&#39;t be clawed back), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/multi-purpose-tokens" target="_blank" rel="noopener noreferrer">Multi-Purpose Tokens</a> (holders must say yes first), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/nfts" target="_blank" rel="noopener noreferrer">Non-Fungible Tokens</a> (unique, not used for payments), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/accounts/reserves" target="_blank" rel="noopener noreferrer">Reserves</a> (0.2 XRP per trust line), xrpl.org</li></ul>
+        <ul><li><a href="https://xrpl.org/docs/concepts/tokens" target="_blank" rel="noopener noreferrer">Tokens</a> (all assets other than XRP are tokens, anyone can issue), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/stablecoins" target="_blank" rel="noopener noreferrer">Stablecoins</a> (backed outside the ledger, depend on the issuer), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/trust-line-tokens" target="_blank" rel="noopener noreferrer">Trust Line Tokens</a> (you can&#39;t be made to hold a token, limits), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/freezes" target="_blank" rel="noopener noreferrer">Freezing Tokens</a> (freeze types, XRP can&#39;t be frozen), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/clawing-back-tokens" target="_blank" rel="noopener noreferrer">Clawing Back Tokens</a> (must be switched on before issuing, XRP can&#39;t be clawed back), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/multi-purpose-tokens" target="_blank" rel="noopener noreferrer">Multi-Purpose Tokens</a> (holders must say yes first, issuer sets the rules at creation), xrpl.org</li><li><a href="https://xrpl.org/docs/references/protocol/transactions/types/nftokencreateoffer" target="_blank" rel="noopener noreferrer">NFTokenCreateOffer</a> (an NFT offer does nothing until it&#39;s accepted), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/nfts" target="_blank" rel="noopener noreferrer">Non-Fungible Tokens</a> (unique, not used for payments), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/accounts/reserves" target="_blank" rel="noopener noreferrer">Reserves</a> (0.2 XRP per trust line), xrpl.org</li></ul>
         <nav class="pager" aria-label="More lessons"><a class="prev" href="/learn/what-is-xrp/"><span>Previous lesson</span>What XRP is actually for</a><div class="next soon"><span>Next lesson, Tue, Nov 24</span>How new features get voted in</div></nav>
       </article>
       <nav class="toc" aria-label="On this page">

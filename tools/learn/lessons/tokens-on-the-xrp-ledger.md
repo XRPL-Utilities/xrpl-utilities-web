@@ -1,7 +1,7 @@
 title: XRP Ledger Tokens and Stablecoins, Explained Simply
 description: How dollars and other assets live on the XRP Ledger as tokens, why you have to say yes before you can hold one, and what an issuer can and can't do.
 h1: Tokens: dollars and more on the XRP Ledger
-updated: 2026-11-17
+updated: 2026-11-20
 hero: hero-tokens
 card: Dollars and more on the ledger, and the promise behind each one.
 short: A token is anything on the XRP Ledger other than XRP. Someone issues it, usually as a promise backed by something real, like a dollar. You have to say yes before you can hold one, and it's only as good as its issuer.
@@ -18,15 +18,13 @@ Think of a coat check. You hand over your coat and get a ticket. The ticket is o
 
 ::: token-life
 
-That last step is the whole deal. The ledger can't see the issuer's bank account, so it can't check that the dollars are really there.
+The ledger can't see inside the issuer's vault, so it can't check that the dollars are really there. That's why it matters who the issuer is.
 
 ## You have to say yes first
 
 Nobody can put a token in your account without your OK. You first tell the ledger you'll accept that token from that issuer, and set a limit on how much. This is called a trust line.
 
 ::: trust
-
-The ledger also won't let a payment push you past your limit. And every trust line uses up a bit of your reserve, the XRP your account keeps locked.
 
 ## What an issuer can and can't do
 
@@ -61,6 +59,12 @@ Anyone with an XRP Ledger account. That's why it matters who the issuer is. The 
 ?? Can someone send me a token I don't want?
 No. A token can only land in your account after you've said yes to it with a trust line, or bought it yourself. The ledger also blocks payments that would put you over your limit.
 
+?? Then why do random things show up in some wallets?
+On the XRP Ledger, it's usually tiny XRP payments carrying a spam message, or NFT offers that do nothing unless you accept them. It can also be a token from an issuer you said yes to before, like for an airdrop. On some other blockchains, anyone can push a token into your wallet.
+
+?? Does an issuer need XRP to back its token?
+No. Say a bank issues 30,000 dollar tokens. It needs 30,000 real dollars, kept off the ledger in its bank account. It only needs a little XRP for its own reserve and fees.
+
 ?? Can my XRP be frozen like a token?
 No. Nobody can freeze or claw back XRP on the ledger. An exchange can still freeze an account it runs for you, because then the exchange holds the XRP, not you.
 
@@ -88,6 +92,7 @@ One dollar token is the same as any other, like dollar bills. Each NFT is one of
 - [Trust Line Tokens](https://xrpl.org/docs/concepts/tokens/fungible-tokens/trust-line-tokens) (you can't be made to hold a token, limits), xrpl.org
 - [Freezing Tokens](https://xrpl.org/docs/concepts/tokens/fungible-tokens/freezes) (freeze types, XRP can't be frozen), xrpl.org
 - [Clawing Back Tokens](https://xrpl.org/docs/concepts/tokens/fungible-tokens/clawing-back-tokens) (must be switched on before issuing, XRP can't be clawed back), xrpl.org
-- [Multi-Purpose Tokens](https://xrpl.org/docs/concepts/tokens/fungible-tokens/multi-purpose-tokens) (holders must say yes first), xrpl.org
+- [Multi-Purpose Tokens](https://xrpl.org/docs/concepts/tokens/fungible-tokens/multi-purpose-tokens) (holders must say yes first, issuer sets the rules at creation), xrpl.org
+- [NFTokenCreateOffer](https://xrpl.org/docs/references/protocol/transactions/types/nftokencreateoffer) (an NFT offer does nothing until it's accepted), xrpl.org
 - [Non-Fungible Tokens](https://xrpl.org/docs/concepts/tokens/nfts) (unique, not used for payments), xrpl.org
 - [Reserves](https://xrpl.org/docs/concepts/accounts/reserves) (0.2 XRP per trust line), xrpl.org
