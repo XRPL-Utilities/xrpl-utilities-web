@@ -460,6 +460,59 @@
     start();
   }
 
+  // ---- try it: follow one dollar token through the issuer ------------------------
+  function tokenLife(root) {
+    const cells = {};
+    root.querySelectorAll('[data-cell]').forEach((c) => { cells[c.getAttribute('data-cell')] = c; });
+    const msg = root.querySelector('[data-role="msg"]');
+    const next = root.querySelector('[data-role="next"]');
+    const reset = root.querySelector('[data-role="reset"]');
+    // Each state: where the dollar and the token are, the two counters, the message,
+    // and the label for the button that moves to the following state.
+    const STATES = [
+      { cash: 'you-cash', tok: null, vault: 0, out: 0, msg: 'You have a real dollar. The issuer\'s vault is empty.', btn: 'Step 1: Hand the issuer your dollar' },
+      { cash: 'vault', tok: null, vault: 1, out: 0, msg: 'The issuer puts your dollar in its vault, off the ledger.', btn: 'Step 2: The issuer sends you a token' },
+      { cash: 'vault', tok: 'you-tok', vault: 1, out: 1, msg: 'You get one dollar token on the ledger. One dollar in, one token out.', btn: 'Step 3: Pay your friend with it' },
+      { cash: 'vault', tok: 'friend-tok', vault: 1, out: 1, msg: 'The token moves to your friend in seconds. The dollar never left the vault.', btn: 'Step 4: Your friend cashes it in' },
+      { cash: 'friend-cash', tok: null, vault: 0, out: 0, msg: 'Your friend hands the token back and gets the dollar. Both counts are back to zero.', btn: null },
+    ];
+    let i = 0;
+    function chip(cls, text) {
+      const s = document.createElement('span');
+      s.className = 'chip ' + cls;
+      s.textContent = text;
+      return s;
+    }
+    function draw(flash) {
+      const st = STATES[i];
+      ['you-cash', 'friend-cash', 'you-tok', 'friend-tok'].forEach((k) => { cells[k].textContent = ''; });
+      if (st.cash !== 'vault') cells[st.cash].appendChild(chip('cash', '1 dollar'));
+      if (st.tok) cells[st.tok].appendChild(chip('tok', '1 USD token'));
+      cells.vault.querySelector('b').textContent = st.vault === 1 ? '1 dollar' : '0 dollars';
+      cells.out.querySelector('b').textContent = String(st.out);
+      msg.textContent = st.msg;
+      if (st.btn) { next.hidden = false; next.textContent = st.btn; } else { next.hidden = true; }
+      if (flash) {
+        root.querySelectorAll('.tl-cell').forEach((c) => {
+          c.classList.remove('fresh');
+          void c.offsetWidth;
+        });
+        flash.forEach((k) => cells[k] && cells[k].classList.add('fresh'));
+      }
+    }
+    next.addEventListener('click', () => {
+      if (i >= STATES.length - 1) return;
+      const a = STATES[i];
+      i += 1;
+      const b = STATES[i];
+      const changed = [a.cash, b.cash, a.tok, b.tok].filter(Boolean).map((k) => (k === 'vault' ? 'vault' : k));
+      if (a.out !== b.out) changed.push('out');
+      draw(changed);
+    });
+    reset.addEventListener('click', () => { i = 0; draw([]); });
+    draw(null);
+  }
+
   // ---- live: what's inside the newest page ----------------------------------------
   function liveTokens(root) {
     const status = root.querySelector('[data-role="status"]');
@@ -549,7 +602,7 @@
     load(false);
   }
 
-  const WIDGETS = { tamper, 'live-chain': liveChain, race, vote, reserve, supply, trust, 'live-tokens': liveTokens };
+  const WIDGETS = { 'token-life': tokenLife, tamper, 'live-chain': liveChain, race, vote, reserve, supply, trust, 'live-tokens': liveTokens };
   document.querySelectorAll('[data-widget]').forEach((root) => {
     const fn = WIDGETS[root.getAttribute('data-widget')];
     if (fn) fn(root);

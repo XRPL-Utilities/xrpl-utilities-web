@@ -1,31 +1,21 @@
-<figure class="widget token-life">
-  <div class="widget-head"><strong>The life of a dollar token</strong></div>
-  <svg viewBox="0 0 520 330" role="img" aria-label="You hand the issuer a dollar, and its vault count goes to one. The issuer sends you a token, and tokens out goes to one. You pay a friend with the token. Your friend hands the token back and gets the dollar, and both counts go back to zero.">
-    <text x="10" y="22" class="hd">OFF THE LEDGER</text>
-    <line x1="10" y1="152" x2="510" y2="152" class="tl-div"/>
-    <text x="10" y="176" class="hd">ON THE LEDGER</text>
-    <rect x="10" y="38" width="140" height="98" rx="12" class="card"/><text x="80" y="62" class="hd mid">YOU</text>
-    <rect x="190" y="38" width="140" height="98" rx="12" class="card vault-box"/><text x="260" y="62" class="hd mid">ISSUER'S VAULT</text>
-    <text x="260" y="124" class="cnt mid">0 dollars<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="1;0;1" keyTimes="0;0.15;0.8"/></text>
-    <text x="260" y="124" class="cnt mid" opacity="0">1 dollar<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.15;0.8"/></text>
-    <rect x="370" y="38" width="140" height="98" rx="12" class="card"/><text x="440" y="62" class="hd mid">YOUR FRIEND</text>
-    <rect x="10" y="188" width="140" height="82" rx="12" class="card"/><text x="80" y="210" class="hd mid">YOUR WALLET</text>
-    <rect x="190" y="188" width="140" height="82" rx="12" class="card"/><text x="260" y="210" class="hd mid">TOKENS OUT</text>
-    <text x="260" y="258" class="cnt mid">0<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="1;0;1" keyTimes="0;0.25;0.8"/></text>
-    <text x="260" y="258" class="cnt mid" opacity="0">1<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.8"/></text>
-    <rect x="370" y="188" width="140" height="82" rx="12" class="card"/><text x="440" y="210" class="hd mid">FRIEND'S WALLET</text>
-    <g class="tl-move"><rect x="-20" y="-12" width="40" height="24" rx="4" class="bill"/><circle r="6" class="bill-dot"/><animateMotion dur="16s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0.5;0.5;1;1" keyTimes="0;0.15;0.8;0.95;1" path="M80 100 L260 100 L440 100"/><animate attributeName="opacity" dur="16s" repeatCount="indefinite" values="1;1;0;0;1;1" keyTimes="0;0.15;0.16;0.79;0.8;1"/></g>
-    <g class="tl-move" opacity="0"><circle r="13" class="tcoin"/><text y="5" class="gl">T</text><animateMotion dur="16s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;0.25;0.25;0.75;0.75;1;1" keyTimes="0;0.28;0.42;0.53;0.67;0.76;0.8;1" path="M260 234 L80 234 L440 234 L260 234"/><animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.8"/></g>
-    <text x="260" y="312" class="cap mid">1. You hand the issuer a real dollar.<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="1;0" keyTimes="0;0.25"/></text>
-    <text x="260" y="312" class="cap mid" opacity="0">2. The issuer sends you a token for it.<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.25;0.5"/></text>
-    <text x="260" y="312" class="cap mid" opacity="0">3. You pay your friend with the token.<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1;0" keyTimes="0;0.5;0.75"/></text>
-    <text x="260" y="312" class="cap mid" opacity="0">4. Your friend cashes it in for the dollar.<animate attributeName="opacity" dur="16s" repeatCount="indefinite" calcMode="discrete" values="0;1" keyTimes="0;0.75"/></text>
-  </svg>
-  <ol class="tl-steps">
-    <li>You hand the issuer a real dollar.</li>
-    <li>The issuer sends you a token for it.</li>
-    <li>You pay your friend with the token.</li>
-    <li>Your friend cashes it in for the dollar.</li>
-  </ol>
-  <figcaption>The dollars in the vault and the tokens out always match. The ledger can only see the bottom half.</figcaption>
+<figure class="widget token-life" data-widget="token-life">
+  <div class="widget-head"><strong>Try it: follow one dollar token</strong></div>
+  <p>Press the button to move one step at a time. Watch the vault and the tokens.</p>
+  <div class="tl-grid">
+    <p class="tl-h"></p><p class="tl-h">You</p><p class="tl-h tl-iss">Issuer</p><p class="tl-h">Your friend</p>
+    <p class="tl-row">Real money<span>off the ledger</span></p>
+    <p class="tl-cell" data-cell="you-cash"><span class="chip cash">1 dollar</span></p>
+    <p class="tl-cell tl-vault" data-cell="vault"><span class="tl-k">In the vault</span><b>0 dollars</b></p>
+    <p class="tl-cell" data-cell="friend-cash"></p>
+    <p class="tl-row">Tokens<span>on the ledger</span></p>
+    <p class="tl-cell" data-cell="you-tok"></p>
+    <p class="tl-cell tl-vault" data-cell="out"><span class="tl-k">Tokens out</span><b>0</b></p>
+    <p class="tl-cell" data-cell="friend-tok"></p>
+  </div>
+  <p class="tl-msg" data-role="msg" aria-live="polite">You have a real dollar. The issuer's vault is empty.</p>
+  <div class="tr-btns">
+    <button type="button" class="replay tr-next" data-role="next">Step 1: Hand the issuer your dollar</button>
+    <button type="button" class="replay tr-reset" data-role="reset">Start over</button>
+  </div>
+  <figcaption>The vault and the tokens out always match. The ledger only sees the tokens row, so you trust the issuer about the vault.</figcaption>
 </figure>

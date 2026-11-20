@@ -359,21 +359,24 @@ a.page-num:hover { color: var(--accent); }
 @keyframes tk-lit-late { 0%, 14% { opacity: 0; } 20% { opacity: 1; } 26% { opacity: 1; } 32%, 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .hero-tokens .tk-dot { display: none; } .hero-tokens .halo { animation: none; opacity: 0; } }
 
-/* ---- life of a dollar token ------------------------------------------------------ */
-.token-life svg { width: 100%; height: auto; display: block; margin-top: 8px; }
-.token-life .card { fill: #121212; stroke: #2e2e2e; stroke-width: 1.5; }
-.token-life .vault-box { stroke: #fbbf24; }
-.token-life .hd { fill: var(--muted); font: 700 13px Inter, system-ui, sans-serif; letter-spacing: 0.04em; }
-.token-life .mid { text-anchor: middle; }
-.token-life .tl-div { stroke: #3a3a3a; stroke-width: 1.5; stroke-dasharray: 6 6; }
-.token-life .cnt { fill: #fff; font: 700 24px Inter, system-ui, sans-serif; }
-.token-life .cap { fill: #fff; font: 600 20px Inter, system-ui, sans-serif; }
-.token-life .bill { fill: #16a34a; stroke: #bbf7d0; stroke-width: 1.5; }
-.token-life .bill-dot { fill: none; stroke: #bbf7d0; stroke-width: 1.5; }
-.token-life .tcoin { fill: var(--accent); stroke: #0a0a0a; stroke-width: 2; }
-.token-life .gl { fill: var(--ink); font: 700 13px Inter, system-ui, sans-serif; text-anchor: middle; }
-.tl-steps { display: none; margin: 8px 0 0; padding-left: 1.4em; }
-@media (prefers-reduced-motion: reduce) { .token-life .tl-move, .token-life .cap { display: none; } .tl-steps { display: block; } }
+/* ---- life of a dollar token (step through) ------------------------------------- */
+.tl-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) repeat(3, minmax(0, 1fr)); gap: 6px; margin: 10px 0 0; font-size: 0.9rem; }
+.tl-grid p { margin: 0; }
+.tl-h { color: #fff; font-weight: 600; text-align: center; padding: 2px 0; }
+.tl-h.tl-iss { color: #fbbf24; }
+.tl-row { color: #fff; font-weight: 600; align-self: center; line-height: 1.3; }
+.tl-row span { display: block; color: var(--muted); font-weight: 400; font-size: 0.78rem; }
+.tl-cell { border: 1px solid var(--border); border-radius: 10px; background: var(--ink); min-height: 64px; padding: 8px 6px; display: grid; place-items: center; align-content: center; gap: 2px; text-align: center; }
+.tl-cell.tl-vault { border-color: rgba(251, 191, 36, 0.6); }
+.tl-k { color: var(--muted); font-size: 0.75rem; line-height: 1.2; }
+.tl-vault b { color: #fff; font-size: 1.05rem; }
+.token-life .chip { display: inline-block; border-radius: 999px; padding: 3px 10px; font-weight: 600; font-size: 0.82rem; line-height: 1.3; animation: tr-in 0.35s ease-out; }
+.token-life .chip.cash { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid #22c55e; }
+.token-life .chip.tok { background: rgba(0, 184, 255, 0.15); color: var(--accent); border: 1px solid var(--accent); }
+.tl-cell.fresh { animation: tl-flash 1.2s ease-out; }
+@keyframes tl-flash { 0% { box-shadow: 0 0 0 2px var(--accent); } 100% { box-shadow: 0 0 0 2px transparent; } }
+.tl-msg { margin: 12px 0 0; font-weight: 600; color: #fff; min-height: 3em; }
+@media (prefers-reduced-motion: reduce) { .token-life .chip, .tl-cell.fresh { animation: none; } }
 
 /* ---- trust line try-it -------------------------------------------------------- */
 .tr-wallet { border: 1px solid var(--border); border-radius: 12px; background: var(--ink); padding: 12px 14px; margin: 10px 0 4px; }
@@ -388,11 +391,11 @@ a.page-num:hover { color: var(--accent); }
 .tr-bar span { display: block; height: 100%; width: 0; border-radius: 5px; background: linear-gradient(90deg, var(--accent), #22c55e); transition: width 0.6s ease-out; }
 @keyframes tr-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 .tr-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.trust .replay { margin-top: 0; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
-.trust .replay:hover { background: var(--accent); color: var(--ink); }
-.trust .tr-next { background: var(--accent); color: var(--ink); font-weight: 600; }
-.trust .tr-reset { border-color: var(--border); color: var(--muted); }
-.trust .replay[hidden] { display: none; }
+.trust .replay, .token-life .replay { margin-top: 0; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.trust .replay:hover, .token-life .replay:hover { background: var(--accent); color: var(--ink); }
+.trust .tr-next, .token-life .tr-next { background: var(--accent); color: var(--ink); font-weight: 600; }
+.trust .tr-reset, .token-life .tr-reset { border-color: var(--border); color: var(--muted); }
+.trust .replay[hidden], .token-life .replay[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { .tr-line { animation: none; } .tr-bar span { transition: none; } }
 .tr-msg { margin: 12px 0 0; font-weight: 600; min-height: 3em; color: #fff; }
 .tr-msg.ok { color: #22c55e; }
