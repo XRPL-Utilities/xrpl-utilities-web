@@ -477,17 +477,19 @@
       { cash: 'friend-cash', tok: null, vault: 0, out: 0, msg: 'Your friend hands the token back and gets the dollar. Both counts are back to zero.', btn: null },
     ];
     let i = 0;
-    function chip(cls, text) {
-      const s = document.createElement('span');
-      s.className = 'chip ' + cls;
-      s.textContent = text;
-      return s;
+    // Chips are cloned from <template> elements in the widget, so no markup is built here.
+    function chip(kind) {
+      const t = root.querySelector('template[data-tpl="' + kind + '"]');
+      return t ? t.content.firstElementChild.cloneNode(true) : document.createTextNode('');
     }
     function draw(flash) {
       const st = STATES[i];
       ['you-cash', 'friend-cash', 'you-tok', 'friend-tok'].forEach((k) => { cells[k].textContent = ''; });
-      if (st.cash !== 'vault') cells[st.cash].appendChild(chip('cash', '1 dollar'));
-      if (st.tok) cells[st.tok].appendChild(chip('tok', '1 USD token'));
+      const slot = cells.vault.querySelector('[data-slot="vault"]');
+      if (slot) slot.textContent = '';
+      if (st.cash !== 'vault') cells[st.cash].appendChild(chip('cash'));
+      else if (slot) { const c = chip('cash'); const lbl = c.lastChild; if (lbl && lbl.nodeType === 3) c.removeChild(lbl); slot.appendChild(c); }
+      if (st.tok) cells[st.tok].appendChild(chip('tok'));
       cells.vault.querySelector('b').textContent = st.vault === 1 ? '1 dollar' : '0 dollars';
       cells.out.querySelector('b').textContent = String(st.out);
       msg.textContent = st.msg;
