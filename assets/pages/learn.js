@@ -412,43 +412,52 @@
   // ---- try it: say yes to a token (trust lines) ---------------------------------
   // Rules from xrpl.org Trust Line Tokens: no balance without a trust line,
   // and a payment can't push the balance past the holder's limit.
+  // Guided: one button walks the steps in order so the story reads top to bottom.
   function trust(root) {
     const LIMIT = 1000;
-    const bal = root.querySelector('[data-role="bal"]');
-    const lim = root.querySelector('[data-role="limit"]');
-    const res = root.querySelector('[data-role="res"]');
+    const empty = root.querySelector('[data-role="empty"]');
+    const line = root.querySelector('[data-role="line"]');
+    const nums = root.querySelector('[data-role="nums"]');
+    const bar = root.querySelector('[data-role="bar"]');
     const msg = root.querySelector('[data-role="msg"]');
-    let state = { line: false, balance: 0 };
+    const next = root.querySelector('[data-role="next"]');
+    const reset = root.querySelector('[data-role="reset"]');
+    const STEPS = [
+      { btn: 'Step 1: Bob sends you 50 USD', run: (s) => (s.line ? null : ['Refused. You haven\'t said yes to this token, so the ledger sends it back to Bob.', 'bad']) },
+      { btn: 'Step 2: Say yes, up to 1,000 USD', run: (s) => { s.line = true; return ['Done. Your wallet now has a spot for this token, up to 1,000 USD.', 'ok']; } },
+      { btn: 'Step 3: Bob tries 50 USD again', run: (s) => { s.balance += 50; return ['Arrived. 50 USD from Example Bank is in your wallet.', 'ok']; } },
+      { btn: 'Step 4: Bob sends you 2,000 USD', run: (s) => ['Refused. That would take you to ' + (s.balance + 2000).toLocaleString('en-US') + ' USD, over your 1,000 USD limit.', 'bad'] },
+    ];
+    let state;
+    let step;
     function draw(text, cls) {
-      bal.textContent = state.balance.toLocaleString('en-US') + ' USD from Example Bank';
-      lim.textContent = state.line ? LIMIT.toLocaleString('en-US') + ' USD' : 'None. You haven\'t said yes.';
-      res.textContent = state.line ? '0.2 XRP' : '0 XRP';
+      line.hidden = !state.line;
+      empty.hidden = state.line;
+      nums.textContent = state.balance.toLocaleString('en-US') + ' of your 1,000 limit';
+      bar.style.width = Math.min(100, (state.balance / LIMIT) * 100) + '%';
       msg.textContent = text;
       msg.className = 'tr-msg' + (cls ? ' ' + cls : '');
+      if (step < STEPS.length) {
+        next.hidden = false;
+        next.textContent = STEPS[step].btn;
+      } else {
+        next.hidden = true;
+      }
     }
-    function send(n) {
-      if (!state.line) return draw('Refused. You haven\'t said yes to this token, so the ledger won\'t put it in your account.', 'bad');
-      if (state.balance + n > LIMIT) return draw('Refused. That would take you to ' + (state.balance + n).toLocaleString('en-US') + ' USD, over your 1,000 USD limit.', 'bad');
-      state.balance += n;
-      return draw('Arrived. ' + n.toLocaleString('en-US') + ' USD from Example Bank is in your account.', 'ok');
+    function start() {
+      state = { line: false, balance: 0 };
+      step = 0;
+      draw('Press the button to start.', '');
     }
-    const acts = {
-      send50: () => send(50),
-      send2000: () => send(2000),
-      trust: () => {
-        if (state.line) return draw('You already said yes, up to 1,000 USD.', '');
-        state.line = true;
-        return draw('Done. You\'ll now accept up to 1,000 USD from Example Bank. That locks 0.2 XRP of your reserve.', 'ok');
-      },
-      reset: () => { state = { line: false, balance: 0 }; draw('Nothing sent yet.', ''); },
-    };
-    root.querySelectorAll('[data-act]').forEach((b) => {
-      b.addEventListener('click', () => {
-        const fn = acts[b.getAttribute('data-act')];
-        if (fn) fn();
-      });
+    next.addEventListener('click', () => {
+      if (step >= STEPS.length) return;
+      const out = STEPS[step].run(state) || ['', ''];
+      step += 1;
+      if (step === STEPS.length) out[0] += ' That\'s a trust line at work.';
+      draw(out[0], out[1]);
     });
-    draw('Nothing sent yet.', '');
+    reset.addEventListener('click', start);
+    start();
   }
 
   // ---- live: what's inside the newest page ----------------------------------------
@@ -458,8 +467,24 @@
       xrp: root.querySelector('[data-role="xrp"]'),
       tok: root.querySelector('[data-role="tok"]'),
       trust: root.querySelector('[data-role="trust"]'),
-      other: root.querySelector('[data-role="other"]'),
+      swap: root.querySelector('[data-role="swap"]'),
     };
+    const also = root.querySelector('[data-role="also"]');
+    // Plain names for the rest of the page, grouped by transaction type prefix.
+    const KINDS = [
+      [/^Batch$/, ['bundle of transactions sent as one', 'bundles of transactions sent as one']],
+      [/^AMM/, ['trading pool move', 'trading pool moves']],
+      [/^NFToken/, ['NFT move', 'NFT moves']],
+      [/^Escrow/, ['escrow move', 'escrow moves']],
+      [/^Check/, ['check', 'checks']],
+      [/^MPToken/, ['MPT move', 'MPT moves']],
+      [/^(AccountSet|SetRegularKey|SignerListSet|DepositPreauth|TicketCreate)$/, ['account setting change', 'account setting changes']],
+      [/^Oracle/, ['data feed update', 'data feed updates']],
+    ];
+    function kindOf(type) {
+      for (let i = 0; i < KINDS.length; i++) if (KINDS[i][0].test(type)) return KINDS[i][1];
+      return ['other', 'other'];
+    }
     const refresh = root.querySelector('[data-role="refresh"]');
     const card = root.querySelector('.sp-grid');
     const BASE = 'https://api.xrpscan.com/api/v1/';
@@ -489,18 +514,25 @@
           if (!r.ok) throw new Error('status ' + r.status);
           const txs = await r.json();
           if (!Array.isArray(txs)) throw new Error('shape');
-          const n = { xrp: 0, tok: 0, trust: 0, other: 0 };
+          const n = { xrp: 0, tok: 0, trust: 0, swap: 0 };
+          const rest = {};
+          const more = (k) => { const key = k.join('|'); rest[key] = (rest[key] || 0) + 1; };
           txs.forEach((t) => {
             if (!t || typeof t.TransactionType !== 'string') return;
             const ok = t.meta && t.meta.TransactionResult === 'tesSUCCESS';
             if (!ok) return;
             if (t.TransactionType === 'Payment') {
               const d = t.meta.delivered_amount || t.Amount;
-              const cur = d && typeof d === 'object' ? d.currency : (typeof d === 'string' || typeof d === 'number' ? 'XRP' : null);
-              if (cur === 'XRP') n.xrp++; else if (cur) n.tok++; else n.other++;
-            } else if (t.TransactionType === 'TrustSet') n.trust++;
-            else n.other++;
+              const cur = d && typeof d === 'object' ? (d.currency || (d.mpt_issuance_id ? 'MPT' : null)) : (typeof d === 'string' || typeof d === 'number' ? 'XRP' : null);
+              if (cur === 'XRP') n.xrp++; else if (cur) n.tok++; else more(['other', 'other']);
+            } else if (t.TransactionType === 'TrustSet' || t.TransactionType === 'MPTokenAuthorize') n.trust++;
+            else if (t.TransactionType === 'OfferCreate' || t.TransactionType === 'OfferCancel') n.swap++;
+            else more(kindOf(t.TransactionType));
           });
+          const parts = Object.keys(rest)
+            .sort((x, y) => (x === 'other|other') - (y === 'other|other') || rest[y] - rest[x])
+            .map((k) => rest[k].toLocaleString('en-US') + ' ' + k.split('|')[rest[k] === 1 ? 0 : 1]);
+          if (also) also.textContent = parts.length ? 'Also on this page: ' + parts.join(', ') + '.' : 'Nothing else on this page.';
           Object.keys(n).forEach((k) => { out[k].textContent = n[k].toLocaleString('en-US'); });
           lastIndex = idx;
           status.textContent = 'Page ' + idx.toLocaleString('en-US') + '. Only transactions that went through are counted.';
