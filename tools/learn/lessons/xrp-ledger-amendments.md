@@ -16,13 +16,23 @@ So the XRP Ledger has a built-in vote for every change to the rules. Each change
 
 ## How a new feature gets in
 
-Anyone can propose a new feature. It starts as a public write-up called an XRP Ledger Standard, or XLS for short. Each one gets a number, like XLS-33 for the MPTs from Lesson 4.
+Anyone can propose a new feature. It starts as a public write-up called an XRP Ledger Standard, or XLS for short. Each one gets a number, like XLS-33 for the MPTs from [Lesson 4](/learn/tokens-on-the-xrp-ledger/).
+
+Here's the whole trip, from an idea to a feature you can use.
 
 ::: amend-path
 
-The server software that runs the ledger is open source. Anyone can read the code or suggest a change. A group of maintainers reviews each change before it's added, and new versions come out about four times a year.
+Steps 1 to 4 are about the code. Steps 5 and 6 are about the rules. A server can run the new code for months while the feature stays off. Only the vote turns it on.
 
-The code for a new feature ships in one of those new versions, switched off. Running the new version doesn't turn it on. Only the vote does.
+## Who decides what goes in the code?
+
+The server software is open source. Anyone can read the code or suggest a change. A small group called maintainers decides what gets added and when a new version ships.
+
+As of November 2026, five of the seven maintainers work at Ripple. The other two come from the XRP Ledger Foundation, a nonprofit, and XRPL Labs. Most of the code reviewers work at Ripple too.
+
+::: amend-powers
+
+That's why the vote matters. The maintainers can ship new code, but they can't switch a feature on. Only the validators can, and Ripple runs one of the 35.
 
 ## Try it: get a feature switched on
 
@@ -67,7 +77,7 @@ Only validators, and only the votes from trusted validators count. Those are the
 It stands for XRP Ledger Standard. It's the public write-up of a new feature, with a number, like XLS-33 for MPTs. Anyone can read one and comment on it.
 
 ?? Who writes new features?
-Anyone can. The server software is open source, and the code lives in public. Every change is reviewed and tested before it ships in a new version.
+Anyone can. The server software is open source, and the code lives in public. Most of the code is written and reviewed by people at Ripple, and a feature needs at least two reviewers to approve it.
 
 ?? Can one company switch on a feature by itself?
 No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups. Ripple ran one of them, and six were run by universities.
@@ -91,6 +101,7 @@ Not directly. Switching one off would need a new amendment, voted in the same wa
 - **XLS:** short for XRP Ledger Standard. The numbered public write-up of a new feature.
 - **Devnet:** a practice network where new features get tried out first. Its money isn't real.
 - **Testnet:** a practice network that works like the real ledger, with play money. New server versions get tried there before release.
+- **Maintainers:** the small group that decides what goes into the server software and when a new version ships.
 - **Trusted validators:** the validators on the recommended lists most servers use. Only their votes count.
 - **Amendment blocked:** what happens to a server that's missing the code for a feature that's now on. It stops until it's upgraded.
 - **Fix:** an amendment that fixes a bug. Its name usually starts with "fix."
@@ -99,6 +110,7 @@ Not directly. Switching one off would need a new amendment, voted in the same wa
 
 - [Amendments](https://xrpl.org/docs/concepts/networks-and-servers/amendments) (80% for two weeks, the clock restarts, votes about four times an hour, amendment blocked servers, undoing one, bug fixes), xrpl.org
 - [Contribute Code](https://xrpl.org/resources/contribute-code) (XLS write-ups, review, Devnet, Testnet, new versions about four times a year), xrpl.org
+- [Contributing to the server software](https://github.com/XRPLF/rippled/blob/develop/CONTRIBUTING.md) (two approvals per change, the current maintainers and reviewers), GitHub
 - [XRPL Standards](https://github.com/XRPLF/XRPL-Standards) (every XLS, in public), GitHub
 - [Known Amendments](https://xrpl.org/resources/known-amendments) (the full list, with which ones are on), xrpl.org
 - [Consensus](https://xrpl.org/docs/concepts/consensus-protocol) (validators and trusted lists), xrpl.org
