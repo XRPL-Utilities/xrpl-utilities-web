@@ -28,11 +28,11 @@ Steps 1 to 4 are about the code. Steps 5 and 6 are about the rules. A server can
 
 The server software is open source. Anyone can read the code or suggest a change. A small group called maintainers decides what gets added and when a new version ships.
 
-As of November 2026, five of the seven maintainers work at Ripple. The other two come from the XRP Ledger Foundation, a nonprofit, and XRPL Labs. Most of the code reviewers work at Ripple too.
+As of November 2026, there were seven maintainers. Most of them work at companies that build on the XRP Ledger.
 
 ::: amend-powers
 
-That's why the vote matters. The maintainers can ship new code, but they can't switch a feature on. Only the validators can, and Ripple runs one of the 35.
+That's why the vote matters. The maintainers can ship new code, but they can't switch a feature on. Only the validators can, and no single group runs more than one of the 35.
 
 ## Try it: get a feature switched on
 
@@ -77,10 +77,10 @@ Only validators, and only the votes from trusted validators count. Those are the
 It stands for XRP Ledger Standard. It's the public write-up of a new feature, with a number, like XLS-33 for MPTs. Anyone can read one and comment on it.
 
 ?? Who writes new features?
-Anyone can. The server software is open source, and the code lives in public. Most of the code is written and reviewed by people at Ripple, and a feature needs at least two reviewers to approve it.
+Anyone can. The server software is open source, and the code lives in public. A feature needs at least two reviewers to approve it before it's added.
 
 ?? Can one company switch on a feature by itself?
-No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups. Ripple ran one of them, and six were run by universities.
+No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups, and six of them were universities. No group ran more than one.
 
 ?? Do I need to do anything when a feature switches on?
 No. Your wallet or exchange runs the servers and handles the upgrades. The new feature just shows up as something you can use.
