@@ -1,7 +1,7 @@
 title: How the XRP Ledger Adds New Features: Amendments
 description: No company can switch on a new XRP Ledger feature by itself. Here's how validators vote new features in, explained for anyone new to crypto.
 h1: How new features get voted in
-updated: 2026-11-23
+updated: 2026-11-24
 hero: hero-amend
 card: Nobody flips the switch alone. The validators vote.
 short: New XRP Ledger features arrive switched off. Validators then vote on each one. If 80% of the trusted validators say yes and keep saying yes for two weeks, it switches on for everyone at the same moment. That built-in vote is called an amendment.
@@ -16,17 +16,25 @@ So the XRP Ledger has a built-in vote for every change to the rules. Each change
 
 ## How a new feature gets in
 
+Anyone can propose a new feature. It starts as a public write-up called an XRP Ledger Standard, or XLS for short. Each one gets a number, like XLS-33 for the MPTs from Lesson 4.
+
 ::: amend-path
 
-The code for a new feature ships in a new version of the server software, switched off. Running the new version doesn't turn it on. Only the vote does.
+The server software that runs the ledger is open source. Anyone can read the code or suggest a change. A group of maintainers reviews each change before it's added, and new versions come out about four times a year.
+
+The code for a new feature ships in one of those new versions, switched off. Running the new version doesn't turn it on. Only the vote does.
 
 ## Try it: get a feature switched on
 
 The validators from Lesson 2 are the voters. Each one says yes or no, and the votes get counted about four times an hour.
 
+Below is a pretend run of a real vote, the one for MPTs. Step through it, then run a vote of your own.
+
 ::: amend-vote
 
 The two weeks give everyone running a server time to upgrade before the change lands. Saying yes isn't a one-time thing, either. Support has to hold the whole way through.
+
+If support slips under 80% even once, the clock doesn't pause. It's thrown out, and a fresh two weeks starts when support comes back. A feature can win and lose 80% many times before it switches on.
 
 ## What about servers that don't upgrade?
 
@@ -42,16 +50,24 @@ Bug fixes go through the same vote. You can spot them on the list, because their
 
 ## See it for yourself
 
-Here's what the validators are voting on right now, and how close each feature is.
+Here's what the validators are voting on right now, and how close each feature is. The tag next to each one is its XLS number, the public write-up you met above.
 
 ::: live-amend
 
-Press the button again later to see the latest count. Lessons 6, 7 and 8 cover three of the biggest features on this list.
+This list is live. When a feature passes, it shows under "Just switched on" for 30 days. New features join the vote as new server versions come out.
+
+Lessons 6, 7 and 8 cover three of the biggest features on this list.
 
 ## Common questions
 
 ?? Who gets a vote?
 Only validators, and only the votes from trusted validators count. Those are the ones on the recommended lists most servers use, the same lists from Lesson 2.
+
+?? What does XLS mean?
+It stands for XRP Ledger Standard. It's the public write-up of a new feature, with a number, like XLS-33 for MPTs. Anyone can read one and comment on it.
+
+?? Who writes new features?
+Anyone can. The server software is open source, and the code lives in public. Every change is reviewed and tested before it ships in a new version.
 
 ?? Can one company switch on a feature by itself?
 No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups. Ripple ran one of them, and six were run by universities.
@@ -72,6 +88,9 @@ Not directly. Switching one off would need a new amendment, voted in the same wa
 
 - **Amendment:** a change to the XRP Ledger's rules, switched on by a vote.
 - **Validator:** a server whose votes help decide each new page, and each new feature.
+- **XLS:** short for XRP Ledger Standard. The numbered public write-up of a new feature.
+- **Devnet:** a practice network where new features get tried out first. Its money isn't real.
+- **Testnet:** a practice network that works like the real ledger, with play money. New server versions get tried there before release.
 - **Trusted validators:** the validators on the recommended lists most servers use. Only their votes count.
 - **Amendment blocked:** what happens to a server that's missing the code for a feature that's now on. It stops until it's upgraded.
 - **Fix:** an amendment that fixes a bug. Its name usually starts with "fix."
@@ -79,6 +98,8 @@ Not directly. Switching one off would need a new amendment, voted in the same wa
 ## Sources
 
 - [Amendments](https://xrpl.org/docs/concepts/networks-and-servers/amendments) (80% for two weeks, the clock restarts, votes about four times an hour, amendment blocked servers, undoing one, bug fixes), xrpl.org
+- [Contribute Code](https://xrpl.org/resources/contribute-code) (XLS write-ups, review, Devnet, Testnet, new versions about four times a year), xrpl.org
+- [XRPL Standards](https://github.com/XRPLF/XRPL-Standards) (every XLS, in public), GitHub
 - [Known Amendments](https://xrpl.org/resources/known-amendments) (the full list, with which ones are on), xrpl.org
 - [Consensus](https://xrpl.org/docs/concepts/consensus-protocol) (validators and trusted lists), xrpl.org
 - Validators and votes: checked by us on November 23, 2026, from public XRP Ledger data (35 trusted validators, 98 amendments on since 2016).
