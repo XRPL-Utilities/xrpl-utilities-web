@@ -518,18 +518,34 @@
   // ---- try it: vote a feature in (amendments) -----------------------------------
   // Rules from xrpl.org Amendments: 80% of trusted validators for two weeks,
   // and the two-week period restarts if support drops below 80%.
+  // The story is a pretend run; MPTokensV1 (XLS-33) really switched on 2025-10-01.
   function amendVote(root) {
     const TOTAL = 35;
     const NEED = 28;
     const DAYS = 14;
+    const STORY = [
+      { yes: 20, days: 0, text: 'MPTs come out in a new server version, switched off. 20 of 35 validators say yes so far. It needs 28.' },
+      { yes: 29, days: 0, cls: 'ok', text: 'More validators upgrade and say yes. 29 of 35 is over 80%, so the two-week clock starts.' },
+      { yes: 29, days: 5, text: 'Five days go by and support holds. Day 5 of 14.' },
+      { yes: 27, days: 0, cls: 'bad', text: 'Two validators change their minds. 27 is under 80%. The clock doesn’t pause. It goes back to day 0.' },
+      { yes: 29, days: 0, text: 'A few days later they say yes again. Back over 80%, but the clock starts fresh from day 0.' },
+      { yes: 29, days: 14, text: 'This time support holds for two full weeks. Day 14 of 14.' },
+      { yes: 29, days: 14, on: true, cls: 'ok', text: 'MPTs switch on for every server, on the same page. The real vote ended that way on October 1, 2025.' },
+    ];
+    const NEXT = ['Next', 'Let five days pass', 'Two validators say no', 'They say yes again', 'Let two weeks pass', 'Switch it on'];
     const dotsEl = root.querySelector('[data-role="dots"]');
     const daysEl = root.querySelector('[data-role="days"]');
     const count = root.querySelector('[data-role="count"]');
+    const daylbl = root.querySelector('[data-role="daylbl"]');
     const msg = root.querySelector('[data-role="msg"]');
     const minus = root.querySelector('[data-role="minus"]');
     const plus = root.querySelector('[data-role="plus"]');
+    const next = root.querySelector('[data-role="next"]');
     const day = root.querySelector('[data-role="day"]');
+    const tryBtn = root.querySelector('[data-role="try"]');
     const reset = root.querySelector('[data-role="reset"]');
+    const cap = root.querySelector('[data-role="cap"]');
+    const capStory = cap ? cap.textContent : '';
     const dots = [];
     const cells = [];
     for (let i = 0; i < TOTAL; i++) { const d = document.createElement('span'); dotsEl.appendChild(d); dots.push(d); }
@@ -537,26 +553,50 @@
     let yes;
     let days;
     let on;
+    let step;
+    let free;
     function draw(text, cls) {
       dots.forEach((d, i) => { d.className = i < yes ? 'yes' : ''; });
       cells.forEach((c, i) => { c.className = i < days ? 'done' : ''; });
       count.textContent = yes + ' of 35 say yes';
       count.className = 'av-count' + (yes >= NEED ? ' ok' : '');
+      daylbl.textContent = on ? 'Switched on' : 'Two-week clock: day ' + days + ' of 14';
+      daylbl.className = 'av-daylbl' + (on ? ' ok' : '');
       msg.textContent = text;
       msg.className = 'av-msg' + (cls ? ' ' + cls : '');
+      minus.hidden = !free;
+      plus.hidden = !free;
       minus.disabled = on || yes === 0;
       plus.disabled = on || yes === TOTAL;
-      day.hidden = on;
+      day.hidden = !free || on;
+      next.hidden = free || step >= STORY.length - 1;
+      if (!next.hidden) next.textContent = NEXT[step];
+      tryBtn.hidden = free || step < STORY.length - 1;
+    }
+    function showStep() {
+      const s = STORY[step];
+      yes = s.yes; days = s.days; on = !!s.on;
+      draw(s.text, s.cls || '');
+    }
+    function story() {
+      free = false; step = 0;
+      if (cap) cap.textContent = capStory;
+      showStep();
     }
     function status() {
       if (yes >= NEED) return 'Day ' + days + ' of 14. Enough yes votes. Keep it there.';
       return 'Day ' + days + ' of 14. Not enough yes votes yet.';
     }
-    function start() { yes = 20; days = 0; on = false; draw(status(), ''); }
-    minus.addEventListener('click', () => { if (yes > 0) { yes -= 1; draw(status(), ''); } });
-    plus.addEventListener('click', () => { if (yes < TOTAL) { yes += 1; draw(status(), ''); } });
+    next.addEventListener('click', () => { if (!free && step < STORY.length - 1) { step += 1; showStep(); } });
+    tryBtn.addEventListener('click', () => {
+      free = true; yes = 20; days = 0; on = false;
+      if (cap) cap.textContent = 'Your turn. Use − and + to set the yes votes, then let the days go by.';
+      draw(status(), '');
+    });
+    minus.addEventListener('click', () => { if (free && yes > 0) { yes -= 1; draw(status(), ''); } });
+    plus.addEventListener('click', () => { if (free && yes < TOTAL) { yes += 1; draw(status(), ''); } });
     day.addEventListener('click', () => {
-      if (on) return;
+      if (!free || on) return;
       if (yes < NEED) {
         const had = days;
         days = 0;
@@ -565,12 +605,12 @@
       days += 1;
       if (days >= DAYS) {
         on = true;
-        return draw('Two weeks over 80%. The feature is now on for every server, starting on the same page.', 'ok');
+        return draw('Two weeks at 80% or more. The feature is now on for every server, starting on the same page.', 'ok');
       }
       return draw(status(), '');
     });
-    reset.addEventListener('click', start);
-    start();
+    reset.addEventListener('click', story);
+    story();
   }
 
   // ---- live: features being voted on right now -----------------------------------
@@ -579,7 +619,11 @@
     const list = root.querySelector('[data-role="list"]');
     const total = root.querySelector('[data-role="total"]');
     const refresh = root.querySelector('[data-role="refresh"]');
+    const recentWrap = root.querySelector('[data-role="recent-wrap"]');
+    const recent = root.querySelector('[data-role="recent"]');
     const URL_ = 'https://api.xrpscan.com/api/v1/amendments';
+    const RECENT_DAYS = 30;
+    const XLS = /^XLS-\d{1,4}$/;
     // Plain names for features a reader might meet in these lessons.
     const PLAIN = {
       LendingProtocol: 'Lending: loans on the ledger',
@@ -589,14 +633,44 @@
       DynamicMPT: 'MPTs whose settings can change later',
       Sponsor: 'Sponsors: someone else covers your fees and reserve',
       XChainBridge: 'Bridges to other blockchains',
+      Batch: 'Batch: several transactions sent as one',
+      PermissionDelegation: 'Letting another account act for you',
     };
+    function plain(n) {
+      if (PLAIN[n]) return PLAIN[n];
+      return n.indexOf('fix') === 0 ? 'A bug fix' : n;
+    }
+    function head(a) {
+      const name = document.createElement('p');
+      name.className = 'lam-name';
+      name.appendChild(document.createTextNode(plain(a.name)));
+      const tagText = typeof a.xls === 'string' && XLS.test(a.xls) ? a.xls : '';
+      if (tagText) {
+        const tag = document.createElement('span');
+        tag.className = 'lam-xls';
+        tag.textContent = tagText;
+        name.appendChild(tag);
+      }
+      return name;
+    }
+    function onDate(a) {
+      const t = typeof a.enabled_on === 'string' ? Date.parse(a.enabled_on) : NaN;
+      return Number.isFinite(t) ? t : null;
+    }
+    function recentRow(a) {
+      const li = document.createElement('li');
+      li.appendChild(head(a));
+      const when = document.createElement('p');
+      when.className = 'lam-nums lam-on';
+      when.textContent = 'Switched on ' + new Date(onDate(a)).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' }) + '.';
+      li.appendChild(when);
+      return li;
+    }
     let busy = false;
     let loaded = false;
     function row(a) {
       const li = document.createElement('li');
-      const name = document.createElement('p');
-      name.className = 'lam-name';
-      name.textContent = PLAIN[a.name] || a.name;
+      const name = head(a);
       const bar = document.createElement('div');
       bar.className = 'lam-bar';
       const fill = document.createElement('span');
@@ -608,7 +682,7 @@
       bar.appendChild(need);
       const nums = document.createElement('p');
       nums.className = 'lam-nums';
-      nums.textContent = a.count + ' of ' + a.validations + ' say yes. Needs ' + a.threshold + '.';
+      nums.textContent = a.count + ' of ' + a.validations + ' say yes. Needs ' + a.threshold + '.' + (a.majority ? ' Over 80% now, so the two-week clock is running.' : '');
       li.appendChild(name);
       li.appendChild(bar);
       li.appendChild(nums);
@@ -632,6 +706,11 @@
         list.textContent = '';
         open.slice(0, 6).forEach((a) => list.appendChild(row(a)));
         if (!open.length) list.appendChild(Object.assign(document.createElement('li'), { textContent: 'Nothing is being voted on right now.' }));
+        const cutoff = Date.now() - RECENT_DAYS * 86400000;
+        const fresh = enabled.filter((a) => onDate(a) !== null && onDate(a) >= cutoff).sort((x, y) => onDate(y) - onDate(x));
+        recent.textContent = '';
+        fresh.slice(0, 3).forEach((a) => recent.appendChild(recentRow(a)));
+        recentWrap.hidden = !fresh.length;
         total.textContent = enabled.length + ' features have been switched on so far.';
         status.textContent = 'Latest count of yes votes from the trusted validators.';
         loaded = true;

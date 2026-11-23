@@ -1,17 +1,20 @@
 <figure class="widget amend-vote" data-widget="amend-vote">
-  <div class="widget-head"><strong>Try it: get a feature switched on</strong></div>
-  <p>Set how many of the 35 validators say yes, then let the days go by. The feature needs 28 yes votes, every day, for 14 days.</p>
+  <div class="widget-head"><strong>Try it: watch MPTs get voted in</strong></div>
+  <p class="av-feature"><span class="av-xls">XLS-33</span><b>MPTs</b> <span>The second kind of token from Lesson 4</span></p>
   <div class="av-dots" data-role="dots" aria-hidden="true"></div>
   <div class="av-row">
-    <button type="button" class="replay av-minus" data-role="minus" aria-label="One fewer yes vote">−</button>
+    <button type="button" class="replay av-minus" data-role="minus" aria-label="One fewer yes vote" hidden>−</button>
     <p class="av-count" data-role="count">20 of 35 say yes</p>
-    <button type="button" class="replay av-plus" data-role="plus" aria-label="One more yes vote">+</button>
+    <button type="button" class="replay av-plus" data-role="plus" aria-label="One more yes vote" hidden>+</button>
   </div>
   <div class="av-days" data-role="days" aria-hidden="true"></div>
-  <p class="av-msg" data-role="msg" aria-live="polite">Day 0 of 14. Not enough yes votes yet.</p>
+  <p class="av-daylbl" data-role="daylbl">Two-week clock: day 0 of 14</p>
+  <p class="av-msg" data-role="msg" aria-live="polite">MPTs come out in a new server version, switched off. 20 of 35 validators say yes so far. It needs 28.</p>
   <div class="tr-btns">
-    <button type="button" class="replay tr-next" data-role="day">Let a day pass</button>
+    <button type="button" class="replay tr-next" data-role="next">Next</button>
+    <button type="button" class="replay tr-next" data-role="day" hidden>Let a day pass</button>
+    <button type="button" class="replay tr-next" data-role="try" hidden>Now run your own vote</button>
     <button type="button" class="replay tr-reset" data-role="reset">Start over</button>
   </div>
-  <figcaption>Drop below 28 on any day and the two-week clock starts over from zero.</figcaption>
+  <figcaption data-role="cap">A pretend run of a real vote. Here we count once a day to keep it short.</figcaption>
 </figure>
