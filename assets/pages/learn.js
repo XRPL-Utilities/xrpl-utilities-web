@@ -515,6 +515,137 @@
     draw(null);
   }
 
+  // ---- try it: vote a feature in (amendments) -----------------------------------
+  // Rules from xrpl.org Amendments: 80% of trusted validators for two weeks,
+  // and the two-week period restarts if support drops below 80%.
+  function amendVote(root) {
+    const TOTAL = 35;
+    const NEED = 28;
+    const DAYS = 14;
+    const dotsEl = root.querySelector('[data-role="dots"]');
+    const daysEl = root.querySelector('[data-role="days"]');
+    const count = root.querySelector('[data-role="count"]');
+    const msg = root.querySelector('[data-role="msg"]');
+    const minus = root.querySelector('[data-role="minus"]');
+    const plus = root.querySelector('[data-role="plus"]');
+    const day = root.querySelector('[data-role="day"]');
+    const reset = root.querySelector('[data-role="reset"]');
+    const dots = [];
+    const cells = [];
+    for (let i = 0; i < TOTAL; i++) { const d = document.createElement('span'); dotsEl.appendChild(d); dots.push(d); }
+    for (let i = 0; i < DAYS; i++) { const d = document.createElement('span'); daysEl.appendChild(d); cells.push(d); }
+    let yes;
+    let days;
+    let on;
+    function draw(text, cls) {
+      dots.forEach((d, i) => { d.className = i < yes ? 'yes' : ''; });
+      cells.forEach((c, i) => { c.className = i < days ? 'done' : ''; });
+      count.textContent = yes + ' of 35 say yes';
+      count.className = 'av-count' + (yes >= NEED ? ' ok' : '');
+      msg.textContent = text;
+      msg.className = 'av-msg' + (cls ? ' ' + cls : '');
+      minus.disabled = on || yes === 0;
+      plus.disabled = on || yes === TOTAL;
+      day.hidden = on;
+    }
+    function status() {
+      if (yes >= NEED) return 'Day ' + days + ' of 14. Enough yes votes. Keep it there.';
+      return 'Day ' + days + ' of 14. Not enough yes votes yet.';
+    }
+    function start() { yes = 20; days = 0; on = false; draw(status(), ''); }
+    minus.addEventListener('click', () => { if (yes > 0) { yes -= 1; draw(status(), ''); } });
+    plus.addEventListener('click', () => { if (yes < TOTAL) { yes += 1; draw(status(), ''); } });
+    day.addEventListener('click', () => {
+      if (on) return;
+      if (yes < NEED) {
+        const had = days;
+        days = 0;
+        return draw(had ? 'Support fell below 80%, so the clock went back to day 0.' : 'Another day with too few yes votes. The clock stays at day 0.', 'bad');
+      }
+      days += 1;
+      if (days >= DAYS) {
+        on = true;
+        return draw('Two weeks over 80%. The feature is now on for every server, starting on the same page.', 'ok');
+      }
+      return draw(status(), '');
+    });
+    reset.addEventListener('click', start);
+    start();
+  }
+
+  // ---- live: features being voted on right now -----------------------------------
+  function liveAmend(root) {
+    const status = root.querySelector('[data-role="status"]');
+    const list = root.querySelector('[data-role="list"]');
+    const total = root.querySelector('[data-role="total"]');
+    const refresh = root.querySelector('[data-role="refresh"]');
+    const URL_ = 'https://api.xrpscan.com/api/v1/amendments';
+    // Plain names for features a reader might meet in these lessons.
+    const PLAIN = {
+      LendingProtocol: 'Lending: loans on the ledger',
+      LendingProtocolV1_1: 'Lending, first update',
+      SingleAssetVault: 'Vaults: shared pools of one asset',
+      ConfidentialTransfer: 'Confidential transfers: private amounts',
+      DynamicMPT: 'MPTs whose settings can change later',
+      Sponsor: 'Sponsors: someone else covers your fees and reserve',
+      XChainBridge: 'Bridges to other blockchains',
+    };
+    let busy = false;
+    let loaded = false;
+    function row(a) {
+      const li = document.createElement('li');
+      const name = document.createElement('p');
+      name.className = 'lam-name';
+      name.textContent = PLAIN[a.name] || a.name;
+      const bar = document.createElement('div');
+      bar.className = 'lam-bar';
+      const fill = document.createElement('span');
+      fill.style.width = Math.min(100, (a.count / a.validations) * 100) + '%';
+      if (a.count >= a.threshold) fill.className = 'met';
+      const need = document.createElement('i');
+      need.style.left = Math.min(100, (a.threshold / a.validations) * 100) + '%';
+      bar.appendChild(fill);
+      bar.appendChild(need);
+      const nums = document.createElement('p');
+      nums.className = 'lam-nums';
+      nums.textContent = a.count + ' of ' + a.validations + ' say yes. Needs ' + a.threshold + '.';
+      li.appendChild(name);
+      li.appendChild(bar);
+      li.appendChild(nums);
+      return li;
+    }
+    async function load() {
+      if (busy) return;
+      busy = true;
+      status.textContent = 'Checking the latest votes...';
+      try {
+        const r = await fetch(URL_, { headers: { accept: 'application/json' } });
+        if (!r.ok) throw new Error('status ' + r.status);
+        const all = await r.json();
+        if (!Array.isArray(all)) throw new Error('shape');
+        const ok = (a) => a && typeof a.name === 'string' && Number.isInteger(a.count) && Number.isInteger(a.threshold) && Number.isInteger(a.validations) && a.validations > 0;
+        const enabled = all.filter((a) => a && a.enabled === true && typeof a.name === 'string');
+        const names = enabled.map((a) => a.name);
+        // Skip an old version when a newer one with a longer name is already on (Batch vs BatchV1_1).
+        const open = all.filter((a) => ok(a) && a.enabled !== true && a.count > 0 && !names.some((n) => n !== a.name && n.indexOf(a.name) === 0));
+        open.sort((x, y) => y.count - x.count);
+        list.textContent = '';
+        open.slice(0, 6).forEach((a) => list.appendChild(row(a)));
+        if (!open.length) list.appendChild(Object.assign(document.createElement('li'), { textContent: 'Nothing is being voted on right now.' }));
+        total.textContent = enabled.length + ' features have been switched on so far.';
+        status.textContent = 'Latest count of yes votes from the trusted validators.';
+        loaded = true;
+      } catch (e) {
+        status.textContent = loaded
+          ? 'Couldn’t reach the ledger just now. These are the last votes we got.'
+          : 'Couldn’t reach the ledger just now. Press the button in a moment.';
+      }
+      busy = false;
+    }
+    if (refresh) refresh.addEventListener('click', load);
+    load();
+  }
+
   // ---- live: what's inside the newest page ----------------------------------------
   function liveTokens(root) {
     const status = root.querySelector('[data-role="status"]');
@@ -604,7 +735,7 @@
     load(false);
   }
 
-  const WIDGETS = { 'token-life': tokenLife, tamper, 'live-chain': liveChain, race, vote, reserve, supply, trust, 'live-tokens': liveTokens };
+  const WIDGETS = { 'amend-vote': amendVote, 'live-amend': liveAmend, 'token-life': tokenLife, tamper, 'live-chain': liveChain, race, vote, reserve, supply, trust, 'live-tokens': liveTokens };
   document.querySelectorAll('[data-widget]').forEach((root) => {
     const fn = WIDGETS[root.getAttribute('data-widget')];
     if (fn) fn(root);
