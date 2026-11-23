@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=17" />
+  <link rel="stylesheet" href="/assets/learn.css?v=18" />
   <script src="/assets/pages/learn.js?v=17" defer></script>
   <script type="application/ld+json">
 {
@@ -101,7 +101,7 @@
           "name": "Who writes new features?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Anyone can. The server software is open source, and the code lives in public. Most of the code is written and reviewed by people at Ripple, and a feature needs at least two reviewers to approve it."
+            "text": "Anyone can. The server software is open source, and the code lives in public. A feature needs at least two reviewers to approve it before it's added."
           }
         },
         {
@@ -109,7 +109,7 @@
           "name": "Can one company switch on a feature by itself?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups. Ripple ran one of them, and six were run by universities."
+            "text": "No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups, and six of them were universities. No group ran more than one."
           }
         },
         {
@@ -168,7 +168,7 @@
           <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 5</nav>
           <p class="kicker">Lesson 5 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
           <h1>How new features get voted in</h1>
-          <p class="meta">Updated <time datetime="2026-11-24">November 24, 2026</time> <span aria-hidden="true">&middot;</span> 8 minute read</p>
+          <p class="meta">Updated <time datetime="2026-11-24">November 24, 2026</time> <span aria-hidden="true">&middot;</span> 7 minute read</p>
           <div class="short"><strong>The short answer:</strong> New XRP Ledger features arrive switched off. Validators then vote on each one. If 80% of the trusted validators say yes and keep saying yes for two weeks, it switches on for everyone at the same moment. That built-in vote is called an amendment.</div>
         </div>
         <div class="hero-art">
@@ -213,25 +213,25 @@
         <p>Steps 1 to 4 are about the code. Steps 5 and 6 are about the rules. A server can run the new code for months while the feature stays off. Only the vote turns it on.</p>
         <h2 id="who-decides-what-goes-in-the-code">Who decides what goes in the code?</h2>
         <p>The server software is open source. Anyone can read the code or suggest a change. A small group called maintainers decides what gets added and when a new version ships.</p>
-        <p>As of November 2026, five of the seven maintainers work at Ripple. The other two come from the XRP Ledger Foundation, a nonprofit, and XRPL Labs. Most of the code reviewers work at Ripple too.</p>
+        <p>As of November 2026, there were seven maintainers. Most of them work at companies that build on the XRP Ledger.</p>
         <figure class="widget amend-powers">
         <div class="apw-grid">
           <div class="apw-card">
             <p class="apw-label">Ships the code</p>
             <p class="apw-who">7 maintainers</p>
-            <p class="apw-dots" aria-hidden="true"><span class="r"></span><span class="r"></span><span class="r"></span><span class="r"></span><span class="r"></span><span></span><span></span></p>
-            <p class="apw-note">5 work at Ripple. 2 come from the XRP Ledger Foundation and XRPL Labs.</p>
+            <p class="apw-dots" aria-hidden="true"><span class="m"></span><span class="m"></span><span class="m"></span><span class="m"></span><span class="m"></span><span class="m"></span><span class="m"></span></p>
+            <p class="apw-note">They decide what code goes in and when a new version comes out. They can't turn a feature on.</p>
           </div>
           <div class="apw-card apw-on">
             <p class="apw-label">Switches it on</p>
             <p class="apw-who">35 validators</p>
-            <p class="apw-dots apw-many" aria-hidden="true"><span class="r"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></p>
-            <p class="apw-note">Ripple runs 1. A feature needs 28 yes votes.</p>
+            <p class="apw-dots apw-many" aria-hidden="true"><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span></p>
+            <p class="apw-note">Run by 35 different groups. A feature needs 28 of them to say yes for two weeks.</p>
           </div>
         </div>
-        <figcaption>The orange dots are Ripple. Counts as of November 23, 2026.</figcaption>
+        <figcaption>Counts as of November 23, 2026.</figcaption>
       </figure>
-        <p>That&#39;s why the vote matters. The maintainers can ship new code, but they can&#39;t switch a feature on. Only the validators can, and Ripple runs one of the 35.</p>
+        <p>That&#39;s why the vote matters. The maintainers can ship new code, but they can&#39;t switch a feature on. Only the validators can, and no single group runs more than one of the 35.</p>
         <h2 id="try-it-get-a-feature-switched-on">Try it: get a feature switched on</h2>
         <p>The validators from Lesson 2 are the voters. Each one says yes or no, and the votes get counted about four times an hour.</p>
         <p>Below is a pretend run of a real vote, the one for MPTs. Step through it, then run a vote of your own.</p>
@@ -293,8 +293,8 @@
         <h2 id="common-questions">Common questions</h2>
         <details class="faq" open><summary><h3>Who gets a vote?</h3><span class="plus" aria-hidden="true"></span></summary><p>Only validators, and only the votes from trusted validators count. Those are the ones on the recommended lists most servers use, the same lists from Lesson 2.</p></details>
         <details class="faq"><summary><h3>What does XLS mean?</h3><span class="plus" aria-hidden="true"></span></summary><p>It stands for XRP Ledger Standard. It&#39;s the public write-up of a new feature, with a number, like XLS-33 for MPTs. Anyone can read one and comment on it.</p></details>
-        <details class="faq"><summary><h3>Who writes new features?</h3><span class="plus" aria-hidden="true"></span></summary><p>Anyone can. The server software is open source, and the code lives in public. Most of the code is written and reviewed by people at Ripple, and a feature needs at least two reviewers to approve it.</p></details>
-        <details class="faq"><summary><h3>Can one company switch on a feature by itself?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups. Ripple ran one of them, and six were run by universities.</p></details>
+        <details class="faq"><summary><h3>Who writes new features?</h3><span class="plus" aria-hidden="true"></span></summary><p>Anyone can. The server software is open source, and the code lives in public. A feature needs at least two reviewers to approve it before it&#39;s added.</p></details>
+        <details class="faq"><summary><h3>Can one company switch on a feature by itself?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups, and six of them were universities. No group ran more than one.</p></details>
         <details class="faq"><summary><h3>Do I need to do anything when a feature switches on?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Your wallet or exchange runs the servers and handles the upgrades. The new feature just shows up as something you can use.</p></details>
         <details class="faq"><summary><h3>How long does it take?</h3><span class="plus" aria-hidden="true"></span></summary><p>At least two weeks once a feature reaches 80%. Some sit in the vote for months, and some never pass.</p></details>
         <details class="faq"><summary><h3>Can a feature be voted out later?</h3><span class="plus" aria-hidden="true"></span></summary><p>Not directly. Switching one off would need a new amendment, voted in the same way as any other change.</p></details>
