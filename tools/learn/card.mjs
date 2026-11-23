@@ -45,6 +45,13 @@ h1 { font-size: 64px; line-height: 1.05; margin: 0 0 20px; }
 .hero-xrp .jhalo { animation: none; opacity: 0; }
 .hero-tokens .tk-dot { display: none; }
 .hero-tokens .halo { animation: none; opacity: 0; }
+.hero-amend .am-y, .hero-amend .am-d, .hero-amend .am-track, .hero-amend .am-knob, .hero-amend .am-on, .hero-amend .am-off { animation: none; }
+.hero-amend .am-y { fill: #22c55e; stroke: #22c55e; }
+.hero-amend .am-d { fill: #00b8ff; stroke: #00b8ff; }
+.hero-amend .am-track { fill: #22c55e; }
+.hero-amend .am-knob { transform: translateX(36px); }
+.hero-amend .am-on { opacity: 1; }
+.hero-amend .am-off { opacity: 0; }
 </style></head><body>
 <div class="og">
   <div>

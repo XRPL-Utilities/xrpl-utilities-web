@@ -426,3 +426,166 @@ a.page-num:hover { color: var(--accent); }
 .ltok .sp-grid dd { color: #fff; }
 .ltok-also { color: var(--muted); font-size: 0.9rem; margin: 10px 0 0; min-height: 1.5em; }
 .pw-grid p { margin: 0; }
+
+/* ---- hero: amendments --------------------------------------------------------- */
+.hero-amend .am-y { fill: #2a2a2a; stroke: #3a3a3a; stroke-width: 1; animation-duration: 9s; animation-iteration-count: infinite; animation-timing-function: linear; }
+.hero-amend .am-no { fill: none; stroke: #ef4444; stroke-width: 1.5; stroke-dasharray: 2 3; }
+.hero-amend .am-d { fill: #1c1c1c; stroke: #3a3a3a; stroke-width: 1; animation-duration: 9s; animation-iteration-count: infinite; animation-timing-function: linear; }
+.hero-amend .am-cap { fill: #fff; font: 700 16px Inter, system-ui, sans-serif; }
+.hero-amend .am-sub { fill: var(--muted); font: 13px Inter, system-ui, sans-serif; }
+.hero-amend .am-mid { text-anchor: middle; }
+.hero-amend .am-track { fill: #2a2a2a; animation: am-track 9s linear infinite; }
+.hero-amend .am-knob { fill: #fff; animation: am-knob 9s ease-in-out infinite; }
+.hero-amend .am-on { fill: #22c55e; opacity: 0; animation: am-onlbl 9s linear infinite; }
+.hero-amend .am-off { fill: var(--muted); animation: am-offlbl 9s linear infinite; }
+.hero-amend .am-y0 { animation-name: amy0; }
+@keyframes amy0 { 0%, 2.2% { fill: #2a2a2a; stroke: #3a3a3a; } 2.8%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y1 { animation-name: amy1; }
+@keyframes amy1 { 0%, 3.1% { fill: #2a2a2a; stroke: #3a3a3a; } 3.7%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y2 { animation-name: amy2; }
+@keyframes amy2 { 0%, 4.0% { fill: #2a2a2a; stroke: #3a3a3a; } 4.6%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y3 { animation-name: amy3; }
+@keyframes amy3 { 0%, 4.9% { fill: #2a2a2a; stroke: #3a3a3a; } 5.5%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y4 { animation-name: amy4; }
+@keyframes amy4 { 0%, 5.8% { fill: #2a2a2a; stroke: #3a3a3a; } 6.4%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y5 { animation-name: amy5; }
+@keyframes amy5 { 0%, 6.7% { fill: #2a2a2a; stroke: #3a3a3a; } 7.3%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y6 { animation-name: amy6; }
+@keyframes amy6 { 0%, 7.6% { fill: #2a2a2a; stroke: #3a3a3a; } 8.2%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y7 { animation-name: amy7; }
+@keyframes amy7 { 0%, 8.4% { fill: #2a2a2a; stroke: #3a3a3a; } 9.0%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y8 { animation-name: amy8; }
+@keyframes amy8 { 0%, 9.3% { fill: #2a2a2a; stroke: #3a3a3a; } 9.9%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y9 { animation-name: amy9; }
+@keyframes amy9 { 0%, 10.2% { fill: #2a2a2a; stroke: #3a3a3a; } 10.8%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y10 { animation-name: amy10; }
+@keyframes amy10 { 0%, 11.1% { fill: #2a2a2a; stroke: #3a3a3a; } 11.7%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y11 { animation-name: amy11; }
+@keyframes amy11 { 0%, 12.0% { fill: #2a2a2a; stroke: #3a3a3a; } 12.6%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y12 { animation-name: amy12; }
+@keyframes amy12 { 0%, 12.9% { fill: #2a2a2a; stroke: #3a3a3a; } 13.5%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y13 { animation-name: amy13; }
+@keyframes amy13 { 0%, 13.8% { fill: #2a2a2a; stroke: #3a3a3a; } 14.4%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y14 { animation-name: amy14; }
+@keyframes amy14 { 0%, 14.7% { fill: #2a2a2a; stroke: #3a3a3a; } 15.3%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y15 { animation-name: amy15; }
+@keyframes amy15 { 0%, 15.6% { fill: #2a2a2a; stroke: #3a3a3a; } 16.2%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y16 { animation-name: amy16; }
+@keyframes amy16 { 0%, 16.4% { fill: #2a2a2a; stroke: #3a3a3a; } 17.0%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y17 { animation-name: amy17; }
+@keyframes amy17 { 0%, 17.3% { fill: #2a2a2a; stroke: #3a3a3a; } 17.9%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y18 { animation-name: amy18; }
+@keyframes amy18 { 0%, 18.2% { fill: #2a2a2a; stroke: #3a3a3a; } 18.8%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y19 { animation-name: amy19; }
+@keyframes amy19 { 0%, 19.1% { fill: #2a2a2a; stroke: #3a3a3a; } 19.7%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y20 { animation-name: amy20; }
+@keyframes amy20 { 0%, 20.0% { fill: #2a2a2a; stroke: #3a3a3a; } 20.6%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y21 { animation-name: amy21; }
+@keyframes amy21 { 0%, 20.9% { fill: #2a2a2a; stroke: #3a3a3a; } 21.5%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y22 { animation-name: amy22; }
+@keyframes amy22 { 0%, 21.8% { fill: #2a2a2a; stroke: #3a3a3a; } 22.4%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y23 { animation-name: amy23; }
+@keyframes amy23 { 0%, 22.7% { fill: #2a2a2a; stroke: #3a3a3a; } 23.3%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y24 { animation-name: amy24; }
+@keyframes amy24 { 0%, 23.6% { fill: #2a2a2a; stroke: #3a3a3a; } 24.2%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y25 { animation-name: amy25; }
+@keyframes amy25 { 0%, 24.4% { fill: #2a2a2a; stroke: #3a3a3a; } 25.0%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y26 { animation-name: amy26; }
+@keyframes amy26 { 0%, 25.3% { fill: #2a2a2a; stroke: #3a3a3a; } 25.9%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y27 { animation-name: amy27; }
+@keyframes amy27 { 0%, 26.2% { fill: #2a2a2a; stroke: #3a3a3a; } 26.8%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-y28 { animation-name: amy28; }
+@keyframes amy28 { 0%, 27.1% { fill: #2a2a2a; stroke: #3a3a3a; } 27.7%, 92% { fill: #22c55e; stroke: #22c55e; } 96%, 100% { fill: #2a2a2a; stroke: #3a3a3a; } }
+.hero-amend .am-d0 { animation-name: amd0; }
+@keyframes amd0 { 0%, 33.3% { fill: #1c1c1c; stroke: #3a3a3a; } 33.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d1 { animation-name: amd1; }
+@keyframes amd1 { 0%, 35.3% { fill: #1c1c1c; stroke: #3a3a3a; } 35.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d2 { animation-name: amd2; }
+@keyframes amd2 { 0%, 37.3% { fill: #1c1c1c; stroke: #3a3a3a; } 37.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d3 { animation-name: amd3; }
+@keyframes amd3 { 0%, 39.3% { fill: #1c1c1c; stroke: #3a3a3a; } 39.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d4 { animation-name: amd4; }
+@keyframes amd4 { 0%, 41.3% { fill: #1c1c1c; stroke: #3a3a3a; } 41.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d5 { animation-name: amd5; }
+@keyframes amd5 { 0%, 43.3% { fill: #1c1c1c; stroke: #3a3a3a; } 43.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d6 { animation-name: amd6; }
+@keyframes amd6 { 0%, 45.3% { fill: #1c1c1c; stroke: #3a3a3a; } 45.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d7 { animation-name: amd7; }
+@keyframes amd7 { 0%, 47.3% { fill: #1c1c1c; stroke: #3a3a3a; } 47.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d8 { animation-name: amd8; }
+@keyframes amd8 { 0%, 49.3% { fill: #1c1c1c; stroke: #3a3a3a; } 49.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d9 { animation-name: amd9; }
+@keyframes amd9 { 0%, 51.3% { fill: #1c1c1c; stroke: #3a3a3a; } 51.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d10 { animation-name: amd10; }
+@keyframes amd10 { 0%, 53.3% { fill: #1c1c1c; stroke: #3a3a3a; } 53.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d11 { animation-name: amd11; }
+@keyframes amd11 { 0%, 55.3% { fill: #1c1c1c; stroke: #3a3a3a; } 55.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d12 { animation-name: amd12; }
+@keyframes amd12 { 0%, 57.3% { fill: #1c1c1c; stroke: #3a3a3a; } 57.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+.hero-amend .am-d13 { animation-name: amd13; }
+@keyframes amd13 { 0%, 59.3% { fill: #1c1c1c; stroke: #3a3a3a; } 59.9%, 92% { fill: #00b8ff; stroke: #00b8ff; } 96%, 100% { fill: #1c1c1c; stroke: #3a3a3a; } }
+@keyframes am-knob { 0%, 66.7% { transform: translateX(0); } 69.7%, 92% { transform: translateX(36px); } 96%, 100% { transform: translateX(0); } }
+@keyframes am-track { 0%, 66.7% { fill: #2a2a2a; } 69.7%, 92% { fill: #22c55e; } 96%, 100% { fill: #2a2a2a; } }
+@keyframes am-onlbl { 0%, 68.7% { opacity: 0; } 70.7%, 92% { opacity: 1; } 96%, 100% { opacity: 0; } }
+@keyframes am-offlbl { 0%, 66.7% { opacity: 1; } 68.7%, 94% { opacity: 0; } 98%, 100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .hero-amend .am-y, .hero-amend .am-d, .hero-amend .am-track, .hero-amend .am-knob, .hero-amend .am-on, .hero-amend .am-off { animation: none; } .hero-amend .am-y { fill: #22c55e; stroke: #22c55e; } .hero-amend .am-d { fill: #00b8ff; stroke: #00b8ff; } .hero-amend .am-track { fill: #22c55e; } .hero-amend .am-knob { transform: translateX(36px); } .hero-amend .am-on { opacity: 1; } .hero-amend .am-off { opacity: 0; } }
+
+/* ---- amendment path --------------------------------------------------------------- */
+.ap-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+@media (min-width: 640px) { .ap-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ap-list li { border: 1px solid var(--border); border-radius: 10px; background: var(--ink); padding: 14px; display: grid; gap: 6px; align-content: start; font-size: 0.9rem; position: relative; }
+.ap-list b { color: #fff; font-size: 1rem; }
+.ap-list span:last-child { color: var(--muted); }
+.ap-list .ap-on { border-color: #22c55e; }
+.ap-ic { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: rgba(0, 184, 255, 0.12); }
+.ap-on .ap-ic { background: rgba(34, 197, 94, 0.15); }
+.ap-ic svg { width: 22px; height: 22px; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ap-on .ap-ic svg { stroke: #22c55e; }
+
+/* ---- try it: vote a feature in ------------------------------------------------------ */
+.av-dots { display: grid; grid-template-columns: repeat(7, 18px); gap: 8px; justify-content: center; margin: 14px 0 10px; }
+.av-dots span { width: 18px; height: 18px; border-radius: 50%; background: #2a2a2a; border: 1px solid #3a3a3a; transition: background 0.2s; }
+.av-dots span.yes { background: #22c55e; border-color: #22c55e; }
+.av-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.av-count { margin: 0; font-weight: 700; color: #fbbf24; min-width: 10em; text-align: center; }
+.av-count.ok { color: #22c55e; }
+.amend-vote .av-minus, .amend-vote .av-plus { width: 40px; height: 40px; padding: 0; font-size: 1.3rem; line-height: 1; }
+.amend-vote .replay:disabled { opacity: 0.35; cursor: default; }
+.av-days { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; margin: 14px 0 0; }
+.av-days span { height: 14px; border-radius: 3px; background: #1c1c1c; border: 1px solid #3a3a3a; }
+.av-days span.done { background: var(--accent); border-color: var(--accent); }
+.av-msg { margin: 12px 0 0; font-weight: 600; color: #fff; min-height: 3em; }
+.av-msg.ok { color: #22c55e; }
+.av-msg.bad { color: #ef4444; animation: shake 0.4s ease-in-out; }
+.amend-vote .replay { margin-top: 0; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.amend-vote .replay:hover:not(:disabled) { background: var(--accent); color: var(--ink); }
+.amend-vote .tr-next { background: var(--accent); color: var(--ink); font-weight: 600; }
+.amend-vote .tr-reset { border-color: var(--border); color: var(--muted); }
+.amend-vote .replay[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .av-msg.bad { animation: none; } .av-dots span { transition: none; } }
+
+/* ---- amendment blocked ------------------------------------------------------------- */
+.ab-grid { display: grid; gap: 8px; }
+@media (min-width: 560px) { .ab-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.ab-srv { border: 1px solid var(--border); border-radius: 10px; background: var(--ink); padding: 14px; display: grid; gap: 4px; font-size: 0.9rem; color: var(--muted); }
+.ab-srv p { margin: 0; }
+.ab-name { color: #fff; font-weight: 600; }
+.ab-ok { border-color: rgba(34, 197, 94, 0.6); }
+.ab-stop { border-color: #ef4444; animation: ab-pulse 2.4s ease-in-out infinite; }
+.ab-ic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; background: rgba(34, 197, 94, 0.15); }
+.ab-stop .ab-ic { background: rgba(239, 68, 68, 0.15); }
+.ab-ic svg { width: 20px; height: 20px; fill: none; stroke: #22c55e; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.ab-stop .ab-ic svg { stroke: #ef4444; fill: rgba(239, 68, 68, 0.4); }
+@keyframes ab-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25); } }
+@media (prefers-reduced-motion: reduce) { .ab-stop { animation: none; } }
+
+/* ---- live: being voted on ----------------------------------------------------------- */
+.lam-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 12px; }
+.lam-list p { margin: 0; }
+.lam-name { color: #fff; font-weight: 600; font-size: 0.95rem; }
+.lam-bar { position: relative; height: 10px; border-radius: 5px; background: #222; margin: 6px 0 4px; }
+.lam-bar span { display: block; height: 100%; border-radius: 5px; background: var(--accent); }
+.lam-bar span.met { background: #22c55e; }
+.lam-bar i { position: absolute; top: -4px; bottom: -4px; width: 2px; background: #fff; }
+.lam-nums { color: var(--muted); font-size: 0.85rem; }
+.lam-total { color: var(--muted); font-size: 0.9rem; margin: 12px 0 0; }
