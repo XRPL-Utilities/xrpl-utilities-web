@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <title>How the XRP Ledger Adds New Features: Amendments</title>
+  <meta name="description" content="No company can switch on a new XRP Ledger feature by itself. Here&#39;s how validators vote new features in, explained for anyone new to crypto." />
+  <meta property="og:title" content="How the XRP Ledger Adds New Features: Amendments" />
+  <meta property="og:description" content="No company can switch on a new XRP Ledger feature by itself. Here&#39;s how validators vote new features in, explained for anyone new to crypto." />
+  <meta property="og:image" content="https://xrpl-utilities.com/assets/img/learn/xrp-ledger-amendments.png" />
+  <meta property="og:url" content="https://xrpl-utilities.com/learn/xrp-ledger-amendments/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="XRPL-Utilities" />
+  <meta property="article:published_time" content="2026-11-24" />
+  <meta property="article:modified_time" content="2026-11-24" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@XRPL_Utilities" />
+  <meta name="twitter:title" content="How the XRP Ledger Adds New Features: Amendments" />
+  <meta name="twitter:description" content="No company can switch on a new XRP Ledger feature by itself. Here&#39;s how validators vote new features in, explained for anyone new to crypto." />
+  <meta name="twitter:image" content="https://xrpl-utilities.com/assets/img/learn/xrp-ledger-amendments.png" />
+  <link rel="canonical" href="https://xrpl-utilities.com/learn/xrp-ledger-amendments/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/learn.css?v=18" />
+  <script src="/assets/pages/learn.js?v=17" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://xrpl-utilities.com/#org",
+      "name": "XRPL-Utilities",
+      "url": "https://xrpl-utilities.com/"
+    },
+    {
+      "@type": "Article",
+      "@id": "https://xrpl-utilities.com/learn/xrp-ledger-amendments/#article",
+      "headline": "How new features get voted in",
+      "description": "No company can switch on a new XRP Ledger feature by itself. Here's how validators vote new features in, explained for anyone new to crypto.",
+      "url": "https://xrpl-utilities.com/learn/xrp-ledger-amendments/",
+      "mainEntityOfPage": "https://xrpl-utilities.com/learn/xrp-ledger-amendments/",
+      "datePublished": "2026-11-24",
+      "dateModified": "2026-11-24",
+      "inLanguage": "en",
+      "author": {
+        "@id": "https://xrpl-utilities.com/#org"
+      },
+      "publisher": {
+        "@id": "https://xrpl-utilities.com/#org"
+      },
+      "image": "https://xrpl-utilities.com/assets/img/learn/xrp-ledger-amendments.png",
+      "isPartOf": {
+        "@type": "Course",
+        "name": "Learn the XRP Ledger",
+        "url": "https://xrpl-utilities.com/learn/"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Learn",
+          "item": "https://xrpl-utilities.com/learn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "How new features get voted in",
+          "item": "https://xrpl-utilities.com/learn/xrp-ledger-amendments/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://xrpl-utilities.com/learn/xrp-ledger-amendments/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Who gets a vote?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Only validators, and only the votes from trusted validators count. Those are the ones on the recommended lists most servers use, the same lists from Lesson 2."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does XLS mean?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It stands for XRP Ledger Standard. It's the public write-up of a new feature, with a number, like XLS-33 for MPTs. Anyone can read one and comment on it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who writes new features?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Anyone can. The server software is open source, and the code lives in public. A feature needs at least two reviewers to approve it before it's added."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can one company switch on a feature by itself?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups, and six of them were universities. No group ran more than one."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to do anything when a feature switches on?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Your wallet or exchange runs the servers and handles the upgrades. The new feature just shows up as something you can use."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does it take?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "At least two weeks once a feature reaches 80%. Some sit in the vote for months, and some never pass."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can a feature be voted out later?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not directly. Switching one off would need a new amendment, voted in the same way as any other change."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How many features have passed so far?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "98 had passed by November 2026. The first ones were switched on in 2016."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip">Skip to content</a>
+  <header class="site">
+    <div class="wide bar">
+      <a href="/learn/" class="brand">
+        <img src="/assets/img/logo-mark-128.webp" width="32" height="32" loading="eager" decoding="async" alt="" />
+        <span>XRPL-Utilities <em>Learn</em></span>
+      </a>
+      <nav aria-label="Lessons"><a href="/learn/">All lessons</a></nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="hero">
+      <div class="wide hero-grid">
+        <div class="hero-text">
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 5</nav>
+          <p class="kicker">Lesson 5 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
+          <h1>How new features get voted in</h1>
+          <p class="meta">Updated <time datetime="2026-11-24">November 24, 2026</time> <span aria-hidden="true">&middot;</span> 7 minute read</p>
+          <div class="short"><strong>The short answer:</strong> New XRP Ledger features arrive switched off. Validators then vote on each one. If 80% of the trusted validators say yes and keep saying yes for two weeks, it switches on for everyone at the same moment. That built-in vote is called an amendment.</div>
+        </div>
+        <div class="hero-art">
+          <figure class="hero-chain hero-amend">
+            <svg viewBox="0 0 560 300" role="img" aria-label="Thirty-five validators vote. Twenty-nine say yes, which is over 80 percent. That support holds for fourteen days, and then the new feature switches on for everyone.">
+              <rect x="10" y="34" width="210" height="216" rx="14" class="card"/><text x="26" y="60" class="hd">1. VALIDATORS VOTE</text>
+              <circle cx="34" cy="84" r="8" class="am-y am-y0"/><circle cx="60" cy="84" r="8" class="am-y am-y1"/><circle cx="86" cy="84" r="8" class="am-y am-y2"/><circle cx="112" cy="84" r="8" class="am-y am-y3"/><circle cx="138" cy="84" r="8" class="am-no"/><circle cx="164" cy="84" r="8" class="am-y am-y4"/><circle cx="190" cy="84" r="8" class="am-y am-y5"/><circle cx="34" cy="114" r="8" class="am-y am-y6"/><circle cx="60" cy="114" r="8" class="am-y am-y7"/><circle cx="86" cy="114" r="8" class="am-y am-y8"/><circle cx="112" cy="114" r="8" class="am-y am-y9"/><circle cx="138" cy="114" r="8" class="am-no"/><circle cx="164" cy="114" r="8" class="am-y am-y10"/><circle cx="190" cy="114" r="8" class="am-y am-y11"/><circle cx="34" cy="144" r="8" class="am-y am-y12"/><circle cx="60" cy="144" r="8" class="am-y am-y13"/><circle cx="86" cy="144" r="8" class="am-y am-y14"/><circle cx="112" cy="144" r="8" class="am-no"/><circle cx="138" cy="144" r="8" class="am-y am-y15"/><circle cx="164" cy="144" r="8" class="am-y am-y16"/><circle cx="190" cy="144" r="8" class="am-y am-y17"/><circle cx="34" cy="174" r="8" class="am-y am-y18"/><circle cx="60" cy="174" r="8" class="am-y am-y19"/><circle cx="86" cy="174" r="8" class="am-no"/><circle cx="112" cy="174" r="8" class="am-y am-y20"/><circle cx="138" cy="174" r="8" class="am-y am-y21"/><circle cx="164" cy="174" r="8" class="am-y am-y22"/><circle cx="190" cy="174" r="8" class="am-y am-y23"/><circle cx="34" cy="204" r="8" class="am-y am-y24"/><circle cx="60" cy="204" r="8" class="am-y am-y25"/><circle cx="86" cy="204" r="8" class="am-no"/><circle cx="112" cy="204" r="8" class="am-y am-y26"/><circle cx="138" cy="204" r="8" class="am-y am-y27"/><circle cx="164" cy="204" r="8" class="am-no"/><circle cx="190" cy="204" r="8" class="am-y am-y28"/>
+              <text x="26" y="236" class="am-cap">29 of 35 say yes</text>
+              <rect x="226" y="34" width="168" height="216" rx="14" class="card"/><text x="242" y="60" class="hd">2. FOR TWO WEEKS</text>
+              <text x="242" y="100" class="am-sub">yes stays over 80%</text>
+              <rect x="248" y="120" width="15" height="18" rx="3" class="am-d am-d0"/><rect x="268" y="120" width="15" height="18" rx="3" class="am-d am-d1"/><rect x="288" y="120" width="15" height="18" rx="3" class="am-d am-d2"/><rect x="308" y="120" width="15" height="18" rx="3" class="am-d am-d3"/><rect x="328" y="120" width="15" height="18" rx="3" class="am-d am-d4"/><rect x="348" y="120" width="15" height="18" rx="3" class="am-d am-d5"/><rect x="368" y="120" width="15" height="18" rx="3" class="am-d am-d6"/><rect x="248" y="144" width="15" height="18" rx="3" class="am-d am-d7"/><rect x="268" y="144" width="15" height="18" rx="3" class="am-d am-d8"/><rect x="288" y="144" width="15" height="18" rx="3" class="am-d am-d9"/><rect x="308" y="144" width="15" height="18" rx="3" class="am-d am-d10"/><rect x="328" y="144" width="15" height="18" rx="3" class="am-d am-d11"/><rect x="348" y="144" width="15" height="18" rx="3" class="am-d am-d12"/><rect x="368" y="144" width="15" height="18" rx="3" class="am-d am-d13"/>
+              <text x="242" y="236" class="am-cap">14 days</text>
+              <rect x="406" y="34" width="144" height="216" rx="14" class="card"/><text x="422" y="60" class="hd">3. TURNED ON</text>
+              <rect x="441" y="124" width="74" height="38" rx="19" class="am-track"/><circle cx="460" cy="143" r="15" class="am-knob"/>
+              <text x="478" y="196" class="am-cap am-mid am-off">OFF</text><text x="478" y="196" class="am-cap am-mid am-on">ON</text>
+              <text x="478" y="236" class="am-sub am-mid">for everyone</text>
+            </svg>
+            <figcaption>A new feature only switches on after the validators vote yes and keep saying yes for two weeks.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <div class="wide body-grid">
+      <article class="lesson">
+        <h2 id="the-ledger-runs-on-rules-who-gets-to-change-them">The ledger runs on rules. Who gets to change them?</h2>
+        <p>Every copy of the XRP Ledger follows the same rules. That&#39;s how they all end up with the same pages, as you saw in <a href="/learn/xrp-ledger-consensus/" target="_blank" rel="noopener noreferrer">Lesson 2</a>.</p>
+        <p>But the rules do change. New kinds of payments get added, and bugs get fixed. If one copy switched to new rules before the others, the copies would stop matching.</p>
+        <p>So the XRP Ledger has a built-in vote for every change to the rules. Each change is called an amendment.</p>
+        <h2 id="how-a-new-feature-gets-in">How a new feature gets in</h2>
+        <p>Anyone can propose a new feature. It starts as a public write-up called an XRP Ledger Standard, or XLS for short. Each one gets a number, like XLS-33 for the MPTs from <a href="/learn/tokens-on-the-xrp-ledger/" target="_blank" rel="noopener noreferrer">Lesson 4</a>.</p>
+        <p>Here&#39;s the whole trip, from an idea to a feature you can use.</p>
+        <figure class="widget amend-path">
+        <ol class="ap-list">
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/></svg></span><b>1. The idea</b><span>Someone writes the idea down in public. It gets an XLS number, and anyone can comment.</span></li>
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg></span><b>2. The code</b><span>Programmers build it. At least two reviewers check and approve the code before it's added.</span></li>
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><b>3. Practice runs</b><span>It runs on practice copies of the ledger, called Devnet and Testnet, with play money. Bugs show up where nothing real is at stake.</span></li>
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16"/></svg></span><b>4. The release</b><span>It ships in a new version of the server software. Servers upgrade, but the feature stays off.</span></li>
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></span><b>5. The vote</b><span>Each validator says yes or no. It needs 80% yes for two weeks.</span></li>
+          <li class="ap-on"><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="4"/><circle cx="17" cy="12" r="3"/></svg></span><b>6. Switched on</b><span>Every server starts using it on the same page. This is the first time it touches real money.</span></li>
+        </ol>
+      </figure>
+        <p>Steps 1 to 4 are about the code. Steps 5 and 6 are about the rules. A server can run the new code for months while the feature stays off. Only the vote turns it on.</p>
+        <h2 id="who-decides-what-goes-in-the-code">Who decides what goes in the code?</h2>
+        <p>The server software is open source. Anyone can read the code or suggest a change. A small group called maintainers decides what gets added and when a new version ships.</p>
+        <p>As of November 2026, there were seven maintainers. Most of them work at companies that build on the XRP Ledger.</p>
+        <figure class="widget amend-powers">
+        <div class="apw-grid">
+          <div class="apw-card">
+            <p class="apw-label">Ships the code</p>
+            <p class="apw-who">7 maintainers</p>
+            <p class="apw-dots" aria-hidden="true"><span class="m"></span><span class="m"></span><span class="m"></span><span class="m"></span><span class="m"></span><span class="m"></span><span class="m"></span></p>
+            <p class="apw-note">They decide what code goes in and when a new version comes out. They can't turn a feature on.</p>
+          </div>
+          <div class="apw-card apw-on">
+            <p class="apw-label">Switches it on</p>
+            <p class="apw-who">35 validators</p>
+            <p class="apw-dots apw-many" aria-hidden="true"><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span><span class="v"></span></p>
+            <p class="apw-note">Run by 35 different groups. A feature needs 28 of them to say yes for two weeks.</p>
+          </div>
+        </div>
+        <figcaption>Counts as of November 23, 2026.</figcaption>
+      </figure>
+        <p>That&#39;s why the vote matters. The maintainers can ship new code, but they can&#39;t switch a feature on. Only the validators can, and no single group runs more than one of the 35.</p>
+        <h2 id="try-it-get-a-feature-switched-on">Try it: get a feature switched on</h2>
+        <p>The validators from Lesson 2 are the voters. Each one says yes or no, and the votes get counted about four times an hour.</p>
+        <p>Below is a pretend run of a real vote, the one for MPTs. Step through it, then run a vote of your own.</p>
+        <figure class="widget amend-vote" data-widget="amend-vote">
+        <div class="widget-head"><strong>Try it: watch MPTs get voted in</strong></div>
+        <p class="av-feature"><span class="av-xls">XLS-33</span><b>MPTs</b> <span>The second kind of token from Lesson 4</span></p>
+        <div class="av-dots" data-role="dots" aria-hidden="true"></div>
+        <div class="av-row">
+          <button type="button" class="replay av-minus" data-role="minus" aria-label="One fewer yes vote" hidden>−</button>
+          <p class="av-count" data-role="count">20 of 35 say yes</p>
+          <button type="button" class="replay av-plus" data-role="plus" aria-label="One more yes vote" hidden>+</button>
+        </div>
+        <div class="av-days" data-role="days" aria-hidden="true"></div>
+        <p class="av-daylbl" data-role="daylbl">Two-week clock: day 0 of 14</p>
+        <p class="av-msg" data-role="msg" aria-live="polite">MPTs come out in a new server version, switched off. 20 of 35 validators say yes so far. It needs 28.</p>
+        <div class="tr-btns">
+          <button type="button" class="replay tr-next" data-role="next">Next</button>
+          <button type="button" class="replay tr-next" data-role="day" hidden>Let a day pass</button>
+          <button type="button" class="replay tr-next" data-role="try" hidden>Now run your own vote</button>
+          <button type="button" class="replay tr-reset" data-role="reset">Start over</button>
+        </div>
+        <figcaption data-role="cap">A pretend run of a real vote. Here we count once a day to keep it short.</figcaption>
+      </figure>
+        <p>The two weeks give everyone running a server time to upgrade before the change lands. Saying yes isn&#39;t a one-time thing, either. Support has to hold the whole way through.</p>
+        <p>If support slips under 80% even once, the clock doesn&#39;t pause. It&#39;s thrown out, and a fresh two weeks starts when support comes back. A feature can win and lose 80% many times before it switches on.</p>
+        <h2 id="what-about-servers-that-don-t-upgrade">What about servers that don&#39;t upgrade?</h2>
+        <figure class="widget amend-blocked">
+        <div class="ab-grid">
+          <div class="ab-srv ab-ok"><span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></span><p class="ab-name">Upgraded server</p><p>Knows the new rules. Keeps reading new pages.</p></div>
+          <div class="ab-srv ab-ok"><span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></span><p class="ab-name">Upgraded server</p><p>Knows the new rules. Keeps reading new pages.</p></div>
+          <div class="ab-srv ab-stop"><span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg></span><p class="ab-name">Old server</p><p>Missing the new rules. Stops and waits for an upgrade.</p></div>
+        </div>
+        <figcaption>An old server stops rather than guess. Once it's upgraded, it catches up.</figcaption>
+      </figure>
+        <p>A server that&#39;s missing the new code can&#39;t tell what the new pages mean. Rather than guess, it stops until its owner upgrades. The ledger calls that being amendment blocked.</p>
+        <h2 id="once-it-s-on-it-stays-on">Once it&#39;s on, it stays on</h2>
+        <p>A feature that passes is on for good. There&#39;s no off switch. Turning it off would take a new amendment and a new vote, passed the same way.</p>
+        <p>Bug fixes go through the same vote. You can spot them on the list, because their names usually start with &quot;fix.&quot;</p>
+        <h2 id="see-it-for-yourself">See it for yourself</h2>
+        <p>Here&#39;s what the validators are voting on right now, and how close each feature is. The tag next to each one is its XLS number, the public write-up you met above.</p>
+        <figure class="widget live lam" data-widget="live-amend">
+        <div class="widget-head">
+          <span class="dot" aria-hidden="true"></span>
+          <strong>Being voted on right now</strong>
+        </div>
+        <p class="live-status" data-role="status" aria-live="polite">Checking the latest votes...</p>
+        <div class="lam-recent" data-role="recent-wrap" hidden>
+          <p class="lam-sub">Just switched on</p>
+          <ul class="lam-list" data-role="recent"></ul>
+          <p class="lam-sub">Still in the vote</p>
+        </div>
+        <ul class="lam-list" data-role="list"></ul>
+        <p class="lam-total" data-role="total"></p>
+        <button type="button" class="replay" data-role="refresh">Check the latest votes</button>
+        <figcaption>The white line is how many yes votes each feature needs. The total can dip under 35 when a validator misses a count.</figcaption>
+      </figure>
+        <p>This list is live. When a feature passes, it shows under &quot;Just switched on&quot; for 30 days. New features join the vote as new server versions come out.</p>
+        <p>Lessons 6, 7 and 8 cover three of the biggest features on this list.</p>
+        <h2 id="common-questions">Common questions</h2>
+        <details class="faq" open><summary><h3>Who gets a vote?</h3><span class="plus" aria-hidden="true"></span></summary><p>Only validators, and only the votes from trusted validators count. Those are the ones on the recommended lists most servers use, the same lists from Lesson 2.</p></details>
+        <details class="faq"><summary><h3>What does XLS mean?</h3><span class="plus" aria-hidden="true"></span></summary><p>It stands for XRP Ledger Standard. It&#39;s the public write-up of a new feature, with a number, like XLS-33 for MPTs. Anyone can read one and comment on it.</p></details>
+        <details class="faq"><summary><h3>Who writes new features?</h3><span class="plus" aria-hidden="true"></span></summary><p>Anyone can. The server software is open source, and the code lives in public. A feature needs at least two reviewers to approve it before it&#39;s added.</p></details>
+        <details class="faq"><summary><h3>Can one company switch on a feature by itself?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. It needs 80% of the trusted validators. On November 23, 2026, the 35 validators on the recommended lists were run by 35 different groups, and six of them were universities. No group ran more than one.</p></details>
+        <details class="faq"><summary><h3>Do I need to do anything when a feature switches on?</h3><span class="plus" aria-hidden="true"></span></summary><p>No. Your wallet or exchange runs the servers and handles the upgrades. The new feature just shows up as something you can use.</p></details>
+        <details class="faq"><summary><h3>How long does it take?</h3><span class="plus" aria-hidden="true"></span></summary><p>At least two weeks once a feature reaches 80%. Some sit in the vote for months, and some never pass.</p></details>
+        <details class="faq"><summary><h3>Can a feature be voted out later?</h3><span class="plus" aria-hidden="true"></span></summary><p>Not directly. Switching one off would need a new amendment, voted in the same way as any other change.</p></details>
+        <details class="faq"><summary><h3>How many features have passed so far?</h3><span class="plus" aria-hidden="true"></span></summary><p>98 had passed by November 2026. The first ones were switched on in 2016.</p></details>
+        <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
+        <ul><li><strong>Amendment:</strong> a change to the XRP Ledger&#39;s rules, switched on by a vote.</li><li><strong>Validator:</strong> a server whose votes help decide each new page, and each new feature.</li><li><strong>XLS:</strong> short for XRP Ledger Standard. The numbered public write-up of a new feature.</li><li><strong>Devnet:</strong> a practice network where new features get tried out first. Its money isn&#39;t real.</li><li><strong>Testnet:</strong> a practice network that works like the real ledger, with play money. New server versions get tried there before release.</li><li><strong>Maintainers:</strong> the small group that decides what goes into the server software and when a new version ships.</li><li><strong>Trusted validators:</strong> the validators on the recommended lists most servers use. Only their votes count.</li><li><strong>Amendment blocked:</strong> what happens to a server that&#39;s missing the code for a feature that&#39;s now on. It stops until it&#39;s upgraded.</li><li><strong>Fix:</strong> an amendment that fixes a bug. Its name usually starts with &quot;fix.&quot;</li></ul>
+        <h2 id="sources">Sources</h2>
+        <ul><li><a href="https://xrpl.org/docs/concepts/networks-and-servers/amendments" target="_blank" rel="noopener noreferrer">Amendments</a> (80% for two weeks, the clock restarts, votes about four times an hour, amendment blocked servers, undoing one, bug fixes), xrpl.org</li><li><a href="https://xrpl.org/resources/contribute-code" target="_blank" rel="noopener noreferrer">Contribute Code</a> (XLS write-ups, review, Devnet, Testnet, new versions about four times a year), xrpl.org</li><li><a href="https://github.com/XRPLF/rippled/blob/develop/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing to the server software</a> (two approvals per change, the current maintainers and reviewers), GitHub</li><li><a href="https://github.com/XRPLF/XRPL-Standards" target="_blank" rel="noopener noreferrer">XRPL Standards</a> (every XLS, in public), GitHub</li><li><a href="https://xrpl.org/resources/known-amendments" target="_blank" rel="noopener noreferrer">Known Amendments</a> (the full list, with which ones are on), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/consensus-protocol" target="_blank" rel="noopener noreferrer">Consensus</a> (validators and trusted lists), xrpl.org</li><li>Validators and votes: checked by us on November 23, 2026, from public XRP Ledger data (35 trusted validators, 98 amendments on since 2016).</li></ul>
+        <nav class="pager" aria-label="More lessons"><a class="prev" href="/learn/tokens-on-the-xrp-ledger/"><span>Previous lesson</span>Tokens: dollars and more on the XRP Ledger</a><div class="next soon"><span>Next lesson, Sat, Nov 28</span>The Lending Protocol, part 1: vaults</div></nav>
+      </article>
+      <nav class="toc" aria-label="On this page">
+        <p>On this page</p>
+        <ol><li><a href="#the-ledger-runs-on-rules-who-gets-to-change-them">The ledger runs on rules. Who gets to change them?</a></li><li><a href="#how-a-new-feature-gets-in">How a new feature gets in</a></li><li><a href="#who-decides-what-goes-in-the-code">Who decides what goes in the code?</a></li><li><a href="#try-it-get-a-feature-switched-on">Try it: get a feature switched on</a></li><li><a href="#what-about-servers-that-don-t-upgrade">What about servers that don&#39;t upgrade?</a></li><li><a href="#once-it-s-on-it-stays-on">Once it&#39;s on, it stays on</a></li><li><a href="#see-it-for-yourself">See it for yourself</a></li><li><a href="#common-questions">Common questions</a></li><li><a href="#words-used-in-this-lesson">Words used in this lesson</a></li><li><a href="#sources">Sources</a></li></ol>
+      </nav>
+    </div>
+  </main>
+  <footer class="site">
+    <div class="wide">
+      <p>Written by XRPL-Utilities for XRP Ledger Education Month. #XRPEducationMonth</p>
+      <p>For learning only. This is not financial advice, and nothing here is a reason to buy anything.</p>
+      <p class="links"><a href="/learn/">All lessons</a> <a href="/contact/">Contact</a> <a href="/privacy/">Privacy</a> <a href="/terms/">Terms</a> <a href="/status/">Site status</a></p>
+    </div>
+  </footer>
+</body>
+</html>
