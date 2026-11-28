@@ -20,6 +20,16 @@ Both are new features, so they go through the vote you saw in [Lesson 5](/learn/
 
 Notice what's missing. There's no bank in the middle. The rules for who gets what are part of the ledger, and anyone can check them.
 
+## How a vault gets made
+
+Anyone with an XRP Ledger account can make a vault. That could be a bank, a fund, a lending company or one person. Whoever makes it owns it. For now, the owner is also the only one who can set up lending on it, so the owner and the loan broker are the same.
+
+Making one takes a single transaction with a handful of choices. Try it.
+
+::: vault-make
+
+Most of those choices are locked in for good once the vault exists. People who join know the rules can't be changed on them later.
+
 ## Try it: put money in a vault
 
 Below is a pretend vault that holds a dollar token, like the ones from [Lesson 4](/learn/tokens-on-the-xrp-ledger/). Step through what happens to your share of it.
@@ -28,27 +38,17 @@ Below is a pretend vault that holds a dollar token, like the ones from [Lesson 4
 
 Your shares never change. What changes is how much each share is worth. That's the whole idea of a vault.
 
-## Shares are your receipt
+## What keeps a vault fair
 
-When you put money in, the vault hands you shares. Shares are a kind of token, the MPTs from Lesson 4, made by the vault itself.
+::: vault-facts
 
-Each share is worth the money in the vault divided by the number of shares. If the vault holds 104,000 tokens and there are 100,000 shares, each share is worth 1.04 tokens.
-
-Someone who joins later pays what a share is worth on that day. So they don't get a cut of interest that was earned before they showed up.
-
-The vault also guards against a sneaky move. When a loan starts to look shaky, the broker can mark it down right away. Anyone who cashes out after that takes their part of the loss with them, so nobody can dodge it by leaving early.
-
-## The money sits in an account nobody controls
-
-The vault's money doesn't sit in the broker's wallet. It sits in a special account the ledger makes for the vault. Nobody has a key to it, and it can't send a payment on its own.
-
-Money only leaves in a few ways. A shareholder cashes out, the broker makes a loan, or the token's issuer takes its token back. The broker can't just take it. But the broker does pick the borrowers, so a careless broker can still lose the pool's money.
+The broker can't just take the money. But the broker picks the borrowers, so a careless broker can still lose it.
 
 ## Open vaults and fixed-schedule vaults
 
 An open vault lets people put money in and take it out whenever they like.
 
-An update to lending, also in the vote right now, adds vaults that run on a fixed schedule. It also says loans can only come from these fixed-schedule vaults. Click through the three stages.
+The lending vote includes an update that adds vaults with a fixed schedule. Once it's on, loans can only come from these fixed-schedule vaults. Click through the three stages.
 
 ::: vault-stages
 
@@ -59,6 +59,8 @@ The dates are set when the vault is made and can't be changed later. Everyone kn
 Anyone can join a public vault.
 
 A private vault only takes money from people with a pass from a checker the vault trusts. Think of it like a members-only club that checks your ID at the door. Banks and funds that must know who they deal with would use these.
+
+The owner picks private when making the vault, and can't switch it later. The vault then points to a guest list on the ledger. The list doesn't name people. It names which checkers' passes count. Anyone can set up a list like that, and its owner can update it.
 
 If your pass runs out, you can't add more money. But you can always cash out the shares you already have. The broker can't lock you in.
 
@@ -107,10 +109,13 @@ Not yet on the live ledger. Vaults switch on only after the vote passes. The box
 - **First-loss capital:** the broker's own money, set aside to take the first hit when a loan goes bad.
 - **Collateral:** something a borrower hands over to back a loan, like a house for a mortgage. These loans don't use it.
 - **Private vault:** a vault that only takes money from people with an approved pass.
+- **Vault owner:** the account that made the vault. Right now it's also the one that runs lending on it.
 
 ## Sources
 
 - [Single Asset Vaults](https://xrpl.org/docs/concepts/tokens/single-asset-vaults) (shares, public and private, fixed-schedule vaults, the vault account, freezes), xrpl.org
+- [VaultCreate](https://xrpl.org/docs/references/protocol/transactions/types/vaultcreate) (who makes a vault, the choices, which ones are locked), xrpl.org
+- [Permissioned Domains](https://xrpl.org/docs/concepts/tokens/decentralized-exchange/permissioned-domains) (the guest list of accepted passes), xrpl.org
 - [Lending Protocol](https://xrpl.org/docs/concepts/tokens/lending-protocol) (brokers, depositors, borrowers, no collateral, first-loss capital), xrpl.org
 - [Amendments](https://xrpl.org/docs/concepts/networks-and-servers/amendments) (80% for two weeks), xrpl.org
 - Vote counts: read by us from the XRP Ledger on November 27, 2026. Vaults passed 80% on November 25 and lending on November 27.

@@ -671,3 +671,19 @@ a.page-num:hover { color: var(--accent); }
 .vs-rules li { display: flex; justify-content: space-between; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; background: var(--ink); }
 .vs-rules b.yes { color: #22c55e; } .vs-rules b.no { color: #ef4444; }
 .lam-when { color: #22c55e; }
+@media (min-width: 640px) { .vf-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.vm-q { margin: 12px 0 0; }
+.vm-q p { margin: 0 0 6px; color: #fff; font-weight: 600; font-size: 0.95rem; }
+.vm-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.vault-make button { margin-top: 0; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.vault-make .vm-opts button[aria-pressed="true"] { background: var(--accent); color: var(--ink); font-weight: 600; }
+.vault-make .vm-opts button:disabled { cursor: default; opacity: 0.55; }
+.vault-make .vm-opts button[aria-pressed="true"]:disabled { opacity: 1; }
+.vault-make .tr-next { background: #22c55e; border-color: #22c55e; color: var(--ink); font-weight: 600; }
+.vault-make .tr-reset { border-color: var(--border); color: var(--muted); }
+.vault-make .tr-btns { margin-top: 14px; }
+.vault-make [hidden] { display: none; }
+.vm-out { margin-top: 12px; padding: 14px; border: 1px solid #22c55e; border-radius: 10px; background: var(--ink); }
+.vm-title { margin: 0 0 8px; color: #22c55e; font-weight: 700; }
+.vm-steps { margin: 0; padding-left: 20px; color: var(--muted); display: grid; gap: 4px; }
+.vm-lock { margin: 10px 0 0; color: #fbbf24; font-size: 0.9rem; }

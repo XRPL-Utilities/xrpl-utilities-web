@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/learn.css?v=19" />
+  <link rel="stylesheet" href="/assets/learn.css?v=20" />
   <script src="/assets/pages/learn.js?v=17" defer></script>
   <script type="application/ld+json">
 {
@@ -152,7 +152,7 @@
           <nav class="crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> <span aria-hidden="true">/</span> Lesson 6</nav>
           <p class="kicker">Lesson 6 of 8 <span aria-hidden="true">&middot;</span> XRP Ledger Education Month</p>
           <h1>Vaults: the pool every loan comes from</h1>
-          <p class="meta">Updated <time datetime="2026-11-28">November 28, 2026</time> <span aria-hidden="true">&middot;</span> 7 minute read</p>
+          <p class="meta">Updated <time datetime="2026-11-28">November 28, 2026</time> <span aria-hidden="true">&middot;</span> 8 minute read</p>
           <div class="short"><strong>The short answer:</strong> A vault is a shared pool on the XRP Ledger. Many people put the same kind of money in and get shares back. Loans are paid out of the pool. When borrowers pay interest, every share is worth more. When a loan goes bad, every share is worth less.</div>
         </div>
         <div class="hero-art">
@@ -203,6 +203,32 @@
         </ol>
       </figure>
         <p>Notice what&#39;s missing. There&#39;s no bank in the middle. The rules for who gets what are part of the ledger, and anyone can check them.</p>
+        <h2 id="how-a-vault-gets-made">How a vault gets made</h2>
+        <p>Anyone with an XRP Ledger account can make a vault. That could be a bank, a fund, a lending company or one person. Whoever makes it owns it. For now, the owner is also the only one who can set up lending on it, so the owner and the loan broker are the same.</p>
+        <p>Making one takes a single transaction with a handful of choices. Try it.</p>
+        <figure class="widget vault-make" data-widget="vault-make">
+        <div class="widget-head"><strong>Try it: make a vault</strong></div>
+        <div class="vm-q" data-q="asset"><p>What money goes in?</p><div class="vm-opts"><button type="button" data-v="0" aria-pressed="true">XRP</button><button type="button" data-v="1" aria-pressed="false">A dollar token</button></div></div>
+        <div class="vm-q" data-q="who"><p>Who can join?</p><div class="vm-opts"><button type="button" data-v="0" aria-pressed="true">Anyone</button><button type="button" data-v="1" aria-pressed="false">Only people with an approved pass</button></div></div>
+        <div class="vm-q" data-q="kind"><p>How does money come and go?</p><div class="vm-opts"><button type="button" data-v="0" aria-pressed="true">In and out any time</button><button type="button" data-v="1" aria-pressed="false">On a fixed schedule</button></div></div>
+        <div class="vm-q" data-q="pass"><p>Can people pass their shares to someone else?</p><div class="vm-opts"><button type="button" data-v="0" aria-pressed="true">Yes</button><button type="button" data-v="1" aria-pressed="false">No</button></div></div>
+        <div class="tr-btns">
+          <button type="button" class="replay tr-next" data-role="make">Make the vault</button>
+          <button type="button" class="replay tr-reset" data-role="reset" hidden>Start over</button>
+        </div>
+        <div class="vm-out" data-role="out" hidden>
+          <p class="vm-title" data-role="title"></p>
+          <ol class="vm-steps">
+            <li>The ledger opens a new account to hold the vault's money. Nobody has a key to it.</li>
+            <li>It makes a share token for the vault.</li>
+            <li>Your account becomes the vault owner.</li>
+            <li>A little XRP is destroyed as the fee, to keep spam off the ledger.</li>
+          </ol>
+          <p class="vm-lock" data-role="lock"></p>
+        </div>
+        <figcaption>A pretend vault. The real choices are made in one VaultCreate transaction.</figcaption>
+      </figure>
+        <p>Most of those choices are locked in for good once the vault exists. People who join know the rules can&#39;t be changed on them later.</p>
         <h2 id="try-it-put-money-in-a-vault">Try it: put money in a vault</h2>
         <p>Below is a pretend vault that holds a dollar token, like the ones from <a href="/learn/tokens-on-the-xrp-ledger/" target="_blank" rel="noopener noreferrer">Lesson 4</a>. Step through what happens to your share of it.</p>
         <figure class="widget vault-life" data-widget="vault-life">
@@ -236,17 +262,19 @@
         <figcaption data-role="cap">A pretend vault holding a dollar token. Fees and timing are left out to keep it simple.</figcaption>
       </figure>
         <p>Your shares never change. What changes is how much each share is worth. That&#39;s the whole idea of a vault.</p>
-        <h2 id="shares-are-your-receipt">Shares are your receipt</h2>
-        <p>When you put money in, the vault hands you shares. Shares are a kind of token, the MPTs from Lesson 4, made by the vault itself.</p>
-        <p>Each share is worth the money in the vault divided by the number of shares. If the vault holds 104,000 tokens and there are 100,000 shares, each share is worth 1.04 tokens.</p>
-        <p>Someone who joins later pays what a share is worth on that day. So they don&#39;t get a cut of interest that was earned before they showed up.</p>
-        <p>The vault also guards against a sneaky move. When a loan starts to look shaky, the broker can mark it down right away. Anyone who cashes out after that takes their part of the loss with them, so nobody can dodge it by leaving early.</p>
-        <h2 id="the-money-sits-in-an-account-nobody-controls">The money sits in an account nobody controls</h2>
-        <p>The vault&#39;s money doesn&#39;t sit in the broker&#39;s wallet. It sits in a special account the ledger makes for the vault. Nobody has a key to it, and it can&#39;t send a payment on its own.</p>
-        <p>Money only leaves in a few ways. A shareholder cashes out, the broker makes a loan, or the token&#39;s issuer takes its token back. The broker can&#39;t just take it. But the broker does pick the borrowers, so a careless broker can still lose the pool&#39;s money.</p>
+        <h2 id="what-keeps-a-vault-fair">What keeps a vault fair</h2>
+        <figure class="widget vault-facts">
+        <ol class="ap-list vf-list">
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span><b>Shares are your receipt</b><span>Put money in and the vault gives you shares, a token it makes itself. Each share is worth the money in the vault divided by all the shares.</span></li>
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><b>Late joiners pay today's value</b><span>Someone who joins later pays what a share is worth that day. They don't get interest earned before they showed up.</span></li>
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 4.4-3.4 8.2-8 9-4.6-.8-8-4.6-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span><b>No dodging a loss</b><span>When a loan looks shaky, the broker can mark it down right away. Anyone who cashes out after that takes their part of the loss.</span></li>
+          <li><span class="ap-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><b>Nobody holds the key</b><span>The money sits in an account the ledger makes for the vault. Nobody can sign for it. Money leaves only when a shareholder cashes out, the broker makes a loan, or the token's issuer takes its token back.</span></li>
+        </ol>
+      </figure>
+        <p>The broker can&#39;t just take the money. But the broker picks the borrowers, so a careless broker can still lose it.</p>
         <h2 id="open-vaults-and-fixed-schedule-vaults">Open vaults and fixed-schedule vaults</h2>
         <p>An open vault lets people put money in and take it out whenever they like.</p>
-        <p>An update to lending, also in the vote right now, adds vaults that run on a fixed schedule. It also says loans can only come from these fixed-schedule vaults. Click through the three stages.</p>
+        <p>The lending vote includes an update that adds vaults with a fixed schedule. Once it&#39;s on, loans can only come from these fixed-schedule vaults. Click through the three stages.</p>
         <figure class="widget vault-stages" data-widget="vault-stages">
         <div class="widget-head"><strong>A fixed-schedule vault, stage by stage</strong></div>
         <div class="vs-tabs" role="tablist">
@@ -266,6 +294,7 @@
         <h2 id="public-and-private-vaults">Public and private vaults</h2>
         <p>Anyone can join a public vault.</p>
         <p>A private vault only takes money from people with a pass from a checker the vault trusts. Think of it like a members-only club that checks your ID at the door. Banks and funds that must know who they deal with would use these.</p>
+        <p>The owner picks private when making the vault, and can&#39;t switch it later. The vault then points to a guest list on the ledger. The list doesn&#39;t name people. It names which checkers&#39; passes count. Anyone can set up a list like that, and its owner can update it.</p>
         <p>If your pass runs out, you can&#39;t add more money. But you can always cash out the shares you already have. The broker can&#39;t lock you in.</p>
         <h2 id="what-if-a-borrower-doesn-t-pay">What if a borrower doesn&#39;t pay?</h2>
         <p>These loans don&#39;t have collateral. Nobody hands over a car or a house to back them. The broker checks borrowers out the old-fashioned way, off the ledger, before lending to them.</p>
@@ -292,14 +321,14 @@
         <details class="faq"><summary><h3>Can the issuer of a token still freeze it inside a vault?</h3><span class="plus" aria-hidden="true"></span></summary><p>Yes. The issuer&#39;s powers from Lesson 4 still apply. An issuer can freeze its token, or take it back if it turned that power on, even when it sits in a vault.</p></details>
         <details class="faq"><summary><h3>When can I use a vault?</h3><span class="plus" aria-hidden="true"></span></summary><p>Not yet on the live ledger. Vaults switch on only after the vote passes. The box above shows the latest count.</p></details>
         <h2 id="words-used-in-this-lesson">Words used in this lesson</h2>
-        <ul><li><strong>Vault:</strong> a shared pool of one kind of money on the XRP Ledger, which loans can be paid out of.</li><li><strong>Share:</strong> a token that shows how much of a vault you own.</li><li><strong>Depositor:</strong> someone who puts money in a vault.</li><li><strong>Loan broker:</strong> the person or company that runs a vault and decides who gets a loan.</li><li><strong>First-loss capital:</strong> the broker&#39;s own money, set aside to take the first hit when a loan goes bad.</li><li><strong>Collateral:</strong> something a borrower hands over to back a loan, like a house for a mortgage. These loans don&#39;t use it.</li><li><strong>Private vault:</strong> a vault that only takes money from people with an approved pass.</li></ul>
+        <ul><li><strong>Vault:</strong> a shared pool of one kind of money on the XRP Ledger, which loans can be paid out of.</li><li><strong>Share:</strong> a token that shows how much of a vault you own.</li><li><strong>Depositor:</strong> someone who puts money in a vault.</li><li><strong>Loan broker:</strong> the person or company that runs a vault and decides who gets a loan.</li><li><strong>First-loss capital:</strong> the broker&#39;s own money, set aside to take the first hit when a loan goes bad.</li><li><strong>Collateral:</strong> something a borrower hands over to back a loan, like a house for a mortgage. These loans don&#39;t use it.</li><li><strong>Private vault:</strong> a vault that only takes money from people with an approved pass.</li><li><strong>Vault owner:</strong> the account that made the vault. Right now it&#39;s also the one that runs lending on it.</li></ul>
         <h2 id="sources">Sources</h2>
-        <ul><li><a href="https://xrpl.org/docs/concepts/tokens/single-asset-vaults" target="_blank" rel="noopener noreferrer">Single Asset Vaults</a> (shares, public and private, fixed-schedule vaults, the vault account, freezes), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/lending-protocol" target="_blank" rel="noopener noreferrer">Lending Protocol</a> (brokers, depositors, borrowers, no collateral, first-loss capital), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/networks-and-servers/amendments" target="_blank" rel="noopener noreferrer">Amendments</a> (80% for two weeks), xrpl.org</li><li>Vote counts: read by us from the XRP Ledger on November 27, 2026. Vaults passed 80% on November 25 and lending on November 27.</li></ul>
+        <ul><li><a href="https://xrpl.org/docs/concepts/tokens/single-asset-vaults" target="_blank" rel="noopener noreferrer">Single Asset Vaults</a> (shares, public and private, fixed-schedule vaults, the vault account, freezes), xrpl.org</li><li><a href="https://xrpl.org/docs/references/protocol/transactions/types/vaultcreate" target="_blank" rel="noopener noreferrer">VaultCreate</a> (who makes a vault, the choices, which ones are locked), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/decentralized-exchange/permissioned-domains" target="_blank" rel="noopener noreferrer">Permissioned Domains</a> (the guest list of accepted passes), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/tokens/lending-protocol" target="_blank" rel="noopener noreferrer">Lending Protocol</a> (brokers, depositors, borrowers, no collateral, first-loss capital), xrpl.org</li><li><a href="https://xrpl.org/docs/concepts/networks-and-servers/amendments" target="_blank" rel="noopener noreferrer">Amendments</a> (80% for two weeks), xrpl.org</li><li>Vote counts: read by us from the XRP Ledger on November 27, 2026. Vaults passed 80% on November 25 and lending on November 27.</li></ul>
         <nav class="pager" aria-label="More lessons"><a class="prev" href="/learn/xrp-ledger-amendments/"><span>Previous lesson</span>How new features get voted in</a><div class="next soon"><span>Next lesson, Tue, Dec 1</span>The Lending Protocol, part 2: how a loan works</div></nav>
       </article>
       <nav class="toc" aria-label="On this page">
         <p>On this page</p>
-        <ol><li><a href="#where-does-loan-money-come-from">Where does loan money come from?</a></li><li><a href="#who-s-who">Who&#39;s who</a></li><li><a href="#try-it-put-money-in-a-vault">Try it: put money in a vault</a></li><li><a href="#shares-are-your-receipt">Shares are your receipt</a></li><li><a href="#the-money-sits-in-an-account-nobody-controls">The money sits in an account nobody controls</a></li><li><a href="#open-vaults-and-fixed-schedule-vaults">Open vaults and fixed-schedule vaults</a></li><li><a href="#public-and-private-vaults">Public and private vaults</a></li><li><a href="#what-if-a-borrower-doesn-t-pay">What if a borrower doesn&#39;t pay?</a></li><li><a href="#see-it-for-yourself">See it for yourself</a></li><li><a href="#common-questions">Common questions</a></li><li><a href="#words-used-in-this-lesson">Words used in this lesson</a></li><li><a href="#sources">Sources</a></li></ol>
+        <ol><li><a href="#where-does-loan-money-come-from">Where does loan money come from?</a></li><li><a href="#who-s-who">Who&#39;s who</a></li><li><a href="#how-a-vault-gets-made">How a vault gets made</a></li><li><a href="#try-it-put-money-in-a-vault">Try it: put money in a vault</a></li><li><a href="#what-keeps-a-vault-fair">What keeps a vault fair</a></li><li><a href="#open-vaults-and-fixed-schedule-vaults">Open vaults and fixed-schedule vaults</a></li><li><a href="#public-and-private-vaults">Public and private vaults</a></li><li><a href="#what-if-a-borrower-doesn-t-pay">What if a borrower doesn&#39;t pay?</a></li><li><a href="#see-it-for-yourself">See it for yourself</a></li><li><a href="#common-questions">Common questions</a></li><li><a href="#words-used-in-this-lesson">Words used in this lesson</a></li><li><a href="#sources">Sources</a></li></ol>
       </nav>
     </div>
   </main>

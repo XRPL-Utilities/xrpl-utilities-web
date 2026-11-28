@@ -807,6 +807,48 @@
     storyStep();
   }
 
+  // ---- try it: make a vault (lesson 6) ---------------------------------------------
+  // Choices map to VaultCreate (xrpl.org): Asset, tfVaultPrivate + DomainID,
+  // VaultKind, tfVaultShareNonTransferable. Asset, private, kind and share
+  // transfer can't be changed after the vault is created.
+  function vaultMake(root) {
+    const qs = Array.from(root.querySelectorAll('[data-q]'));
+    const make = root.querySelector('[data-role="make"]');
+    const reset = root.querySelector('[data-role="reset"]');
+    const out = root.querySelector('[data-role="out"]');
+    const title = root.querySelector('[data-role="title"]');
+    const lock = root.querySelector('[data-role="lock"]');
+    const pick = {};
+    qs.forEach((q) => {
+      const key = q.getAttribute('data-q');
+      const btns = Array.from(q.querySelectorAll('button'));
+      pick[key] = 0;
+      btns.forEach((b) => b.addEventListener('click', () => {
+        if (b.disabled) return;
+        pick[key] = Number(b.getAttribute('data-v'));
+        btns.forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      }));
+    });
+    function setLocked(on) {
+      qs.forEach((q) => q.querySelectorAll('button').forEach((b) => { b.disabled = on; }));
+      make.hidden = on;
+      reset.hidden = !on;
+      out.hidden = !on;
+    }
+    make.addEventListener('click', () => {
+      const money = pick.asset ? 'dollar token' : 'XRP';
+      const who = pick.who ? 'private' : 'public';
+      const kind = pick.kind ? 'fixed-schedule' : 'open';
+      title.textContent = 'Done. You made a ' + who + ', ' + kind + ' ' + money + ' vault.';
+      let text = 'Locked in for good: the money it holds, who can join, the schedule and whether shares can be passed on.';
+      if (pick.who) text += ' It points to a guest list of accepted passes, which can be updated.';
+      if (pick.kind) text += ' Its sign-up and pay-back dates are set now too, and can’t move.';
+      lock.textContent = text;
+      setLocked(true);
+    });
+    reset.addEventListener('click', () => setLocked(false));
+  }
+
   // ---- fixed-schedule vault stages (lesson 6) --------------------------------------
   // From the xrpl.org table: Subscription allows deposit and withdraw, no new loans;
   // Investment blocks deposit and withdraw, allows new loans; Redemption allows
@@ -1003,7 +1045,7 @@
     load(false);
   }
 
-  const WIDGETS = { 'vault-life': vaultLife, 'vault-stages': vaultStages, 'live-lending': liveLending, 'amend-vote': amendVote, 'live-amend': liveAmend, 'token-life': tokenLife, tamper, 'live-chain': liveChain, race, vote, reserve, supply, trust, 'live-tokens': liveTokens };
+  const WIDGETS = { 'vault-make': vaultMake, 'vault-life': vaultLife, 'vault-stages': vaultStages, 'live-lending': liveLending, 'amend-vote': amendVote, 'live-amend': liveAmend, 'token-life': tokenLife, tamper, 'live-chain': liveChain, race, vote, reserve, supply, trust, 'live-tokens': liveTokens };
   document.querySelectorAll('[data-widget]').forEach((root) => {
     const fn = WIDGETS[root.getAttribute('data-widget')];
     if (fn) fn(root);
