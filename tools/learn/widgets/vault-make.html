@@ -1,0 +1,22 @@
+<figure class="widget vault-make" data-widget="vault-make">
+  <div class="widget-head"><strong>Try it: make a vault</strong></div>
+  <div class="vm-q" data-q="asset"><p>What money goes in?</p><div class="vm-opts"><button type="button" data-v="0" aria-pressed="true">XRP</button><button type="button" data-v="1" aria-pressed="false">A dollar token</button></div></div>
+  <div class="vm-q" data-q="who"><p>Who can join?</p><div class="vm-opts"><button type="button" data-v="0" aria-pressed="true">Anyone</button><button type="button" data-v="1" aria-pressed="false">Only people with an approved pass</button></div></div>
+  <div class="vm-q" data-q="kind"><p>How does money come and go?</p><div class="vm-opts"><button type="button" data-v="0" aria-pressed="true">In and out any time</button><button type="button" data-v="1" aria-pressed="false">On a fixed schedule</button></div></div>
+  <div class="vm-q" data-q="pass"><p>Can people pass their shares to someone else?</p><div class="vm-opts"><button type="button" data-v="0" aria-pressed="true">Yes</button><button type="button" data-v="1" aria-pressed="false">No</button></div></div>
+  <div class="tr-btns">
+    <button type="button" class="replay tr-next" data-role="make">Make the vault</button>
+    <button type="button" class="replay tr-reset" data-role="reset" hidden>Start over</button>
+  </div>
+  <div class="vm-out" data-role="out" hidden>
+    <p class="vm-title" data-role="title"></p>
+    <ol class="vm-steps">
+      <li>The ledger opens a new account to hold the vault's money. Nobody has a key to it.</li>
+      <li>It makes a share token for the vault.</li>
+      <li>Your account becomes the vault owner.</li>
+      <li>A little XRP is destroyed as the fee, to keep spam off the ledger.</li>
+    </ol>
+    <p class="vm-lock" data-role="lock"></p>
+  </div>
+  <figcaption>A pretend vault. The real choices are made in one VaultCreate transaction.</figcaption>
+</figure>
