@@ -52,6 +52,10 @@ h1 { font-size: 64px; line-height: 1.05; margin: 0 0 20px; }
 .hero-amend .am-knob { transform: translateX(36px); }
 .hero-amend .am-on { opacity: 1; }
 .hero-amend .am-off { opacity: 0; }
+.hero-vault .hv-coin, .hero-vault .hv-gold, .hero-vault .hv-share, .hero-vault .hv-grow { animation: none; }
+.hero-vault .hv-c1 { transform: translateX(50px); } .hero-vault .hv-c2 { opacity: 0; } .hero-vault .hv-s1 { transform: translateX(-50px); }
+.hero-vault .hv-c3 { transform: translateX(55px); } .hero-vault .hv-c4, .hero-vault .hv-c5 { transform: translateX(-55px); }
+.hero-vault .hv-grow { transform: scaleY(0.3); }
 </style></head><body>
 <div class="og">
   <div>

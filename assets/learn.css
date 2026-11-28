@@ -614,3 +614,60 @@ a.page-num:hover { color: var(--accent); }
 .apw-note { color: var(--muted); font-size: 0.9rem; margin-top: 10px !important; }
 .apw-dots span.m { background: var(--accent); border-color: var(--accent); }
 .apw-dots span.v { background: #22c55e; border-color: #22c55e; }
+/* lesson 6 hero: money in, loans out, interest back */
+.hero-vault .hd { fill: var(--muted); font: 700 12px Inter, system-ui, sans-serif; letter-spacing: 0.08em; }
+.hero-vault .mid { text-anchor: middle; }
+.hero-vault .nm { fill: #fff; font: 600 15px Inter, system-ui, sans-serif; }
+.hero-vault .sm { fill: var(--muted); font: 12px Inter, system-ui, sans-serif; }
+.hero-vault .hv-int { fill: #fbbf24; font-weight: 700; }
+.hero-vault .hv-ppl circle, .hero-vault .hv-ppl path { fill: none; stroke: #00b8ff; stroke-width: 2; }
+.hero-vault .hv-b circle, .hero-vault .hv-b path { stroke: #fbbf24; }
+.hero-vault .hv-box { fill: #111; stroke: #00b8ff; stroke-width: 2; }
+.hero-vault .hv-pool { fill: rgba(0, 184, 255, 0.14); }
+.hero-vault .hv-grow { fill: rgba(34, 197, 94, 0.18); transform-box: fill-box; transform-origin: bottom; animation: hv-grow 6s ease-in-out infinite; }
+.hero-vault .hv-dial { fill: none; stroke: #3a3a3a; stroke-width: 3; }
+.hero-vault .hv-hub { fill: #00b8ff; }
+.hero-vault .hv-tick { stroke: #00b8ff; stroke-width: 2; stroke-linecap: round; }
+.hero-vault .hv-lane { stroke: #3a3a3a; stroke-width: 2; stroke-dasharray: 4 6; }
+.hero-vault .hv-coin { fill: #00b8ff; }
+.hero-vault .hv-gold { fill: #fbbf24; }
+.hero-vault .hv-share { fill: #22c55e; }
+.hero-vault .hv-c1 { animation: hv-right 3s linear infinite; }
+.hero-vault .hv-c2 { animation: hv-right 3s linear 1.5s infinite; }
+.hero-vault .hv-s1 { animation: hv-left 3s linear 0.8s infinite; }
+.hero-vault .hv-c3 { animation: hv-right2 3s linear 0.4s infinite; }
+.hero-vault .hv-c4, .hero-vault .hv-c5 { animation: hv-left2 3s linear 1.9s infinite; }
+@keyframes hv-right { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(100px); opacity: 0; } }
+@keyframes hv-left { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(-100px); opacity: 0; } }
+@keyframes hv-right2 { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(110px); opacity: 0; } }
+@keyframes hv-left2 { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(-110px); opacity: 0; } }
+@keyframes hv-grow { 0%, 20% { transform: scaleY(0.05); } 70%, 100% { transform: scaleY(0.35); } }
+@media (prefers-reduced-motion: reduce) { .hero-vault .hv-coin, .hero-vault .hv-gold, .hero-vault .hv-share, .hero-vault .hv-grow { animation: none; } .hero-vault .hv-grow { transform: scaleY(0.3); } }
+/* lesson 6 widgets */
+.vr-list { margin: 0; }
+@media (min-width: 640px) { .vr-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.vl-bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; background: #1c1c1c; border: 1px solid var(--border); margin: 12px 0 8px; }
+.vl-bar span { display: block; height: 100%; transition: width 0.4s ease; }
+.vl-in { background: var(--accent); }
+.vl-out { background: #fbbf24; }
+.vl-keys, .vl-you { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; }
+.vl-keys p, .vl-you p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.vl-keys b, .vl-you b { color: #fff; }
+.vl-keys i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: 0; }
+.k-in { background: var(--accent); } .k-out { background: #fbbf24; }
+.vl-you { margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--ink); }
+.vl-you b.up { color: #22c55e; } .vl-you b.down { color: #ef4444; }
+.vault-life .replay, .vault-stages button { margin-top: 0; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.vault-life .tr-next { background: var(--accent); color: var(--ink); font-weight: 600; }
+.vault-life .tr-reset { border-color: var(--border); color: var(--muted); }
+.vault-life .replay[hidden], .vl-free[hidden] { display: none; }
+.vault-life .replay:disabled { opacity: 0.35; cursor: default; }
+.vault-life .av-minus, .vault-life .av-plus { width: 40px; height: 40px; padding: 0; font-size: 1.3rem; line-height: 1; }
+.vl-free { margin-top: 10px; }
+.vs-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+.vault-stages .vs-tabs button[aria-selected="true"] { background: var(--accent); color: var(--ink); font-weight: 600; }
+.vs-say { margin: 8px 0; color: #fff; font-weight: 600; min-height: 3em; }
+.vs-rules { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.vs-rules li { display: flex; justify-content: space-between; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; background: var(--ink); }
+.vs-rules b.yes { color: #22c55e; } .vs-rules b.no { color: #ef4444; }
+.lam-when { color: #22c55e; }
