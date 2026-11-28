@@ -725,6 +725,195 @@
     load();
   }
 
+  // ---- try it: your share of a vault (lesson 6) ------------------------------------
+  // Share value = assets in the vault (cash plus loans owed) / shares, per xrpl.org
+  // Single Asset Vaults. The story is pretend; numbers chosen to stay whole.
+  function vaultLife(root) {
+    const $ = (r) => root.querySelector('[data-role="' + r + '"]');
+    const el = { barin: $('barin'), barout: $('barout'), inn: $('in'), out: $('out'), total: $('total'), shares: $('shares'), each: $('each'), worth: $('worth'), msg: $('msg'), free: $('free'), dep: $('dep'), minus: $('minus'), plus: $('plus'), next: $('next'), earn: $('earn'), lose: $('lose'), tryBtn: $('try'), reset: $('reset'), cap: $('cap') };
+    const capStory = el.cap ? el.cap.textContent : '';
+    const STORY = [
+      { inn: 100000, out: 0, text: 'The vault opens. Other people put in 99,000 dollar tokens and you put in 1,000. You get 1,000 shares, so you own 1% of the vault.' },
+      { inn: 20000, out: 80000, text: 'The broker lends 80,000 to borrowers. Only 20,000 is left in the vault, but the loans still count. Borrowers owe that money back.' },
+      { inn: 24000, out: 80000, cls: 'ok', text: 'Borrowers pay 4,000 in interest. The vault now holds 104,000, so each share is worth 1.04. Your shares are worth 1,040.' },
+      { inn: 25000, out: 77000, cls: 'bad', text: 'One borrower stops paying and still owes 3,000. The broker’s own money covers 1,000. The vault takes the other 2,000 loss. Your shares drop to 1,020.' },
+      { inn: 102000, out: 0, cls: 'ok', text: 'The other loans are paid back. You cash out your 1,000 shares and get 1,020 tokens. A bad loan cost you, but the interest more than made up for it.' },
+    ];
+    const NEXT = ['Lend some out', 'Interest comes in', 'A loan goes bad', 'Loans paid back', ''];
+    const fmt = (n) => Math.round(n).toLocaleString('en-US');
+    let step = 0;
+    let free = false;
+    let mine = 1000;
+    let total = 100000;
+    let start = 1000;
+    let last = null;
+    function show(inn, out, shares, all, msgText, cls) {
+      const tot = inn + out;
+      const each = tot / all;
+      el.barin.style.width = (inn / Math.max(tot, 1)) * 100 + '%';
+      el.barout.style.width = (out / Math.max(tot, 1)) * 100 + '%';
+      el.inn.textContent = fmt(inn);
+      el.out.textContent = fmt(out);
+      el.total.textContent = fmt(tot);
+      el.shares.textContent = fmt(shares);
+      let e3 = each.toFixed(3);
+      if (e3.slice(-1) === '0') e3 = e3.slice(0, -1);
+      el.each.textContent = e3;
+      const worth = shares * each;
+      el.worth.textContent = fmt(worth);
+      el.worth.className = last === null ? '' : worth > last + 0.5 ? 'up' : worth < last - 0.5 ? 'down' : '';
+      last = worth;
+      el.msg.textContent = msgText;
+      el.msg.className = 'av-msg' + (cls ? ' ' + cls : '');
+    }
+    function buttons() {
+      el.free.hidden = !free;
+      el.next.hidden = free || step >= STORY.length - 1;
+      if (!el.next.hidden) el.next.textContent = NEXT[step];
+      el.tryBtn.hidden = free || step < STORY.length - 1;
+      el.earn.hidden = !free;
+      el.lose.hidden = !free;
+    }
+    function storyStep() {
+      const s = STORY[step];
+      if (step === 0) last = null;
+      start = 1000;
+      show(s.inn, s.out, 1000, 100000, s.text, s.cls || '');
+      buttons();
+    }
+    function freeDraw(text, cls) {
+      // All money sits in the vault for the free play; shares = total at the start.
+      show(Math.round(total * 0.2), total - Math.round(total * 0.2), mine, 100000, text, cls);
+      el.dep.textContent = 'You put in ' + fmt(start);
+      el.minus.disabled = start <= 500 || total !== 100000;
+      el.plus.disabled = start >= 10000 || total !== 100000;
+      buttons();
+    }
+    function freeStart(text) {
+      free = true; total = 100000; mine = start; last = null;
+      freeDraw(text || 'Pick how much you put in, then see what happens to it. The vault holds 100,000 tokens in all, and most of it is lent out.', '');
+    }
+    el.next.addEventListener('click', () => { if (!free && step < STORY.length - 1) { step += 1; storyStep(); } });
+    el.tryBtn.addEventListener('click', () => {
+      start = 1000;
+      if (el.cap) el.cap.textContent = 'Your turn. Interest adds 2% to the whole vault. A bad loan takes 1.5% away.';
+      freeStart();
+    });
+    el.minus.addEventListener('click', () => { if (start > 500) { start -= 500; freeStart(); } });
+    el.plus.addEventListener('click', () => { if (start < 10000) { start += 500; freeStart(); } });
+    el.earn.addEventListener('click', () => { total = Math.round(total * 1.02); freeDraw('Borrowers paid interest. Every share is worth a bit more, yours included.', 'ok'); });
+    el.lose.addEventListener('click', () => { total = Math.round(total * 0.985); freeDraw('A loan went bad. Every share is worth a bit less, yours included.', 'bad'); });
+    el.reset.addEventListener('click', () => { free = false; step = 0; if (el.cap) el.cap.textContent = capStory; storyStep(); });
+    storyStep();
+  }
+
+  // ---- fixed-schedule vault stages (lesson 6) --------------------------------------
+  // From the xrpl.org table: Subscription allows deposit and withdraw, no new loans;
+  // Investment blocks deposit and withdraw, allows new loans; Redemption allows
+  // withdraw only.
+  function vaultStages(root) {
+    const STAGES = [
+      { say: 'The vault takes sign-ups. People can put money in or change their minds and take it out.', dep: true, wd: true, loan: false },
+      { say: 'The money is locked so the broker can lend it out. Nobody can add or remove money until this stage ends.', dep: false, wd: false, loan: true },
+      { say: 'Loans come due and get paid back. No new loans go out, and everyone can take their share home.', dep: false, wd: true, loan: false },
+    ];
+    const tabs = Array.from(root.querySelectorAll('[data-stage]'));
+    const say = root.querySelector('[data-role="say"]');
+    const cells = { dep: root.querySelector('[data-role="dep"]'), wd: root.querySelector('[data-role="wd"]'), loan: root.querySelector('[data-role="loan"]') };
+    function pick(i) {
+      const s = STAGES[i];
+      tabs.forEach((t, j) => t.setAttribute('aria-selected', j === i ? 'true' : 'false'));
+      say.textContent = s.say;
+      Object.keys(cells).forEach((k) => { cells[k].textContent = s[k] ? 'Yes' : 'No'; cells[k].className = s[k] ? 'yes' : 'no'; });
+    }
+    tabs.forEach((t) => t.addEventListener('click', () => pick(Number(t.getAttribute('data-stage')))));
+    pick(0);
+  }
+
+  // ---- live: the lending vote (lesson 6) -------------------------------------------
+  // Majority time comes from the ledger's Amendments entry (Ripple epoch seconds,
+  // as served by XRPScan). Switch-on is the earliest possible: majority + 14 days.
+  function liveLending(root) {
+    const status = root.querySelector('[data-role="status"]');
+    const list = root.querySelector('[data-role="list"]');
+    const refresh = root.querySelector('[data-role="refresh"]');
+    const WANT = [
+      ['SingleAssetVault', 'Vaults', 'XLS-65'],
+      ['LendingProtocol', 'Lending', 'XLS-66'],
+      ['LendingProtocolV1_1', 'Lending update (fixed-schedule vaults)', 'XLS-66'],
+    ];
+    const RIPPLE_EPOCH = 946684800;
+    const day = (ms) => new Date(ms).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
+    let busy = false;
+    let loaded = false;
+    function row(a, label, xls) {
+      const li = document.createElement('li');
+      const name = document.createElement('p');
+      name.className = 'lam-name';
+      name.appendChild(document.createTextNode(label));
+      const tag = document.createElement('span');
+      tag.className = 'lam-xls';
+      tag.textContent = xls;
+      name.appendChild(tag);
+      li.appendChild(name);
+      const nums = document.createElement('p');
+      nums.className = 'lam-nums';
+      if (a.enabled === true) {
+        const t = typeof a.enabled_on === 'string' ? Date.parse(a.enabled_on) : NaN;
+        nums.className += ' lam-when';
+        nums.textContent = Number.isFinite(t) ? 'Switched on ' + day(t) + '.' : 'Switched on.';
+        li.appendChild(nums);
+        return li;
+      }
+      const bar = document.createElement('div');
+      bar.className = 'lam-bar';
+      const fill = document.createElement('span');
+      fill.style.width = Math.min(100, (a.count / a.validations) * 100) + '%';
+      if (a.count >= a.threshold) fill.className = 'met';
+      const need = document.createElement('i');
+      need.style.left = Math.min(100, (a.threshold / a.validations) * 100) + '%';
+      bar.appendChild(fill);
+      bar.appendChild(need);
+      li.appendChild(bar);
+      let text = a.count + ' of ' + a.validations + ' say yes. Needs ' + a.threshold + '.';
+      if (Number.isInteger(a.majority) && a.majority > 0) {
+        const since = (a.majority + RIPPLE_EPOCH) * 1000;
+        text += ' Over 80% since ' + day(since) + '. If it holds, it switches on about ' + day(since + 14 * 86400000) + '.';
+        nums.className += ' lam-when';
+      } else {
+        text += ' The two-week clock isn’t running.';
+      }
+      nums.textContent = text;
+      li.appendChild(nums);
+      return li;
+    }
+    async function load() {
+      if (busy) return;
+      busy = true;
+      status.textContent = 'Checking the latest votes...';
+      try {
+        const r = await fetch('https://api.xrpscan.com/api/v1/amendments', { headers: { accept: 'application/json' } });
+        if (!r.ok) throw new Error('status ' + r.status);
+        const all = await r.json();
+        if (!Array.isArray(all)) throw new Error('shape');
+        const ok = (a) => a && typeof a.name === 'string' && (a.enabled === true || (Number.isInteger(a.count) && Number.isInteger(a.threshold) && Number.isInteger(a.validations) && a.validations > 0));
+        const rows = WANT.map(([n, label, xls]) => [all.find((a) => ok(a) && a.name === n), label, xls]).filter((x) => x[0]);
+        if (!rows.length) throw new Error('missing');
+        list.textContent = '';
+        rows.forEach(([a, label, xls]) => list.appendChild(row(a, label, xls)));
+        status.textContent = 'Latest count of yes votes from the trusted validators.';
+        loaded = true;
+      } catch (e) {
+        status.textContent = loaded
+          ? 'Couldn’t reach the ledger just now. These are the last votes we got.'
+          : 'Couldn’t reach the ledger just now. Press the button in a moment.';
+      }
+      busy = false;
+    }
+    if (refresh) refresh.addEventListener('click', load);
+    load();
+  }
+
   // ---- live: what's inside the newest page ----------------------------------------
   function liveTokens(root) {
     const status = root.querySelector('[data-role="status"]');
@@ -814,7 +1003,7 @@
     load(false);
   }
 
-  const WIDGETS = { 'amend-vote': amendVote, 'live-amend': liveAmend, 'token-life': tokenLife, tamper, 'live-chain': liveChain, race, vote, reserve, supply, trust, 'live-tokens': liveTokens };
+  const WIDGETS = { 'vault-life': vaultLife, 'vault-stages': vaultStages, 'live-lending': liveLending, 'amend-vote': amendVote, 'live-amend': liveAmend, 'token-life': tokenLife, tamper, 'live-chain': liveChain, race, vote, reserve, supply, trust, 'live-tokens': liveTokens };
   document.querySelectorAll('[data-widget]').forEach((root) => {
     const fn = WIDGETS[root.getAttribute('data-widget')];
     if (fn) fn(root);

@@ -44,6 +44,7 @@ Each service publishes its own llms.txt, x402 catalog, OpenAPI document and agen
 - [What XRP is actually for](https://xrpl-utilities.com/learn/what-is-xrp/)
 - [Tokens: dollars and more on the XRP Ledger](https://xrpl-utilities.com/learn/tokens-on-the-xrp-ledger/)
 - [How new features get voted in](https://xrpl-utilities.com/learn/xrp-ledger-amendments/)
+- [Vaults: the pool every loan comes from](https://xrpl-utilities.com/learn/xrp-ledger-lending-protocol/)
 
 ## Optional
 
